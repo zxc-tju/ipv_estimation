@@ -1,0 +1,17 @@
+# Data directories
+argoverse/0_souce_data/
+argoverse/1_experiment_result/
+argoverse/2_data_process/
+background_pic/
+
+# Notebook artifacts
+*.ipynb
+.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS metadata
+.DS_Store
+Thumbs.db
