@@ -43,7 +43,7 @@ OUTPUT_ROOT = THIS_DIR / "1_experiment_result" / "ipv_estimation"
 # calling process_dataset directly.
 DEBUG_VIRTUAL_TRACKS = False
 DEBUG_STEPS: Optional[Sequence[int]] = None
-MAX_WORKERS: Optional[int] = None
+MAX_WORKERS: Optional[int] = 18
 
 
 ARGO_CONFIG: Dict[str, Dict[str, Dict[str, Path]]] = {
