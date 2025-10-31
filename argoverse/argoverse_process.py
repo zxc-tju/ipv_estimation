@@ -10,21 +10,37 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional, Sequence
+import sys
+
+THIS_DIR = Path(__file__).resolve().parent
+PARENT_DIR = THIS_DIR.parent
+if str(PARENT_DIR) not in sys.path:
+    sys.path.insert(0, str(PARENT_DIR))
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from ipv_estimation import MotionSequence, concat_motion, estimate_ipv_pair
+from ipv_estimation import (
+    MotionSequence,
+    concat_motion,
+    estimate_ipv_pair,
+    plot_virtual_vs_observed,
+)
 from tools.utility import smooth_ployline
 
 LOGGER = logging.getLogger(__name__)
 
-THIS_DIR = Path(__file__).resolve().parent
 DATA_ROOT = THIS_DIR / "0_souce_data"
 OUTPUT_ROOT = THIS_DIR / "1_experiment_result" / "ipv_estimation"
+
+# Toggle diagnostic plotting for virtual trajectories.
+# Set these to True / specific indices before running main(), or override when
+# calling process_dataset directly.
+DEBUG_VIRTUAL_TRACKS = True
+DEBUG_STEPS: Optional[Sequence[int]] = None
 
 
 ARGO_CONFIG: Dict[str, Dict[str, Dict[str, Path]]] = {
@@ -206,6 +222,8 @@ def process_dataset(
     source_map: Dict[str, Path],
     *,
     sample_time_argo1: float = 0.1,
+    debug_virtual_tracks: bool = False,
+    debug_steps: Optional[Sequence[int]] = None,
 ) -> None:
     LOGGER.info("Processing %s %s cases", data_version, scenario)
     for path_name, source_dir in source_map.items():
@@ -231,10 +249,19 @@ def process_dataset(
                 LOGGER.error("Failed to load case %s (%s): %s", case_id, source_dir, exc)
                 continue
 
-            ipv_values, ipv_errors = estimate_ipv_pair(
-                artifacts.motion_lt,
-                artifacts.motion_gs,
-            )
+            if debug_virtual_tracks:
+                ipv_values, ipv_errors, diagnostics = estimate_ipv_pair(
+                    artifacts.motion_lt,
+                    artifacts.motion_gs,
+                    return_diagnostics=True,
+                    diagnostic_steps=debug_steps,
+                )
+            else:
+                ipv_values, ipv_errors = estimate_ipv_pair(
+                    artifacts.motion_lt,
+                    artifacts.motion_gs,
+                )
+                diagnostics = None
 
             steps = ipv_values.shape[0]
             lt_motion = artifacts.motion_lt.data[:steps]
@@ -262,12 +289,43 @@ def process_dataset(
             except Exception as exc:  # pylint: disable=broad-except
                 LOGGER.error("Failed to render IPV figure for case %s: %s", case_id, exc)
 
+            if debug_virtual_tracks and diagnostics:
+                debug_dir = fig_dir / "virtual_tracks" / f"{case_id}"
+                debug_dir.mkdir(parents=True, exist_ok=True)
+
+                for role, entries in diagnostics.items():
+                    for entry in entries:
+                        title = (
+                            f"{role} step {entry['step']} "
+                            f"(ipv={entry['ipv']:.3f}, err={entry['ipv_error']:.3f})"
+                        )
+                        ax = plot_virtual_vs_observed(
+                            entry["observed"],
+                            entry["virtual_tracks"],
+                            interacting_track=entry["interacting"],
+                            weights=entry["weights"],
+                            title=title,
+                            show=False,
+                        )
+                        fig = ax.figure
+                        fig.savefig(
+                            debug_dir / f"{role}_step_{entry['step']}.png",
+                            dpi=300,
+                        )
+                        plt.close(fig)
+
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     for data_version, scenarios in ARGO_CONFIG.items():
         for scenario, source_map in scenarios.items():
-            process_dataset(data_version, scenario, source_map)
+            process_dataset(
+                data_version,
+                scenario,
+                source_map,
+                debug_virtual_tracks=DEBUG_VIRTUAL_TRACKS,
+                debug_steps=DEBUG_STEPS,
+            )
 
 
 if __name__ == "__main__":

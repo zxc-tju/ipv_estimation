@@ -21,10 +21,10 @@ import time
 # MIN_DIS = 5
 
 # argoverse1 setting
-# dt = 0.1
-# TRACK_LEN = 8
-# MAX_DELTA_UT = 1e-4
-# MIN_DIS = 5
+dt = 0.1
+TRACK_LEN = 8
+MAX_DELTA_UT = 1e-4
+MIN_DIS = 5
 
 # # simulation setting for convergence process illustration
 # dt = 0.35
@@ -32,9 +32,9 @@ import time
 # MIN_DIS = 4
 
 # simulation setting for T-intersection
-dt = 0.2
-TRACK_LEN = 20
-MIN_DIS = 4
+# dt = 0.2
+# TRACK_LEN = 20
+# MIN_DIS = 4
 
 # weights for calculate interior cost
 WEIGHT_DELAY = 0.3
@@ -552,7 +552,7 @@ class Agent:
             virtual_agent_track_collection.append(virtual_inter_agent.trj_solution)
         self.estimated_inter_agent[0].virtual_track_collection.append(virtual_agent_track_collection)
 
-    def estimate_self_ipv(self, self_actual_track, inter_track):
+    def estimate_self_ipv(self, self_actual_track, inter_track, *, return_details=False):
         """
         用于分析自然驾驶数据中的轨迹IPV
         Parameters
@@ -564,13 +564,16 @@ class Agent:
 
         ipv_range = virtual_agent_IPV_range
         # plt.plot(self_actual_track[:, 0], self_actual_track[:, 1], color='green')
+        virtual_tracks_recent = []
         for ipv_temp in ipv_range:
             agent_self_temp = copy.deepcopy(self)
             agent_self_temp.ipv = ipv_temp
             # generate track with varied ipv
             virtual_track_temp = agent_self_temp.solve_optimization(inter_track)
             # save track into a collection
-            self.virtual_track_collection.append(virtual_track_temp[:, 0:2])
+            track_xy = virtual_track_temp[:, 0:2]
+            self.virtual_track_collection.append(track_xy)
+            virtual_tracks_recent.append(track_xy)
         #     plt.plot(virtual_track_temp[:, 0], virtual_track_temp[:, 1])
         # plt.show()
 
@@ -579,7 +582,7 @@ class Agent:
         #                              self_actual_track,
         #                              self.virtual_track_collection,
         #                              self.target)
-        ipv_weight = cal_traj_reliability([], self_actual_track, self.virtual_track_collection, self.target)
+        ipv_weight = cal_traj_reliability([], self_actual_track, virtual_tracks_recent, self.target)
 
         # weighted sum of all candidates' IPVs
         self.ipv = sum(ipv_range * ipv_weight)
@@ -587,6 +590,12 @@ class Agent:
         # # save updated ipv and estimation error
         # self.ipv_collection.append(self.ipv)
         # self.ipv_error_collection.append(self.ipv_error)
+        if return_details:
+            return {
+                "virtual_tracks": virtual_tracks_recent,
+                "weights": ipv_weight,
+                "ipv_range": ipv_range,
+            }
 
 
 def get_cost_param(last_track_features, last_track_self, last_track_inter_collection, ipv):
