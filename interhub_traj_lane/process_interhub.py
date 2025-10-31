@@ -38,6 +38,7 @@ HEADING_THRESHOLD_DEG = 12.0
 HISTORY_WINDOW = 10
 MIN_OBSERVATION = 4
 DIAGNOSTIC_STEPS = (5, 6)
+DEFAULT_ENABLE_DIAGNOSTICS = False
 
 
 def _load_dataset(
@@ -192,10 +193,23 @@ def process_dataset(
     lane_distance_threshold: float = LANE_DISTANCE_THRESHOLD,
     heading_threshold_deg: float = HEADING_THRESHOLD_DEG,
     max_workers: Optional[int] = None,
+    enable_diagnostics: bool = DEFAULT_ENABLE_DIAGNOSTICS,
+    diagnostic_steps: Optional[Sequence[int]] = DIAGNOSTIC_STEPS,
 ) -> None:
     scenarios = _load_dataset(json_path, lane_distance_threshold)
     dataset_name = json_path.stem
-    tasks: List[Tuple[str, str, Dict[str, object], Dict[str, object], List[str], Path]] = []
+    tasks: List[
+        Tuple[
+            str,
+            str,
+            Dict[str, object],
+            Dict[str, object],
+            List[str],
+            Path,
+            bool,
+            Optional[Sequence[int]],
+        ]
+    ] = []
     skipped = 0
 
     for scenario_id, vehicles in scenarios.items():
@@ -210,7 +224,19 @@ def process_dataset(
             _classify_heading(secondary["headings"], heading_threshold_deg),
         ]
         labels = _ensure_unique_labels(labels)
-        tasks.append((dataset_name, scenario_id, primary, secondary, labels, output_root))
+        steps = diagnostic_steps if enable_diagnostics else None
+        tasks.append(
+            (
+                dataset_name,
+                scenario_id,
+                primary,
+                secondary,
+                labels,
+                output_root,
+                enable_diagnostics,
+                steps,
+            )
+        )
 
     if not tasks:
         LOGGER.info("Dataset %s completed: 0 processed, %d skipped", dataset_name, skipped)
@@ -242,6 +268,8 @@ def process_dataset(
                     secondary=task[3],
                     labels=task[4],
                     output_root=task[5],
+                    enable_diagnostics=task[6],
+                    diagnostic_steps=task[7],
                 )
                 processed += 1
             except Exception as exc:  # pylint: disable=broad-except
@@ -280,8 +308,19 @@ def process_dataset(
     )
 
 
-def _process_task(task: Tuple[str, str, Dict[str, object], Dict[str, object], List[str], Path]) -> None:
-    dataset_name, scenario_id, primary, secondary, labels, output_root = task
+def _process_task(
+    task: Tuple[
+        str,
+        str,
+        Dict[str, object],
+        Dict[str, object],
+        List[str],
+        Path,
+        bool,
+        Optional[Sequence[int]],
+    ]
+) -> None:
+    dataset_name, scenario_id, primary, secondary, labels, output_root, enable_diagnostics, diagnostic_steps = task
     _process_pair(
         dataset_name=dataset_name,
         scenario_id=scenario_id,
@@ -289,6 +328,8 @@ def _process_task(task: Tuple[str, str, Dict[str, object], Dict[str, object], Li
         secondary=secondary,
         labels=labels,
         output_root=output_root,
+        enable_diagnostics=enable_diagnostics,
+        diagnostic_steps=diagnostic_steps,
     )
 
 
@@ -300,18 +341,26 @@ def _process_pair(
     secondary: Dict[str, object],
     labels: List[str],
     output_root: Path,
+    enable_diagnostics: bool,
+    diagnostic_steps: Optional[Sequence[int]],
 ) -> None:
     seq_primary = _build_motion_sequence(primary, labels[0])
     seq_secondary = _build_motion_sequence(secondary, labels[1])
 
-    ipv_values, ipv_errors, diagnostics = estimate_ipv_pair(
+    diag_steps = diagnostic_steps if enable_diagnostics else None
+    result = estimate_ipv_pair(
         seq_primary,
         seq_secondary,
         history_window=HISTORY_WINDOW,
         min_observation=MIN_OBSERVATION,
-        return_diagnostics=True,
-        diagnostic_steps=DIAGNOSTIC_STEPS,
+        return_diagnostics=enable_diagnostics,
+        diagnostic_steps=diag_steps,
     )
+    if enable_diagnostics:
+        ipv_values, ipv_errors, diagnostics = result  # type: ignore[misc]
+    else:
+        ipv_values, ipv_errors = result  # type: ignore[misc]
+        diagnostics = None
 
     steps = ipv_values.shape[0]
     lt_motion = seq_primary.data[:steps]
@@ -342,7 +391,7 @@ def _process_pair(
     )
 
     diag_dir = fig_dir / "virtual_tracks" / case_name
-    if diagnostics:
+    if enable_diagnostics and diagnostics:
         diag_dir.mkdir(parents=True, exist_ok=True)
         for role, entries in diagnostics.items():
             for entry in entries:
@@ -398,15 +447,20 @@ def main() -> None:
         description="Run IPV estimation on interhub trajectory datasets."
     )
     parser.add_argument(
-        "datasets",
-        nargs="*",
-        help="Specific dataset filenames (e.g. trajectory_data_interaction_single.json)",
-    )
-    parser.add_argument(
         "--workers",
         type=int,
         default=None,
         help="Maximum number of parallel workers (default: cpu_count)",
+    )
+    parser.add_argument(
+        "--diagnostics",
+        action="store_true",
+        help="Enable virtual-track diagnostics and plotting",
+    )
+    parser.add_argument(
+        "datasets",
+        nargs="*",
+        help="Specific dataset filenames (e.g. trajectory_data_interaction_single.json)",
     )
     parser.add_argument(
         "--lane-threshold",
@@ -438,6 +492,8 @@ def main() -> None:
             lane_distance_threshold=args.lane_threshold,
             heading_threshold_deg=args.heading_threshold,
             max_workers=args.workers,
+            enable_diagnostics=args.diagnostics,
+            diagnostic_steps=DIAGNOSTIC_STEPS if args.diagnostics else None,
         )
 
 
