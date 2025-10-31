@@ -8,12 +8,17 @@ from __future__ import annotations
 
 import json
 import logging
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from itertools import count
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
+import argparse
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
+from tqdm import tqdm
 
 from agent import Agent  # noqa: F401  # ensure agent modifications are applied
 from ipv_estimation import (
@@ -186,10 +191,11 @@ def process_dataset(
     output_root: Path = OUTPUT_ROOT,
     lane_distance_threshold: float = LANE_DISTANCE_THRESHOLD,
     heading_threshold_deg: float = HEADING_THRESHOLD_DEG,
+    max_workers: Optional[int] = None,
 ) -> None:
     scenarios = _load_dataset(json_path, lane_distance_threshold)
     dataset_name = json_path.stem
-    processed = 0
+    tasks: List[Tuple[str, str, Dict[str, object], Dict[str, object], List[str], Path]] = []
     skipped = 0
 
     for scenario_id, vehicles in scenarios.items():
@@ -204,31 +210,85 @@ def process_dataset(
             _classify_heading(secondary["headings"], heading_threshold_deg),
         ]
         labels = _ensure_unique_labels(labels)
+        tasks.append((dataset_name, scenario_id, primary, secondary, labels, output_root))
 
-        try:
-            _process_pair(
-                dataset_name=dataset_name,
-                scenario_id=scenario_id,
-                primary=primary,
-                secondary=secondary,
-                labels=labels,
-                output_root=output_root,
-            )
-            processed += 1
-        except Exception as exc:  # pylint: disable=broad-except
-            LOGGER.exception(
-                "Failed to process dataset=%s scenario=%s (%s)",
-                dataset_name,
-                scenario_id,
-                exc,
-            )
-            skipped += 1
+    if not tasks:
+        LOGGER.info("Dataset %s completed: 0 processed, %d skipped", dataset_name, skipped)
+        return
+
+    workers = max_workers if max_workers not in (None, 0) else os.cpu_count()
+    if workers is None or workers <= 0:
+        workers = 1
+    workers = min(workers, len(tasks))
 
     LOGGER.info(
-        "Dataset %s completed: %d processed, %d skipped",
+        "Processing %d scenarios from %s with %d worker(s)",
+        len(tasks),
+        dataset_name,
+        workers,
+    )
+
+    processed = 0
+    failed = 0
+
+    if workers == 1:
+        iterator = tqdm(tasks, desc=f"{dataset_name}", unit="scenario")
+        for task in iterator:
+            try:
+                _process_pair(
+                    dataset_name=task[0],
+                    scenario_id=task[1],
+                    primary=task[2],
+                    secondary=task[3],
+                    labels=task[4],
+                    output_root=task[5],
+                )
+                processed += 1
+            except Exception as exc:  # pylint: disable=broad-except
+                LOGGER.exception(
+                    "Failed to process dataset=%s scenario=%s (%s)",
+                    task[0],
+                    task[1],
+                    exc,
+                )
+                failed += 1
+    else:
+        with ProcessPoolExecutor(max_workers=workers) as executor:
+            futures = {
+                executor.submit(_process_task, task): task[1] for task in tasks
+            }
+            for future in tqdm(as_completed(futures), total=len(futures), desc=f"{dataset_name}", unit="scenario"):
+                scenario_id = futures[future]
+                try:
+                    future.result()
+                    processed += 1
+                except Exception as exc:  # pylint: disable=broad-except
+                    LOGGER.error(
+                        "Failed to process dataset=%s scenario=%s (%s)",
+                        dataset_name,
+                        scenario_id,
+                        exc,
+                    )
+                    failed += 1
+
+    LOGGER.info(
+        "Dataset %s completed: %d processed, %d failed, %d skipped",
         dataset_name,
         processed,
+        failed,
         skipped,
+    )
+
+
+def _process_task(task: Tuple[str, str, Dict[str, object], Dict[str, object], List[str], Path]) -> None:
+    dataset_name, scenario_id, primary, secondary, labels, output_root = task
+    _process_pair(
+        dataset_name=dataset_name,
+        scenario_id=scenario_id,
+        primary=primary,
+        secondary=secondary,
+        labels=labels,
+        output_root=output_root,
     )
 
 
@@ -333,13 +393,52 @@ def _process_pair(
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    json_files = sorted(INTERHUB_ROOT.glob("trajectory_data_*.json"))
+
+    parser = argparse.ArgumentParser(
+        description="Run IPV estimation on interhub trajectory datasets."
+    )
+    parser.add_argument(
+        "datasets",
+        nargs="*",
+        help="Specific dataset filenames (e.g. trajectory_data_interaction_single.json)",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=None,
+        help="Maximum number of parallel workers (default: cpu_count)",
+    )
+    parser.add_argument(
+        "--lane-threshold",
+        type=float,
+        default=LANE_DISTANCE_THRESHOLD,
+        help="Lane distance threshold in meters",
+    )
+    parser.add_argument(
+        "--heading-threshold",
+        type=float,
+        default=HEADING_THRESHOLD_DEG,
+        help="Heading change threshold in degrees",
+    )
+    args = parser.parse_args()
+
+    if args.datasets:
+        json_files = [INTERHUB_ROOT / name for name in args.datasets]
+    else:
+        json_files = sorted(INTERHUB_ROOT.glob("trajectory_data_*.json"))
+
+    json_files = [path for path in json_files if path.exists()]
     if not json_files:
-        LOGGER.warning("No trajectory_data_*.json files found under %s", INTERHUB_ROOT)
+        LOGGER.warning("No matching trajectory_data files found under %s", INTERHUB_ROOT)
         return
 
     for json_path in json_files:
-        process_dataset(json_path)
+        process_dataset(
+            json_path,
+            lane_distance_threshold=args.lane_threshold,
+            heading_threshold_deg=args.heading_threshold,
+            max_workers=args.workers,
+        )
 
 
 if __name__ == "__main__":
