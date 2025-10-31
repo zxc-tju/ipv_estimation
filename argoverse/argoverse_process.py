@@ -8,9 +8,10 @@ original directory structure for inputs and outputs.
 from __future__ import annotations
 
 import logging
+import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence, Tuple
 import sys
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -22,6 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from ipv_estimation import (
     MotionSequence,
@@ -39,8 +41,9 @@ OUTPUT_ROOT = THIS_DIR / "1_experiment_result" / "ipv_estimation"
 # Toggle diagnostic plotting for virtual trajectories.
 # Set these to True / specific indices before running main(), or override when
 # calling process_dataset directly.
-DEBUG_VIRTUAL_TRACKS = True
+DEBUG_VIRTUAL_TRACKS = False
 DEBUG_STEPS: Optional[Sequence[int]] = None
+MAX_WORKERS: Optional[int] = None
 
 
 ARGO_CONFIG: Dict[str, Dict[str, Dict[str, Path]]] = {
@@ -162,6 +165,114 @@ def save_ipv_table(
     df.to_excel(output_path, index=False)
 
 
+def _process_single_case(args) -> Tuple[int, bool, List[str]]:
+    (
+        case_id,
+        data_version,
+        scenario,
+        source_dir,
+        sample_time_argo1,
+        debug_virtual_tracks,
+        debug_steps,
+        data_dir,
+        fig_dir,
+    ) = args
+
+    source_dir = Path(source_dir)
+    data_dir = Path(data_dir)
+    fig_dir = Path(fig_dir)
+
+    errors: List[str] = []
+
+    try:
+        artifacts = load_case_artifacts(
+            data_version,
+            source_dir,
+            case_id,
+            sample_time_argo1=sample_time_argo1,
+        )
+    except Exception as exc:  # pylint: disable=broad-except
+        errors.append(f"load_case: {exc}")
+        return case_id, False, errors
+
+    try:
+        if debug_virtual_tracks:
+            ipv_values, ipv_errors, diagnostics = estimate_ipv_pair(
+                artifacts.motion_lt,
+                artifacts.motion_gs,
+                return_diagnostics=True,
+                diagnostic_steps=debug_steps,
+            )
+        else:
+            ipv_values, ipv_errors = estimate_ipv_pair(
+                artifacts.motion_lt,
+                artifacts.motion_gs,
+            )
+            diagnostics = None
+    except Exception as exc:  # pylint: disable=broad-except
+        errors.append(f"estimate_ipv: {exc}")
+        return case_id, False, errors
+
+    steps = ipv_values.shape[0]
+    lt_motion = artifacts.motion_lt.data[:steps]
+    gs_motion = artifacts.motion_gs.data[:steps]
+
+    try:
+        save_ipv_table(
+            data_dir / f"{case_id}_ipv_results.xlsx",
+            lt_motion,
+            gs_motion,
+            ipv_values,
+            ipv_errors,
+        )
+    except Exception as exc:  # pylint: disable=broad-except
+        errors.append(f"save_table: {exc}")
+
+    try:
+        plot_ipv_summary(
+            fig_dir / f"{case_id}_ipv_curve.png",
+            lt_motion,
+            gs_motion,
+            ipv_values,
+            ipv_errors,
+        )
+    except Exception as exc:  # pylint: disable=broad-except
+        errors.append(f"plot_summary: {exc}")
+
+    if debug_virtual_tracks and diagnostics:
+        debug_dir = fig_dir / "virtual_tracks" / f"{case_id}"
+        try:
+            debug_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as exc:  # pylint: disable=broad-except
+            errors.append(f"create_debug_dir: {exc}")
+        else:
+            for role, entries in diagnostics.items():
+                for entry in entries:
+                    try:
+                        ax = plot_virtual_vs_observed(
+                            entry["observed"],
+                            entry["virtual_tracks"],
+                            interacting_track=entry["interacting"],
+                            weights=entry["weights"],
+                            title=(
+                                f"{role} step {entry['step']} "
+                                f"(ipv={entry['ipv']:.3f}, err={entry['ipv_error']:.3f})"
+                            ),
+                            show=False,
+                        )
+                        fig = ax.figure
+                        fig.savefig(
+                            debug_dir / f"{role}_step_{entry['step']}.png",
+                            dpi=300,
+                        )
+                        plt.close(fig)
+                    except Exception as exc:  # pylint: disable=broad-except
+                        errors.append(f"plot_virtual[{role} step {entry['step']}]: {exc}")
+
+    success = not errors
+    return case_id, success, errors
+
+
 def plot_ipv_summary(
     fig_path: Path,
     lt_motion: np.ndarray,
@@ -224,6 +335,7 @@ def process_dataset(
     sample_time_argo1: float = 0.1,
     debug_virtual_tracks: bool = False,
     debug_steps: Optional[Sequence[int]] = None,
+    max_workers: Optional[int] = None,
 ) -> None:
     LOGGER.info("Processing %s %s cases", data_version, scenario)
     for path_name, source_dir in source_map.items():
@@ -237,82 +349,72 @@ def process_dataset(
         data_dir.mkdir(parents=True, exist_ok=True)
         fig_dir.mkdir(parents=True, exist_ok=True)
 
-        for case_id in tqdm(case_ids, desc=f"{data_version}-{path_name}-{scenario}"):
-            try:
-                artifacts = load_case_artifacts(
-                    data_version,
-                    source_dir,
-                    case_id,
-                    sample_time_argo1=sample_time_argo1,
-                )
-            except Exception as exc:  # pylint: disable=broad-except
-                LOGGER.error("Failed to load case %s (%s): %s", case_id, source_dir, exc)
-                continue
+        debug_steps_payload = tuple(debug_steps) if debug_steps is not None else None
+        tasks = [
+            (
+                case_id,
+                data_version,
+                scenario,
+                str(source_dir),
+                sample_time_argo1,
+                debug_virtual_tracks,
+                debug_steps_payload,
+                str(data_dir),
+                str(fig_dir),
+            )
+            for case_id in case_ids
+        ]
 
-            if debug_virtual_tracks:
-                ipv_values, ipv_errors, diagnostics = estimate_ipv_pair(
-                    artifacts.motion_lt,
-                    artifacts.motion_gs,
-                    return_diagnostics=True,
-                    diagnostic_steps=debug_steps,
-                )
-            else:
-                ipv_values, ipv_errors = estimate_ipv_pair(
-                    artifacts.motion_lt,
-                    artifacts.motion_gs,
-                )
-                diagnostics = None
+        workers = max_workers if max_workers not in (None, 0) else MAX_WORKERS
+        if workers in (None, 0):
+            workers = os.cpu_count() or 1
+        workers = max(1, min(workers, len(tasks)))
 
-            steps = ipv_values.shape[0]
-            lt_motion = artifacts.motion_lt.data[:steps]
-            gs_motion = artifacts.motion_gs.data[:steps]
-
-            try:
-                save_ipv_table(
-                    data_dir / f"{case_id}_ipv_results.xlsx",
-                    lt_motion,
-                    gs_motion,
-                    ipv_values,
-                    ipv_errors,
-                )
-            except Exception as exc:  # pylint: disable=broad-except
-                LOGGER.error("Failed to save IPV table for case %s: %s", case_id, exc)
-
-            try:
-                plot_ipv_summary(
-                    fig_dir / f"{case_id}_ipv_curve.png",
-                    lt_motion,
-                    gs_motion,
-                    ipv_values,
-                    ipv_errors,
-                )
-            except Exception as exc:  # pylint: disable=broad-except
-                LOGGER.error("Failed to render IPV figure for case %s: %s", case_id, exc)
-
-            if debug_virtual_tracks and diagnostics:
-                debug_dir = fig_dir / "virtual_tracks" / f"{case_id}"
-                debug_dir.mkdir(parents=True, exist_ok=True)
-
-                for role, entries in diagnostics.items():
-                    for entry in entries:
-                        title = (
-                            f"{role} step {entry['step']} "
-                            f"(ipv={entry['ipv']:.3f}, err={entry['ipv_error']:.3f})"
-                        )
-                        ax = plot_virtual_vs_observed(
-                            entry["observed"],
-                            entry["virtual_tracks"],
-                            interacting_track=entry["interacting"],
-                            weights=entry["weights"],
-                            title=title,
-                            show=False,
-                        )
-                        fig = ax.figure
-                        fig.savefig(
-                            debug_dir / f"{role}_step_{entry['step']}.png",
-                            dpi=300,
-                        )
-                        plt.close(fig)
+        if workers == 1:
+            iterator = tqdm(tasks, desc=f"{data_version}-{path_name}-{scenario}", unit="case")
+            for task in iterator:
+                case_id, _, errors = _process_single_case(task)
+                for msg in errors:
+                    LOGGER.error(
+                        "Case %s (%s %s %s): %s",
+                        case_id,
+                        data_version,
+                        scenario,
+                        path_name,
+                        msg,
+                    )
+        else:
+            desc = f"{data_version}-{path_name}-{scenario}"
+            with ProcessPoolExecutor(max_workers=workers) as executor:
+                futures = {
+                    executor.submit(_process_single_case, task): task[0]
+                    for task in tasks
+                }
+                with tqdm(total=len(futures), desc=desc, unit="case") as progress:
+                    for future in as_completed(futures):
+                        case_id = futures[future]
+                        try:
+                            _, _, errors = future.result()
+                        except Exception as exc:  # pylint: disable=broad-except
+                            LOGGER.error(
+                                "Case %s (%s %s %s) raised an unhandled exception: %s",
+                                case_id,
+                                data_version,
+                                scenario,
+                                path_name,
+                                exc,
+                            )
+                        else:
+                            for msg in errors:
+                                LOGGER.error(
+                                    "Case %s (%s %s %s): %s",
+                                    case_id,
+                                    data_version,
+                                    scenario,
+                                    path_name,
+                                    msg,
+                                )
+                        progress.update(1)
 
 
 def main() -> None:
@@ -325,6 +427,7 @@ def main() -> None:
                 source_map,
                 debug_virtual_tracks=DEBUG_VIRTUAL_TRACKS,
                 debug_steps=DEBUG_STEPS,
+                max_workers=MAX_WORKERS,
             )
 
 
