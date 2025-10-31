@@ -15,3 +15,7 @@ __pycache__/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Interhub data
+interhub_traj_lane/**/*.json
+interhub_traj_lane/readme/
