@@ -190,11 +190,18 @@ class Agent:
         miu[np.where(dis_ps2pi - min_dis < 0)] = 1
 
         # 获取参考轨迹
-        if self.target in {'gs_nds', 'lt_nds'}:
-            cv, _ = get_central_vertices(self.target, last_track_self[0, :])
+        if self.reference is not None:
+            cv = np.asarray(self.reference)
+            if cv.ndim != 2 or cv.shape[1] < 2:
+                raise ValueError("reference path must have shape (N, 2)")
+            cv = cv[:, 0:2]
+            path_points = CalcRefLine([cv[:, 0], cv[:, 1]])  # reference path
         else:
-            cv, _ = get_central_vertices(self.target, None)
-        path_points = CalcRefLine([cv[:, 0], cv[:, 1]])  # reference path
+            if self.target in {'gs_nds', 'lt_nds'}:
+                cv, _ = get_central_vertices(self.target, last_track_self[0, :])
+            else:
+                cv, _ = get_central_vertices(self.target, None)
+            path_points = CalcRefLine([cv[:, 0], cv[:, 1]])  # reference path
 
         # 计算线性化收益项中涉及的轨迹特征
         tao = []
