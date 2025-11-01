@@ -27,17 +27,27 @@ This repository provides reusable tools for estimating Interaction Preference Va
 > All large datasets and notebooks are ignored by `.gitignore`. Place Argoverse CSV files under `argoverse/0_souce_data/` following the existing subfolder naming convention (`argo1/HV_HV_rush`, `argo2/interaction_hv/left_turn_rush`, …).
 
 ## Environment Setup
-The estimator depends on `numpy`, `scipy`, `pandas`, `matplotlib`, `shapely`, `openpyxl`, `seaborn`, and `tqdm`. The pinned versions in `requirements.txt` match the original development environment.
+The estimator depends on `numpy`, `scipy`, `pandas`, `matplotlib`, `shapely`, `openpyxl`, `seaborn`, and `tqdm`. 
 
-Example using conda:
+### Recommended Installation (HPC/Linux with conda):
 
 ```bash
-conda create -n ipv_estimate -y python=3.9 \
-      numpy=1.21 scipy=1.7 pandas=1.4 matplotlib=3.4 shapely=1.8 \
-      openpyxl seaborn tqdm pip
-conda activate ipv_estimate
-pip install -r requirements.txt   # optional if you need the exact pip wheel builds
+conda create -n ipv python=3.9 -y
+conda activate ipv
+conda install numpy=1.21 scipy=1.7 pandas=1.4 matplotlib=3.4 \
+              shapely=1.8 openpyxl seaborn tqdm -y
+pip install -r requirements-minimal.txt
 ```
+
+### Alternative Installation (pip only):
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+**Note**: The `requirements.txt` file has been updated to work on Linux/HPC clusters (removed Windows-specific file paths that caused installation errors).
 
 ## Running IPV Estimation on Argoverse
 1. Download the processed interaction CSVs and place them in the appropriate directory under `argoverse/0_souce_data/` (the script expects the same naming scheme used in the original notebook).
@@ -52,6 +62,45 @@ pip install -r requirements.txt   # optional if you need the exact pip wheel bui
    - generate trajectory/IPV plots in the parallel `fig/` directories.
 
 To process only a subset of cases, modify `ARGO_CONFIG` or add guard clauses inside `process_dataset` (for example, slicing `case_ids` or filtering `path_name`).
+
+## Running on HPC Cluster (SLURM)
+
+For processing Interhub datasets on an HPC cluster with SLURM:
+
+1. **Setup environment** (one-time):
+   ```bash
+   conda create -n ipv python=3.9 -y
+   conda activate ipv
+   conda install numpy=1.21 scipy=1.7 pandas=1.4 matplotlib=3.4 \
+                 shapely=1.8 openpyxl seaborn tqdm -y
+   pip install -r requirements-minimal.txt
+   ```
+
+2. **Submit batch job**:
+   ```bash
+   sbatch submit.sh
+   ```
+
+The `submit.sh` script will:
+- Process all 7 JSON datasets in parallel (array job)
+- Use 1 full node (96 cores) per dataset
+- Each worker processes scenarios in parallel using ProcessPoolExecutor
+- Output results to `interhub_traj_lane/ipv_estimation/`
+
+3. **Monitor progress**:
+   ```bash
+   # Check job status
+   squeue -u $USER
+   
+   # Watch output
+   tail -f interhub_ipv_*.out
+   ```
+
+**Configuration**: Edit `submit.sh` to adjust:
+- `--nodes`: Number of nodes per job (default: 1)
+- `--cpus-per-task`: CPUs per node (default: 96)
+- `--mem-per-cpu`: Memory per CPU (default: 5G = 480GB total)
+- `--time`: Time limit (default: 1 day)
 
 ## Using the Estimator with Other Datasets
 The central function accepts generic motion sequences:

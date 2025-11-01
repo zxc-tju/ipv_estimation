@@ -1,0 +1,11 @@
+# Minimal requirements for HPC/conda environments
+# Use after installing main packages via conda:
+#   conda create -n ipv python=3.9
+#   conda activate ipv
+#   conda install numpy scipy pandas matplotlib shapely openpyxl seaborn tqdm
+#   pip install -r requirements-minimal.txt
+
+# Only packages not available via conda or needing specific versions
+XlsxWriter==3.0.3
+xlrd==2.0.1
+
