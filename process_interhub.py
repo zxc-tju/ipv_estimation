@@ -11,14 +11,20 @@ import logging
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from itertools import count
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 import argparse
 import os
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
+
+THIS_DIR = Path(__file__).resolve().parent
+ROOT_DIR = THIS_DIR.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 from agent import Agent  # noqa: F401  # ensure agent modifications are applied
 from ipv_estimation import (
@@ -32,6 +38,7 @@ LOGGER = logging.getLogger(__name__)
 
 INTERHUB_ROOT = Path("interhub_traj_lane")
 OUTPUT_ROOT = INTERHUB_ROOT / "ipv_estimation"
+SELECTION_DIAG_ROOT = INTERHUB_ROOT / "diagnostics_selection_skipped"
 
 LANE_DISTANCE_THRESHOLD = 2.0
 HEADING_THRESHOLD_DEG = 12.0
@@ -44,35 +51,43 @@ DEFAULT_ENABLE_DIAGNOSTICS = False
 def _load_dataset(
     json_path: Path,
     lane_distance_threshold: float = LANE_DISTANCE_THRESHOLD,
-) -> Dict[str, Dict[str, Dict[str, np.ndarray]]]:
+) -> Tuple[Dict[str, Dict[str, Dict[str, np.ndarray]]], Dict[str, List[str]]]:
     """
     Load the raw JSON file and regroup entries by scenario/vehicle.
 
     Returns:
-        {"scenario_id": {"vehicle_id": normalized_vehicle_entry, ...}, ...}
+        (
+            {"scenario_id": {"vehicle_id": normalized_vehicle_entry, ...}, ...},
+            {"reason": [scenario_ids], ...}
+        )
     """
     LOGGER.info("Loading dataset %s", json_path.name)
     with json_path.open("r", encoding="utf-8") as f:
         raw = json.load(f)
 
     scenarios: Dict[str, Dict[str, Dict[str, np.ndarray]]] = {}
-    skipped = 0
+    skip_reasons: Dict[str, List[str]] = {
+        "missing_reference": [],
+        "lane_distance_exceeded": [],
+        "invalid_entry": [],
+    }
 
     for value in raw.values():
+        scenario_id = str(value.get("scenario_idx"))
         reference = value.get("filtered_centerline_path") or value.get("centerline_path")
         if not reference:
-            skipped += 1
+            skip_reasons["missing_reference"].append(scenario_id)
             continue
 
         if lane_distance_threshold is not None:
             dist = value.get("trajectory_centerline_distance")
             if dist is not None and float(dist) > lane_distance_threshold:
-                skipped += 1
+                skip_reasons["lane_distance_exceeded"].append(scenario_id)
                 continue
 
         prepared = _prepare_vehicle_entry(value, reference)
         if prepared is None:
-            skipped += 1
+            skip_reasons["invalid_entry"].append(scenario_id)
             continue
 
         scenario_id = prepared["scenario_id"]
@@ -83,9 +98,9 @@ def _load_dataset(
         "Loaded %d scenarios from %s (skipped %d entries)",
         len(scenarios),
         json_path.name,
-        skipped,
+        sum(len(v) for v in skip_reasons.values()),
     )
-    return scenarios
+    return scenarios, skip_reasons
 
 
 def _prepare_vehicle_entry(
@@ -139,15 +154,22 @@ def _prepare_vehicle_entry(
 
 def _select_vehicle_pair(
     vehicles: Dict[str, Dict[str, object]]
-) -> Optional[Tuple[Dict[str, object], Dict[str, object]]]:
+) -> Tuple[Optional[Tuple[Dict[str, object], Dict[str, object]]], Optional[str]]:
     avs = [v for v in vehicles.values() if v["is_av"]]
     hvs = [v for v in vehicles.values() if not v["is_av"]]
 
     if avs and hvs:
-        return avs[0], hvs[0]
+        return (avs[0], hvs[0]), None
     if len(hvs) >= 2:
-        return hvs[0], hvs[1]
-    return None
+        return (hvs[0], hvs[1]), None
+    if avs and not hvs:
+        reason = "only autonomous vehicles" if len(avs) > 1 else "single autonomous vehicle"
+        return None, reason
+    if not avs and len(hvs) == 1:
+        return None, "only one human-driven vehicle"
+    if len(vehicles) < 2:
+        return None, "fewer than two vehicles after filtering"
+    return None, "no valid pairing combination"
 
 
 def _classify_heading(headings: np.ndarray, threshold_deg: float = HEADING_THRESHOLD_DEG) -> str:
@@ -196,9 +218,9 @@ def process_dataset(
     enable_diagnostics: bool = DEFAULT_ENABLE_DIAGNOSTICS,
     diagnostic_steps: Optional[Sequence[int]] = DIAGNOSTIC_STEPS,
 ) -> None:
-    scenarios = _load_dataset(json_path, lane_distance_threshold)
+    scenarios, load_skips = _load_dataset(json_path, lane_distance_threshold)
     dataset_name = json_path.stem
-    tasks: List[
+    tasks: [
         Tuple[
             str,
             str,
@@ -210,12 +232,12 @@ def process_dataset(
             Optional[Sequence[int]],
         ]
     ] = []
-    skipped = 0
+    selection_skipped: List[Tuple[str, Dict[str, Dict[str, object]], str]] = []
 
     for scenario_id, vehicles in scenarios.items():
-        pair = _select_vehicle_pair(vehicles)
+        pair, reason = _select_vehicle_pair(vehicles)
         if not pair:
-            skipped += 1
+            selection_skipped.append((scenario_id, vehicles, reason or "no valid pair"))
             continue
 
         primary, secondary = pair
@@ -239,7 +261,19 @@ def process_dataset(
         )
 
     if not tasks:
-        LOGGER.info("Dataset %s completed: 0 processed, %d skipped", dataset_name, skipped)
+        _log_load_skips(load_skips)
+        if selection_skipped:
+            _log_selection_skips(selection_skipped, dataset_name)
+            LOGGER.info(
+                "Selection-stage skips (no valid pair): %d scenarios (examples: %s)",
+                len(selection_skipped),
+                [sid for sid, _, _ in selection_skipped[:5]],
+            )
+        LOGGER.info(
+            "Dataset %s completed: 0 processed, 0 failed, %d skipped",
+            dataset_name,
+            len(selection_skipped),
+        )
         return
 
     workers = max_workers if max_workers not in (None, 0) else os.cpu_count()
@@ -304,8 +338,45 @@ def process_dataset(
         dataset_name,
         processed,
         failed,
-        skipped,
+        len(selection_skipped),
     )
+    _log_load_skips(load_skips)
+    if selection_skipped:
+        _log_selection_skips(selection_skipped, dataset_name)
+        LOGGER.info(
+            "Selection-stage skips (no valid pair): %d scenarios (examples: %s)",
+            len(selection_skipped),
+            [sid for sid, _, _ in selection_skipped[:5]],
+        )
+
+
+def _log_load_skips(skip_reasons: Dict[str, List[str]]) -> None:
+    for reason, ids in skip_reasons.items():
+        if not ids:
+            continue
+        LOGGER.info("Load-stage skips (%s): %d entries (examples: %s)",
+                    reason, len(ids), ids[:5])
+
+
+def _log_selection_skips(
+    skipped: List[Tuple[str, Dict[str, Dict[str, object]], str]],
+    dataset_name: str,
+) -> None:
+    reason_counts: Dict[str, int] = {}
+    for _, _, reason in skipped:
+        reason_counts[reason] = reason_counts.get(reason, 0) + 1
+    for reason, count in reason_counts.items():
+        LOGGER.info("Selection skip reason '%s': %d scenarios", reason, count)
+
+    for scenario_id, vehicles, reason in skipped:
+        if not vehicles:
+            LOGGER.info(
+                "Skipping plotting for scenario %s (%s) because no vehicles remain after filtering",
+                scenario_id,
+                reason,
+            )
+            continue
+        _plot_selection_skip(dataset_name, scenario_id, vehicles, reason)
 
 
 def _process_task(
@@ -440,6 +511,44 @@ def _process_pair(
     metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
 
+def _plot_selection_skip(
+    dataset_name: str,
+    scenario_id: str,
+    vehicles: Dict[str, Dict[str, object]],
+    reason: str,
+) -> None:
+    diag_dir = SELECTION_DIAG_ROOT / dataset_name
+    diag_dir.mkdir(parents=True, exist_ok=True)
+
+    fig, ax = plt.subplots(figsize=(6, 6))
+    for vehicle_id, vehicle in vehicles.items():
+        track = vehicle["positions"]
+        ax.plot(
+            track[:, 0],
+            track[:, 1],
+            marker="o",
+            linewidth=1.5,
+            label=f"{vehicle_id} ({'AV' if vehicle['is_av'] else 'HV'})",
+        )
+        ref = vehicle["reference"]
+        ax.plot(
+            ref[:, 0],
+            ref[:, 1],
+            linestyle="--",
+            linewidth=1.0,
+            alpha=0.7,
+        )
+
+    ax.set_title(f"Scenario {scenario_id} skipped: {reason}")
+    ax.set_xlabel("x [m]")
+    ax.set_ylabel("y [m]")
+    ax.legend()
+    ax.set_aspect("equal")
+    fig.tight_layout()
+    fig.savefig(diag_dir / f"scenario_{scenario_id}.png", dpi=300)
+    plt.close(fig)
+
+
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
@@ -499,3 +608,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# inserted comment
