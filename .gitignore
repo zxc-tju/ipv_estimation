@@ -16,6 +16,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Interhub data
-interhub_traj_lane/**/*.json
-interhub_traj_lane/readme/
+# Interhub data - ignore everything except process_interhub.py
+interhub_traj_lane/*
+argoverse/*
