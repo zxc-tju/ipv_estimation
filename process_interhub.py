@@ -32,7 +32,7 @@ from ipv_estimation import (
     estimate_ipv_pair,
     plot_virtual_vs_observed,
 )
-from argoverse.argoverse_process import plot_ipv_summary, save_ipv_table
+from process_argoverse import plot_ipv_summary, save_ipv_table
 
 LOGGER = logging.getLogger(__name__)
 
