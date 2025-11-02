@@ -598,10 +598,19 @@ def main() -> None:
         json_files = sorted(INTERHUB_ROOT.glob("trajectory_data_*.json"))
     
     LOGGER.info("Found %d files matching pattern before exists() check", len(json_files))
+    for jf in json_files:
+        LOGGER.info("  Matched file: %s (exists: %s, is_file: %s)", jf, jf.exists(), jf.is_file() if jf.exists() else "N/A")
+    
     json_files = [path for path in json_files if path.exists()]
     if not json_files:
         LOGGER.warning("No matching trajectory_data files found under %s", INTERHUB_ROOT)
-        return
+        LOGGER.info("Trying alternative approach: manually checking files...")
+        all_json = [f for f in INTERHUB_ROOT.iterdir() if f.name.startswith("trajectory_data_") and f.name.endswith(".json")]
+        LOGGER.info("Found %d files via iterdir: %s", len(all_json), [f.name for f in all_json[:5]])
+        if all_json:
+            json_files = sorted(all_json)
+        else:
+            return
 
     for json_path in json_files:
         process_dataset(
