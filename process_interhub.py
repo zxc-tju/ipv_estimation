@@ -585,11 +585,19 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    LOGGER.info("Looking for data files in: %s", INTERHUB_ROOT.resolve())
+    LOGGER.info("INTERHUB_ROOT exists: %s", INTERHUB_ROOT.exists())
+    if INTERHUB_ROOT.exists():
+        LOGGER.info("INTERHUB_ROOT is directory: %s", INTERHUB_ROOT.is_dir())
+        all_files = list(INTERHUB_ROOT.glob("*"))
+        LOGGER.info("All files in INTERHUB_ROOT: %s", [f.name for f in all_files])
+    
     if args.datasets:
         json_files = [INTERHUB_ROOT / name for name in args.datasets]
     else:
         json_files = sorted(INTERHUB_ROOT.glob("trajectory_data_*.json"))
-
+    
+    LOGGER.info("Found %d files matching pattern before exists() check", len(json_files))
     json_files = [path for path in json_files if path.exists()]
     if not json_files:
         LOGGER.warning("No matching trajectory_data files found under %s", INTERHUB_ROOT)
