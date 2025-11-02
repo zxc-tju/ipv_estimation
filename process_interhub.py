@@ -585,32 +585,20 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    LOGGER.info("Looking for data files in: %s", INTERHUB_ROOT.resolve())
-    LOGGER.info("INTERHUB_ROOT exists: %s", INTERHUB_ROOT.exists())
-    if INTERHUB_ROOT.exists():
-        LOGGER.info("INTERHUB_ROOT is directory: %s", INTERHUB_ROOT.is_dir())
-        all_files = list(INTERHUB_ROOT.glob("*"))
-        LOGGER.info("All files in INTERHUB_ROOT: %s", [f.name for f in all_files])
-    
     if args.datasets:
         json_files = [INTERHUB_ROOT / name for name in args.datasets]
     else:
-        json_files = sorted(INTERHUB_ROOT.glob("trajectory_data_*.json"))
+        # Use iterdir instead of glob to avoid path issues on some systems
+        json_files = sorted([
+            f for f in INTERHUB_ROOT.iterdir() 
+            if f.is_file() and f.name.startswith("trajectory_data_") and f.name.endswith(".json")
+        ])
     
-    LOGGER.info("Found %d files matching pattern before exists() check", len(json_files))
-    for jf in json_files:
-        LOGGER.info("  Matched file: %s (exists: %s, is_file: %s)", jf, jf.exists(), jf.is_file() if jf.exists() else "N/A")
-    
-    json_files = [path for path in json_files if path.exists()]
     if not json_files:
         LOGGER.warning("No matching trajectory_data files found under %s", INTERHUB_ROOT)
-        LOGGER.info("Trying alternative approach: manually checking files...")
-        all_json = [f for f in INTERHUB_ROOT.iterdir() if f.name.startswith("trajectory_data_") and f.name.endswith(".json")]
-        LOGGER.info("Found %d files via iterdir: %s", len(all_json), [f.name for f in all_json[:5]])
-        if all_json:
-            json_files = sorted(all_json)
-        else:
-            return
+        return
+    
+    LOGGER.info("Found %d trajectory data file(s) to process", len(json_files))
 
     for json_path in json_files:
         process_dataset(

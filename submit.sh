@@ -45,4 +45,4 @@ echo "Workers: $WORKERS"
 echo "=========================================="
 
 # Launch the Python job with all available CPUs
-python "$SCRIPT" --workers "$WORKERS" "interhub_traj_lane/$TARGET"
+python "$SCRIPT" --workers "$WORKERS" "$TARGET"
