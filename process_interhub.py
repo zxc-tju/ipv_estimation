@@ -36,7 +36,7 @@ from process_argoverse import plot_ipv_summary, save_ipv_table
 
 LOGGER = logging.getLogger(__name__)
 
-INTERHUB_ROOT = Path("interhub_traj_lane")
+INTERHUB_ROOT = THIS_DIR / "interhub_traj_lane"
 OUTPUT_ROOT = INTERHUB_ROOT / "ipv_estimation"
 SELECTION_DIAG_ROOT = INTERHUB_ROOT / "diagnostics_selection_skipped"
 
