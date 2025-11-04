@@ -19,6 +19,7 @@ import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 
 THIS_DIR = Path(__file__).resolve().parent
@@ -32,7 +33,7 @@ from ipv_estimation import (
     estimate_ipv_pair,
     plot_virtual_vs_observed,
 )
-from process_argoverse import plot_ipv_summary, save_ipv_table
+from tools.utility import smooth_ployline
 
 LOGGER = logging.getLogger(__name__)
 
@@ -46,6 +47,158 @@ HISTORY_WINDOW = 10
 MIN_OBSERVATION = 4
 DIAGNOSTIC_STEPS = (5, 6)
 DEFAULT_ENABLE_DIAGNOSTICS = False
+
+
+def _save_ipv_table_labeled(
+    output_path: Path,
+    primary_motion: np.ndarray,
+    secondary_motion: np.ndarray,
+    ipv_values: np.ndarray,
+    ipv_errors: np.ndarray,
+    primary_label: str,
+    secondary_label: str,
+) -> None:
+    """Save IPV results to Excel with dynamic labels based on heading classification."""
+    columns = {
+        f"ipv_{primary_label}": ipv_values[:, 0],
+        f"ipv_{primary_label}_error": ipv_errors[:, 0],
+        f"{primary_label}_px": primary_motion[:, 0],
+        f"{primary_label}_py": primary_motion[:, 1],
+        f"{primary_label}_vx": primary_motion[:, 2],
+        f"{primary_label}_vy": primary_motion[:, 3],
+        f"{primary_label}_heading": primary_motion[:, 4],
+        f"ipv_{secondary_label}": ipv_values[:, 1],
+        f"ipv_{secondary_label}_error": ipv_errors[:, 1],
+        f"{secondary_label}_px": secondary_motion[:, 0],
+        f"{secondary_label}_py": secondary_motion[:, 1],
+        f"{secondary_label}_vx": secondary_motion[:, 2],
+        f"{secondary_label}_vy": secondary_motion[:, 3],
+        f"{secondary_label}_heading": secondary_motion[:, 4],
+    }
+    df = pd.DataFrame(columns)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    df.to_excel(output_path, index=False)
+
+
+def _plot_ipv_summary_labeled(
+    fig_path: Path,
+    primary_motion: np.ndarray,
+    secondary_motion: np.ndarray,
+    ipv_values: np.ndarray,
+    ipv_errors: np.ndarray,
+    primary_label: str,
+    secondary_label: str,
+    primary_reference: Optional[np.ndarray] = None,
+    secondary_reference: Optional[np.ndarray] = None,
+) -> None:
+    """Plot IPV summary with dynamic labels based on heading classification."""
+    # Define colors for different maneuvers
+    label_colors = {
+        "lt": "#df7565",  # red-ish for left turn
+        "rt": "#65df75",  # green-ish for right turn
+        "gs": "#2FAECE",  # blue for go-straight
+    }
+    # Alternative colors for when both agents have the same label
+    label_colors_alt = {
+        "lt": "#c94f3d",  # darker red for left turn
+        "rt": "#4dcc5d",  # darker green for right turn
+        "gs": "#1a7a94",  # darker blue for go-straight
+    }
+    label_names = {
+        "lt": "left-turn",
+        "rt": "right-turn",
+        "gs": "go-straight",
+    }
+    
+    # Extract base label (remove numeric suffix if present, e.g., "gs2" -> "gs")
+    def get_base_label(label: str) -> str:
+        for base in ["lt", "rt", "gs"]:
+            if label.startswith(base):
+                return base
+        return label
+    
+    primary_base = get_base_label(primary_label)
+    secondary_base = get_base_label(secondary_label)
+    
+    # Assign colors: if both base labels are the same, use alternative color for secondary
+    primary_color = label_colors.get(primary_base, "#df7565")
+    if primary_base == secondary_base:
+        secondary_color = label_colors_alt.get(secondary_base, "#1a7a94")
+    else:
+        secondary_color = label_colors.get(secondary_base, "#2FAECE")
+    
+    # Get display names (add suffix if label has one)
+    primary_name = label_names.get(primary_base, primary_base)
+    secondary_name = label_names.get(secondary_base, secondary_base)
+    if primary_label != primary_base:  # has numeric suffix
+        primary_name = f"{primary_name} (1)"
+    if secondary_label != secondary_base:  # has numeric suffix
+        suffix_num = secondary_label[len(secondary_base):]
+        secondary_name = f"{secondary_name} ({suffix_num})"
+    
+    fig, (ax_ipv, ax_traj) = plt.subplots(1, 2, figsize=(16, 8))
+    time_idx = np.arange(len(ipv_values))
+
+    ax_ipv.set_ylim([-2, 2])
+    if len(time_idx) >= 2:
+        primary_curve, _ = smooth_ployline(np.column_stack((time_idx, ipv_values[:, 0])))
+        primary_err_curve, _ = smooth_ployline(np.column_stack((time_idx, ipv_errors[:, 0])))
+        secondary_curve, _ = smooth_ployline(np.column_stack((time_idx, ipv_values[:, 1])))
+        secondary_err_curve, _ = smooth_ployline(np.column_stack((time_idx, ipv_errors[:, 1])))
+
+        ax_ipv.plot(primary_curve[:, 0], primary_curve[:, 1], color=primary_color, 
+                    label=f"estimated {primary_label} IPV")
+        ax_ipv.fill_between(
+            primary_curve[:, 0],
+            primary_curve[:, 1] - primary_err_curve[:, 1],
+            primary_curve[:, 1] + primary_err_curve[:, 1],
+            alpha=0.3,
+            color=primary_color,
+        )
+        ax_ipv.plot(secondary_curve[:, 0], secondary_curve[:, 1], color=secondary_color,
+                    label=f"estimated {secondary_label} IPV")
+        ax_ipv.fill_between(
+            secondary_curve[:, 0],
+            secondary_curve[:, 1] - secondary_err_curve[:, 1],
+            secondary_curve[:, 1] + secondary_err_curve[:, 1],
+            alpha=0.3,
+            color=secondary_color,
+        )
+    else:
+        ax_ipv.plot(time_idx, ipv_values[:, 0], color=primary_color, 
+                    label=f"estimated {primary_label} IPV")
+        ax_ipv.plot(time_idx, ipv_values[:, 1], color=secondary_color,
+                    label=f"estimated {secondary_label} IPV")
+
+    ax_ipv.set_xlabel("time index")
+    ax_ipv.set_ylabel("IPV")
+    ax_ipv.legend()
+
+    # Plot trajectories
+    ax_traj.plot(primary_motion[:, 0], primary_motion[:, 1], color=primary_color, 
+                 linewidth=2.0, label=primary_name, zorder=3)
+    ax_traj.plot(secondary_motion[:, 0], secondary_motion[:, 1], color=secondary_color, 
+                 linewidth=2.0, label=secondary_name, zorder=3)
+    
+    # Plot reference paths if provided
+    if primary_reference is not None:
+        ax_traj.plot(primary_reference[:, 0], primary_reference[:, 1], 
+                     color=primary_color, linestyle='--', linewidth=1.5, 
+                     alpha=0.6, label=f"{primary_name} reference", zorder=2)
+    if secondary_reference is not None:
+        ax_traj.plot(secondary_reference[:, 0], secondary_reference[:, 1], 
+                     color=secondary_color, linestyle='--', linewidth=1.5, 
+                     alpha=0.6, label=f"{secondary_name} reference", zorder=2)
+    
+    ax_traj.axis("equal")
+    ax_traj.legend()
+    ax_traj.set_xlabel("x [m]")
+    ax_traj.set_ylabel("y [m]")
+
+    fig_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(fig_path, dpi=300)
+    plt.close(fig)
 
 
 def _load_dataset(
@@ -434,8 +587,8 @@ def _process_pair(
         diagnostics = None
 
     steps = ipv_values.shape[0]
-    lt_motion = seq_primary.data[:steps]
-    gs_motion = seq_secondary.data[:steps]
+    primary_motion = seq_primary.data[:steps]
+    secondary_motion = seq_secondary.data[:steps]
 
     case_name = f"{scenario_id}_{primary['vehicle_id']}_{secondary['vehicle_id']}"
 
@@ -445,20 +598,26 @@ def _process_pair(
     data_dir.mkdir(parents=True, exist_ok=True)
     fig_dir.mkdir(parents=True, exist_ok=True)
 
-    save_ipv_table(
+    _save_ipv_table_labeled(
         data_dir / f"{case_name}_ipv_results.xlsx",
-        lt_motion,
-        gs_motion,
+        primary_motion,
+        secondary_motion,
         ipv_values,
         ipv_errors,
+        labels[0],
+        labels[1],
     )
 
-    plot_ipv_summary(
+    _plot_ipv_summary_labeled(
         fig_dir / f"{case_name}_ipv_curve.png",
-        lt_motion,
-        gs_motion,
+        primary_motion,
+        secondary_motion,
         ipv_values,
         ipv_errors,
+        labels[0],
+        labels[1],
+        primary_reference=primary["reference"],
+        secondary_reference=secondary["reference"],
     )
 
     diag_dir = fig_dir / "virtual_tracks" / case_name
