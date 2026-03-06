@@ -1,0 +1,66 @@
+# 代理工作流日志 (Agent Workflow Log)
+
+## [2026-01-03] 批量 IPV 均值计算与元数据更新
+- **状态**: 已完成 (Completed)
+- **任务总结**:
+    - 分析了 `interhub_traj_lane/ipv_estimation_results/` 中的数据结构。
+    - 定义了 IPV 均值计算逻辑：
+        - 排除前 4 行初始观察数据。
+        - 仅在 `ipv_xxx_error < 0.6` 时视为有效估计值。
+        - 若无有效帧，则记为 "unknown"。
+    - 开发了并行处理脚本 `batch_process_ipv.py`，用于处理跨多个数据集（Interaction, Waymo, Lyft）的大规模数据。
+- **关键成果**:
+    - 成功处理了数万个交互案例。
+    - 更新了所有 `metadata.json` 文件，在 `vehicle_id` 字段后插入了 `mean_ipv` 字段（包含主车和从车）。
+- **持久化产物**:
+    - `batch_process_ipv.py`: 用于提取 IPV 均值的并行处理脚本。
+    - `merge_ipv_to_csv.py`: 将 IPV 均值合并至元数据汇总表的脚本。
+    - `ipv_estimation_results` 目录下更新后的 `*_metadata.json` 文件。
+    - `interhub_traj_lane/interhub_meta_with_ipv.csv`: 包含 IPV 均值的全量元数据汇总表。
+
+## [2026-01-03] 数据关联与汇总
+- **状态**: 已完成 (Completed)
+- **任务总结**:
+    - 将批量计算得到的 IPV 均值与原始 `interhub_meta.csv` 进行了关联。
+    - 建立了 JSON 数据集字段与 CSV `subdata` 字段的映射规则。
+    - 通过 `subdata` + `scenario_idx` + `key_agents` 组合键实现了精准匹配。
+- **关键成果**:
+    - 生成了 `interhub_meta_with_ipv.csv`，在原始 6.2 万条交互元数据的基础上，成功填充了已处理案例的 IPV 均值字段。
+    - 验证了数据一致性，确保 IPV 均值能正确对应到具体的交互主体（Primary/Secondary）。
+## [2026-01-03] IPV factor analysis
+- Status: Completed
+- Summary:
+  - Analyzed PET, intensity, AV/HV type, key-agent combo, priority, and two/multi effects on IPV and coupling.
+  - Generated Nature-style figures and statistical summaries.
+- Artifacts:
+  - tools/analyze_interhub_ipv_factors.py
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/fig1_ipv_vs_pet_intensity.png
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/fig2_ipv_by_pet_intensity_bins.png
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/fig3_ipv_by_agent_type_combo.png
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/fig4_ipv_by_priority.png
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/fig5_ipv_by_two_multi.png
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/fig6_ipv_coupling.png
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/summary_stats.csv
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/correlations.csv
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/figure_conclusions.md
+## [2026-01-03] IPV priority mapping correction
+- Status: Completed
+- Summary:
+  - Adjusted priority assignment to match priority_label against track_id and key_agents, adding a NonKeyAgentPriority category.
+  - Regenerated priority figure and summaries.
+- Artifacts:
+  - tools/analyze_interhub_ipv_factors.py
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/fig4_ipv_by_priority.png
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/summary_stats.csv
+  - interhub_traj_lane/ipv_estimation_results/ipv_factor_report/figure_conclusions.md
+## [2026-01-04] 全量目录结构重构 (Global Directory Restructuring)
+- **状态**: 已完成 (Completed)
+- **任务总结**:
+    - 对 `interhub_traj_lane/ipv_estimation_results` 目录下所有 `trajectory_data_` 开头的文件夹进行了重构。
+    - 包括：`interaction_multi`, `interaction_single`, `lyft_train_full`, `waymo_0-299`, `waymo_300-499`, `waymo_500-799`, `waymo_800-999`。
+    - 去除了所有中间的航向角对分类子目录（如 `gs-gs` 等），将场景文件夹提升至各数据集根目录。
+- **关键成果**:
+    - 统一了全量数据集的存储结构。
+    - 清理了所有冗余的分类中间层，方便后续批量分析。
+- **持久化产物**:
+    - 规范化后的全量数据集目录结构。
