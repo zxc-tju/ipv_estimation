@@ -64,3 +64,11 @@
     - 清理了所有冗余的分类中间层，方便后续批量分析。
 - **持久化产物**:
     - 规范化后的全量数据集目录结构。
+## [2026-03-06] Push main and cleanup temp branch
+- Status: Completed
+- Summary:
+  - Pushed `main` to `origin/main`.
+  - Removed temporary branch `codex/merge-worktree-20260306` after detaching the linked worktree.
+- Artifacts:
+  - Remote branch: origin/main @ b617308
+  - Removed local branch: codex/merge-worktree-20260306
