@@ -72,3 +72,150 @@
 - Artifacts:
   - Remote branch: origin/main @ b617308
   - Removed local branch: codex/merge-worktree-20260306
+[2026-03-06 16:56:41] STATUS: COMPLETED | TASK: Validate mapping between ipv_estimation_results metadata vehicle_id and intersection_results_pass.csv key_agents/dataset fields.
+Outcome:
+- Directory-vs-CSV naming is partially aligned only. Top-level dirs (normalized by removing 'trajectory_data_') overlap csv.folder on: lyft_train_full, waymo_0-299.
+- No exact overlap between top-level dir names and csv.dataset values. Normalized top-level dirs overlap csv.dataset only on lyft_train_full.
+- JSON content check (vehicle_id from metadata): lyft_train_full matched 4100/5409 pairs; waymo_0-299 matched 1723/6400 pairs; remaining pairs were missing in CSV.
+- CSV->JSON check on overlap folders: matched 6198/8405 pairs; 2207 CSV pairs missing in JSON; 1 CSV row malformed (empty key_agents, scenario_idx=37680).
+- Non-overlap sets exist both sides (e.g., interaction_* and waymo_300+ in JSON dirs; train_* nuplan folders in CSV).
+Artifacts:
+- No files generated.
+[2026-03-06 17:07:07] STATUS: COMPLETED | TASK: Provide 3 example scenario_id values for CSV rows (folder=waymo_0-299) unmatched in ipv_estimation_results JSON metadata.
+Outcome:
+- Unmatched unique (scenario_id,key_agents) rows found: 648.
+- First 3 example scenario_id values: 100418, 103506, 103562.
+- Corresponding key_agents examples: 1230;1225, 664;669, 1599;ego.
+Artifacts:
+- No files generated.
+[2026-03-06 17:25:32] STATUS: COMPLETED | TASK: Confirm whether process_interhub.py selects pair from track_id as [ego + first numeric id].
+Outcome:
+- In specified file C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\process_interhub.py, no 'track_id' parsing logic exists.
+- Pair selection uses vehicle_id/is_av lists: if AV and HV exist, returns (avs[0], hvs[0]); otherwise falls back to first two HVs.
+- Therefore selection is based on raw JSON iteration/insertion order of vehicles, not directly from CSV track_id column.
+Artifacts:
+- No files generated.
+[2026-03-06 17:31:36] STATUS: COMPLETED | TASK: Inspect vehicle_type column and evaluate track_id-based alignment feasibility (ego treated as AV).
+Outcome:
+- vehicle_type and track_id are structurally consistent: token count mismatch=0; AV count vs ego count mismatch=0; AV position vs ego position mismatch=0 (rows_total=17665; vehicle_type_empty=1).
+- Alignment using rule [if ego exists -> pair = (ego, first non-ego id); else pair = first two ids], compared to JSON output on overlapping folders:
+  - Row-level match: lyft_train_full 4482/5330 (84.09%), waymo_0-299 2100/2672 (78.59%), overall 6582/8002 (82.25%).
+  - AV-only rows (track contains ego): lyft_train_full 283/318 (88.99%), waymo_0-299 789/925 (85.30%), overall 1072/1243 (86.24%).
+  - AV scenario-level (any row matched): lyft_train_full 277/299 (92.64%), waymo_0-299 695/728 (95.47%).
+- Conclusion: track_id-based alignment is feasible for most AV scenarios, but not perfect row-by-row.
+Artifacts:
+- No files generated.
+[2026-03-06 17:34:51] STATUS: COMPLETED | TASK: Explain mismatch cases for alignment rule (ego + first HV from track_id) and provide examples.
+Outcome:
+- Evaluated AV rows (track_id contains ego) across lyft_train_full and waymo_0-299 with existing JSON pairs.
+- Found 171 mismatch rows in this subset.
+- Category counts:
+  - C_json_pair_not_from_this_track_row: 113
+  - A_json_has_ego_but_hv_not_first: 52
+  - B_json_pair_without_ego: 6
+- Example scenarios include: 107704, 112133, 130323, 100768, 23576.
+Artifacts:
+- No files generated.
+[2026-03-06 17:48:02] STATUS: COMPLETED | TASK: Re-validate alignment using intersection_results_pass_only.csv with duplicate scenario handling (keep last row).
+Outcome:
+- Input CSV rows: 42061.
+- Dedup by folder+scenario (keep last): 32215 rows (removed 9846).
+- Compared overlap folders with JSON outputs (lyft_train_full + waymo_0/300/500/800): 25274 rows, matched 20596, mismatched 4678, missing_json_scenario 807, overall match rate 81.49%.
+- Per-folder match rates: lyft 80.12%; waymo_0-299 81.67%; waymo_300-499 82.03%; waymo_500-799 82.01%; waymo_800-999 81.54%.
+- Mode split: AV_rule (track contains ego -> ego+first HV) 6279/7232 = 86.82%; HV_fallback (no ego -> first two IDs) 14317/18042 = 79.35%.
+- Cross-folder same scenario_idx collisions exist (3492), so global scenario-only dedup can incorrectly overwrite across datasets; folder+scenario dedup is safer for this combined CSV.
+Artifacts:
+- No files generated.
+[2026-03-06 17:49:35] STATUS: COMPLETED | TASK: Additional check using global scenario-only dedup (keep last row) per user note.
+Outcome:
+- dedup_by_scenario_rows=28333; overlap_compared_rows=23230.
+- matched=18957; missing_json_scenario=710; overall_match_rate=81.61%.
+- Folder rates: lyft 80.10%; waymo_0-299 81.88%; waymo_300-499 82.18%; waymo_500-799 82.03%; waymo_800-999 81.54%.
+- Note: scenario_idx collisions across folders exist, so global scenario-only dedup may overwrite records across datasets.
+Artifacts:
+- No files generated.
+[2026-03-06 22:02:28] STATUS: COMPLETED | TASK: Confirm final dedup scope as per-dataset processing.
+Outcome:
+- Final interpretation: deduplicate by (folder/dataset + scenario_idx), keep last row within each group.
+- Use previously computed per-dataset-separated stats (overall match rate 81.49% on overlap rows).
+Artifacts:
+- No files generated.
+[2026-03-06 22:08:11] STATUS: COMPLETED | TASK: Categorize unmatched cases for per-dataset dedup (keep last row by folder+scenario).
+Outcome:
+- Unmatched total: 4678.
+- Categories:
+  - last_row_overwrite_mismatch: 3340
+  - missing_json_scenario: 807
+  - av_rule_json_has_ego_but_not_first_hv: 240
+  - hv_fallback_hv_pair_different: 193
+  - hv_fallback_json_selected_ego_hv: 95
+  - av_rule_json_selected_hv_hv: 3
+- Main reason is overwrite effect from keeping last row when multiple rows exist per folder+scenario.
+Artifacts:
+- No files generated.
+[2026-03-06 22:17:35] STATUS: COMPLETED | TASK: Generate filtered CSV by keeping JSON-matchable rows for duplicate scenarios (dataset-separated).
+Outcome:
+- Source: intersection_results_pass_only.csv (42061 rows).
+- Grouping key: folder+scenario_idx; for each group, retain one row that matches JSON pair (if multiple, keep last matching row).
+- Duplicate handling: other rows in same folder+scenario group dropped.
+- Output generated: intersection_results_pass_only_json_matched.csv with 23936 rows.
+- Class-1 overwrite groups rescued: 3340.
+- Excluded groups: no JSON folder=6941; missing JSON scenario=807; no match even using all rows in group=531.
+- Verification: output duplicate folder+scenario=0; output mismatch rows vs JSON=0.
+Artifacts:
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\interhub_traj_lane\intersection_results_pass_only_json_matched.csv
+[2026-03-06 22:28:05] STATUS: COMPLETED | TASK: Report original JSON totals and exclusion reasons relative to filtered matched CSV output.
+Outcome:
+- JSON total across all top dirs: 38043.
+- JSON total in current CSV scope (lyft + waymo splits): 26222.
+- Kept in output CSV: 23936.
+- Excluded in scope: no CSV group=1755; has CSV group but no pair match=531.
+- Additional out-of-scope JSON (interaction datasets) not considered by current CSV mapping: 11821.
+Artifacts:
+- No files generated.
+[2026-03-06 22:43:32] STATUS: COMPLETED | TASK: Fill mean_ipv for two matched vehicles from JSON into filtered CSV rows.
+Outcome:
+- Input CSV: intersection_results_pass_only_json_matched.csv (23936 rows).
+- Built JSON lookup entries: 26222.
+- Added columns per row: ipv_vehicle_id_1, ipv_mean_ipv_1, ipv_vehicle_id_2, ipv_mean_ipv_2.
+- Output CSV generated: intersection_results_pass_only_json_matched_with_mean_ipv.csv.
+- Fill status: ok=23936 (all rows successfully filled).
+Artifacts:
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\interhub_traj_lane\intersection_results_pass_only_json_matched_with_mean_ipv.csv
+[2026-03-06 22:58:03] STATUS: COMPLETED | TASK: Read Argoverse analysis notebook and manuscript draft, then propose Interhub analysis plan.
+Outcome:
+- Reviewed notebook: C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\argoverse\paper_plot_argoverse.ipynb.
+- Reviewed manuscript draft: C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\PNAS-Sociality Pattern Analysis\Sociality patterns in driving interactions-20240805.docx.
+- Extracted key Argoverse analysis themes: IPV distributions by PCS/PVS, AV vs HV comparison, spillover/cultivation effect, PET/APET safety analyses, and paired-IPV cost-map visualization.
+- Confirmed Interhub mapping note from user: priority_label determines prioritized agent.
+- Built readiness stats for Interhub matched CSV with mean_ipv and derived feasible PCS/PVS parsing counts to support planning.
+Artifacts:
+- No files generated.
+[2026-03-07 09:51:00] STATUS: COMPLETED | TASK: Compare IPV computation code differences between Argoverse and Interhub pipelines.
+Outcome:
+- Reviewed process_argoverse.py and process_interhub.py call chains plus ipv_estimation.py defaults.
+- Confirmed both datasets use the same core estimator function estimate_ipv_pair (same effective history_window=10 and min_observation=4).
+- Identified key differences in upstream processing: trajectory construction, pair-selection/filtering, maneuver labeling, and output metadata.
+- Assessed expected impact: sample composition and role labeling differ; core optimization logic is shared.
+Artifacts:
+- No files generated.
+[2026-03-07 12:21:41] STATUS: COMPLETED | TASK: Create detailed IPV analysis handoff document for next agent.
+Outcome:
+- Added comprehensive handoff covering alignment workflow, matched CSV generation, mean_ipv filling, Interhub core analysis outputs, sign-convention update, Argoverse re-analysis, cross-dataset comparison, and code-path differences.
+- Included concrete file paths, key counts/statistics, and next-step checklist.
+Artifacts:
+- C:\Users\xiaocongzhao\.codex\worktrees\bb52\2_sociality_estimation\NEXT_AGENT_HANDOFF_IPV_2026-03-07.md
+[2026-03-07 12:24:23] STATUS: COMPLETED | TASK: Add Chinese version of IPV handoff document and sync.
+Outcome:
+- Created Chinese handoff markdown aligned with existing English handoff (same data paths, counts, conclusions, and next-step checklist).
+- Synced Chinese handoff to OneDrive project root for downstream agent use.
+Artifacts:
+- C:\Users\xiaocongzhao\.codex\worktrees\bb52\2_sociality_estimation\NEXT_AGENT_HANDOFF_IPV_2026-03-07_中文.md
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\NEXT_AGENT_HANDOFF_IPV_2026-03-07_中文.md
+[2026-03-07 12:26:28] STATUS: COMPLETED | TASK: Merge Chinese and English handoff into one bilingual document.
+Outcome:
+- Created one section-aligned bilingual handoff markdown with synchronized EN/ZH content.
+- Synced bilingual handoff to OneDrive project root for next-agent usage.
+Artifacts:
+- C:\Users\xiaocongzhao\.codex\worktrees\bb52\2_sociality_estimation\NEXT_AGENT_HANDOFF_IPV_2026-03-07_BILINGUAL.md
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\NEXT_AGENT_HANDOFF_IPV_2026-03-07_BILINGUAL.md
