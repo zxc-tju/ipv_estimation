@@ -202,3 +202,47 @@ def test_case_output_dir_uses_short_hash_instead_of_full_segment_id(tmp_path):
     assert segment_id not in str(case_dir)
     assert "row_00000_" in case_dir.name
     assert len(case_dir.name) < 24
+
+
+def test_select_shard_rows_uses_modulo_positions_and_preserves_indices():
+    source = pd.DataFrame({"value": list(range(10))}, index=[10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
+
+    shard = mod.select_shard_rows(source, shard_index=1, shard_count=3)
+
+    assert shard.index.tolist() == [11, 14, 17]
+    assert shard["value"].tolist() == [1, 4, 7]
+
+
+def test_merge_shard_outputs_combines_csv_columns_by_key(tmp_path):
+    source = pd.DataFrame(
+        {
+            "folder": ["a", "b", "c"],
+            "scenario_idx": [1, 2, 3],
+            "track_id": ["ta", "tb", "tc"],
+            "key_agents": ["ka1;ka2", "kb1;kb2", "kc1;kc2"],
+        }
+    )
+    csv_path = tmp_path / "selected_interactive_segments_equalized.csv"
+    source.to_csv(csv_path, index=False)
+
+    shard_0 = source.iloc[[0, 2]].copy()
+    shard_1 = source.iloc[[1]].copy()
+    for df, prefix in ((shard_0, "s0"), (shard_1, "s1")):
+        for column in mod.CSV_OUTPUT_COLUMNS:
+            df[column] = ""
+        df["ipv_key_agent_1_mean"] = [f"{prefix}-a{i}" for i in range(len(df))]
+        df["ipv_key_agent_2_mean"] = [f"{prefix}-b{i}" for i in range(len(df))]
+        df["ipv_result_status"] = "ok"
+
+    output_root = tmp_path / "out"
+    output_root.mkdir()
+    shard_0.to_csv(output_root / "selected_interactive_segments_equalized_with_ipv_shard_00_of_02.csv", index=False)
+    shard_1.to_csv(output_root / "selected_interactive_segments_equalized_with_ipv_shard_01_of_02.csv", index=False)
+
+    summary = mod.merge_shard_outputs(csv_path, output_root, shard_count=2)
+    merged = pd.read_csv(summary["csv_output"])
+
+    assert summary["merged_rows"] == 3
+    assert merged["ipv_result_status"].tolist() == ["ok", "ok", "ok"]
+    assert merged["ipv_key_agent_1_mean"].tolist() == ["s0-a0", "s1-a0", "s0-a1"]
+    assert "ipv_key_agent_1_id" not in merged.columns

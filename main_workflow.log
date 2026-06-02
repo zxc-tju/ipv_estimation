@@ -358,3 +358,43 @@ Summary:
 - Verified shell syntax with Git Bash bash -n.
 Artifacts:
 - submit_subsets_for_yiru_ipv.sh
+
+2026-06-02 14:00:00 +08:00 - Reviewed CPU utilization characteristics of subsets_for_yiru IPV processing script.
+Status: completed_analysis
+Summary:
+- Confirmed process_subsets_for_yiru_ipv.py uses ProcessPoolExecutor for per-case multiprocessing, so it can use multiple CPU cores on HPC.
+- Noted that full processing has enough independent tasks to keep many workers busy, but per-case Excel/PNG/JSON output and filesystem I/O limit scaling at high worker counts.
+- Recommended 64 workers on 96 allocated CPUs as a practical first full-run setting, with optional 80/96 worker trials if monitoring shows spare resources.
+
+2026-06-02 14:10:00 +08:00 - Provided SSH config repair guidance for malformed Windows SSH config.
+Status: completed_guidance
+Summary:
+- User reported SSH error: Bad configuration option: ssh in C:\Users\46936\.ssh\config line 1.
+- Explained that the SSH command was likely pasted into the config file and provided PowerShell commands to back up and rewrite a valid tongji-hpc host alias.
+
+2026-06-02 14:20:00 +08:00 - Guided live Slurm job inspection on compute node cpui085.
+Status: completed_guidance
+Summary:
+- User confirmed job 1605465 is running on cpui085 with 96 allocated CPUs.
+- Explained that direct ssh to the compute node may be denied and srun --jobid=1605465 --overlap --pty bash is the correct method.
+- Diagnosed log tail failure as running from home instead of the Slurm WorkDir and provided commands to inspect stderr and Python worker count from the compute node.
+
+2026-06-02 14:30:00 +08:00 - Interpreted live HPC worker utilization output for job 1605465.
+Status: completed_analysis
+Summary:
+- Confirmed job 1605465 is running in parallel with 65 matching Python processes, corresponding to 1 parent plus 64 worker processes.
+- User-provided ps output shows all 64 workers near 99.6 percent CPU, indicating CPU-bound parallel execution rather than an idle or serial run.
+- Noted observed throughput around 94 cases in 75 minutes, with tqdm estimating about 92 hours remaining; recommended considering rerun with WORKERS=96 to use all allocated CPUs if the 72-hour time limit is a concern.
+
+2026-06-02 21:00:30 +08:00 - Added multi-node shard execution for subsets_for_yiru IPV processing.
+Status: completed_for_commit_push
+Summary:
+- Added shard CLI support with --shard-index and --shard-count so Slurm array jobs can split the 7500 CSV rows across multiple nodes.
+- Added --merge-shards to combine per-shard CSV outputs into the final selected_interactive_segments_equalized_with_ipv.csv.
+- Added submit_subsets_for_yiru_ipv_array.sh for 6 array shards with 96 workers each and submit_subsets_for_yiru_ipv_merge.sh for final merge.
+- Verification: pytest passed 10 tests; py_compile passed; bash -n passed for submit scripts; preflight confirmed csv_rows=7500, pkl_events=7500, matched_rows=7500, unmatched_rows=0.
+Artifacts:
+- process_subsets_for_yiru_ipv.py
+- tests/test_process_subsets_for_yiru_ipv.py
+- submit_subsets_for_yiru_ipv_array.sh
+- submit_subsets_for_yiru_ipv_merge.sh

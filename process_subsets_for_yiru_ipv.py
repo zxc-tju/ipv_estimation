@@ -51,6 +51,7 @@ CSV_OUTPUT_COLUMNS = [
     "ipv_reference_source_1",
     "ipv_reference_source_2",
 ]
+CSV_KEY_COLUMNS = ["folder", "scenario_idx", "key_agents", "track_id"]
 
 _PKL_CACHE: Dict[Path, Mapping[str, object]] = {}
 
@@ -333,6 +334,100 @@ def build_csv_copy(source_df: pd.DataFrame, results: Mapping[int, Mapping[str, o
             if column in result:
                 output.loc[row_index, column] = result[column]
     return output
+
+
+def select_shard_rows(df: pd.DataFrame, *, shard_index: int, shard_count: int) -> pd.DataFrame:
+    """Select one deterministic row-position shard while preserving original indices."""
+    if shard_count < 1:
+        raise ValueError("shard_count must be >= 1")
+    if shard_index < 0 or shard_index >= shard_count:
+        raise ValueError(f"shard_index must be in [0, {shard_count}), got {shard_index}")
+    positions = np.arange(len(df))
+    return df.iloc[positions % shard_count == shard_index].copy()
+
+
+def shard_suffix(shard_index: int, shard_count: int) -> str:
+    width = max(2, len(str(max(0, shard_count - 1))))
+    return f"_shard_{shard_index:0{width}d}_of_{shard_count:0{width}d}"
+
+
+def _csv_match_key(row: Mapping[str, object]) -> Tuple[str, str, str, str]:
+    return tuple(str(row[column]) for column in CSV_KEY_COLUMNS)
+
+
+def merge_shard_outputs(csv_path: Path, output_root: Path, *, shard_count: int) -> Dict[str, object]:
+    """Merge per-shard CSV outputs into the final full-size CSV copy."""
+    if shard_count < 1:
+        raise ValueError("shard_count must be >= 1")
+    source_df = pd.read_csv(csv_path)
+    merged = build_csv_copy(source_df, {})
+    key_to_index: Dict[Tuple[str, str, str, str], int] = {}
+    duplicate_source_keys: List[Tuple[str, str, str, str]] = []
+    for row_index, row in merged.iterrows():
+        key = _csv_match_key(row)
+        if key in key_to_index:
+            duplicate_source_keys.append(key)
+        key_to_index[key] = int(row_index)
+    if duplicate_source_keys:
+        raise ValueError(f"Duplicate source CSV keys detected: {duplicate_source_keys[:5]}")
+
+    shard_files: List[str] = []
+    seen_keys: set[Tuple[str, str, str, str]] = set()
+    duplicate_shard_keys: List[Tuple[str, str, str, str]] = []
+    unmatched_shard_keys: List[Tuple[str, str, str, str]] = []
+    for shard_index in range(shard_count):
+        shard_path = (
+            output_root
+            / f"selected_interactive_segments_equalized_with_ipv{shard_suffix(shard_index, shard_count)}.csv"
+        )
+        if not shard_path.exists():
+            raise FileNotFoundError(f"Missing shard CSV: {shard_path}")
+        shard_files.append(str(shard_path))
+        shard_df = pd.read_csv(shard_path)
+        for _, shard_row in shard_df.iterrows():
+            key = _csv_match_key(shard_row)
+            if key in seen_keys:
+                duplicate_shard_keys.append(key)
+                continue
+            target_index = key_to_index.get(key)
+            if target_index is None:
+                unmatched_shard_keys.append(key)
+                continue
+            seen_keys.add(key)
+            for column in CSV_OUTPUT_COLUMNS:
+                if column in shard_row:
+                    merged.loc[target_index, column] = shard_row[column]
+
+    if duplicate_shard_keys:
+        raise ValueError(f"Duplicate shard CSV keys detected: {duplicate_shard_keys[:5]}")
+    if unmatched_shard_keys:
+        raise ValueError(f"Shard rows not found in source CSV: {unmatched_shard_keys[:5]}")
+
+    output_root.mkdir(parents=True, exist_ok=True)
+    csv_output = output_root / "selected_interactive_segments_equalized_with_ipv.csv"
+    merged.to_csv(csv_output, index=False, encoding="utf-8-sig")
+    missing_rows = len(merged) - len(seen_keys)
+    status_counts = {
+        str(key): int(value)
+        for key, value in merged["ipv_result_status"].value_counts(dropna=False).items()
+        if str(key)
+    }
+    summary = {
+        "csv_path": str(csv_path),
+        "output_root": str(output_root),
+        "shard_count": shard_count,
+        "source_rows": int(len(source_df)),
+        "merged_rows": int(len(seen_keys)),
+        "missing_rows": int(missing_rows),
+        "status_counts": status_counts,
+        "csv_output": str(csv_output),
+        "shard_files": shard_files,
+    }
+    (output_root / "merge_summary.json").write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default),
+        encoding="utf-8",
+    )
+    return summary
 
 
 def choose_recommended_workers(
@@ -846,8 +941,17 @@ def run_processing(
     history_window: int,
     min_observation: int,
     limit: Optional[int] = None,
+    shard_index: Optional[int] = None,
+    shard_count: Optional[int] = None,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
+    source_rows = len(df)
+    if shard_index is not None or shard_count is not None:
+        if shard_index is None or shard_count is None:
+            raise ValueError("shard_index and shard_count must be provided together")
+        df = select_shard_rows(df, shard_index=shard_index, shard_count=shard_count)
+    if limit is not None:
+        df = df.head(limit).copy()
     event_index = build_event_index(pkl_root)
     tasks, initial_results = _build_tasks(
         df,
@@ -857,13 +961,14 @@ def run_processing(
         output_root=output_root,
         history_window=history_window,
         min_observation=min_observation,
-        limit=limit,
     )
     results = dict(initial_results)
     results.update(_run_tasks(tasks, workers))
     csv_copy = build_csv_copy(df, results)
     output_root.mkdir(parents=True, exist_ok=True)
     suffix = "_limit" if limit is not None else ""
+    if shard_index is not None and shard_count is not None:
+        suffix += shard_suffix(shard_index, shard_count)
     csv_output = output_root / f"selected_interactive_segments_equalized_with_ipv{suffix}.csv"
     csv_copy.to_csv(csv_output, index=False, encoding="utf-8-sig")
     status_counts: Dict[str, int] = {}
@@ -876,6 +981,10 @@ def run_processing(
         "output_root": str(output_root),
         "workers": workers,
         "limit": limit,
+        "shard_index": shard_index,
+        "shard_count": shard_count,
+        "source_rows": int(source_rows),
+        "selected_rows": int(len(df)),
         "processed_task_count": len(tasks),
         "result_count": len(results),
         "status_counts": status_counts,
@@ -898,6 +1007,7 @@ def _append_workflow_log(summary: Mapping[str, object], *, task_name: str) -> No
         f"- Output root: {summary.get('output_root')}.\n"
         f"- Workers: {summary.get('workers')}.\n"
         f"- Limit: {summary.get('limit')}.\n"
+        f"- Shard: {summary.get('shard_index')} / {summary.get('shard_count')}.\n"
         f"- Status counts: {status_counts}.\n"
         "Artifacts:\n"
         f"- {summary.get('csv_output', summary.get('output_root'))}\n"
@@ -917,26 +1027,48 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--history-window", type=int, default=HISTORY_WINDOW)
     parser.add_argument("--min-observation", type=int, default=MIN_OBSERVATION)
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--skip-preflight", action="store_true")
     parser.add_argument("--benchmark-workers", action="store_true")
+    parser.add_argument("--shard-index", type=int, default=None)
+    parser.add_argument("--shard-count", type=int, default=None)
+    parser.add_argument("--merge-shards", action="store_true")
     parser.add_argument("--log-workflow", action="store_true")
     return parser
 
 
 def main(argv: Optional[Sequence[str]] = None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    args = build_arg_parser().parse_args(argv)
+    parser = build_arg_parser()
+    args = parser.parse_args(argv)
     args.output_root.mkdir(parents=True, exist_ok=True)
 
-    preflight = run_preflight(args.csv, args.pkl_root, args.output_root)
-    LOGGER.info(
-        "Preflight: csv_rows=%s pkl_events=%s matched=%s unmatched=%s",
-        preflight["csv_rows"],
-        preflight["pkl_events"],
-        preflight["matched_rows"],
-        preflight["unmatched_rows"],
-    )
-    if args.preflight_only:
-        print(json.dumps(preflight, indent=2, ensure_ascii=False, default=_json_default))
+    if args.preflight_only and args.skip_preflight:
+        parser.error("--preflight-only cannot be combined with --skip-preflight")
+    if args.merge_shards and args.shard_count is None:
+        parser.error("--merge-shards requires --shard-count")
+    if not args.merge_shards and (args.shard_index is None) != (args.shard_count is None):
+        parser.error("--shard-index and --shard-count must be provided together")
+
+    if not args.skip_preflight:
+        preflight = run_preflight(args.csv, args.pkl_root, args.output_root)
+        LOGGER.info(
+            "Preflight: csv_rows=%s pkl_events=%s matched=%s unmatched=%s",
+            preflight["csv_rows"],
+            preflight["pkl_events"],
+            preflight["matched_rows"],
+            preflight["unmatched_rows"],
+        )
+        if args.preflight_only:
+            print(json.dumps(preflight, indent=2, ensure_ascii=False, default=_json_default))
+            return
+    elif args.preflight_only:
+        parser.error("--preflight-only cannot be used with --skip-preflight")
+
+    if args.merge_shards:
+        summary = merge_shard_outputs(args.csv, args.output_root, shard_count=args.shard_count)
+        if args.log_workflow:
+            _append_workflow_log(summary, task_name="Merge subsets_for_yiru key-agent IPV shards")
+        print(json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default))
         return
 
     if args.benchmark_workers:
@@ -968,6 +1100,8 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         history_window=args.history_window,
         min_observation=args.min_observation,
         limit=args.limit,
+        shard_index=args.shard_index,
+        shard_count=args.shard_count,
     )
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")
