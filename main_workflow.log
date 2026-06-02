@@ -295,3 +295,66 @@ Artifacts:
 - tests/test_process_subsets_for_yiru_ipv.py
 - docs/superpowers/plans/2026-05-31-subsets-for-yiru-ipv.md
 - main_workflow.log
+
+2026-06-02 13:10:00 +08:00 - Completed HPC manual review and next-step guidance for account u25310231.
+Status: completed
+Summary:
+- Reviewed HPC使用说明.pdf by rendering pages and extracting key commands.
+- Confirmed login command, rsync pattern, conda initialization path, sbatch submission workflow, and squeue monitoring.
+- Prepared project-specific next steps for running process_subsets_for_yiru_ipv.py on HPC after git pull.
+Artifacts:
+- tmp/pdfs/hpc_manual_page-*.png
+- tmp/pdfs/hpc_manual.txt
+- tmp/pdfs/hpc_manual_fixed.txt
+
+2026-06-02 13:15:00 +08:00 - Updated HPC run commands with project path provided by user.
+Status: completed
+Summary:
+- User provided HPC interhub_traj_lane path: /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane.
+- Derived project root as /share/home/u25310231/ZXC/ipv_estimation and updated sbatch/cd guidance accordingly.
+
+2026-06-02 13:20:00 +08:00 - Provided data upload steps for missing HPC interhub_traj_lane data.
+Status: completed_guidance
+Summary:
+- Confirmed local subsets_for_yiru data exists and is about 0.21 GB.
+- Recommended uploading only selected_interactive_segments_equalized.csv and pkl/ to /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/0_raw_data/subsets_for_yiru.
+- Provided tar/scp/upload/verify/preflight command sequence for account u25310231.
+
+2026-06-02 13:25:00 +08:00 - Rewrote local data packaging/upload commands to avoid fragile PowerShell line continuation.
+Status: completed_guidance
+Summary:
+- User reported the multi-line tar command broke when pasted.
+- Provided short-variable PowerShell commands and a one-line alternative for packaging subsets_for_yiru data before HPC upload.
+
+2026-06-02 13:30:00 +08:00 - Updated local data packaging commands with corrected Windows user path.
+Status: completed_guidance
+Summary:
+- User corrected local interhub_traj_lane path to C:\Users\46936\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\interhub_traj_lane.
+- Provided revised PowerShell and Git Bash packaging/upload command variants.
+
+2026-06-02 13:35:00 +08:00 - Diagnosed scp usage error during subsets_for_yiru data upload.
+Status: completed_guidance
+Summary:
+- Explained that scp usage output likely means the PowerShell $out variable was empty or not defined in the current session.
+- Provided commands to reset $out, verify the tarball exists, and retry upload with explicit quoted source and target paths.
+
+2026-06-02 13:40:00 +08:00 - Recommended full-scale HPC worker configuration for subsets_for_yiru IPV run.
+Status: completed_guidance
+Summary:
+- Clarified that the previous sbatch template with cpus-per-task=64 and 70 percent worker rule would run 44 workers.
+- Recommended requesting 96 CPUs on HPC and running 64 workers explicitly for the first full-scale job, with options to increase to 80/96 if stable.
+
+2026-06-02 13:45:00 +08:00 - Clarified location/status of full-run HPC submission script.
+Status: completed_guidance
+Summary:
+- Checked local repository for submit scripts and found only the existing submit.sh.
+- Clarified that the subsets_for_yiru-specific sbatch script has not been created yet and should be created as submit_subsets_for_yiru_ipv.sh at the HPC project root.
+
+2026-06-02 13:50:00 +08:00 - Created HPC sbatch script for full subsets_for_yiru IPV processing.
+Status: completed_for_commit_push
+Summary:
+- Added submit_subsets_for_yiru_ipv.sh following the existing submit.sh Slurm style.
+- The script requests 96 CPUs, 5G memory per CPU, activates conda env ipv, runs preflight, then runs process_subsets_for_yiru_ipv.py with 64 default workers.
+- Verified shell syntax with Git Bash bash -n.
+Artifacts:
+- submit_subsets_for_yiru_ipv.sh
