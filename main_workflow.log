@@ -227,3 +227,71 @@ Outcome:
 Artifacts:
 - Commit: 23bec86 (Add IPV handoff docs and workflow logs)
 - Files: main_workflow.log; NEXT_AGENT_HANDOFF_IPV_2026-03-07.md; NEXT_AGENT_HANDOFF_IPV_2026-03-07_ÖÐÎÄ.md; NEXT_AGENT_HANDOFF_IPV_2026-03-07_BILINGUAL.md
+[2026-05-31 17:09:40] STATUS: COMPLETED | TASK: Review overall project structure.
+Outcome:
+- Inspected repository root, tracked Python modules, existing structure document, pipeline entry points, core estimator, agent implementation, requirements, gitignore, and workflow log format.
+- Confirmed project layout: core IPV estimation lives in agent.py and ipv_estimation.py; dataset pipelines are process_argoverse.py and process_interhub.py; simulation is centered in simulator.py; shared planning/geometry helpers live under tools/.
+- Noted current working tree already has unrelated deleted handoff files; no code or data files were modified.
+Artifacts:
+- main_workflow.log updated with this workflow summary.
+[2026-05-31 19:20:18] STATUS: COMPLETED | TASK: Save subsets_for_yiru IPV estimation plan locally.
+Outcome:
+- Saved the approved key-agent IPV estimation plan with worker benchmark strategy to docs/superpowers/plans/2026-05-31-subsets-for-yiru-ipv.md.
+- Plan covers 7500 pkl-backed CSV rows, multi-agent key-agent filtering, per-case artifacts, CSV mean IPV fill-in, benchmark-based worker selection, tests, and workflow logging.
+Artifacts:
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\docs\superpowers\plans\2026-05-31-subsets-for-yiru-ipv.md
+[2026-06-02 09:15:18] STATUS: COMPLETED | TASK: Update subsets_for_yiru IPV plan after refreshed pkl reference data inspection.
+Outcome:
+- Inspected refreshed subsets_for_yiru pkl data and confirmed references are now derivable from road_info all_lane_centerlines with vehicle lane_ids/frame_lane_ids for all currently matched key agents.
+- Updated docs/superpowers/plans/2026-05-31-subsets-for-yiru-ipv.md to use lane-derived references instead of observed-trajectory fallback as the default.
+- Added preflight handling for the current data mismatch: 5000 CSV rows match available pkl files; 2500 waymo_train rows currently have no corresponding pkl file and should be marked missing_pkl_event until waymo pkl data is supplied.
+Artifacts:
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\docs\superpowers\plans\2026-05-31-subsets-for-yiru-ipv.md
+[2026-06-02 11:36:45] STATUS: COMPLETED | TASK: Implement subsets_for_yiru key-agent IPV processing script and tests.
+Outcome:
+- Added process_subsets_for_yiru_ipv.py with pkl indexing, lane-derived references, key_agents-only processing, preflight, worker benchmark support, per-case artifacts, and CSV copy output without duplicate key-agent id columns.
+- Added tests/test_process_subsets_for_yiru_ipv.py covering event matching, reference construction, timestamp alignment, CSV output columns, valid mean IPV, worker selection, and short Windows-safe case paths.
+- Updated docs/superpowers/plans/2026-05-31-subsets-for-yiru-ipv.md to reflect the latest data and implementation contract.
+- Verification: pytest passed 8 tests; py_compile passed; preflight found csv_rows=7500, pkl_events=7500, matched_rows=7500, unmatched_rows=0, lane_ids references=15000.
+- Smoke run in conda env ipv_estimate completed limit=1 with status ok and generated CSV, Excel, metadata JSON, and PNG artifacts.
+Artifacts:
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\process_subsets_for_yiru_ipv.py
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\tests\test_process_subsets_for_yiru_ipv.py
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\docs\superpowers\plans\2026-05-31-subsets-for-yiru-ipv.md
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\interhub_traj_lane\1_ipv_estimation_results\subsets_for_yiru\selected_interactive_segments_equalized_with_ipv_limit.csv
+
+2026-06-02 11:41:21 +08:00 - Completed HPC command guidance for subsets_for_yiru IPV processing.
+Status: completed
+Summary:
+- Provided Slurm/sbatch command guidance for running process_subsets_for_yiru_ipv.py on HPC.
+- Recommended preflight, optional smoke test, and full multi-worker run commands with explicit worker control.
+
+2026-06-02 11:45:00 +08:00 - Completed SSH passwordless-login setup guidance for Tongji HPC.
+Status: partial_local_setup_completed_remote_blocked
+Summary:
+- Created local SSH alias tongji-hpc in the Windows user SSH config using the existing id_ed25519 key.
+- Verified OpenSSH is available locally.
+- Remote key installation could not be completed because logini.tongji.edu.cn does not resolve on the current network; likely requires campus network/VPN or corrected login hostname.
+Artifacts:
+- C:\Users\xiaocongzhao\.ssh\config
+
+2026-06-02 11:52:30 +08:00 - Completed MotionPro VPN split-routing guidance for Tongji HPC SSH.
+Status: completed_guidance
+Summary:
+- Inspected local MotionPro processes, listeners, VPN adapters, DNS, and routes.
+- Found MotionPro is running, but Array VPN adapters are disconnected/not present and logini.tongji.edu.cn still does not resolve.
+- Explained that SSH-only VPN routing requires MotionPro split tunnel/system routes or a real local proxy; current local MotionPro ports did not behave like SOCKS/HTTP proxy endpoints.
+Artifacts:
+- C:\Users\xiaocongzhao\.ssh\config remains configured for tongji-hpc direct SSH.
+
+2026-06-02 12:57:00 +08:00 - Completed organization and verification before committing subsets_for_yiru IPV implementation.
+Status: completed_for_commit_push
+Summary:
+- Organized the current workspace and excluded unrelated pre-existing handoff document deletions from staging.
+- Verified process_subsets_for_yiru_ipv.py with pytest, py_compile, and preflight.
+- Preflight confirmed csv_rows=7500, pkl_events=7500, matched_rows=7500, unmatched_rows=0, and lane_ids references for 15000 key agents.
+Artifacts:
+- process_subsets_for_yiru_ipv.py
+- tests/test_process_subsets_for_yiru_ipv.py
+- docs/superpowers/plans/2026-05-31-subsets-for-yiru-ipv.md
+- main_workflow.log

@@ -1,0 +1,204 @@
+from __future__ import annotations
+
+import pickle
+
+import numpy as np
+import pandas as pd
+
+import process_subsets_for_yiru_ipv as mod
+
+
+def _vehicle(
+    *,
+    positions,
+    velocities=None,
+    headings=None,
+    timestamps=None,
+    lane_ids=None,
+    frame_lane_ids=None,
+):
+    positions = np.asarray(positions, dtype=float)
+    steps = len(positions)
+    if velocities is None:
+        velocities = np.ones((steps, 2), dtype=float)
+    if headings is None:
+        headings = np.zeros(steps, dtype=float)
+    if timestamps is None:
+        timestamps = list(range(steps))
+    return {
+        "positions": positions.tolist(),
+        "velocities": np.asarray(velocities, dtype=float).tolist(),
+        "headings": np.asarray(headings, dtype=float).tolist(),
+        "timestamps": list(timestamps),
+        "lane_ids": list(lane_ids or []),
+        "frame_lane_ids": list(frame_lane_ids or []),
+    }
+
+
+def _event(*, folder="fold", scenario_idx=7, key_agents="a;b", track_ids=None):
+    if track_ids is None:
+        track_ids = key_agents.split(";")
+    return {
+        "metadata": {
+            "dataset": "demo",
+            "folder": folder,
+            "scenario_idx": scenario_idx,
+            "track_ids": track_ids,
+            "key_agents": key_agents,
+            "two_multi": "two",
+        },
+        "vehicles": {
+            "a": _vehicle(
+                positions=[[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+                lane_ids=["L1", "L2"],
+            ),
+            "b": _vehicle(
+                positions=[[0, 1, 0], [1, 1, 0], [2, 1, 0]],
+                lane_ids=["L3"],
+            ),
+        },
+        "road_info": {
+            "all_lane_centerlines": {
+                "L1": [[0, 0], [1, 0]],
+                "L2": [[1, 0], [2, 0]],
+                "L3": [[0, 1], [2, 1]],
+                "F1": [[5, 5], [6, 5]],
+                "F2": [[6, 5], [7, 5]],
+            }
+        },
+    }
+
+
+def test_build_event_index_uses_folder_scenario_key_agents_and_track_id(tmp_path):
+    event = _event(folder="demo_folder", scenario_idx=42, key_agents="b;a", track_ids=["a", "b"])
+    pkl_path = tmp_path / "demo.pkl"
+    with pkl_path.open("wb") as f:
+        pickle.dump({"segment_1": event}, f)
+
+    index = mod.build_event_index(tmp_path)
+
+    key = ("demo_folder", "42", "b;a", "a;b")
+    assert key in index
+    assert index[key].segment_id == "segment_1"
+    assert index[key].pkl_path == pkl_path
+
+
+def test_reference_uses_lane_ids_then_frame_lane_ids():
+    event = _event()
+    lane_ref, lane_source = mod.build_vehicle_reference(event, "a")
+    np.testing.assert_allclose(lane_ref, [[0, 0], [1, 0], [2, 0]])
+    assert lane_source == "lane_ids"
+
+    event["vehicles"]["a"]["lane_ids"] = []
+    event["vehicles"]["a"]["frame_lane_ids"] = ["F1", "F1", "F2"]
+    frame_ref, frame_source = mod.build_vehicle_reference(event, "a")
+    np.testing.assert_allclose(frame_ref, [[5, 5], [6, 5], [7, 5]])
+    assert frame_source == "frame_lane_ids"
+
+
+def test_reference_falls_back_to_observed_trajectory_when_lanes_missing():
+    event = _event()
+    event["vehicles"]["a"]["lane_ids"] = ["missing"]
+    event["vehicles"]["a"]["frame_lane_ids"] = []
+
+    ref, source = mod.build_vehicle_reference(event, "a")
+
+    np.testing.assert_allclose(ref, [[0, 0], [1, 0], [2, 0]])
+    assert source == "observed_trajectory_fallback"
+
+
+def test_align_key_agent_motion_uses_common_timestamps_in_key_agent_order():
+    event = _event(key_agents="b;a")
+    event["vehicles"]["b"] = _vehicle(
+        positions=[[10, 0, 0], [11, 0, 0], [12, 0, 0]],
+        velocities=[[10, 0], [11, 0], [12, 0]],
+        headings=[0.1, 0.2, 0.3],
+        timestamps=[0, 1, 2],
+    )
+    event["vehicles"]["a"] = _vehicle(
+        positions=[[20, 0, 0], [21, 0, 0]],
+        velocities=[[20, 0], [21, 0]],
+        headings=[0.4, 0.5],
+        timestamps=[1, 2],
+    )
+
+    aligned = mod.align_key_agent_motion(event, ["b", "a"], min_steps=2)
+
+    assert aligned.timestamps == [1, 2]
+    np.testing.assert_allclose(aligned.primary_motion[:, 0], [11, 12])
+    np.testing.assert_allclose(aligned.secondary_motion[:, 0], [20, 21])
+
+
+def test_compute_valid_mean_ipv_ignores_pre_observation_rows():
+    ipv_values = np.array([[99.0, 99.0], [1.0, 3.0], [2.0, 5.0]])
+    ipv_errors = np.array([[99.0, 99.0], [0.1, 0.3], [0.2, 0.5]])
+
+    summary = mod.compute_valid_ipv_summary(ipv_values, ipv_errors, min_observation=1)
+
+    assert summary == {
+        "ipv_key_agent_1_mean": 1.5,
+        "ipv_key_agent_1_error_mean": 0.15,
+        "ipv_key_agent_2_mean": 4.0,
+        "ipv_key_agent_2_error_mean": 0.4,
+    }
+
+
+def test_build_csv_copy_preserves_key_agents_without_new_id_columns():
+    source = pd.DataFrame(
+        {
+            "folder": ["demo"],
+            "scenario_idx": [1],
+            "track_id": ["a;b"],
+            "key_agents": ["a;b"],
+        }
+    )
+    results = {
+        0: {
+            "ipv_key_agent_1_mean": 0.25,
+            "ipv_key_agent_1_error_mean": 0.1,
+            "ipv_key_agent_2_mean": -0.5,
+            "ipv_key_agent_2_error_mean": 0.2,
+            "ipv_result_status": "ok",
+            "ipv_result_case_dir": "case",
+            "ipv_result_error": "",
+            "ipv_pkl_file": "demo.pkl",
+            "ipv_segment_id": "seg",
+            "ipv_reference_source_1": "lane_ids",
+            "ipv_reference_source_2": "lane_ids",
+        }
+    }
+
+    output = mod.build_csv_copy(source, results)
+
+    assert "key_agents" in output.columns
+    assert "ipv_key_agent_1_id" not in output.columns
+    assert "ipv_key_agent_2_id" not in output.columns
+    assert output.loc[0, "key_agents"] == "a;b"
+    assert output.loc[0, "ipv_key_agent_1_mean"] == 0.25
+    assert output.loc[0, "ipv_key_agent_2_mean"] == -0.5
+
+
+def test_choose_recommended_workers_prefers_lower_worker_when_gain_is_small():
+    records = [
+        {"workers": 1, "failed": 0, "cases_per_minute": 10.0},
+        {"workers": 2, "failed": 0, "cases_per_minute": 19.0},
+        {"workers": 4, "failed": 0, "cases_per_minute": 20.0},
+        {"workers": 8, "failed": 1, "cases_per_minute": 30.0},
+    ]
+
+    assert mod.choose_recommended_workers(records) == 2
+
+
+def test_case_output_dir_uses_short_hash_instead_of_full_segment_id(tmp_path):
+    segment_id = "train_vegas3_4000_1fe61c52847a5cb8_2b28efeda75a5117"
+    row = {
+        "dataset": "nuplan_train",
+        "folder": "train_vegas3",
+        "scenario_idx": 4000,
+    }
+
+    case_dir = mod.case_output_dir(tmp_path, 0, row, segment_id)
+
+    assert segment_id not in str(case_dir)
+    assert "row_00000_" in case_dir.name
+    assert len(case_dir.name) < 24
