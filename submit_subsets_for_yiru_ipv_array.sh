@@ -30,6 +30,7 @@ echo "Node: $SLURM_NODELIST"
 echo "Allocated CPUs: $SLURM_CPUS_PER_TASK"
 echo "Shard: $SHARD_INDEX / $SHARD_COUNT"
 echo "Workers: $WORKERS"
+echo "Plots: disabled"
 echo "=========================================="
 
 if [ ! -f "$SCRIPT" ]; then
@@ -42,4 +43,5 @@ python "$SCRIPT" \
     --shard-index "$SHARD_INDEX" \
     --shard-count "$SHARD_COUNT" \
     --workers "$WORKERS" \
-    --max-workers "$WORKERS"
+    --max-workers "$WORKERS" \
+    --no-plots

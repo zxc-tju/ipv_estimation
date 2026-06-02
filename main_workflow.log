@@ -398,3 +398,33 @@ Artifacts:
 - tests/test_process_subsets_for_yiru_ipv.py
 - submit_subsets_for_yiru_ipv_array.sh
 - submit_subsets_for_yiru_ipv_merge.sh
+
+2026-06-02 21:10:00 +08:00 - Guided HPC conda activation after python command was not found.
+Status: completed_guidance
+Summary:
+- User reported bash: python: command not found when running preflight on HPC.
+- Explained that conda must be sourced and the ipv environment activated before running Python interactively.
+- Provided fallback environment creation/install commands if conda activate ipv fails.
+
+[2026-06-02 23:35:06 +08:00] Task: Explain process_subsets_for_yiru_ipv.py IPV estimation call chain
+Status: completed
+Key outcomes: Confirmed process_case imports MotionSequence and estimate_ipv_pair from ipv_estimation.py; estimate_ipv_pair calls Agent.estimate_self_ipv for both key agents; Agent.estimate_self_ipv evaluates virtual_agent_IPV_range candidates and computes weighted IPV plus error.
+Artifacts generated: main_workflow.log entry only
+
+
+[2026-06-02 23:38:30 +08:00] Task: Compare process_subsets_for_yiru_ipv.py IPV logic with process_interhub.py
+Status: completed
+Key outcomes: Confirmed both pipelines use ipv_estimation.estimate_ipv_pair and Agent.estimate_self_ipv with the same HISTORY_WINDOW/MIN_OBSERVATION defaults, but differ in data source selection, key-agent alignment, reference fallback, outputs, and summary aggregation.
+Artifacts generated: main_workflow.log entry only
+
+
+2026-06-02 23:50:15 +08:00 - Added optional plot skipping for faster multi-node subsets_for_yiru IPV runs.
+Status: completed_for_commit_push
+Summary:
+- Added --no-plots to process_subsets_for_yiru_ipv.py and propagated save_plots into per-case tasks and metadata.
+- Updated submit_subsets_for_yiru_ipv_array.sh so the 6-node array run skips PNG generation by default while still writing Excel, metadata JSON, shard CSVs, and the final mergeable outputs.
+- Verification: targeted TDD test passed; full pytest passed 11 tests; py_compile passed; bash -n passed for the array script; preflight confirmed csv_rows=7500, pkl_events=7500, matched_rows=7500, unmatched_rows=0.
+Artifacts:
+- process_subsets_for_yiru_ipv.py
+- tests/test_process_subsets_for_yiru_ipv.py
+- submit_subsets_for_yiru_ipv_array.sh

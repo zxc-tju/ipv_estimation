@@ -246,3 +246,41 @@ def test_merge_shard_outputs_combines_csv_columns_by_key(tmp_path):
     assert merged["ipv_result_status"].tolist() == ["ok", "ok", "ok"]
     assert merged["ipv_key_agent_1_mean"].tolist() == ["s0-a0", "s1-a0", "s0-a1"]
     assert "ipv_key_agent_1_id" not in merged.columns
+
+
+def test_run_processing_propagates_save_plots_flag(tmp_path, monkeypatch):
+    event = _event(folder="demo_folder", scenario_idx=42, key_agents="a;b", track_ids=["a", "b"])
+    pkl_path = tmp_path / "events.pkl"
+    with pkl_path.open("wb") as f:
+        pickle.dump({"segment_1": event}, f)
+    csv_path = tmp_path / "selected_interactive_segments_equalized.csv"
+    pd.DataFrame(
+        {
+            "dataset": ["demo"],
+            "folder": ["demo_folder"],
+            "scenario_idx": [42],
+            "track_id": ["a;b"],
+            "key_agents": ["a;b"],
+            "two/multi": ["two"],
+        }
+    ).to_csv(csv_path, index=False)
+
+    seen_flags = []
+
+    def fake_process_case(task):
+        seen_flags.append(task.save_plots)
+        return {"ipv_result_status": "ok"}
+
+    monkeypatch.setattr(mod, "process_case", fake_process_case)
+
+    mod.run_processing(
+        csv_path,
+        tmp_path,
+        tmp_path / "out",
+        workers=1,
+        history_window=10,
+        min_observation=4,
+        save_plots=False,
+    )
+
+    assert seen_flags == [False]

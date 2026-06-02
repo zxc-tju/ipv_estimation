@@ -85,6 +85,7 @@ class CaseTask:
     pkl_root: Path
     history_window: int
     min_observation: int
+    save_plots: bool = True
 
 
 def _json_default(value):
@@ -598,7 +599,6 @@ def process_case(task: CaseTask) -> Dict[str, object]:
         )
 
         data_dir = case_dir / "data"
-        fig_dir = case_dir / "fig"
         _save_ipv_table(
             data_dir / "ipv_results.xlsx",
             aligned.timestamps,
@@ -608,16 +608,18 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             ipv_values,
             ipv_errors,
         )
-        _plot_case_summary(
-            fig_dir / "ipv_curve.png",
-            key_agents,
-            aligned.primary_motion,
-            aligned.secondary_motion,
-            ipv_values,
-            ipv_errors,
-            primary_ref,
-            secondary_ref,
-        )
+        if task.save_plots:
+            fig_dir = case_dir / "fig"
+            _plot_case_summary(
+                fig_dir / "ipv_curve.png",
+                key_agents,
+                aligned.primary_motion,
+                aligned.secondary_motion,
+                ipv_values,
+                ipv_errors,
+                primary_ref,
+                secondary_ref,
+            )
         metadata = {
             "row_index": task.row_index,
             "csv_path": str(task.csv_path),
@@ -633,6 +635,7 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             "reference_source_2": secondary_ref_source,
             "history_window": task.history_window,
             "min_observation": task.min_observation,
+            "save_plots": task.save_plots,
             "timestamps": aligned.timestamps,
             "summary": summary,
             "status": "ok",
@@ -672,6 +675,7 @@ def _build_tasks(
     output_root: Path,
     history_window: int,
     min_observation: int,
+    save_plots: bool = True,
     limit: Optional[int] = None,
 ) -> Tuple[List[CaseTask], Dict[int, Dict[str, object]]]:
     tasks: List[CaseTask] = []
@@ -697,6 +701,7 @@ def _build_tasks(
                 pkl_root=Path(pkl_root),
                 history_window=history_window,
                 min_observation=min_observation,
+                save_plots=save_plots,
             )
         )
     return tasks, initial_results
@@ -943,6 +948,7 @@ def run_processing(
     limit: Optional[int] = None,
     shard_index: Optional[int] = None,
     shard_count: Optional[int] = None,
+    save_plots: bool = True,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     source_rows = len(df)
@@ -961,6 +967,7 @@ def run_processing(
         output_root=output_root,
         history_window=history_window,
         min_observation=min_observation,
+        save_plots=save_plots,
     )
     results = dict(initial_results)
     results.update(_run_tasks(tasks, workers))
@@ -983,6 +990,7 @@ def run_processing(
         "limit": limit,
         "shard_index": shard_index,
         "shard_count": shard_count,
+        "save_plots": save_plots,
         "source_rows": int(source_rows),
         "selected_rows": int(len(df)),
         "processed_task_count": len(tasks),
@@ -1008,6 +1016,7 @@ def _append_workflow_log(summary: Mapping[str, object], *, task_name: str) -> No
         f"- Workers: {summary.get('workers')}.\n"
         f"- Limit: {summary.get('limit')}.\n"
         f"- Shard: {summary.get('shard_index')} / {summary.get('shard_count')}.\n"
+        f"- Save plots: {summary.get('save_plots')}.\n"
         f"- Status counts: {status_counts}.\n"
         "Artifacts:\n"
         f"- {summary.get('csv_output', summary.get('output_root'))}\n"
@@ -1032,6 +1041,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--shard-index", type=int, default=None)
     parser.add_argument("--shard-count", type=int, default=None)
     parser.add_argument("--merge-shards", action="store_true")
+    parser.add_argument("--no-plots", action="store_true")
     parser.add_argument("--log-workflow", action="store_true")
     return parser
 
@@ -1102,6 +1112,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         limit=args.limit,
         shard_index=args.shard_index,
         shard_count=args.shard_count,
+        save_plots=not args.no_plots,
     )
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")
