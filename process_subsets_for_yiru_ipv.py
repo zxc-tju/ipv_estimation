@@ -390,6 +390,10 @@ def dataset_filter_suffix(dataset_filter: Optional[Sequence[str]]) -> str:
     return f"_dataset_{safe_names}"
 
 
+def incomplete_suffix(only_incomplete: bool) -> str:
+    return "_incomplete" if only_incomplete else ""
+
+
 def shard_suffix(shard_index: int, shard_count: int) -> str:
     width = max(2, len(str(max(0, shard_count - 1))))
     return f"_shard_{shard_index:0{width}d}_of_{shard_count:0{width}d}"
@@ -406,6 +410,7 @@ def merge_shard_outputs(
     shard_count: int,
     dataset_filter: Optional[Sequence[str]] = None,
     base_csv_path: Optional[Path] = None,
+    only_incomplete: bool = False,
 ) -> Dict[str, object]:
     """Merge per-shard CSV outputs into the final full-size CSV copy."""
     if shard_count < 1:
@@ -432,7 +437,7 @@ def merge_shard_outputs(
     seen_keys: set[Tuple[str, str, str, str]] = set()
     duplicate_shard_keys: List[Tuple[str, str, str, str]] = []
     unmatched_shard_keys: List[Tuple[str, str, str, str]] = []
-    suffix = dataset_filter_suffix(dataset_filter)
+    suffix = incomplete_suffix(only_incomplete) + dataset_filter_suffix(dataset_filter)
     for shard_index in range(shard_count):
         shard_path = (
             output_root
@@ -476,6 +481,7 @@ def merge_shard_outputs(
         "shard_count": shard_count,
         "dataset_filter": list(dataset_filter or []),
         "base_csv_path": str(base_csv_path) if base_csv_path else None,
+        "only_incomplete": only_incomplete,
         "source_rows": int(len(source_df)),
         "merged_rows": int(len(seen_keys)),
         "missing_rows": int(missing_rows),
@@ -608,6 +614,87 @@ def case_output_dir(output_root: Path, row_index: int, row: Mapping[str, object]
     segment_hash = hashlib.sha1(str(segment_id).encode("utf-8")).hexdigest()[:12]
     case = f"row_{row_index:05d}_{segment_hash}"
     return Path(output_root) / "cases" / dataset / folder / f"scenario_{scenario}" / case
+
+
+def inspect_case_completion(
+    output_root: Path,
+    row_index: int,
+    row: Mapping[str, object],
+    segment_id: str,
+) -> Dict[str, object]:
+    """Inspect persisted per-case artifacts and decide whether the case is complete."""
+    case_dir = case_output_dir(output_root, row_index, row, segment_id)
+    data_dir = case_dir / "data"
+    metadata_path = data_dir / "metadata.json"
+    table_path = data_dir / "ipv_results.xlsx"
+    result = {
+        "row_index": int(row_index),
+        "dataset": str(row.get("dataset", "")),
+        "case_dir": str(case_dir),
+        "segment_id": str(segment_id),
+        "complete": False,
+        "reason": "",
+    }
+    if not metadata_path.exists():
+        result["reason"] = "missing_metadata"
+        return result
+    if not table_path.exists():
+        result["reason"] = "missing_excel"
+        return result
+    try:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        result["reason"] = f"invalid_metadata_json:{exc}"
+        return result
+    if metadata.get("status") != "ok":
+        result["reason"] = f"metadata_status_{metadata.get('status')}"
+        return result
+    expected_factor = downsample_factor_for_dataset(row.get("dataset"))
+    actual_factor = int(metadata.get("downsample_factor", 1))
+    if actual_factor != expected_factor:
+        result["reason"] = "stale_downsample_factor"
+        result["expected_downsample_factor"] = expected_factor
+        result["actual_downsample_factor"] = actual_factor
+        return result
+    result["reason"] = "complete"
+    result["complete"] = True
+    result["expected_downsample_factor"] = expected_factor
+    result["actual_downsample_factor"] = actual_factor
+    return result
+
+
+def scan_case_completion(
+    df: pd.DataFrame,
+    event_index: Mapping[Tuple[str, str, str, str], EventRef],
+    *,
+    output_root: Path,
+) -> pd.DataFrame:
+    """Return one completion-inspection row per source CSV row."""
+    records: List[Dict[str, object]] = []
+    for row_index, row in df.iterrows():
+        row_dict = row.to_dict()
+        event_ref = event_index.get(csv_key(row_dict))
+        if event_ref is None:
+            records.append(
+                {
+                    "row_index": int(row_index),
+                    "dataset": str(row.get("dataset", "")),
+                    "complete": False,
+                    "reason": "missing_pkl_event",
+                    "case_dir": "",
+                    "segment_id": "",
+                }
+            )
+            continue
+        records.append(
+            inspect_case_completion(
+                output_root,
+                int(row_index),
+                row_dict,
+                event_ref.segment_id,
+            )
+        )
+    return pd.DataFrame(records)
 
 
 def process_case(task: CaseTask) -> Dict[str, object]:
@@ -1016,17 +1103,27 @@ def run_processing(
     shard_count: Optional[int] = None,
     save_plots: bool = True,
     dataset_filter: Optional[Sequence[str]] = None,
+    only_incomplete: bool = False,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     source_rows = len(df)
     df = select_dataset_rows(df, dataset_filter)
+    event_index = build_event_index(pkl_root)
+    completion_status_counts: Dict[str, int] = {}
+    incomplete_total: Optional[int] = None
+    if only_incomplete:
+        completion_df = scan_case_completion(df, event_index, output_root=output_root)
+        for reason, count in completion_df["reason"].value_counts(dropna=False).items():
+            completion_status_counts[str(reason)] = int(count)
+        incomplete_indices = completion_df.loc[~completion_df["complete"].astype(bool), "row_index"].astype(int).tolist()
+        incomplete_total = len(incomplete_indices)
+        df = df.loc[incomplete_indices].copy()
     if shard_index is not None or shard_count is not None:
         if shard_index is None or shard_count is None:
             raise ValueError("shard_index and shard_count must be provided together")
         df = select_shard_rows(df, shard_index=shard_index, shard_count=shard_count)
     if limit is not None:
         df = df.head(limit).copy()
-    event_index = build_event_index(pkl_root)
     tasks, initial_results = _build_tasks(
         df,
         event_index,
@@ -1042,6 +1139,7 @@ def run_processing(
     csv_copy = build_csv_copy(df, results)
     output_root.mkdir(parents=True, exist_ok=True)
     suffix = "_limit" if limit is not None else ""
+    suffix += incomplete_suffix(only_incomplete)
     suffix += dataset_filter_suffix(dataset_filter)
     if shard_index is not None and shard_count is not None:
         suffix += shard_suffix(shard_index, shard_count)
@@ -1061,6 +1159,9 @@ def run_processing(
         "shard_count": shard_count,
         "save_plots": save_plots,
         "dataset_filter": list(dataset_filter or []),
+        "only_incomplete": only_incomplete,
+        "incomplete_total": incomplete_total,
+        "completion_status_counts": completion_status_counts,
         "source_rows": int(source_rows),
         "selected_rows": int(len(df)),
         "processed_task_count": len(tasks),
@@ -1113,6 +1214,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--merge-shards", action="store_true")
     parser.add_argument("--merge-base-csv", type=Path, default=None)
     parser.add_argument("--dataset-filter", action="append", default=None)
+    parser.add_argument("--only-incomplete", action="store_true")
+    parser.add_argument("--scan-incomplete-only", action="store_true")
     parser.add_argument("--no-plots", action="store_true")
     parser.add_argument("--log-workflow", action="store_true")
     return parser
@@ -1126,6 +1229,8 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
     if args.preflight_only and args.skip_preflight:
         parser.error("--preflight-only cannot be combined with --skip-preflight")
+    if args.scan_incomplete_only and args.merge_shards:
+        parser.error("--scan-incomplete-only cannot be combined with --merge-shards")
     if args.merge_shards and args.shard_count is None:
         parser.error("--merge-shards requires --shard-count")
     if not args.merge_shards and (args.shard_index is None) != (args.shard_count is None):
@@ -1153,9 +1258,39 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             shard_count=args.shard_count,
             dataset_filter=args.dataset_filter,
             base_csv_path=args.merge_base_csv,
+            only_incomplete=args.only_incomplete,
         )
         if args.log_workflow:
             _append_workflow_log(summary, task_name="Merge subsets_for_yiru key-agent IPV shards")
+        print(json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default))
+        return
+
+    if args.scan_incomplete_only:
+        df = select_dataset_rows(pd.read_csv(args.csv), args.dataset_filter)
+        event_index = build_event_index(args.pkl_root)
+        completion_df = scan_case_completion(df, event_index, output_root=args.output_root)
+        suffix = incomplete_suffix(True) + dataset_filter_suffix(args.dataset_filter)
+        scan_csv = args.output_root / f"case_completion_scan{suffix}.csv"
+        scan_json = args.output_root / f"case_completion_scan{suffix}.json"
+        args.output_root.mkdir(parents=True, exist_ok=True)
+        completion_df.to_csv(scan_csv, index=False, encoding="utf-8-sig")
+        summary = {
+            "csv_path": str(args.csv),
+            "output_root": str(args.output_root),
+            "dataset_filter": list(args.dataset_filter or []),
+            "source_rows": int(len(df)),
+            "complete_rows": int(completion_df["complete"].astype(bool).sum()),
+            "incomplete_rows": int((~completion_df["complete"].astype(bool)).sum()),
+            "reason_counts": {
+                str(key): int(value)
+                for key, value in completion_df["reason"].value_counts(dropna=False).items()
+            },
+            "scan_csv": str(scan_csv),
+        }
+        scan_json.write_text(
+            json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default),
+            encoding="utf-8",
+        )
         print(json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default))
         return
 
@@ -1192,6 +1327,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         shard_count=args.shard_count,
         save_plots=not args.no_plots,
         dataset_filter=args.dataset_filter,
+        only_incomplete=args.only_incomplete,
     )
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")

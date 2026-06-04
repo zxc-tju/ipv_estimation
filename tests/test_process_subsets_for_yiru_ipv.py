@@ -371,3 +371,72 @@ def test_run_processing_propagates_save_plots_flag(tmp_path, monkeypatch):
     )
 
     assert seen_flags == [False]
+
+
+def test_inspect_case_completion_requires_metadata_table_and_current_downsample(tmp_path):
+    row = {"dataset": "nuplan_train", "folder": "f", "scenario_idx": 1}
+    case_dir = mod.case_output_dir(tmp_path, 0, row, "seg")
+    data_dir = case_dir / "data"
+    data_dir.mkdir(parents=True)
+    (data_dir / "ipv_results.xlsx").write_text("fake", encoding="utf-8")
+    metadata_path = data_dir / "metadata.json"
+    metadata_path.write_text('{"status": "ok", "downsample_factor": 1}', encoding="utf-8")
+
+    stale = mod.inspect_case_completion(tmp_path, 0, row, "seg")
+    assert stale["complete"] is False
+    assert stale["reason"] == "stale_downsample_factor"
+
+    metadata_path.write_text('{"status": "ok", "downsample_factor": 2}', encoding="utf-8")
+    complete = mod.inspect_case_completion(tmp_path, 0, row, "seg")
+    assert complete["complete"] is True
+    assert complete["reason"] == "complete"
+
+
+def test_run_processing_only_incomplete_dispatches_missing_rows(tmp_path, monkeypatch):
+    events = {
+        "seg_0": _event(folder="f0", scenario_idx=0, key_agents="a;b", track_ids=["a", "b"]),
+        "seg_1": _event(folder="f1", scenario_idx=1, key_agents="a;b", track_ids=["a", "b"]),
+    }
+    pkl_path = tmp_path / "events.pkl"
+    with pkl_path.open("wb") as f:
+        pickle.dump(events, f)
+    csv_path = tmp_path / "selected_interactive_segments_equalized.csv"
+    rows = pd.DataFrame(
+        {
+            "dataset": ["waymo_train", "waymo_train"],
+            "folder": ["f0", "f1"],
+            "scenario_idx": [0, 1],
+            "track_id": ["a;b", "a;b"],
+            "key_agents": ["a;b", "a;b"],
+            "two/multi": ["two", "two"],
+        }
+    )
+    rows.to_csv(csv_path, index=False)
+
+    output_root = tmp_path / "out"
+    complete_dir = mod.case_output_dir(output_root, 0, rows.iloc[0].to_dict(), "seg_0") / "data"
+    complete_dir.mkdir(parents=True)
+    (complete_dir / "metadata.json").write_text('{"status": "ok", "downsample_factor": 1}', encoding="utf-8")
+    (complete_dir / "ipv_results.xlsx").write_text("fake", encoding="utf-8")
+
+    processed_rows = []
+
+    def fake_process_case(task):
+        processed_rows.append(task.row_index)
+        return {"ipv_result_status": "ok"}
+
+    monkeypatch.setattr(mod, "process_case", fake_process_case)
+
+    summary = mod.run_processing(
+        csv_path,
+        tmp_path,
+        output_root,
+        workers=1,
+        history_window=10,
+        min_observation=4,
+        only_incomplete=True,
+    )
+
+    assert processed_rows == [1]
+    assert summary["incomplete_total"] == 1
+    assert summary["selected_rows"] == 1

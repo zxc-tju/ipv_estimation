@@ -459,3 +459,17 @@ Artifacts:
 - tests/test_process_subsets_for_yiru_ipv.py
 - submit_subsets_for_yiru_ipv_nuplan_array.sh
 - submit_subsets_for_yiru_ipv_nuplan_merge.sh
+
+2026-06-04 21:47:00 +08:00 - Added unified incomplete-case scan and 4-node rerun support for subsets_for_yiru IPV processing.
+Status: completed_for_commit_push
+Summary:
+- Added per-case completion inspection based on metadata.json, ipv_results.xlsx, metadata status, and dataset-specific downsample_factor so deleted nuplan cases and unfinished Waymo/AV2 cases are detected uniformly.
+- Added --scan-incomplete-only to write a completion scan summary and CSV, and --only-incomplete to process only cases that are missing, failed, or stale.
+- Added incomplete-case shard suffixes so rerun shard CSVs do not collide with earlier full-run or nuplan-only shard outputs.
+- Added submit_subsets_for_yiru_ipv_incomplete_array.sh for 4 nodes with 96 workers each and submit_subsets_for_yiru_ipv_incomplete_merge.sh to patch-merge rerun results into the existing full CSV.
+- Verification: pytest passed 16 tests; py_compile passed; bash -n passed for new scripts; preflight confirmed csv_rows=7500, pkl_events=7500, matched_rows=7500, unmatched_rows=0.
+Artifacts:
+- process_subsets_for_yiru_ipv.py
+- tests/test_process_subsets_for_yiru_ipv.py
+- submit_subsets_for_yiru_ipv_incomplete_array.sh
+- submit_subsets_for_yiru_ipv_incomplete_merge.sh
