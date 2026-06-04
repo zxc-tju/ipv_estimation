@@ -428,3 +428,34 @@ Artifacts:
 - process_subsets_for_yiru_ipv.py
 - tests/test_process_subsets_for_yiru_ipv.py
 - submit_subsets_for_yiru_ipv_array.sh
+
+[2026-06-02 23:59:53 +08:00] Task: Diagnose all-zero nuPlan IPV results in process_subsets_for_yiru_ipv.py
+Status: completed
+Key outcomes: Traced the saved nuPlan case train_vegas3_4000 and confirmed all post-min_observation IPV values are zero because agent.cal_traj_reliability underflows every raw Gaussian trajectory likelihood to 0, then falls back to uniform weights over the symmetric seven-candidate IPV grid. The uniform weights produce IPV=0 and error=0.622035526991.
+Artifacts generated: main_workflow.log entry only
+
+2026-06-04 00:00:00 +08:00 - Provided HPC result download guidance for completed subsets_for_yiru IPV run.
+Status: completed_guidance
+Summary:
+- Recommended packaging the HPC result directory into a tar.gz archive before downloading to Windows.
+- Provided commands for downloading the full result directory or only final CSV/summary artifacts via scp.
+- Used remote result path /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru and local Windows project path under C:\Users\46936.
+
+[2026-06-04 12:04:09 +08:00] Task: Compare nuPlan all-zero IPV behavior against Waymo subset/full-dataset behavior
+Status: completed
+Key outcomes: Compared subsets_for_yiru pkl nuPlan and Waymo samples plus older full_datasets Waymo outputs. Found nuPlan pkl trajectories are effectively 20 Hz (position/velocity dt about 0.05s) while Agent uses hardcoded dt=0.1, producing 0.5m+ one-step prediction residuals and all-zero likelihood fallback. Waymo full-dataset artifacts mostly use 10 Hz data and process_interhub.py filters centerline distance <=2m, so some windows retain non-uniform weights; subset Waymo can still fall back when reference/model mismatch is large.
+Artifacts generated: main_workflow.log entry only
+
+2026-06-04 21:36:00 +08:00 - Added nuplan_train 20Hz-to-10Hz recomputation support for subsets_for_yiru IPV results.
+Status: completed_for_commit_push
+Summary:
+- Added dataset-specific downsampling so nuplan_train aligned key-agent trajectories are sampled every 2 frames before IPV estimation, converting 20Hz to 10Hz while leaving Waymo and AV2 unchanged.
+- Added --dataset-filter to process only nuplan_train rows and keep shard outputs separated from full-run shard outputs.
+- Added --merge-base-csv so recomputed nuplan shard CSVs can patch the existing full result CSV while preserving previously completed Waymo and AV2 results.
+- Added submit_subsets_for_yiru_ipv_nuplan_array.sh and submit_subsets_for_yiru_ipv_nuplan_merge.sh for HPC rerun and patch merge.
+- Verification: pytest passed 14 tests; py_compile passed; bash -n passed for new submit scripts; preflight confirmed csv_rows=7500, pkl_events=7500, matched_rows=7500, unmatched_rows=0.
+Artifacts:
+- process_subsets_for_yiru_ipv.py
+- tests/test_process_subsets_for_yiru_ipv.py
+- submit_subsets_for_yiru_ipv_nuplan_array.sh
+- submit_subsets_for_yiru_ipv_nuplan_merge.sh

@@ -129,6 +129,38 @@ def test_align_key_agent_motion_uses_common_timestamps_in_key_agent_order():
     np.testing.assert_allclose(aligned.secondary_motion[:, 0], [20, 21])
 
 
+def test_dataset_downsampling_converts_nuplan_20hz_to_10hz_only():
+    aligned = mod.AlignedMotion(
+        primary_motion=np.column_stack(
+            (
+                np.arange(6),
+                np.zeros(6),
+                np.ones(6),
+                np.zeros(6),
+                np.zeros(6),
+            )
+        ),
+        secondary_motion=np.column_stack(
+            (
+                np.arange(10, 16),
+                np.zeros(6),
+                np.ones(6),
+                np.zeros(6),
+                np.zeros(6),
+            )
+        ),
+        timestamps=list(range(6)),
+    )
+
+    nuplan = mod.apply_dataset_downsampling(aligned, dataset="nuplan_train", min_steps=3)
+    waymo = mod.apply_dataset_downsampling(aligned, dataset="waymo_train", min_steps=3)
+
+    assert nuplan.timestamps == [0, 2, 4]
+    np.testing.assert_allclose(nuplan.primary_motion[:, 0], [0, 2, 4])
+    assert waymo.timestamps == list(range(6))
+    np.testing.assert_allclose(waymo.primary_motion[:, 0], np.arange(6))
+
+
 def test_compute_valid_mean_ipv_ignores_pre_observation_rows():
     ipv_values = np.array([[99.0, 99.0], [1.0, 3.0], [2.0, 5.0]])
     ipv_errors = np.array([[99.0, 99.0], [0.1, 0.3], [0.2, 0.5]])
@@ -213,6 +245,14 @@ def test_select_shard_rows_uses_modulo_positions_and_preserves_indices():
     assert shard["value"].tolist() == [1, 4, 7]
 
 
+def test_select_dataset_filter_preserves_only_requested_datasets():
+    source = pd.DataFrame({"dataset": ["nuplan_train", "waymo_train", "nuplan_train"], "value": [1, 2, 3]})
+
+    filtered = mod.select_dataset_rows(source, ["nuplan_train"])
+
+    assert filtered["value"].tolist() == [1, 3]
+
+
 def test_merge_shard_outputs_combines_csv_columns_by_key(tmp_path):
     source = pd.DataFrame(
         {
@@ -246,6 +286,53 @@ def test_merge_shard_outputs_combines_csv_columns_by_key(tmp_path):
     assert merged["ipv_result_status"].tolist() == ["ok", "ok", "ok"]
     assert merged["ipv_key_agent_1_mean"].tolist() == ["s0-a0", "s1-a0", "s0-a1"]
     assert "ipv_key_agent_1_id" not in merged.columns
+
+
+def test_merge_shard_outputs_can_patch_existing_base_csv(tmp_path):
+    source = pd.DataFrame(
+        {
+            "folder": ["a", "b"],
+            "scenario_idx": [1, 2],
+            "track_id": ["ta", "tb"],
+            "key_agents": ["ka1;ka2", "kb1;kb2"],
+        }
+    )
+    csv_path = tmp_path / "selected_interactive_segments_equalized.csv"
+    source.to_csv(csv_path, index=False)
+    base = mod.build_csv_copy(
+        source,
+        {
+            0: {"ipv_key_agent_1_mean": "old-nuplan", "ipv_result_status": "ok"},
+            1: {"ipv_key_agent_1_mean": "keep-waymo", "ipv_result_status": "ok"},
+        },
+    )
+    base_csv = tmp_path / "base.csv"
+    base.to_csv(base_csv, index=False)
+
+    patch = source.iloc[[0]].copy()
+    for column in mod.CSV_OUTPUT_COLUMNS:
+        patch[column] = ""
+    patch["ipv_key_agent_1_mean"] = "new-nuplan"
+    patch["ipv_result_status"] = "ok"
+    output_root = tmp_path / "out"
+    output_root.mkdir()
+    patch.to_csv(
+        output_root / "selected_interactive_segments_equalized_with_ipv_dataset_nuplan_train_shard_00_of_01.csv",
+        index=False,
+    )
+
+    summary = mod.merge_shard_outputs(
+        csv_path,
+        output_root,
+        shard_count=1,
+        dataset_filter=["nuplan_train"],
+        base_csv_path=base_csv,
+    )
+    merged = pd.read_csv(summary["csv_output"])
+
+    assert summary["merged_rows"] == 1
+    assert summary["missing_rows"] == 1
+    assert merged["ipv_key_agent_1_mean"].tolist() == ["new-nuplan", "keep-waymo"]
 
 
 def test_run_processing_propagates_save_plots_flag(tmp_path, monkeypatch):

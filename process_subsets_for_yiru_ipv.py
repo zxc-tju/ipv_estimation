@@ -38,6 +38,7 @@ MIN_OBSERVATION = 4
 HEADING_THRESHOLD_DEG = 12.0
 WORKER_CANDIDATES = [1, 2, 4, 8, 12, 16]
 BENCHMARK_SAMPLE_SIZE = 48
+DATASET_DOWNSAMPLE_FACTORS = {"nuplan_train": 2}
 CSV_OUTPUT_COLUMNS = [
     "ipv_key_agent_1_mean",
     "ipv_key_agent_1_error_mean",
@@ -288,6 +289,33 @@ def align_key_agent_motion(
     )
 
 
+def downsample_factor_for_dataset(dataset: object) -> int:
+    """Return the temporal downsampling factor required by a dataset."""
+    return DATASET_DOWNSAMPLE_FACTORS.get(str(dataset), 1)
+
+
+def apply_dataset_downsampling(
+    aligned: AlignedMotion,
+    *,
+    dataset: object,
+    min_steps: int = MIN_OBSERVATION + 1,
+) -> AlignedMotion:
+    """Apply dataset-specific temporal downsampling after timestamp alignment."""
+    factor = downsample_factor_for_dataset(dataset)
+    if factor <= 1:
+        return aligned
+    downsampled = AlignedMotion(
+        primary_motion=aligned.primary_motion[::factor].copy(),
+        secondary_motion=aligned.secondary_motion[::factor].copy(),
+        timestamps=list(aligned.timestamps[::factor]),
+    )
+    if len(downsampled.timestamps) < min_steps:
+        raise ValueError(
+            f"Only {len(downsampled.timestamps)} timestamps after {factor}x downsampling; need at least {min_steps}"
+        )
+    return downsampled
+
+
 def classify_heading(headings: np.ndarray, threshold_deg: float = HEADING_THRESHOLD_DEG) -> str:
     unwrapped = np.unwrap(np.asarray(headings, dtype=float))
     delta_deg = float(np.degrees(unwrapped[-1] - unwrapped[0]))
@@ -347,6 +375,21 @@ def select_shard_rows(df: pd.DataFrame, *, shard_index: int, shard_count: int) -
     return df.iloc[positions % shard_count == shard_index].copy()
 
 
+def select_dataset_rows(df: pd.DataFrame, dataset_filter: Optional[Sequence[str]]) -> pd.DataFrame:
+    """Filter rows to requested dataset names while preserving original indices."""
+    if not dataset_filter:
+        return df
+    requested = {str(dataset) for dataset in dataset_filter}
+    return df[df["dataset"].astype(str).isin(requested)].copy()
+
+
+def dataset_filter_suffix(dataset_filter: Optional[Sequence[str]]) -> str:
+    if not dataset_filter:
+        return ""
+    safe_names = "_".join(_safe_name(dataset, max_len=60) for dataset in dataset_filter)
+    return f"_dataset_{safe_names}"
+
+
 def shard_suffix(shard_index: int, shard_count: int) -> str:
     width = max(2, len(str(max(0, shard_count - 1))))
     return f"_shard_{shard_index:0{width}d}_of_{shard_count:0{width}d}"
@@ -356,12 +399,25 @@ def _csv_match_key(row: Mapping[str, object]) -> Tuple[str, str, str, str]:
     return tuple(str(row[column]) for column in CSV_KEY_COLUMNS)
 
 
-def merge_shard_outputs(csv_path: Path, output_root: Path, *, shard_count: int) -> Dict[str, object]:
+def merge_shard_outputs(
+    csv_path: Path,
+    output_root: Path,
+    *,
+    shard_count: int,
+    dataset_filter: Optional[Sequence[str]] = None,
+    base_csv_path: Optional[Path] = None,
+) -> Dict[str, object]:
     """Merge per-shard CSV outputs into the final full-size CSV copy."""
     if shard_count < 1:
         raise ValueError("shard_count must be >= 1")
     source_df = pd.read_csv(csv_path)
-    merged = build_csv_copy(source_df, {})
+    if base_csv_path is not None:
+        merged = pd.read_csv(base_csv_path)
+        for column in CSV_OUTPUT_COLUMNS:
+            if column not in merged.columns:
+                merged[column] = ""
+    else:
+        merged = build_csv_copy(source_df, {})
     key_to_index: Dict[Tuple[str, str, str, str], int] = {}
     duplicate_source_keys: List[Tuple[str, str, str, str]] = []
     for row_index, row in merged.iterrows():
@@ -376,10 +432,11 @@ def merge_shard_outputs(csv_path: Path, output_root: Path, *, shard_count: int) 
     seen_keys: set[Tuple[str, str, str, str]] = set()
     duplicate_shard_keys: List[Tuple[str, str, str, str]] = []
     unmatched_shard_keys: List[Tuple[str, str, str, str]] = []
+    suffix = dataset_filter_suffix(dataset_filter)
     for shard_index in range(shard_count):
         shard_path = (
             output_root
-            / f"selected_interactive_segments_equalized_with_ipv{shard_suffix(shard_index, shard_count)}.csv"
+            / f"selected_interactive_segments_equalized_with_ipv{suffix}{shard_suffix(shard_index, shard_count)}.csv"
         )
         if not shard_path.exists():
             raise FileNotFoundError(f"Missing shard CSV: {shard_path}")
@@ -417,6 +474,8 @@ def merge_shard_outputs(csv_path: Path, output_root: Path, *, shard_count: int) 
         "csv_path": str(csv_path),
         "output_root": str(output_root),
         "shard_count": shard_count,
+        "dataset_filter": list(dataset_filter or []),
+        "base_csv_path": str(base_csv_path) if base_csv_path else None,
         "source_rows": int(len(source_df)),
         "merged_rows": int(len(seen_keys)),
         "missing_rows": int(missing_rows),
@@ -573,6 +632,12 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             key_agents,
             min_steps=task.min_observation + 1,
         )
+        downsample_factor = downsample_factor_for_dataset(row.get("dataset"))
+        aligned = apply_dataset_downsampling(
+            aligned,
+            dataset=row.get("dataset"),
+            min_steps=task.min_observation + 1,
+        )
         primary_ref, primary_ref_source = build_vehicle_reference(event, key_agents[0])
         secondary_ref, secondary_ref_source = build_vehicle_reference(event, key_agents[1])
         base_result["ipv_reference_source_1"] = primary_ref_source
@@ -635,6 +700,7 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             "reference_source_2": secondary_ref_source,
             "history_window": task.history_window,
             "min_observation": task.min_observation,
+            "downsample_factor": downsample_factor,
             "save_plots": task.save_plots,
             "timestamps": aligned.timestamps,
             "summary": summary,
@@ -949,9 +1015,11 @@ def run_processing(
     shard_index: Optional[int] = None,
     shard_count: Optional[int] = None,
     save_plots: bool = True,
+    dataset_filter: Optional[Sequence[str]] = None,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     source_rows = len(df)
+    df = select_dataset_rows(df, dataset_filter)
     if shard_index is not None or shard_count is not None:
         if shard_index is None or shard_count is None:
             raise ValueError("shard_index and shard_count must be provided together")
@@ -974,6 +1042,7 @@ def run_processing(
     csv_copy = build_csv_copy(df, results)
     output_root.mkdir(parents=True, exist_ok=True)
     suffix = "_limit" if limit is not None else ""
+    suffix += dataset_filter_suffix(dataset_filter)
     if shard_index is not None and shard_count is not None:
         suffix += shard_suffix(shard_index, shard_count)
     csv_output = output_root / f"selected_interactive_segments_equalized_with_ipv{suffix}.csv"
@@ -991,6 +1060,7 @@ def run_processing(
         "shard_index": shard_index,
         "shard_count": shard_count,
         "save_plots": save_plots,
+        "dataset_filter": list(dataset_filter or []),
         "source_rows": int(source_rows),
         "selected_rows": int(len(df)),
         "processed_task_count": len(tasks),
@@ -1041,6 +1111,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--shard-index", type=int, default=None)
     parser.add_argument("--shard-count", type=int, default=None)
     parser.add_argument("--merge-shards", action="store_true")
+    parser.add_argument("--merge-base-csv", type=Path, default=None)
+    parser.add_argument("--dataset-filter", action="append", default=None)
     parser.add_argument("--no-plots", action="store_true")
     parser.add_argument("--log-workflow", action="store_true")
     return parser
@@ -1075,7 +1147,13 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         parser.error("--preflight-only cannot be used with --skip-preflight")
 
     if args.merge_shards:
-        summary = merge_shard_outputs(args.csv, args.output_root, shard_count=args.shard_count)
+        summary = merge_shard_outputs(
+            args.csv,
+            args.output_root,
+            shard_count=args.shard_count,
+            dataset_filter=args.dataset_filter,
+            base_csv_path=args.merge_base_csv,
+        )
         if args.log_workflow:
             _append_workflow_log(summary, task_name="Merge subsets_for_yiru key-agent IPV shards")
         print(json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default))
@@ -1113,6 +1191,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         shard_index=args.shard_index,
         shard_count=args.shard_count,
         save_plots=not args.no_plots,
+        dataset_filter=args.dataset_filter,
     )
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")
