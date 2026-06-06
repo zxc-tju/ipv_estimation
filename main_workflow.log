@@ -473,3 +473,68 @@ Artifacts:
 - tests/test_process_subsets_for_yiru_ipv.py
 - submit_subsets_for_yiru_ipv_incomplete_array.sh
 - submit_subsets_for_yiru_ipv_incomplete_merge.sh
+
+2026-06-05 10:30:00 +08:00 - Analyzed downloaded HPC cases.zip matching against subsets_for_yiru source CSV.
+Status: completed_analysis
+Summary:
+- Inspected interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/cases.zip without extracting the full archive.
+- Found 6762 completed case metadata/Excel pairs matching unique CSV row indices with no duplicate row indices or CSV metadata mismatches.
+- Waymo and AV2 are complete at 2500/2500 each; nuplan_train has 1762 complete and 738 missing cases.
+- All completed nuplan cases have downsample_factor=2, while Waymo and AV2 have downsample_factor=1.
+- Generated analysis reports and a temporary CSV matched from cases.zip for using available IPV results immediately.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_cases_zip_analysis/summary.json
+- interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_cases_zip_analysis/case_artifact_report.csv
+- interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_cases_zip_analysis/row_match_report.csv
+- interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_cases_zip_analysis/missing_or_incomplete_rows.csv
+- interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_cases_zip_analysis/selected_interactive_segments_equalized_with_ipv_from_cases_zip.csv
+- interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_cases_zip_analysis/selected_interactive_segments_equalized_with_ipv_from_cases_zip_completed_only.csv
+[2026-06-05 10:57:58 +08:00] Task: Generated IPV distribution analysis report from downloaded subsets_for_yiru cases.zip results.
+Status: completed.
+Key outcomes: Built matched CSV-based IPV distribution report using 6762 completed cases and 13524 key-agent IPV values; identified 738 missing cases, all from nuplan_train; generated 12 Nature-style visualization panels plus summary/statistical tables.
+Persistent artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/report_summary.json; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/figures/; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/tables/.
+[2026-06-05 11:05:26 +08:00] Task: Fixed garbled Chinese text in IPV distribution HTML report.
+Status: completed.
+Key outcomes: Confirmed root cause was Chinese text being converted to question marks during HTML generation via PowerShell-to-Python stdin; rebuilt ipv_distribution_report.html with UTF-8 output and verified zero runs of four-or-more question marks plus presence of Chinese headings.
+Persistent artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html.
+[2026-06-05 11:22:19 +08:00] Task: Updated IPV distribution report visualization ranges and dataset comparison section.
+Status: completed.
+Key outcomes: Rebuilt Figure 04 as a zoomed log-density pair IPV plot with display range [-0.30, 0.30], covering 94.735% of completed cases; added dataset comparison overview and dataset sign/strength comparison figures; added dataset_comparison_summary.csv and dataset_pairwise_tests.csv; regenerated HTML with 14 embedded figures and verified zero four-or-more question-mark runs.
+Persistent artifacts: tools/update_ipv_distribution_report.py; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/figures/04_pair_ipv_hexbin.png; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/figures/13_dataset_comparison_overview.png; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/figures/14_dataset_comparison_sign_strength.png; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/tables/dataset_comparison_summary.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/tables/dataset_pairwise_tests.csv.
+[2026-06-05 11:37:13 +08:00] Task: Redesigned dataset comparison visualizations to emphasize IPV distribution differences.
+Status: completed.
+Key outcomes: Replaced raw dataset comparison panels with a difference-lens figure showing share deltas from pooled values, mean/intensity deltas, signed-IPV quantile differences vs AV2, and pair-|IPV| tail probability differences vs AV2; added pairwise Cliff's-delta effect-size heatmap; regenerated HTML with 14 embedded figures and verified zero four-or-more question-mark runs.
+Persistent artifacts: tools/update_ipv_distribution_report.py; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/figures/13_dataset_difference_lens.png; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/figures/14_dataset_effect_size_heatmap.png; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/tables/dataset_effect_size_summary.csv.
+[2026-06-05 12:31:21 +08:00] Task: Added metric definitions and formulas to IPV distribution report.
+Status: completed.
+Key outcomes: Added a metric definition section to ipv_distribution_report.html with English metric labels, Chinese names, statistical grain, meaning, calculation formula, and notes; exported 41 metric definitions to metric_definitions.csv; regenerated HTML and verified zero four-or-more question-mark runs with 14 embedded figures.
+Persistent artifacts: tools/update_ipv_distribution_report.py; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/tables/metric_definitions.csv.
+[2026-06-05 12:48:53 +08:00] Task: Rewrote IPV HTML report into a conclusion-indexed narrative structure.
+Status: completed.
+Key outcomes: Reorganized ipv_distribution_report.html around five conclusion sections, each with a takeaway, supporting evidence, relevant figures, supporting tables, and caveats/implications; kept Executive Summary, reading conventions, next steps, caveats, and metric dictionary; verified 5 conclusion sections, 14 embedded figures, metric dictionary presence, and zero four-or-more question-mark runs.
+Persistent artifacts: tools/update_ipv_distribution_report.py; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html.
+2026-06-05 21:15 - Updated subsets_for_yiru IPV distribution report with key-agent AV/HV analysis.
+Status: completed.
+Key outcomes: read pkl metadata.vehicle_type and aligned it to CSV key_agents/track_id for the existing matched IPV dataset; generated agent_type_dataset_stats.csv (6 rows), agent_type_dataset_deltas.csv (3 rows), and figure 15_agent_type_dataset_lens.png; rewrote conclusion C3 to compare AV vs HV within AV2, Waymo, and nuPlan and kept case-level AV_included/two-multi as auxiliary evidence.
+Verification: python tools/update_ipv_distribution_report.py completed with question_runs=0, embedded 15 PNGs in ipv_distribution_report.html, agent-type totals are AV2=5000, Waymo=5000, nuPlan=3524 completed key-agent values, and py_compile passed. Visual inspection of figure 15 passed after moving the HV/AV legend. In-app browser reload was not attempted further after Browser Use blocked file:// navigation by policy.
+Artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html; tables/agent_type_dataset_stats.csv; tables/agent_type_dataset_deltas.csv; figures/15_agent_type_dataset_lens.png.
+2026-06-05 21:34 - Added AV-HV paired-case IPV comparison to subsets_for_yiru report.
+Status: completed.
+Key outcomes: added within-case AV-HV paired analysis for completed cases with exactly one AV and one HV key agent; generated av_hv_paired_case_summary.csv (4 rows), av_hv_paired_case_records.csv (1329 rows), and figure 16_av_hv_paired_case_lens.png; updated C3 narrative to distinguish agent-level AV/HV comparisons from within-case paired comparisons.
+Verification: python tools/update_ipv_distribution_report.py completed with question_runs=0 and 16 embedded PNGs; python -m py_compile tools/update_ipv_distribution_report.py passed; HTML checks confirmed no replacement characters, no question-mark runs, paired section present, summary rows=4, records rows=1329. Key paired result: Overall AV-HV mean IPV = +0.022, paired Wilcoxon p < 0.001, and 47.1% of paired differences remain |delta| < 0.05.
+Artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html; tables/av_hv_paired_case_summary.csv; tables/av_hv_paired_case_records.csv; figures/16_av_hv_paired_case_lens.png.
+2026-06-05 22:25 - Merged new nuplan_train.zip IPV results with existing subsets_for_yiru cases.zip results.
+Status: completed.
+Key outcomes: added tools/merge_subsets_for_yiru_ipv_archives.py to merge case artifacts directly from zip files without extracting the 1.5GB archive; prioritized nuplan_train.zip for nuPlan rows and used cases.zip for AV2/Waymo. Generated selected_interactive_segments_equalized_with_ipv_combined.csv (7500 rows), selected_interactive_segments_equalized_with_ipv_combined_completed_only.csv (6807 rows), and _combined_ipv_analysis diagnostics. Current coverage: AV2 2500/2500, Waymo 2500/2500, nuPlan 1807/2500, leaving 693 nuPlan missing. The new nuPlan zip contains 1807 metadata/xlsx cases, all matching source CSV rows; it overlaps the old nuPlan results by 1762 rows and adds 45 new nuPlan rows.
+Verification: python tools/merge_subsets_for_yiru_ipv_archives.py completed; combined CSV row count is 7500 with 6807 ok and 693 missing_case; nonmatching artifacts=0; python -m py_compile passed for merge and report scripts. Updated tools/update_ipv_distribution_report.py to use the combined CSV and regenerated ipv_distribution_report.html/report_summary.json with completed_cases=6807 and missing_cases=693.
+Artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/selected_interactive_segments_equalized_with_ipv_combined.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/selected_interactive_segments_equalized_with_ipv_combined_completed_only.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_combined_ipv_analysis/summary.json; tools/merge_subsets_for_yiru_ipv_archives.py.
+2026-06-06 00:00 - Added HPC continuation script for remaining incomplete nuPlan IPV cases.
+Status: completed.
+Key outcomes: created submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh for repeatable Slurm array reruns that process only incomplete nuplan_train cases using --dataset-filter nuplan_train and --only-incomplete, with 8 shards/nodes by default, 96 workers per node, no plots, and a 3-day time limit. This avoids rerunning completed nuPlan cases and can be resubmitted after timeout to continue from case artifacts already written on HPC.
+Verification: python -m py_compile process_subsets_for_yiru_ipv.py tools/merge_subsets_for_yiru_ipv_archives.py passed. Local bash syntax check could not run because local WSL bash is unavailable; script content was reviewed and follows existing Slurm script patterns.
+Artifacts: submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.
+2026-06-06 08:50 - Adjusted remaining nuPlan HPC continuation script to four Slurm array nodes.
+Status: completed.
+Key outcomes: updated submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh to use --array=0-3 with SHARD_COUNT defaulting to 4, matching the requested four-node continuation plan. Each array task keeps one node with 96 CPUs, processes only incomplete nuplan_train cases, disables plot generation, and can be resubmitted to continue remaining cases.
+Verification: python -m py_compile process_subsets_for_yiru_ipv.py tools/merge_subsets_for_yiru_ipv_archives.py tools/update_ipv_distribution_report.py passed; script content reviewed and confirmed --array=0-3, SHARD_COUNT default 4, --dataset-filter nuplan_train, --only-incomplete, and --no-plots.
+Artifacts: submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.
