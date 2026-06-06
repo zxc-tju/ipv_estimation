@@ -570,3 +570,20 @@ Status: completed.
 Key outcomes: explained how to obtain username, IP/hostname, SSH port/service status, firewall status, and optional SSH key setup steps from the target Windows PC.
 Verification: not applicable; advisory response only.
 Artifacts: none.
+
+2026-06-06 20:56:17 +08:00 - Diagnosed remote Windows SSH setup output and provided elevated install workflow.
+Status: completed.
+Key outcomes: identified that sshd is not installed, OpenSSH Server installation failed because PowerShell was not elevated, and the tested 192.168.1.23 address was only an example rather than the target IP 100.75.3.68. Provided administrator PowerShell commands for installing sshd, enabling firewall access, verifying port 22, and preparing connection details.
+Verification: based on user-provided PowerShell output; no remote connection attempted yet.
+Artifacts: none.
+
+2026-06-06 20:59:08 +08:00 - Clarified ToDesk remote terminal operability and next SSH setup path.
+Status: completed.
+Key outcomes: explained that Codex shell commands run on the local workspace rather than inside the ToDesk remote terminal, and that direct terminal UI automation is not appropriate. Provided the recommended path: user runs elevated OpenSSH setup commands in the ToDesk remote PowerShell, then Codex can connect over SSH once port 22 is reachable.
+Verification: advisory response only; no ToDesk or SSH connection attempted.
+Artifacts: none.
+2026-06-06 21:10 - Improved HPC nuPlan remaining-case runner diagnostics and multiprocessing behavior.
+Status: completed.
+Key outcomes: updated process_subsets_for_yiru_ipv.py to support --mp-start-method and prefer fork on Linux so worker processes inherit the parent pkl cache instead of reloading large pkl files. Updated submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh to export OMP/OPENBLAS/MKL/NUMEXPR/SCIPY thread counts as 1, use PYTHONUNBUFFERED=1, print runtime diagnostics, and explicitly pass --mp-start-method fork for the four-node nuPlan continuation run.
+Verification: python -m py_compile process_subsets_for_yiru_ipv.py tools/merge_subsets_for_yiru_ipv_archives.py tools/update_ipv_distribution_report.py passed; process_subsets_for_yiru_ipv.py --help exposes --mp-start-method; local auto start-method resolution falls back cleanly on Windows and fork reports unavailable as expected.
+Artifacts: process_subsets_for_yiru_ipv.py; submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.

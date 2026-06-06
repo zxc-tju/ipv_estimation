@@ -6,6 +6,7 @@ import hashlib
 import json
 import logging
 import math
+import multiprocessing as mp
 import os
 import pickle
 import re
@@ -903,7 +904,29 @@ def _build_tasks(
     return tasks, initial_results
 
 
-def _run_tasks(tasks: Sequence[CaseTask], workers: int) -> Dict[int, Dict[str, object]]:
+def _resolve_mp_context(start_method: str):
+    """Return a multiprocessing context and the resolved start-method label."""
+    requested = (start_method or "auto").lower()
+    available = mp.get_all_start_methods()
+    if requested == "auto":
+        if "fork" in available:
+            requested = "fork"
+        else:
+            return None, mp.get_start_method(allow_none=True) or "default"
+    if requested not in available:
+        raise ValueError(
+            f"Multiprocessing start method {requested!r} is unavailable. "
+            f"Available methods: {available}"
+        )
+    return mp.get_context(requested), requested
+
+
+def _run_tasks(
+    tasks: Sequence[CaseTask],
+    workers: int,
+    *,
+    mp_start_method: str = "auto",
+) -> Dict[int, Dict[str, object]]:
     results: Dict[int, Dict[str, object]] = {}
     if not tasks:
         return results
@@ -912,7 +935,17 @@ def _run_tasks(tasks: Sequence[CaseTask], workers: int) -> Dict[int, Dict[str, o
         for task in tqdm(tasks, desc="IPV cases", unit="case"):
             results[task.row_index] = process_case(task)
         return results
-    with ProcessPoolExecutor(max_workers=workers) as executor:
+    mp_context, resolved_start_method = _resolve_mp_context(mp_start_method)
+    LOGGER.info(
+        "Running %s IPV tasks with %s workers (mp_start_method=%s)",
+        len(tasks),
+        workers,
+        resolved_start_method,
+    )
+    executor_kwargs = {"max_workers": workers}
+    if mp_context is not None:
+        executor_kwargs["mp_context"] = mp_context
+    with ProcessPoolExecutor(**executor_kwargs) as executor:
         future_to_index = {executor.submit(process_case, task): task.row_index for task in tasks}
         for future in tqdm(as_completed(future_to_index), total=len(future_to_index), desc="IPV cases", unit="case"):
             row_index = future_to_index[future]
@@ -1055,6 +1088,7 @@ def run_worker_benchmark(
     min_observation: int,
     max_workers: int,
     exclude_csv_path: Optional[Path] = None,
+    mp_start_method: str = "auto",
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
@@ -1076,7 +1110,7 @@ def run_worker_benchmark(
         )
         start = time.perf_counter()
         results = dict(initial_results)
-        results.update(_run_tasks(tasks, workers))
+        results.update(_run_tasks(tasks, workers, mp_start_method=mp_start_method))
         elapsed = time.perf_counter() - start
         processed = sum(1 for result in results.values() if result.get("ipv_result_status") == "ok")
         failed = len(results) - processed
@@ -1163,6 +1197,7 @@ def run_processing(
     dataset_filter: Optional[Sequence[str]] = None,
     only_incomplete: bool = False,
     exclude_csv_path: Optional[Path] = None,
+    mp_start_method: str = "auto",
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     source_rows = len(df)
@@ -1196,7 +1231,7 @@ def run_processing(
         save_plots=save_plots,
     )
     results = dict(initial_results)
-    results.update(_run_tasks(tasks, workers))
+    results.update(_run_tasks(tasks, workers, mp_start_method=mp_start_method))
     csv_copy = build_csv_copy(df, results)
     output_root.mkdir(parents=True, exist_ok=True)
     suffix = "_limit" if limit is not None else ""
@@ -1216,6 +1251,7 @@ def run_processing(
         "pkl_root": str(pkl_root),
         "output_root": str(output_root),
         "workers": workers,
+        "mp_start_method": mp_start_method,
         "limit": limit,
         "shard_index": shard_index,
         "shard_count": shard_count,
@@ -1249,6 +1285,7 @@ def _append_workflow_log(summary: Mapping[str, object], *, task_name: str) -> No
         "Outcome:\n"
         f"- Output root: {summary.get('output_root')}.\n"
         f"- Workers: {summary.get('workers')}.\n"
+        f"- Multiprocessing start method: {summary.get('mp_start_method')}.\n"
         f"- Limit: {summary.get('limit')}.\n"
         f"- Shard: {summary.get('shard_index')} / {summary.get('shard_count')}.\n"
         f"- Save plots: {summary.get('save_plots')}.\n"
@@ -1287,6 +1324,15 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--only-incomplete", action="store_true")
     parser.add_argument("--scan-incomplete-only", action="store_true")
     parser.add_argument("--no-plots", action="store_true")
+    parser.add_argument(
+        "--mp-start-method",
+        default="auto",
+        choices=["auto", "fork", "spawn", "forkserver"],
+        help=(
+            "Multiprocessing start method. Use fork on Linux HPC so worker processes "
+            "inherit the parent pkl cache instead of reloading large pkl files."
+        ),
+    )
     parser.add_argument("--log-workflow", action="store_true")
     return parser
 
@@ -1378,6 +1424,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             min_observation=args.min_observation,
             max_workers=args.max_workers,
             exclude_csv_path=args.exclude_csv,
+            mp_start_method=args.mp_start_method,
         )
         print(json.dumps(benchmark, indent=2, ensure_ascii=False, default=_json_default))
         return
@@ -1406,6 +1453,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         dataset_filter=args.dataset_filter,
         only_incomplete=args.only_incomplete,
         exclude_csv_path=args.exclude_csv,
+        mp_start_method=args.mp_start_method,
     )
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")
