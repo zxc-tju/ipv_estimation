@@ -564,3 +564,9 @@ Status: completed.
 Key outcomes: removed temporary tmp/ directory, kept extracted result artifacts outside git tracking, and removed obsolete handoff documents plus superseded subsets_for_yiru Slurm scripts from the tracked workspace. The remaining active yiru continuation script is submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.
 Verification: git status was reviewed before cleanup; tmp/ was resolved inside the repository before recursive deletion.
 Artifacts: cleaned git working tree changes prepared for commit; no temporary tmp/ directory remains.
+
+2026-06-06 20:52:26 +08:00 - Provided steps to collect SSH connection details from another Windows machine.
+Status: completed.
+Key outcomes: explained how to obtain username, IP/hostname, SSH port/service status, firewall status, and optional SSH key setup steps from the target Windows PC.
+Verification: not applicable; advisory response only.
+Artifacts: none.
