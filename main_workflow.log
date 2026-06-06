@@ -554,3 +554,13 @@ Status: completed.
 Key outcomes: added --exclude-csv support to process_subsets_for_yiru_ipv.py, filtering rows by folder + scenario_idx + key_agents + track_id while preserving original row indices for case output directories. Updated full-dataset Slurm array and merge scripts to default to interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv as the exclusion CSV, so this run computes only cases outside the completed subset. Updated HPC_FULL_DATASETS_NUPLAN_AGV_COMMANDS.md with the corrected local C:/Users/46936 path and exclusion-aware preflight/submission instructions.
 Verification: added and first observed failing tests for exclude_csv_rows, exclusion-aware run_processing, and exclusion-aware merge shard suffixes; after implementation python -m pytest tests/test_process_subsets_for_yiru_ipv.py passed 19 tests; python -m py_compile passed for process_subsets_for_yiru_ipv.py, tools/merge_subsets_for_yiru_ipv_archives.py, and tools/update_ipv_distribution_report.py; Git Bash bash -n passed for submit_full_datasets_nuplan_agv_ipv_array.sh and submit_full_datasets_nuplan_agv_ipv_merge.sh; exclusion-aware preflight completed with csv_rows=10335, excluded_rows=5000, selected_rows=5335, matched_rows=5335, unmatched_rows=0, remaining dataset counts nuplan_train=5325 and av2_motion_forecasting=10.
 Artifacts: process_subsets_for_yiru_ipv.py; tests/test_process_subsets_for_yiru_ipv.py; submit_full_datasets_nuplan_agv_ipv_array.sh; submit_full_datasets_nuplan_agv_ipv_merge.sh; HPC_FULL_DATASETS_NUPLAN_AGV_COMMANDS.md.
+2026-06-06 20:50:39 +08:00 - Answered SSH connectivity question for another Windows machine.
+Status: completed.
+Key outcomes: clarified that SSH access is possible if the remote Windows PC has OpenSSH Server enabled, is reachable on the network/VPN, and authentication is configured via an SSH key or safe interactive method. No connection attempt was made because host/user/auth details were not provided.
+Verification: not applicable; advisory response only.
+Artifacts: none.
+2026-06-06 09:20 - Cleaned workspace changes after local subsets_for_yiru result merge.
+Status: completed.
+Key outcomes: removed temporary tmp/ directory, kept extracted result artifacts outside git tracking, and removed obsolete handoff documents plus superseded subsets_for_yiru Slurm scripts from the tracked workspace. The remaining active yiru continuation script is submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.
+Verification: git status was reviewed before cleanup; tmp/ was resolved inside the repository before recursive deletion.
+Artifacts: cleaned git working tree changes prepared for commit; no temporary tmp/ directory remains.
