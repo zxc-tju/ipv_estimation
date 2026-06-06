@@ -253,6 +253,39 @@ def test_select_dataset_filter_preserves_only_requested_datasets():
     assert filtered["value"].tolist() == [1, 3]
 
 
+def test_exclude_csv_rows_removes_matching_keys_and_preserves_indices(tmp_path):
+    source = pd.DataFrame(
+        {
+            "folder": ["full_a", "full_b", "full_c"],
+            "scenario_idx": [1, 2, 3],
+            "track_id": ["ta", "tb", "tc"],
+            "key_agents": ["ka1;ka2", "kb1;kb2", "kc1;kc2"],
+            "value": [10, 20, 30],
+        },
+        index=[10, 11, 12],
+    )
+    exclude_csv = tmp_path / "selected_interactive_segments_equalized.csv"
+    pd.DataFrame(
+        {
+            "folder": ["full_b", "missing"],
+            "scenario_idx": [2, 99],
+            "track_id": ["tb", "tm"],
+            "key_agents": ["kb1;kb2", "km1;km2"],
+        }
+    ).to_csv(exclude_csv, index=False)
+
+    filtered, summary = mod.exclude_csv_rows(source, exclude_csv)
+
+    assert filtered.index.tolist() == [10, 12]
+    assert filtered["value"].tolist() == [10, 30]
+    assert summary == {
+        "exclude_csv_path": str(exclude_csv),
+        "exclude_csv_rows": 2,
+        "exclude_csv_unique_keys": 2,
+        "excluded_rows": 1,
+    }
+
+
 def test_merge_shard_outputs_combines_csv_columns_by_key(tmp_path):
     source = pd.DataFrame(
         {
@@ -333,6 +366,42 @@ def test_merge_shard_outputs_can_patch_existing_base_csv(tmp_path):
     assert summary["merged_rows"] == 1
     assert summary["missing_rows"] == 1
     assert merged["ipv_key_agent_1_mean"].tolist() == ["new-nuplan", "keep-waymo"]
+
+
+def test_merge_shard_outputs_uses_exclude_suffix_and_reports_excluded_rows(tmp_path):
+    source = pd.DataFrame(
+        {
+            "folder": ["a", "b", "c"],
+            "scenario_idx": [1, 2, 3],
+            "track_id": ["ta", "tb", "tc"],
+            "key_agents": ["ka1;ka2", "kb1;kb2", "kc1;kc2"],
+        }
+    )
+    csv_path = tmp_path / "selected_interactive_segments_nuplan_agv_full.csv"
+    source.to_csv(csv_path, index=False)
+    exclude_csv = tmp_path / "selected_interactive_segments_equalized.csv"
+    source.iloc[[1]].to_csv(exclude_csv, index=False)
+
+    patch = source.iloc[[0, 2]].copy()
+    for column in mod.CSV_OUTPUT_COLUMNS:
+        patch[column] = ""
+    patch["ipv_result_status"] = "ok"
+
+    output_root = tmp_path / "out"
+    output_root.mkdir()
+    suffix = mod.exclude_csv_suffix(exclude_csv)
+    patch.to_csv(
+        output_root / f"selected_interactive_segments_equalized_with_ipv{suffix}_shard_00_of_01.csv",
+        index=False,
+    )
+
+    summary = mod.merge_shard_outputs(csv_path, output_root, shard_count=1, exclude_csv_path=exclude_csv)
+    merged = pd.read_csv(summary["csv_output"])
+
+    assert summary["merged_rows"] == 2
+    assert summary["excluded_rows"] == 1
+    assert summary["missing_rows"] == 1
+    assert merged["ipv_result_status"].fillna("").tolist() == ["ok", "", "ok"]
 
 
 def test_run_processing_propagates_save_plots_flag(tmp_path, monkeypatch):
@@ -440,3 +509,50 @@ def test_run_processing_only_incomplete_dispatches_missing_rows(tmp_path, monkey
     assert processed_rows == [1]
     assert summary["incomplete_total"] == 1
     assert summary["selected_rows"] == 1
+
+
+def test_run_processing_exclude_csv_skips_existing_subset_rows(tmp_path, monkeypatch):
+    events = {
+        "seg_0": _event(folder="f0", scenario_idx=0, key_agents="a;b", track_ids=["a", "b"]),
+        "seg_1": _event(folder="f1", scenario_idx=1, key_agents="a;b", track_ids=["a", "b"]),
+        "seg_2": _event(folder="f2", scenario_idx=2, key_agents="a;b", track_ids=["a", "b"]),
+    }
+    pkl_path = tmp_path / "events.pkl"
+    with pkl_path.open("wb") as f:
+        pickle.dump(events, f)
+    rows = pd.DataFrame(
+        {
+            "dataset": ["nuplan_train", "nuplan_train", "av2_motion_forecasting"],
+            "folder": ["f0", "f1", "f2"],
+            "scenario_idx": [0, 1, 2],
+            "track_id": ["a;b", "a;b", "a;b"],
+            "key_agents": ["a;b", "a;b", "a;b"],
+            "two/multi": ["two", "two", "two"],
+        }
+    )
+    csv_path = tmp_path / "selected_interactive_segments_nuplan_agv_full.csv"
+    rows.to_csv(csv_path, index=False)
+    exclude_csv = tmp_path / "selected_interactive_segments_equalized.csv"
+    rows.iloc[[1]].to_csv(exclude_csv, index=False)
+
+    processed_rows = []
+
+    def fake_process_case(task):
+        processed_rows.append(task.row_index)
+        return {"ipv_result_status": "ok"}
+
+    monkeypatch.setattr(mod, "process_case", fake_process_case)
+
+    summary = mod.run_processing(
+        csv_path,
+        tmp_path,
+        tmp_path / "out",
+        workers=1,
+        history_window=10,
+        min_observation=4,
+        exclude_csv_path=exclude_csv,
+    )
+
+    assert processed_rows == [0, 2]
+    assert summary["excluded_rows"] == 1
+    assert summary["selected_rows"] == 2

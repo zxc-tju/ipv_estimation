@@ -383,11 +383,55 @@ def select_dataset_rows(df: pd.DataFrame, dataset_filter: Optional[Sequence[str]
     return df[df["dataset"].astype(str).isin(requested)].copy()
 
 
+def _csv_match_key(row: Mapping[str, object]) -> Tuple[str, str, str, str]:
+    return tuple(str(row[column]) for column in CSV_KEY_COLUMNS)
+
+
+def _require_csv_key_columns(df: pd.DataFrame, label: str) -> None:
+    missing = [column for column in CSV_KEY_COLUMNS if column not in df.columns]
+    if missing:
+        raise ValueError(f"{label} is missing required key columns: {missing}")
+
+
+def _csv_key_series(df: pd.DataFrame) -> pd.Series:
+    _require_csv_key_columns(df, "CSV data")
+    return df[CSV_KEY_COLUMNS].astype(str).apply(lambda row: tuple(row), axis=1)
+
+
+def exclude_csv_rows(df: pd.DataFrame, exclude_csv_path: Optional[Path]) -> Tuple[pd.DataFrame, Dict[str, object]]:
+    """Remove rows whose CSV key appears in another CSV, preserving original indices."""
+    if exclude_csv_path is None:
+        return df, {
+            "exclude_csv_path": None,
+            "exclude_csv_rows": 0,
+            "exclude_csv_unique_keys": 0,
+            "excluded_rows": 0,
+        }
+    exclude_df = pd.read_csv(exclude_csv_path)
+    _require_csv_key_columns(df, "source CSV")
+    _require_csv_key_columns(exclude_df, f"exclude CSV {exclude_csv_path}")
+    exclude_keys = set(_csv_key_series(exclude_df))
+    excluded_mask = _csv_key_series(df).isin(exclude_keys)
+    summary = {
+        "exclude_csv_path": str(exclude_csv_path),
+        "exclude_csv_rows": int(len(exclude_df)),
+        "exclude_csv_unique_keys": int(len(exclude_keys)),
+        "excluded_rows": int(excluded_mask.sum()),
+    }
+    return df.loc[~excluded_mask].copy(), summary
+
+
 def dataset_filter_suffix(dataset_filter: Optional[Sequence[str]]) -> str:
     if not dataset_filter:
         return ""
     safe_names = "_".join(_safe_name(dataset, max_len=60) for dataset in dataset_filter)
     return f"_dataset_{safe_names}"
+
+
+def exclude_csv_suffix(exclude_csv_path: Optional[Path]) -> str:
+    if exclude_csv_path is None:
+        return ""
+    return f"_excluding_{_safe_name(Path(exclude_csv_path).stem, max_len=80)}"
 
 
 def incomplete_suffix(only_incomplete: bool) -> str:
@@ -399,10 +443,6 @@ def shard_suffix(shard_index: int, shard_count: int) -> str:
     return f"_shard_{shard_index:0{width}d}_of_{shard_count:0{width}d}"
 
 
-def _csv_match_key(row: Mapping[str, object]) -> Tuple[str, str, str, str]:
-    return tuple(str(row[column]) for column in CSV_KEY_COLUMNS)
-
-
 def merge_shard_outputs(
     csv_path: Path,
     output_root: Path,
@@ -411,11 +451,13 @@ def merge_shard_outputs(
     dataset_filter: Optional[Sequence[str]] = None,
     base_csv_path: Optional[Path] = None,
     only_incomplete: bool = False,
+    exclude_csv_path: Optional[Path] = None,
 ) -> Dict[str, object]:
     """Merge per-shard CSV outputs into the final full-size CSV copy."""
     if shard_count < 1:
         raise ValueError("shard_count must be >= 1")
     source_df = pd.read_csv(csv_path)
+    _, exclude_summary = exclude_csv_rows(source_df, exclude_csv_path)
     if base_csv_path is not None:
         merged = pd.read_csv(base_csv_path)
         for column in CSV_OUTPUT_COLUMNS:
@@ -437,7 +479,7 @@ def merge_shard_outputs(
     seen_keys: set[Tuple[str, str, str, str]] = set()
     duplicate_shard_keys: List[Tuple[str, str, str, str]] = []
     unmatched_shard_keys: List[Tuple[str, str, str, str]] = []
-    suffix = incomplete_suffix(only_incomplete) + dataset_filter_suffix(dataset_filter)
+    suffix = incomplete_suffix(only_incomplete) + dataset_filter_suffix(dataset_filter) + exclude_csv_suffix(exclude_csv_path)
     for shard_index in range(shard_count):
         shard_path = (
             output_root
@@ -482,6 +524,7 @@ def merge_shard_outputs(
         "dataset_filter": list(dataset_filter or []),
         "base_csv_path": str(base_csv_path) if base_csv_path else None,
         "only_incomplete": only_incomplete,
+        **exclude_summary,
         "source_rows": int(len(source_df)),
         "merged_rows": int(len(seen_keys)),
         "missing_rows": int(missing_rows),
@@ -930,8 +973,16 @@ def _summarize_reference_coverage(
     }
 
 
-def run_preflight(csv_path: Path, pkl_root: Path, output_root: Path) -> Dict[str, object]:
+def run_preflight(
+    csv_path: Path,
+    pkl_root: Path,
+    output_root: Path,
+    *,
+    exclude_csv_path: Optional[Path] = None,
+) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
+    source_rows = len(df)
+    df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
     event_index = build_event_index(pkl_root)
     matched = 0
     unmatched_examples: List[Dict[str, object]] = []
@@ -946,7 +997,9 @@ def run_preflight(csv_path: Path, pkl_root: Path, output_root: Path) -> Dict[str
         "csv_path": str(csv_path),
         "pkl_root": str(pkl_root),
         "output_root": str(output_root),
-        "csv_rows": int(len(df)),
+        "csv_rows": int(source_rows),
+        "selected_rows": int(len(df)),
+        **exclude_summary,
         "pkl_files": [path.relative_to(pkl_root).as_posix() for path in sorted(Path(pkl_root).rglob("*.pkl"))],
         "pkl_events": int(len(event_index)),
         "matched_rows": int(matched),
@@ -1001,8 +1054,10 @@ def run_worker_benchmark(
     history_window: int,
     min_observation: int,
     max_workers: int,
+    exclude_csv_path: Optional[Path] = None,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
+    df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
     event_index = build_event_index(pkl_root)
     sample_indices = _benchmark_sample_indices(df)
     sample_df = df.loc[sample_indices]
@@ -1045,6 +1100,7 @@ def run_worker_benchmark(
         "candidate_workers": _worker_candidates(max_workers),
         "records": records,
         "recommended_workers": recommended,
+        **exclude_summary,
     }
     benchmark_root.mkdir(parents=True, exist_ok=True)
     (benchmark_root / "worker_benchmark.json").write_text(
@@ -1073,6 +1129,7 @@ def _resolve_workers(
     history_window: int,
     min_observation: int,
     max_workers: int,
+    exclude_csv_path: Optional[Path] = None,
 ) -> int:
     if workers_arg != "auto":
         return max(1, min(int(workers_arg), max_workers))
@@ -1086,6 +1143,7 @@ def _resolve_workers(
         history_window=history_window,
         min_observation=min_observation,
         max_workers=max_workers,
+        exclude_csv_path=exclude_csv_path,
     )
     return max(1, min(int(benchmark["recommended_workers"]), max_workers))
 
@@ -1104,10 +1162,13 @@ def run_processing(
     save_plots: bool = True,
     dataset_filter: Optional[Sequence[str]] = None,
     only_incomplete: bool = False,
+    exclude_csv_path: Optional[Path] = None,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     source_rows = len(df)
     df = select_dataset_rows(df, dataset_filter)
+    dataset_selected_rows = len(df)
+    df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
     event_index = build_event_index(pkl_root)
     completion_status_counts: Dict[str, int] = {}
     incomplete_total: Optional[int] = None
@@ -1141,6 +1202,7 @@ def run_processing(
     suffix = "_limit" if limit is not None else ""
     suffix += incomplete_suffix(only_incomplete)
     suffix += dataset_filter_suffix(dataset_filter)
+    suffix += exclude_csv_suffix(exclude_csv_path)
     if shard_index is not None and shard_count is not None:
         suffix += shard_suffix(shard_index, shard_count)
     csv_output = output_root / f"selected_interactive_segments_equalized_with_ipv{suffix}.csv"
@@ -1160,9 +1222,11 @@ def run_processing(
         "save_plots": save_plots,
         "dataset_filter": list(dataset_filter or []),
         "only_incomplete": only_incomplete,
+        **exclude_summary,
         "incomplete_total": incomplete_total,
         "completion_status_counts": completion_status_counts,
         "source_rows": int(source_rows),
+        "dataset_selected_rows": int(dataset_selected_rows),
         "selected_rows": int(len(df)),
         "processed_task_count": len(tasks),
         "result_count": len(results),
@@ -1214,6 +1278,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--merge-shards", action="store_true")
     parser.add_argument("--merge-base-csv", type=Path, default=None)
     parser.add_argument("--dataset-filter", action="append", default=None)
+    parser.add_argument(
+        "--exclude-csv",
+        type=Path,
+        default=None,
+        help="Skip rows whose folder/scenario/key_agents/track_id key appears in this CSV.",
+    )
     parser.add_argument("--only-incomplete", action="store_true")
     parser.add_argument("--scan-incomplete-only", action="store_true")
     parser.add_argument("--no-plots", action="store_true")
@@ -1237,10 +1307,12 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         parser.error("--shard-index and --shard-count must be provided together")
 
     if not args.skip_preflight:
-        preflight = run_preflight(args.csv, args.pkl_root, args.output_root)
+        preflight = run_preflight(args.csv, args.pkl_root, args.output_root, exclude_csv_path=args.exclude_csv)
         LOGGER.info(
-            "Preflight: csv_rows=%s pkl_events=%s matched=%s unmatched=%s",
+            "Preflight: csv_rows=%s selected=%s excluded=%s pkl_events=%s matched=%s unmatched=%s",
             preflight["csv_rows"],
+            preflight["selected_rows"],
+            preflight["excluded_rows"],
             preflight["pkl_events"],
             preflight["matched_rows"],
             preflight["unmatched_rows"],
@@ -1259,6 +1331,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             dataset_filter=args.dataset_filter,
             base_csv_path=args.merge_base_csv,
             only_incomplete=args.only_incomplete,
+            exclude_csv_path=args.exclude_csv,
         )
         if args.log_workflow:
             _append_workflow_log(summary, task_name="Merge subsets_for_yiru key-agent IPV shards")
@@ -1267,9 +1340,10 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
     if args.scan_incomplete_only:
         df = select_dataset_rows(pd.read_csv(args.csv), args.dataset_filter)
+        df, exclude_summary = exclude_csv_rows(df, args.exclude_csv)
         event_index = build_event_index(args.pkl_root)
         completion_df = scan_case_completion(df, event_index, output_root=args.output_root)
-        suffix = incomplete_suffix(True) + dataset_filter_suffix(args.dataset_filter)
+        suffix = incomplete_suffix(True) + dataset_filter_suffix(args.dataset_filter) + exclude_csv_suffix(args.exclude_csv)
         scan_csv = args.output_root / f"case_completion_scan{suffix}.csv"
         scan_json = args.output_root / f"case_completion_scan{suffix}.json"
         args.output_root.mkdir(parents=True, exist_ok=True)
@@ -1278,6 +1352,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             "csv_path": str(args.csv),
             "output_root": str(args.output_root),
             "dataset_filter": list(args.dataset_filter or []),
+            **exclude_summary,
             "source_rows": int(len(df)),
             "complete_rows": int(completion_df["complete"].astype(bool).sum()),
             "incomplete_rows": int((~completion_df["complete"].astype(bool)).sum()),
@@ -1302,6 +1377,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             history_window=args.history_window,
             min_observation=args.min_observation,
             max_workers=args.max_workers,
+            exclude_csv_path=args.exclude_csv,
         )
         print(json.dumps(benchmark, indent=2, ensure_ascii=False, default=_json_default))
         return
@@ -1314,6 +1390,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         history_window=args.history_window,
         min_observation=args.min_observation,
         max_workers=args.max_workers,
+        exclude_csv_path=args.exclude_csv,
     )
     summary = run_processing(
         args.csv,
@@ -1328,6 +1405,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         save_plots=not args.no_plots,
         dataset_filter=args.dataset_filter,
         only_incomplete=args.only_incomplete,
+        exclude_csv_path=args.exclude_csv,
     )
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")

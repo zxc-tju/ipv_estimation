@@ -3,10 +3,12 @@
 这批数据位于本地：
 
 ```text
-C:/Users/xiaocongzhao/OneDrive/Desktop/Projects/1_Codes/2_sociality_estimation/interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all
+C:/Users/46936/OneDrive/Desktop/Projects/1_Codes/2_sociality_estimation/interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all
 ```
 
 CSV 共有 10335 行，当前本地预检结果是 `pkl_events=10335`、`matched_rows=10335`、`unmatched_rows=0`。其中 `nuplan_train=7825`、`av2_motion_forecasting=2510`。现有 `process_subsets_for_yiru_ipv.py` 已经对 `nuplan_train` 使用下采样因子 2，也就是 20Hz -> 10Hz；Argoverse/AV2 保持原采样。
+
+本次 full dataset 计算默认排除已经在 `interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv` 中出现过的 case。按 `folder + scenario_idx + key_agents + track_id` 匹配，当前重叠 5000 行，排除后实际需要计算 5335 行：`nuplan_train=5325`、`av2_motion_forecasting=10`。子集结果后续再统一汇总进 full 结果。
 
 ## 1. 本地上传
 
@@ -15,7 +17,7 @@ CSV 共有 10335 行，当前本地预检结果是 `pkl_events=10335`、`matched
 Git Bash 路径：
 
 ```bash
-LOCAL_REPO="/c/Users/xiaocongzhao/OneDrive/Desktop/Projects/1_Codes/2_sociality_estimation"
+LOCAL_REPO="/c/Users/46936/OneDrive/Desktop/Projects/1_Codes/2_sociality_estimation"
 REMOTE_HOST="u25310231@logini.tongji.edu.cn"
 REMOTE_REPO="/share/home/u25310231/ZXC/ipv_estimation"
 
@@ -33,7 +35,7 @@ rsync -avz --progress -e "ssh -p 10022" \
 如果用 WSL，把 `LOCAL_REPO` 改成：
 
 ```bash
-LOCAL_REPO="/mnt/c/Users/xiaocongzhao/OneDrive/Desktop/Projects/1_Codes/2_sociality_estimation"
+LOCAL_REPO="/mnt/c/Users/46936/OneDrive/Desktop/Projects/1_Codes/2_sociality_estimation"
 ```
 
 ## 2. HPC 上预检
@@ -48,6 +50,7 @@ python process_subsets_for_yiru_ipv.py \
   --csv interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl/selected_interactive_segments_nuplan_agv_full.csv \
   --pkl-root interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl \
   --output-root interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all \
+  --exclude-csv interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv \
   --preflight-only
 ```
 
@@ -55,14 +58,16 @@ python process_subsets_for_yiru_ipv.py \
 
 ```text
 csv_rows=10335
+selected_rows=5335
+excluded_rows=5000
 pkl_events=10335
-matched_rows=10335
+matched_rows=5335
 unmatched_rows=0
 ```
 
 ## 3. 提交数组作业和合并作业
 
-默认使用 12 个数组 shard，每个 shard 1 个节点、96 个 workers，不保存 plot。
+默认使用 12 个数组 shard，每个 shard 1 个节点、96 个 workers，不保存 plot。脚本已内置 `--exclude-csv interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv`，所以只计算子集之外的 case。
 
 ```bash
 ARRAY_JOB=$(sbatch --parsable submit_full_datasets_nuplan_agv_ipv_array.sh | cut -d';' -f1)
