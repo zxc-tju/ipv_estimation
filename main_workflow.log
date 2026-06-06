@@ -587,3 +587,24 @@ Status: completed.
 Key outcomes: updated process_subsets_for_yiru_ipv.py to support --mp-start-method and prefer fork on Linux so worker processes inherit the parent pkl cache instead of reloading large pkl files. Updated submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh to export OMP/OPENBLAS/MKL/NUMEXPR/SCIPY thread counts as 1, use PYTHONUNBUFFERED=1, print runtime diagnostics, and explicitly pass --mp-start-method fork for the four-node nuPlan continuation run.
 Verification: python -m py_compile process_subsets_for_yiru_ipv.py tools/merge_subsets_for_yiru_ipv_archives.py tools/update_ipv_distribution_report.py passed; process_subsets_for_yiru_ipv.py --help exposes --mp-start-method; local auto start-method resolution falls back cleanly on Windows and fork reports unavailable as expected.
 Artifacts: process_subsets_for_yiru_ipv.py; submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.
+2026-06-06 21:20 - Provided concrete HPC Slurm inspection commands for nuPlan continuation job 1622468.
+Status: completed.
+Key outcomes: converted generic Slurm diagnostics to job-specific commands for checking array state, logs, CPU/process usage, and optional cancellation/re-submission after pulling the fork/threading performance fix.
+Verification: advisory response only; no HPC connection attempted from local workspace.
+Artifacts: none.
+2026-06-06 21:25 - Interpreted HPC Slurm diagnostics for nuPlan continuation job 1622468.
+Status: completed.
+Key outcomes: confirmed from user-provided grep output that the four-node job is using 96 workers, BLAS/SciPy thread limits of 1, and fork start method. Identified that missing "Running ... IPV tasks" output is expected in .out because Python logging/tqdm writes to .err, and provided corrected .err checks plus array-element srun alternatives.
+Verification: based on user-provided Slurm output; no direct HPC connection attempted.
+Artifacts: none.
+2026-06-06 21:32 - Diagnosed nuPlan continuation job 1622468 underutilization from user-provided stderr.
+Status: completed.
+Key outcomes: identified that each Slurm array task launched only 7-8 IPV tasks, so ProcessPoolExecutor correctly reduced workers to task count and the four-node job was only processing about 29 incomplete cases. Flagged a mismatch between script scan results and manual folder counts, and provided commands to inspect processing summaries, completion scan status, and output-root/path consistency on HPC.
+Verification: based on user-provided stderr showing "Running 8 IPV tasks with 8 workers" and three shards with 7 tasks each; no direct HPC connection attempted.
+Artifacts: none.
+
+2026-06-06 23:51:49 +08:00 - Adjusted full_datasets/nuplan_agv_all HPC continuation to four nodes.
+Status: completed.
+Key outcomes: changed submit_full_datasets_nuplan_agv_ipv_array.sh to use a four-task Slurm array (--array=0-3), with one node and 96 CPUs per task, SHARD_COUNT default 4, and ONLY_INCOMPLETE default 1 so reruns skip case artifacts that are already complete. Updated submit_full_datasets_nuplan_agv_ipv_merge.sh to default to SHARD_COUNT=4 for later matching shard merges. Updated HPC_FULL_DATASETS_NUPLAN_AGV_COMMANDS.md so the immediate HPC workflow is scan incomplete cases, submit the four-node continuation job, and defer final subset/full result aggregation.
+Verification: added a pytest assertion for the full-dataset HPC script defaults and first observed it fail on the old 12-shard configuration; after implementation python -m pytest tests/test_process_subsets_for_yiru_ipv.py passed 20 tests; python -m py_compile passed for process_subsets_for_yiru_ipv.py, tools/merge_subsets_for_yiru_ipv_archives.py, and tools/update_ipv_distribution_report.py; Git Bash bash -n passed for submit_full_datasets_nuplan_agv_ipv_array.sh and submit_full_datasets_nuplan_agv_ipv_merge.sh; exclusion-aware preflight still reports csv_rows=10335, excluded_rows=5000, selected_rows=5335, matched_rows=5335, unmatched_rows=0.
+Artifacts: submit_full_datasets_nuplan_agv_ipv_array.sh; submit_full_datasets_nuplan_agv_ipv_merge.sh; HPC_FULL_DATASETS_NUPLAN_AGV_COMMANDS.md; tests/test_process_subsets_for_yiru_ipv.py; main_workflow.log.

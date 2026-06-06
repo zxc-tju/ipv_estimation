@@ -65,41 +65,44 @@ matched_rows=5335
 unmatched_rows=0
 ```
 
-## 3. 提交数组作业和合并作业
+## 3. 检查已完成和未完成 case
 
-默认使用 12 个数组 shard，每个 shard 1 个节点、96 个 workers，不保存 plot。脚本已内置 `--exclude-csv interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv`，所以只计算子集之外的 case。
+如果之前任务被终止，先扫描 case artifacts。这个命令不会计算，只统计已经完成和还没完成的 case：
 
 ```bash
-ARRAY_JOB=$(sbatch --parsable submit_full_datasets_nuplan_agv_ipv_array.sh | cut -d';' -f1)
-SHARD_COUNT=12 sbatch --dependency=afterok:${ARRAY_JOB} submit_full_datasets_nuplan_agv_ipv_merge.sh
+python process_subsets_for_yiru_ipv.py \
+  --csv interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl/selected_interactive_segments_nuplan_agv_full.csv \
+  --pkl-root interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl \
+  --output-root interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all \
+  --exclude-csv interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv \
+  --scan-incomplete-only
+```
+
+重点看输出里的 `incomplete_rows`。只要还有未完成 case，就可以重复提交下面的 4 节点 continuation 作业。
+
+## 4. 提交 4 节点计算作业
+
+默认使用 4 个数组 shard，也就是最多 4 个节点；每个 shard 1 个节点、96 个 workers，不保存 plot。脚本已内置：
+
+- `--exclude-csv interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv`
+- `--only-incomplete`
+
+所以它会跳过子集内已经完成的 case，也会跳过 full-dataset 输出目录里已经有完整 artifacts 的 case。
+
+```bash
+SHARD_COUNT=4 WORKERS=96 sbatch submit_full_datasets_nuplan_agv_ipv_array.sh
 squeue -u u25310231
 ```
 
-如果想手动合并：
+如果作业再次因为时间或资源限制中断，重新执行同一条 `sbatch` 命令即可续跑。它会重新扫描并只处理还没完成的 case。
+
+## 5. 后续汇总
+
+本轮先只计算子集以外的 case。等所有 `incomplete_rows` 变成 0 后，再做 full dataset 结果汇总，并把 `subsets_for_yiru` 已完成结果合并进来。
+
+临时检查 case artifacts：
 
 ```bash
-SHARD_COUNT=12 sbatch submit_full_datasets_nuplan_agv_ipv_merge.sh
-```
-
-合并后的主要结果：
-
-```text
-interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/selected_interactive_segments_equalized_with_ipv.csv
-interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/selected_interactive_segments_nuplan_agv_full_with_ipv.csv
-```
-
-第二个是 merge 脚本额外复制出的友好命名版本。
-
-## 4. 超时后的断点续跑
-
-如果部分 case 因超时没有完成，可以只处理 incomplete 行：
-
-```bash
-ONLY_INCOMPLETE=1 SHARD_COUNT=12 sbatch submit_full_datasets_nuplan_agv_ipv_array.sh
-```
-
-续跑完成后，用现有合并 CSV 作为 base 进行 patch merge：
-
-```bash
-ONLY_INCOMPLETE=1 SHARD_COUNT=12 sbatch submit_full_datasets_nuplan_agv_ipv_merge.sh
+find interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/cases -name metadata.json | wc -l
+find interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/cases -name ipv_results.xlsx | wc -l
 ```

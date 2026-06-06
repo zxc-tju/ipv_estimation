@@ -24,15 +24,17 @@ OUTPUT_ROOT="interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_ag
 EXCLUDE_CSV="interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv"
 FINAL_CSV="${OUTPUT_ROOT}/selected_interactive_segments_nuplan_agv_full_with_ipv.csv"
 
-SHARD_COUNT=${SHARD_COUNT:-12}
-ONLY_INCOMPLETE=${ONLY_INCOMPLETE:-0}
+SHARD_COUNT=${SHARD_COUNT:-4}
+ONLY_INCOMPLETE=${ONLY_INCOMPLETE:-1}
 BASE_CSV=${BASE_CSV:-}
 
 MERGE_ARGS=()
 MODE="all shard rows"
 if [ "$ONLY_INCOMPLETE" = "1" ]; then
     MODE="incomplete shard rows"
-    BASE_CSV=${BASE_CSV:-"${OUTPUT_ROOT}/selected_interactive_segments_equalized_with_ipv.csv"}
+    if [ -z "$BASE_CSV" ] && [ -f "${OUTPUT_ROOT}/selected_interactive_segments_equalized_with_ipv.csv" ]; then
+        BASE_CSV="${OUTPUT_ROOT}/selected_interactive_segments_equalized_with_ipv.csv"
+    fi
     MERGE_ARGS+=(--only-incomplete)
 fi
 
