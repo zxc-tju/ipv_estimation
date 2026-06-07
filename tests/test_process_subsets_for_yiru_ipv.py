@@ -443,6 +443,117 @@ def test_run_processing_propagates_save_plots_flag(tmp_path, monkeypatch):
     assert seen_flags == [False]
 
 
+def test_clip_reference_to_motion_limits_points_near_observed_path():
+    reference = np.column_stack((np.arange(1000, dtype=float), np.zeros(1000)))
+    motion = np.column_stack(
+        (
+            np.linspace(450, 460, 6),
+            np.zeros(6),
+            np.ones(6),
+            np.zeros(6),
+            np.zeros(6),
+        )
+    )
+
+    clipped, clipped_flag = mod.clip_reference_to_motion(
+        reference,
+        [motion],
+        margin_m=5.0,
+        max_points=12,
+    )
+
+    assert clipped_flag is True
+    assert 2 <= len(clipped) <= 12
+    assert clipped[:, 0].min() >= 445
+    assert clipped[:, 0].max() <= 465
+
+
+def test_run_processing_propagates_reference_clip_options(tmp_path, monkeypatch):
+    event = _event(folder="demo_folder", scenario_idx=42, key_agents="a;b", track_ids=["a", "b"])
+    pkl_path = tmp_path / "events.pkl"
+    with pkl_path.open("wb") as f:
+        pickle.dump({"segment_1": event}, f)
+    csv_path = tmp_path / "selected_interactive_segments_equalized.csv"
+    pd.DataFrame(
+        {
+            "dataset": ["demo"],
+            "folder": ["demo_folder"],
+            "scenario_idx": [42],
+            "track_id": ["a;b"],
+            "key_agents": ["a;b"],
+            "two/multi": ["two"],
+        }
+    ).to_csv(csv_path, index=False)
+
+    seen_options = []
+
+    def fake_process_case(task):
+        seen_options.append(
+            (
+                task.reference_clip_margin_m,
+                task.reference_max_points,
+                task.reference_smooth_points,
+            )
+        )
+        return {"ipv_result_status": "ok"}
+
+    monkeypatch.setattr(mod, "process_case", fake_process_case)
+
+    summary = mod.run_processing(
+        csv_path,
+        tmp_path,
+        tmp_path / "out",
+        workers=1,
+        history_window=10,
+        min_observation=4,
+        reference_clip_margin_m=50.0,
+        reference_max_points=300,
+        reference_smooth_points=180,
+    )
+
+    assert seen_options == [(50.0, 300, 180)]
+    assert summary["reference_clip_margin_m"] == 50.0
+    assert summary["reference_max_points"] == 300
+    assert summary["reference_smooth_points"] == 180
+
+
+def test_run_tasks_routes_to_killable_timeout_runner_without_signal_timeout(tmp_path, monkeypatch):
+    task = mod.CaseTask(
+        row_index=0,
+        row={
+            "dataset": "nuplan_train",
+            "folder": "demo",
+            "scenario_idx": 1,
+            "track_id": "a;b",
+            "key_agents": "a;b",
+        },
+        csv_path=tmp_path / "selected_interactive_segments_equalized.csv",
+        pkl_root=tmp_path,
+        output_root=tmp_path / "out",
+        event_ref=mod.EventRef(tmp_path / "events.pkl", "seg_0"),
+        history_window=10,
+        min_observation=4,
+        case_timeout_seconds=30,
+    )
+    calls = []
+
+    def fake_killable_runner(tasks, workers):
+        calls.append((len(tasks), workers))
+        return {tasks[0].row_index: {"ipv_result_status": "ok"}}
+
+    def fake_process_case(_task):
+        raise AssertionError("process_case should be isolated in a killable child on Windows")
+
+    monkeypatch.setattr(mod, "_has_signal_timeout", lambda: False)
+    monkeypatch.setattr(mod, "_run_tasks_with_killable_timeout", fake_killable_runner)
+    monkeypatch.setattr(mod, "process_case", fake_process_case)
+
+    results = mod._run_tasks([task], workers=1)
+
+    assert calls == [(1, 1)]
+    assert results[0]["ipv_result_status"] == "ok"
+
+
 def test_inspect_case_completion_requires_metadata_table_and_current_downsample(tmp_path):
     row = {"dataset": "nuplan_train", "folder": "f", "scenario_idx": 1}
     case_dir = mod.case_output_dir(tmp_path, 0, row, "seg")

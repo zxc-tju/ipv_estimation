@@ -626,3 +626,37 @@ Status: completed.
 Key outcomes: added --case-timeout-seconds to process_subsets_for_yiru_ipv.py, writes per-case data/running_metadata.json before IPV estimation, logs row/scenario/step diagnostics at case start, records elapsed_seconds and timeout in success/failure metadata, and passes CASE_TIMEOUT_SECONDS from submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh with a default of 1800 seconds. This prevents pathological remaining cases from keeping the progress bar at 0/N indefinitely.
 Verification: python -m py_compile process_subsets_for_yiru_ipv.py tools/merge_subsets_for_yiru_ipv_archives.py tools/update_ipv_distribution_report.py passed; process_subsets_for_yiru_ipv.py --help exposes --case-timeout-seconds; git diff --check passed for touched files; python -m pytest tests/test_process_subsets_for_yiru_ipv.py passed 20 tests.
 Artifacts: process_subsets_for_yiru_ipv.py; submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.
+
+2026-06-07 21:05 - Merged local HPC nuPlan zip into subsets_for_yiru extracted cases and refreshed combined IPV CSV.
+Status: completed.
+Key outcomes: extracted nuplan_train_from_hpc_0607-1507.zip into interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/cases, increasing local nuPlan successful metadata/xlsx pairs from 1807 to 2471. Rebuilt selected_interactive_segments_equalized_with_ipv_combined.csv from extracted local cases with AV2=2500, Waymo=2500, nuPlan=2471, leaving 29 nuPlan missing cases. Wrote remaining-case and diagnostic CSV files for local follow-up; diagnostics show remaining cases have 31-86 downsampled steps and lane references up to 6967 points.
+Verification: combined CSV has 7500 rows with 7471 ok and 29 missing_case; completed-only CSV has 7471 rows; missing rows are all nuplan_train; nonmatching artifacts=0 and duplicate eligible artifacts=0 in _combined_ipv_analysis/summary.json.
+Artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/selected_interactive_segments_equalized_with_ipv_combined.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_combined_ipv_analysis/nuplan_train_remaining_missing_cases_0607-1507.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/_combined_ipv_analysis/nuplan_train_remaining_case_diagnostics_0607-1507.csv.
+
+2026-06-07 21:15 - Removed intermediate subsets_for_yiru IPV analysis files after local HPC zip merge.
+Status: completed.
+Key outcomes: deleted process-only analysis directories and scan/preflight files from interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru while preserving core artifacts: cases/, ipv_distribution_report/, nuplan_train_from_hpc_0607-1507.zip, selected_interactive_segments_equalized_with_ipv_combined.csv, and selected_interactive_segments_equalized_with_ipv_combined_completed_only.csv.
+Verification: confirmed _combined_ipv_analysis, _cases_zip_analysis, case_completion_scan_incomplete_dataset_nuplan_train.csv/json, and preflight_summary.json are absent; confirmed combined CSV still has 7500 rows and completed-only CSV has 7471 rows.
+Artifacts: cleaned interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru result directory.
+
+[2026-06-07 22:14:13] STATUS: COMPLETED | TASK: Run subsets_for_yiru key-agent IPV processing.
+Outcome:
+- Output root: C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\interhub_traj_lane\1_ipv_estimation_results\subsets_for_yiru.
+- Workers: 16.
+- Multiprocessing start method: auto.
+- Case timeout seconds: 1800.
+- Reference clip margin m: 80.0.
+- Reference max points: 300.
+- Reference smooth points: 200.
+- Limit: None.
+- Shard: None / None.
+- Save plots: False.
+- Status counts: {'ok': 27}.
+Artifacts:
+- C:\Users\xiaocongzhao\OneDrive\Desktop\Projects\1_Codes\2_sociality_estimation\interhub_traj_lane\1_ipv_estimation_results\subsets_for_yiru\selected_interactive_segments_equalized_with_ipv_incomplete_dataset_nuplan_train.csv
+
+2026-06-07 22:20 - Completed local Windows rerun for remaining subsets_for_yiru nuPlan IPV cases and rebuilt full combined CSV.
+Status: completed.
+Key outcomes: added reference clipping and configurable reference smoothing for IPV case processing, fixed Windows killable per-case timeout routing, installed missing local Shapely dependency, and ran the remaining nuPlan cases locally with 16 workers. A single-case probe with 200 smoothed reference points completed successfully; the full local rerun processed the remaining 27 nuPlan cases with status_counts={'ok': 27}. Rebuilt selected_interactive_segments_equalized_with_ipv_combined.csv and selected_interactive_segments_equalized_with_ipv_combined_completed_only.csv from local cases, both now containing 7500 ok rows across nuplan_train=2500, waymo_train=2500, and av2_motion_forecasting=2500. Refreshed ipv_distribution_report.html against the complete combined CSV.
+Verification: python -m pytest tests/test_agent_reference_cache.py tests/test_process_subsets_for_yiru_ipv.py passed 25 tests; python -m py_compile agent.py process_subsets_for_yiru_ipv.py tools/update_ipv_distribution_report.py passed; git diff --check passed for touched files; final artifact scan found source_rows=7500, combined_rows=7500, completed_only_rows=7500, combined_status_counts={'ok': 7500}, artifact_missing_count=0.
+Artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/cases; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/selected_interactive_segments_equalized_with_ipv_combined.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/selected_interactive_segments_equalized_with_ipv_combined_completed_only.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html.

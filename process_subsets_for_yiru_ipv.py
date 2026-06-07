@@ -9,6 +9,7 @@ import math
 import multiprocessing as mp
 import os
 import pickle
+import queue as queue_module
 import re
 import signal
 import time
@@ -91,6 +92,9 @@ class CaseTask:
     min_observation: int
     save_plots: bool = True
     case_timeout_seconds: int = 0
+    reference_clip_margin_m: float = 0.0
+    reference_max_points: int = 0
+    reference_smooth_points: int = 0
 
 
 class CaseTimeoutError(TimeoutError):
@@ -265,6 +269,78 @@ def build_vehicle_reference(event: Mapping[str, object], vehicle_id: str) -> Tup
     if observed is None:
         raise ValueError(f"No usable reference or observed trajectory for {vehicle_id!r}")
     return observed, "observed_trajectory_fallback"
+
+
+def _subsample_reference_points(reference: np.ndarray, max_points: int) -> np.ndarray:
+    if max_points <= 0 or len(reference) <= max_points:
+        return reference
+    indices = np.linspace(0, len(reference) - 1, int(max_points))
+    indices = np.unique(np.rint(indices).astype(int))
+    if len(indices) < 2:
+        indices = np.array([0, len(reference) - 1], dtype=int)
+    return reference[indices]
+
+
+def clip_reference_to_motion(
+    reference: np.ndarray,
+    motions: Sequence[np.ndarray],
+    *,
+    margin_m: float = 0.0,
+    max_points: int = 0,
+) -> Tuple[np.ndarray, bool]:
+    """Clip a reference polyline to observed motion bounds and optionally downsample it."""
+    ref = np.asarray(reference, dtype=float)
+    if ref.ndim != 2 or ref.shape[1] < 2 or len(ref) < 2:
+        return ref, False
+    ref = ref[:, :2]
+    original_len = len(ref)
+    clipped = ref
+
+    if margin_m > 0:
+        motion_points: List[np.ndarray] = []
+        for motion in motions:
+            arr = np.asarray(motion, dtype=float)
+            if arr.ndim == 2 and arr.shape[1] >= 2 and len(arr):
+                motion_points.append(arr[:, :2])
+        if motion_points:
+            observed = np.vstack(motion_points)
+            finite_mask = np.isfinite(observed).all(axis=1)
+            observed = observed[finite_mask]
+            if len(observed):
+                lower = observed.min(axis=0) - float(margin_m)
+                upper = observed.max(axis=0) + float(margin_m)
+                inside = np.all((ref >= lower) & (ref <= upper), axis=1)
+                if int(inside.sum()) >= 2:
+                    clipped = ref[inside]
+                else:
+                    diff = ref[:, None, :] - observed[None, :, :]
+                    min_distance_by_ref = np.sqrt(np.sum(diff * diff, axis=2)).min(axis=1)
+                    nearest_indices = np.flatnonzero(
+                        min_distance_by_ref <= min_distance_by_ref.min() + float(margin_m)
+                    )
+                    if len(nearest_indices) >= 2:
+                        clipped = ref[nearest_indices]
+
+    clipped = _subsample_reference_points(clipped, max_points)
+    return clipped, len(clipped) != original_len
+
+
+def prepare_reference_for_estimation(reference: np.ndarray, *, smooth_points: int = 0):
+    """Return a reference representation ready for repeated IPV objective evaluations."""
+    if int(smooth_points) <= 0:
+        return reference
+    from tools.utility import smooth_ployline
+
+    return smooth_ployline(reference, point_num=int(smooth_points))
+
+
+def estimation_reference_len(reference) -> Optional[int]:
+    """Return the number of xy samples used by an estimation reference."""
+    if isinstance(reference, tuple) and len(reference) == 2:
+        return int(len(reference[0]))
+    if reference is None:
+        return None
+    return int(len(reference))
 
 
 def _motion_arrays(vehicle: Mapping[str, object]) -> Tuple[np.ndarray, np.ndarray, np.ndarray, List[object]]:
@@ -804,6 +880,28 @@ def process_case(task: CaseTask) -> Dict[str, object]:
         )
         primary_ref, primary_ref_source = build_vehicle_reference(event, key_agents[0])
         secondary_ref, secondary_ref_source = build_vehicle_reference(event, key_agents[1])
+        primary_ref_original_len = int(len(primary_ref))
+        secondary_ref_original_len = int(len(secondary_ref))
+        primary_ref, primary_ref_clipped = clip_reference_to_motion(
+            primary_ref,
+            [aligned.primary_motion],
+            margin_m=task.reference_clip_margin_m,
+            max_points=task.reference_max_points,
+        )
+        secondary_ref, secondary_ref_clipped = clip_reference_to_motion(
+            secondary_ref,
+            [aligned.secondary_motion],
+            margin_m=task.reference_clip_margin_m,
+            max_points=task.reference_max_points,
+        )
+        primary_estimation_ref = prepare_reference_for_estimation(
+            primary_ref,
+            smooth_points=task.reference_smooth_points,
+        )
+        secondary_estimation_ref = prepare_reference_for_estimation(
+            secondary_ref,
+            smooth_points=task.reference_smooth_points,
+        )
         base_result["ipv_reference_source_1"] = primary_ref_source
         base_result["ipv_reference_source_2"] = secondary_ref_source
 
@@ -813,8 +911,12 @@ def process_case(task: CaseTask) -> Dict[str, object]:
                 classify_heading(aligned.secondary_motion[:, 4]),
             ]
         )
-        seq_primary = MotionSequence(aligned.primary_motion, target=labels[0], reference=primary_ref)
-        seq_secondary = MotionSequence(aligned.secondary_motion, target=labels[1], reference=secondary_ref)
+        seq_primary = MotionSequence(aligned.primary_motion, target=labels[0], reference=primary_estimation_ref)
+        seq_secondary = MotionSequence(
+            aligned.secondary_motion,
+            target=labels[1],
+            reference=secondary_estimation_ref,
+        )
         data_dir = case_dir / "data"
         data_dir.mkdir(parents=True, exist_ok=True)
         running_metadata_path = data_dir / "running_metadata.json"
@@ -831,12 +933,21 @@ def process_case(task: CaseTask) -> Dict[str, object]:
                     "segment_id": task.event_ref.segment_id,
                     "status": "running",
                     "case_timeout_seconds": task.case_timeout_seconds,
+                    "reference_clip_margin_m": task.reference_clip_margin_m,
+                    "reference_max_points": task.reference_max_points,
+                    "reference_smooth_points": task.reference_smooth_points,
                     "started_at": time.strftime("%Y-%m-%d %H:%M:%S"),
                     "downsampled_timestamps": len(aligned.timestamps),
                     "primary_reference_source": primary_ref_source,
                     "secondary_reference_source": secondary_ref_source,
+                    "primary_reference_original_len": primary_ref_original_len,
+                    "secondary_reference_original_len": secondary_ref_original_len,
                     "primary_reference_len": int(len(primary_ref)),
                     "secondary_reference_len": int(len(secondary_ref)),
+                    "primary_estimation_reference_len": estimation_reference_len(primary_estimation_ref),
+                    "secondary_estimation_reference_len": estimation_reference_len(secondary_estimation_ref),
+                    "primary_reference_clipped": primary_ref_clipped,
+                    "secondary_reference_clipped": secondary_ref_clipped,
                 },
                 indent=2,
                 ensure_ascii=False,
@@ -906,6 +1017,17 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             "downsample_factor": downsample_factor,
             "save_plots": task.save_plots,
             "case_timeout_seconds": task.case_timeout_seconds,
+            "reference_clip_margin_m": task.reference_clip_margin_m,
+            "reference_max_points": task.reference_max_points,
+            "reference_smooth_points": task.reference_smooth_points,
+            "reference_original_len_1": primary_ref_original_len,
+            "reference_original_len_2": secondary_ref_original_len,
+            "reference_used_len_1": int(len(primary_ref)),
+            "reference_used_len_2": int(len(secondary_ref)),
+            "reference_estimation_len_1": estimation_reference_len(primary_estimation_ref),
+            "reference_estimation_len_2": estimation_reference_len(secondary_estimation_ref),
+            "reference_clipped_1": primary_ref_clipped,
+            "reference_clipped_2": secondary_ref_clipped,
             "elapsed_seconds": round(time.perf_counter() - start_time, 3),
             "timestamps": aligned.timestamps,
             "summary": summary,
@@ -934,6 +1056,9 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             "status": "failed",
             "error": base_result["ipv_result_error"],
             "case_timeout_seconds": task.case_timeout_seconds,
+            "reference_clip_margin_m": task.reference_clip_margin_m,
+            "reference_max_points": task.reference_max_points,
+            "reference_smooth_points": task.reference_smooth_points,
             "elapsed_seconds": round(time.perf_counter() - start_time, 3),
         }
         (case_dir / "failure_metadata.json").write_text(
@@ -954,6 +1079,9 @@ def _build_tasks(
     min_observation: int,
     save_plots: bool = True,
     case_timeout_seconds: int = 0,
+    reference_clip_margin_m: float = 0.0,
+    reference_max_points: int = 0,
+    reference_smooth_points: int = 0,
     limit: Optional[int] = None,
 ) -> Tuple[List[CaseTask], Dict[int, Dict[str, object]]]:
     tasks: List[CaseTask] = []
@@ -981,6 +1109,9 @@ def _build_tasks(
                 min_observation=min_observation,
                 save_plots=save_plots,
                 case_timeout_seconds=case_timeout_seconds,
+                reference_clip_margin_m=reference_clip_margin_m,
+                reference_max_points=reference_max_points,
+                reference_smooth_points=reference_smooth_points,
             )
         )
     return tasks, initial_results
@@ -1003,6 +1134,123 @@ def _resolve_mp_context(start_method: str):
     return mp.get_context(requested), requested
 
 
+def _has_signal_timeout() -> bool:
+    return all(hasattr(signal, attr) for attr in ("SIGALRM", "ITIMER_REAL", "setitimer"))
+
+
+def _child_process_case(task: CaseTask, result_queue) -> None:
+    result_queue.put((task.row_index, process_case(task)))
+
+
+def _write_case_timeout_failure(task: CaseTask, elapsed_seconds: float) -> Dict[str, object]:
+    case_dir = case_output_dir(task.output_root, task.row_index, task.row, task.event_ref.segment_id)
+    case_dir.mkdir(parents=True, exist_ok=True)
+    data_dir = case_dir / "data"
+    try:
+        (data_dir / "running_metadata.json").unlink()
+    except FileNotFoundError:
+        pass
+    error = f"CaseTimeoutError: case row {task.row_index} exceeded {task.case_timeout_seconds} seconds"
+    result = {
+        "ipv_result_status": "failed",
+        "ipv_result_case_dir": str(case_dir),
+        "ipv_result_error": error,
+        "ipv_pkl_file": task.event_ref.pkl_path.relative_to(task.pkl_root).as_posix(),
+        "ipv_segment_id": task.event_ref.segment_id,
+        "ipv_reference_source_1": "",
+        "ipv_reference_source_2": "",
+    }
+    failure_metadata = {
+        "row_index": task.row_index,
+        "row": task.row,
+        "pkl_file": result["ipv_pkl_file"],
+        "segment_id": task.event_ref.segment_id,
+        "status": "failed",
+        "error": error,
+        "case_timeout_seconds": task.case_timeout_seconds,
+        "reference_clip_margin_m": task.reference_clip_margin_m,
+        "reference_max_points": task.reference_max_points,
+        "reference_smooth_points": task.reference_smooth_points,
+        "elapsed_seconds": round(elapsed_seconds, 3),
+    }
+    (case_dir / "failure_metadata.json").write_text(
+        json.dumps(failure_metadata, indent=2, ensure_ascii=False, default=_json_default),
+        encoding="utf-8",
+    )
+    return result
+
+
+def _run_tasks_with_killable_timeout(tasks: Sequence[CaseTask], workers: int) -> Dict[int, Dict[str, object]]:
+    """Run tasks with parent-side timeout enforcement for platforms without SIGALRM."""
+    results: Dict[int, Dict[str, object]] = {}
+    if not tasks:
+        return results
+    workers = max(1, min(int(workers), len(tasks)))
+    timeout_seconds = max(int(task.case_timeout_seconds) for task in tasks)
+    LOGGER.info(
+        "Running %s IPV tasks with %s killable Windows workers (case_timeout_seconds=%s)",
+        len(tasks),
+        workers,
+        timeout_seconds,
+    )
+    ctx = mp.get_context("spawn")
+    pending = list(tasks)
+    active: List[Tuple[CaseTask, mp.Process, object, float]] = []
+    with tqdm(total=len(tasks), desc="IPV cases", unit="case") as progress:
+        while pending or active:
+            while pending and len(active) < workers:
+                task = pending.pop(0)
+                result_queue = ctx.Queue(maxsize=1)
+                process = ctx.Process(target=_child_process_case, args=(task, result_queue))
+                process.start()
+                active.append((task, process, result_queue, time.perf_counter()))
+
+            next_active: List[Tuple[CaseTask, mp.Process, object, float]] = []
+            for task, process, result_queue, start_time in active:
+                elapsed = time.perf_counter() - start_time
+                task_timeout_seconds = int(task.case_timeout_seconds) or timeout_seconds
+                if process.is_alive() and task_timeout_seconds > 0 and elapsed > task_timeout_seconds:
+                    LOGGER.warning(
+                        "Timing out IPV case row=%s after %.1fs (limit=%ss)",
+                        task.row_index,
+                        elapsed,
+                        task_timeout_seconds,
+                    )
+                    process.terminate()
+                    process.join(timeout=5)
+                    if process.is_alive():
+                        process.kill()
+                        process.join(timeout=5)
+                    results[task.row_index] = _write_case_timeout_failure(task, elapsed)
+                    progress.update(1)
+                    continue
+
+                if process.is_alive():
+                    next_active.append((task, process, result_queue, start_time))
+                    continue
+
+                process.join()
+                try:
+                    row_index, result = result_queue.get_nowait()
+                except queue_module.Empty:
+                    row_index = task.row_index
+                    result = {
+                        "ipv_result_status": "failed",
+                        "ipv_result_case_dir": str(
+                            case_output_dir(task.output_root, task.row_index, task.row, task.event_ref.segment_id)
+                        ),
+                        "ipv_result_error": f"ChildProcessError: process exited with code {process.exitcode}",
+                    }
+                results[int(row_index)] = result
+                progress.update(1)
+            active = next_active
+            if active and not pending:
+                time.sleep(0.25)
+            elif active:
+                time.sleep(0.05)
+    return results
+
+
 def _run_tasks(
     tasks: Sequence[CaseTask],
     workers: int,
@@ -1012,6 +1260,8 @@ def _run_tasks(
     results: Dict[int, Dict[str, object]] = {}
     if not tasks:
         return results
+    if any(int(task.case_timeout_seconds) > 0 for task in tasks) and not _has_signal_timeout():
+        return _run_tasks_with_killable_timeout(tasks, workers)
     workers = max(1, min(int(workers), len(tasks)))
     if workers == 1:
         for task in tqdm(tasks, desc="IPV cases", unit="case"):
@@ -1172,6 +1422,9 @@ def run_worker_benchmark(
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
     case_timeout_seconds: int = 0,
+    reference_clip_margin_m: float = 0.0,
+    reference_max_points: int = 0,
+    reference_smooth_points: int = 0,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
@@ -1191,6 +1444,9 @@ def run_worker_benchmark(
             history_window=history_window,
             min_observation=min_observation,
             case_timeout_seconds=case_timeout_seconds,
+            reference_clip_margin_m=reference_clip_margin_m,
+            reference_max_points=reference_max_points,
+            reference_smooth_points=reference_smooth_points,
         )
         start = time.perf_counter()
         results = dict(initial_results)
@@ -1219,6 +1475,9 @@ def run_worker_benchmark(
         "records": records,
         "recommended_workers": recommended,
         "case_timeout_seconds": case_timeout_seconds,
+        "reference_clip_margin_m": reference_clip_margin_m,
+        "reference_max_points": reference_max_points,
+        "reference_smooth_points": reference_smooth_points,
         **exclude_summary,
     }
     benchmark_root.mkdir(parents=True, exist_ok=True)
@@ -1251,6 +1510,9 @@ def _resolve_workers(
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
     case_timeout_seconds: int = 0,
+    reference_clip_margin_m: float = 0.0,
+    reference_max_points: int = 0,
+    reference_smooth_points: int = 0,
 ) -> int:
     if workers_arg != "auto":
         return max(1, min(int(workers_arg), max_workers))
@@ -1267,6 +1529,9 @@ def _resolve_workers(
         exclude_csv_path=exclude_csv_path,
         mp_start_method=mp_start_method,
         case_timeout_seconds=case_timeout_seconds,
+        reference_clip_margin_m=reference_clip_margin_m,
+        reference_max_points=reference_max_points,
+        reference_smooth_points=reference_smooth_points,
     )
     return max(1, min(int(benchmark["recommended_workers"]), max_workers))
 
@@ -1288,6 +1553,9 @@ def run_processing(
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
     case_timeout_seconds: int = 0,
+    reference_clip_margin_m: float = 0.0,
+    reference_max_points: int = 0,
+    reference_smooth_points: int = 0,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     source_rows = len(df)
@@ -1320,6 +1588,9 @@ def run_processing(
         min_observation=min_observation,
         save_plots=save_plots,
         case_timeout_seconds=case_timeout_seconds,
+        reference_clip_margin_m=reference_clip_margin_m,
+        reference_max_points=reference_max_points,
+        reference_smooth_points=reference_smooth_points,
     )
     results = dict(initial_results)
     results.update(_run_tasks(tasks, workers, mp_start_method=mp_start_method))
@@ -1344,6 +1615,9 @@ def run_processing(
         "workers": workers,
         "mp_start_method": mp_start_method,
         "case_timeout_seconds": case_timeout_seconds,
+        "reference_clip_margin_m": reference_clip_margin_m,
+        "reference_max_points": reference_max_points,
+        "reference_smooth_points": reference_smooth_points,
         "limit": limit,
         "shard_index": shard_index,
         "shard_count": shard_count,
@@ -1379,6 +1653,9 @@ def _append_workflow_log(summary: Mapping[str, object], *, task_name: str) -> No
         f"- Workers: {summary.get('workers')}.\n"
         f"- Multiprocessing start method: {summary.get('mp_start_method')}.\n"
         f"- Case timeout seconds: {summary.get('case_timeout_seconds')}.\n"
+        f"- Reference clip margin m: {summary.get('reference_clip_margin_m')}.\n"
+        f"- Reference max points: {summary.get('reference_max_points')}.\n"
+        f"- Reference smooth points: {summary.get('reference_smooth_points')}.\n"
         f"- Limit: {summary.get('limit')}.\n"
         f"- Shard: {summary.get('shard_index')} / {summary.get('shard_count')}.\n"
         f"- Save plots: {summary.get('save_plots')}.\n"
@@ -1400,6 +1677,27 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--history-window", type=int, default=HISTORY_WINDOW)
     parser.add_argument("--min-observation", type=int, default=MIN_OBSERVATION)
+    parser.add_argument(
+        "--reference-clip-margin-m",
+        type=float,
+        default=0.0,
+        help="Clip each lane reference to the key agent observed-motion bounding box plus this margin in meters.",
+    )
+    parser.add_argument(
+        "--reference-max-points",
+        type=int,
+        default=0,
+        help="After optional clipping, uniformly downsample each reference to at most this many points.",
+    )
+    parser.add_argument(
+        "--reference-smooth-points",
+        type=int,
+        default=0,
+        help=(
+            "If >0, pre-smooth each clipped reference to this many points before IPV optimization. "
+            "Default 0 preserves the legacy smoother resolution."
+        ),
+    )
     parser.add_argument(
         "--case-timeout-seconds",
         type=int,
@@ -1528,6 +1826,9 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             exclude_csv_path=args.exclude_csv,
             mp_start_method=args.mp_start_method,
             case_timeout_seconds=args.case_timeout_seconds,
+            reference_clip_margin_m=args.reference_clip_margin_m,
+            reference_max_points=args.reference_max_points,
+            reference_smooth_points=args.reference_smooth_points,
         )
         print(json.dumps(benchmark, indent=2, ensure_ascii=False, default=_json_default))
         return
@@ -1543,6 +1844,9 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         exclude_csv_path=args.exclude_csv,
         mp_start_method=args.mp_start_method,
         case_timeout_seconds=args.case_timeout_seconds,
+        reference_clip_margin_m=args.reference_clip_margin_m,
+        reference_max_points=args.reference_max_points,
+        reference_smooth_points=args.reference_smooth_points,
     )
     summary = run_processing(
         args.csv,
@@ -1560,6 +1864,9 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         exclude_csv_path=args.exclude_csv,
         mp_start_method=args.mp_start_method,
         case_timeout_seconds=args.case_timeout_seconds,
+        reference_clip_margin_m=args.reference_clip_margin_m,
+        reference_max_points=args.reference_max_points,
+        reference_smooth_points=args.reference_smooth_points,
     )
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")

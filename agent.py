@@ -753,6 +753,8 @@ def cal_individual_cost(track, target, ref=None):
             cv, s = get_central_vertices(target, track[0, :])
         else:
             cv, s = get_central_vertices(target, None)
+    elif isinstance(ref, tuple) and len(ref) == 2:
+        cv, s = ref
     else:
         cv, s = smooth_ployline(ref)
 
@@ -904,6 +906,13 @@ def idm_model(para, vel_self, vel_rel, gap):
 
 
 def utility_fun(self_info, track_inter):
+    prepared_ref = None
+    if self_info[5] is not None:
+        if isinstance(self_info[5], tuple) and len(self_info[5]) == 2:
+            prepared_ref = self_info[5]
+        else:
+            prepared_ref = smooth_ployline(self_info[5])
+
     def fun(u):
         """
         Calculate the utility from the perspective of "self" agent
@@ -918,7 +927,7 @@ def utility_fun(self_info, track_inter):
         track_info_self = bicycle_model(u, init_state_4_kine, np.size(track_inter, 0), dt)
         track_self = track_info_self[:, 0:2]
         track_all = [track_self, track_inter[:, 0:2]]
-        interior_cost = cal_individual_cost(track_self, target=self_info[4], ref=self_info[5])
+        interior_cost = cal_individual_cost(track_self, target=self_info[4], ref=prepared_ref)
         group_cost = cal_group_cost(track_all)
         util = np.cos(self_info[3]) * interior_cost + np.sin(self_info[3]) * group_cost
         # print('interior_cost:', interior_cost)
