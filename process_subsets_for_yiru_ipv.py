@@ -10,7 +10,9 @@ import multiprocessing as mp
 import os
 import pickle
 import re
+import signal
 import time
+from contextlib import contextmanager
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -88,6 +90,36 @@ class CaseTask:
     history_window: int
     min_observation: int
     save_plots: bool = True
+    case_timeout_seconds: int = 0
+
+
+class CaseTimeoutError(TimeoutError):
+    """Raised when one case exceeds the configured wall-clock timeout."""
+
+
+@contextmanager
+def _case_timeout(seconds: int, *, row_index: int):
+    """Raise ``CaseTimeoutError`` if one case exceeds the configured timeout."""
+    if seconds <= 0 or not all(
+        hasattr(signal, attr) for attr in ("SIGALRM", "ITIMER_REAL", "setitimer")
+    ):
+        yield
+        return
+
+    def _raise_timeout(_signum, _frame):
+        raise CaseTimeoutError(f"case row {row_index} exceeded {seconds} seconds")
+
+    previous_handler = signal.getsignal(signal.SIGALRM)
+    previous_timer = signal.setitimer(signal.ITIMER_REAL, 0)
+    signal.signal(signal.SIGALRM, _raise_timeout)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous_handler)
+        if previous_timer[0] > 0:
+            signal.setitimer(signal.ITIMER_REAL, previous_timer[0], previous_timer[1])
 
 
 def _json_default(value):
@@ -746,6 +778,7 @@ def process_case(task: CaseTask) -> Dict[str, object]:
 
     row = task.row
     case_dir = case_output_dir(task.output_root, task.row_index, row, task.event_ref.segment_id)
+    start_time = time.perf_counter()
     base_result: Dict[str, object] = {
         "ipv_result_status": "failed",
         "ipv_result_case_dir": str(case_dir),
@@ -782,19 +815,58 @@ def process_case(task: CaseTask) -> Dict[str, object]:
         )
         seq_primary = MotionSequence(aligned.primary_motion, target=labels[0], reference=primary_ref)
         seq_secondary = MotionSequence(aligned.secondary_motion, target=labels[1], reference=secondary_ref)
-        ipv_values, ipv_errors = estimate_ipv_pair(
-            seq_primary,
-            seq_secondary,
-            history_window=task.history_window,
-            min_observation=task.min_observation,
+        data_dir = case_dir / "data"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        running_metadata_path = data_dir / "running_metadata.json"
+        running_metadata_path.write_text(
+            json.dumps(
+                {
+                    "row_index": task.row_index,
+                    "dataset": row.get("dataset"),
+                    "folder": row.get("folder"),
+                    "scenario_idx": row.get("scenario_idx"),
+                    "track_id": row.get("track_id"),
+                    "key_agents": row.get("key_agents"),
+                    "pkl_file": base_result["ipv_pkl_file"],
+                    "segment_id": task.event_ref.segment_id,
+                    "status": "running",
+                    "case_timeout_seconds": task.case_timeout_seconds,
+                    "started_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "downsampled_timestamps": len(aligned.timestamps),
+                    "primary_reference_source": primary_ref_source,
+                    "secondary_reference_source": secondary_ref_source,
+                    "primary_reference_len": int(len(primary_ref)),
+                    "secondary_reference_len": int(len(secondary_ref)),
+                },
+                indent=2,
+                ensure_ascii=False,
+                default=_json_default,
+            ),
+            encoding="utf-8",
         )
+        LOGGER.info(
+            "Starting IPV case row=%s dataset=%s folder=%s scenario=%s segment=%s steps=%s timeout=%ss",
+            task.row_index,
+            row.get("dataset"),
+            row.get("folder"),
+            row.get("scenario_idx"),
+            task.event_ref.segment_id,
+            len(aligned.timestamps),
+            task.case_timeout_seconds,
+        )
+        with _case_timeout(task.case_timeout_seconds, row_index=task.row_index):
+            ipv_values, ipv_errors = estimate_ipv_pair(
+                seq_primary,
+                seq_secondary,
+                history_window=task.history_window,
+                min_observation=task.min_observation,
+            )
         summary = compute_valid_ipv_summary(
             ipv_values,
             ipv_errors,
             min_observation=task.min_observation,
         )
 
-        data_dir = case_dir / "data"
         _save_ipv_table(
             data_dir / "ipv_results.xlsx",
             aligned.timestamps,
@@ -833,6 +905,8 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             "min_observation": task.min_observation,
             "downsample_factor": downsample_factor,
             "save_plots": task.save_plots,
+            "case_timeout_seconds": task.case_timeout_seconds,
+            "elapsed_seconds": round(time.perf_counter() - start_time, 3),
             "timestamps": aligned.timestamps,
             "summary": summary,
             "status": "ok",
@@ -844,6 +918,10 @@ def process_case(task: CaseTask) -> Dict[str, object]:
         )
         base_result.update(summary)
         base_result["ipv_result_status"] = "ok"
+        try:
+            running_metadata_path.unlink()
+        except FileNotFoundError:
+            pass
         return base_result
     except Exception as exc:  # pylint: disable=broad-except
         case_dir.mkdir(parents=True, exist_ok=True)
@@ -855,6 +933,8 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             "segment_id": task.event_ref.segment_id,
             "status": "failed",
             "error": base_result["ipv_result_error"],
+            "case_timeout_seconds": task.case_timeout_seconds,
+            "elapsed_seconds": round(time.perf_counter() - start_time, 3),
         }
         (case_dir / "failure_metadata.json").write_text(
             json.dumps(failure_metadata, indent=2, ensure_ascii=False, default=_json_default),
@@ -873,6 +953,7 @@ def _build_tasks(
     history_window: int,
     min_observation: int,
     save_plots: bool = True,
+    case_timeout_seconds: int = 0,
     limit: Optional[int] = None,
 ) -> Tuple[List[CaseTask], Dict[int, Dict[str, object]]]:
     tasks: List[CaseTask] = []
@@ -899,6 +980,7 @@ def _build_tasks(
                 history_window=history_window,
                 min_observation=min_observation,
                 save_plots=save_plots,
+                case_timeout_seconds=case_timeout_seconds,
             )
         )
     return tasks, initial_results
@@ -1089,6 +1171,7 @@ def run_worker_benchmark(
     max_workers: int,
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
+    case_timeout_seconds: int = 0,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
@@ -1107,6 +1190,7 @@ def run_worker_benchmark(
             output_root=worker_root,
             history_window=history_window,
             min_observation=min_observation,
+            case_timeout_seconds=case_timeout_seconds,
         )
         start = time.perf_counter()
         results = dict(initial_results)
@@ -1134,6 +1218,7 @@ def run_worker_benchmark(
         "candidate_workers": _worker_candidates(max_workers),
         "records": records,
         "recommended_workers": recommended,
+        "case_timeout_seconds": case_timeout_seconds,
         **exclude_summary,
     }
     benchmark_root.mkdir(parents=True, exist_ok=True)
@@ -1164,6 +1249,8 @@ def _resolve_workers(
     min_observation: int,
     max_workers: int,
     exclude_csv_path: Optional[Path] = None,
+    mp_start_method: str = "auto",
+    case_timeout_seconds: int = 0,
 ) -> int:
     if workers_arg != "auto":
         return max(1, min(int(workers_arg), max_workers))
@@ -1178,6 +1265,8 @@ def _resolve_workers(
         min_observation=min_observation,
         max_workers=max_workers,
         exclude_csv_path=exclude_csv_path,
+        mp_start_method=mp_start_method,
+        case_timeout_seconds=case_timeout_seconds,
     )
     return max(1, min(int(benchmark["recommended_workers"]), max_workers))
 
@@ -1198,6 +1287,7 @@ def run_processing(
     only_incomplete: bool = False,
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
+    case_timeout_seconds: int = 0,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     source_rows = len(df)
@@ -1229,6 +1319,7 @@ def run_processing(
         history_window=history_window,
         min_observation=min_observation,
         save_plots=save_plots,
+        case_timeout_seconds=case_timeout_seconds,
     )
     results = dict(initial_results)
     results.update(_run_tasks(tasks, workers, mp_start_method=mp_start_method))
@@ -1252,6 +1343,7 @@ def run_processing(
         "output_root": str(output_root),
         "workers": workers,
         "mp_start_method": mp_start_method,
+        "case_timeout_seconds": case_timeout_seconds,
         "limit": limit,
         "shard_index": shard_index,
         "shard_count": shard_count,
@@ -1286,6 +1378,7 @@ def _append_workflow_log(summary: Mapping[str, object], *, task_name: str) -> No
         f"- Output root: {summary.get('output_root')}.\n"
         f"- Workers: {summary.get('workers')}.\n"
         f"- Multiprocessing start method: {summary.get('mp_start_method')}.\n"
+        f"- Case timeout seconds: {summary.get('case_timeout_seconds')}.\n"
         f"- Limit: {summary.get('limit')}.\n"
         f"- Shard: {summary.get('shard_index')} / {summary.get('shard_count')}.\n"
         f"- Save plots: {summary.get('save_plots')}.\n"
@@ -1307,6 +1400,15 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--history-window", type=int, default=HISTORY_WINDOW)
     parser.add_argument("--min-observation", type=int, default=MIN_OBSERVATION)
+    parser.add_argument(
+        "--case-timeout-seconds",
+        type=int,
+        default=0,
+        help=(
+            "Per-case wall-clock timeout in seconds. A value <=0 disables timeout. "
+            "On Linux this uses SIGALRM inside each worker process."
+        ),
+    )
     parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--skip-preflight", action="store_true")
     parser.add_argument("--benchmark-workers", action="store_true")
@@ -1425,6 +1527,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             max_workers=args.max_workers,
             exclude_csv_path=args.exclude_csv,
             mp_start_method=args.mp_start_method,
+            case_timeout_seconds=args.case_timeout_seconds,
         )
         print(json.dumps(benchmark, indent=2, ensure_ascii=False, default=_json_default))
         return
@@ -1438,6 +1541,8 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         min_observation=args.min_observation,
         max_workers=args.max_workers,
         exclude_csv_path=args.exclude_csv,
+        mp_start_method=args.mp_start_method,
+        case_timeout_seconds=args.case_timeout_seconds,
     )
     summary = run_processing(
         args.csv,
@@ -1454,6 +1559,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         only_incomplete=args.only_incomplete,
         exclude_csv_path=args.exclude_csv,
         mp_start_method=args.mp_start_method,
+        case_timeout_seconds=args.case_timeout_seconds,
     )
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")

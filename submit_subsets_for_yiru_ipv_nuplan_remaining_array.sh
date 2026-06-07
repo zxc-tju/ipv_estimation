@@ -36,6 +36,7 @@ SHARD_COUNT=${SHARD_COUNT:-4}
 SHARD_INDEX=${SLURM_ARRAY_TASK_ID}
 WORKERS=${WORKERS:-96}
 ONLY_INCOMPLETE=${ONLY_INCOMPLETE:-1}
+CASE_TIMEOUT_SECONDS=${CASE_TIMEOUT_SECONDS:-1800}
 
 if [ "$SHARD_INDEX" -ge "$SHARD_COUNT" ]; then
     echo "SLURM_ARRAY_TASK_ID=$SHARD_INDEX is outside SHARD_COUNT=$SHARD_COUNT" >&2
@@ -65,6 +66,7 @@ echo "Mode: $MODE"
 echo "Shard: $SHARD_INDEX / $SHARD_COUNT"
 echo "Workers: $WORKERS"
 echo "Completed-case skip: ${ONLY_INCOMPLETE}"
+echo "Case timeout seconds: ${CASE_TIMEOUT_SECONDS}"
 echo "OMP_NUM_THREADS: $OMP_NUM_THREADS"
 echo "OPENBLAS_NUM_THREADS: $OPENBLAS_NUM_THREADS"
 echo "MKL_NUM_THREADS: $MKL_NUM_THREADS"
@@ -103,5 +105,6 @@ python "$SCRIPT" \
     --workers "$WORKERS" \
     --max-workers "$WORKERS" \
     --mp-start-method fork \
+    --case-timeout-seconds "$CASE_TIMEOUT_SECONDS" \
     --no-plots \
     "${EXTRA_ARGS[@]}"

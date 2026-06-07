@@ -614,3 +614,15 @@ Status: completed.
 Key outcomes: updated submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh to cd into SLURM_SUBMIT_DIR, declare explicit CSV/PKL/output paths, validate required inputs, create output root, guard SHARD_INDEX against SHARD_COUNT, and support ONLY_INCOMPLETE=0/1 via EXTRA_ARGS while preserving fork multiprocessing and BLAS/SciPy single-thread settings. This mirrors the robust structure of submit_full_datasets_nuplan_agv_ipv_array.sh and allows full nuPlan reruns when ONLY_INCOMPLETE=0 is needed to saturate workers.
 Verification: git diff --check passed for submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh; python -m py_compile process_subsets_for_yiru_ipv.py tools/merge_subsets_for_yiru_ipv_archives.py tools/update_ipv_distribution_report.py passed. Local bash -n could not run because WSL lacks /bin/bash in this environment, so shell syntax must still be validated on HPC before submission.
 Artifacts: submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.
+
+2026-06-07 09:20 - Provided one-node 48-CPU Slurm command for remaining yiru nuPlan IPV cases.
+Status: completed.
+Key outcomes: recommended reusing submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh with sbatch command-line overrides for --array=0-0 and --cpus-per-task=48, plus SHARD_COUNT=1 and WORKERS=48, so only one node processes the remaining incomplete nuplan_train cases.
+Verification: advisory response only; no HPC job submitted from local workspace.
+Artifacts: none.
+
+2026-06-07 09:35 - Added per-case timeout and running diagnostics for stuck remaining yiru nuPlan IPV cases.
+Status: completed.
+Key outcomes: added --case-timeout-seconds to process_subsets_for_yiru_ipv.py, writes per-case data/running_metadata.json before IPV estimation, logs row/scenario/step diagnostics at case start, records elapsed_seconds and timeout in success/failure metadata, and passes CASE_TIMEOUT_SECONDS from submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh with a default of 1800 seconds. This prevents pathological remaining cases from keeping the progress bar at 0/N indefinitely.
+Verification: python -m py_compile process_subsets_for_yiru_ipv.py tools/merge_subsets_for_yiru_ipv_archives.py tools/update_ipv_distribution_report.py passed; process_subsets_for_yiru_ipv.py --help exposes --case-timeout-seconds; git diff --check passed for touched files; python -m pytest tests/test_process_subsets_for_yiru_ipv.py passed 20 tests.
+Artifacts: process_subsets_for_yiru_ipv.py; submit_subsets_for_yiru_ipv_nuplan_remaining_array.sh.
