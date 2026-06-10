@@ -660,3 +660,144 @@ Status: completed.
 Key outcomes: added reference clipping and configurable reference smoothing for IPV case processing, fixed Windows killable per-case timeout routing, installed missing local Shapely dependency, and ran the remaining nuPlan cases locally with 16 workers. A single-case probe with 200 smoothed reference points completed successfully; the full local rerun processed the remaining 27 nuPlan cases with status_counts={'ok': 27}. Rebuilt selected_interactive_segments_equalized_with_ipv_combined.csv and selected_interactive_segments_equalized_with_ipv_combined_completed_only.csv from local cases, both now containing 7500 ok rows across nuplan_train=2500, waymo_train=2500, and av2_motion_forecasting=2500. Refreshed ipv_distribution_report.html against the complete combined CSV.
 Verification: python -m pytest tests/test_agent_reference_cache.py tests/test_process_subsets_for_yiru_ipv.py passed 25 tests; python -m py_compile agent.py process_subsets_for_yiru_ipv.py tools/update_ipv_distribution_report.py passed; git diff --check passed for touched files; final artifact scan found source_rows=7500, combined_rows=7500, completed_only_rows=7500, combined_status_counts={'ok': 7500}, artifact_missing_count=0.
 Artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/cases; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/selected_interactive_segments_equalized_with_ipv_combined.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/selected_interactive_segments_equalized_with_ipv_combined_completed_only.csv; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html.
+
+2026-06-08 09:22 - Removed stale nuPlan missing-data language from subsets_for_yiru IPV HTML report.
+Status: completed.
+Key outcomes: updated tools/update_ipv_distribution_report.py so complete datasets no longer show nuPlan missing/incomplete caveats, hide the missing-case metric definition when all rows are complete, and regenerate ipv_distribution_report.html plus metric_definitions.csv. The report now states that all three datasets are fully covered and compares them on equal completed samples.
+Verification: python -m py_compile tools/update_ipv_distribution_report.py passed; regenerated report with question_runs=0; text scan found no stale phrases such as nuPlan 当前仍缺失, 缺失 738, 未完整覆盖, 未补齐, missing case, or 缺失 case in the HTML/metric definition table; combined CSV remains 7500 ok with nuplan_train=2500, waymo_train=2500, av2_motion_forecasting=2500.
+Artifacts: interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/ipv_distribution_report.html; interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru/ipv_distribution_report/tables/metric_definitions.csv; tools/update_ipv_distribution_report.py.
+
+2026-06-08 09:24:01 +08:00 - Extracted full AV2/nuPlan HPC results and merged full-set IPV CSV with completed subset results.
+Status: completed.
+Key outcomes: extracted interhub_traj_lane/1_ipv_estimation_results/full_datasets/full-AV2-NUPLAN.zip into interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/cases. The archive contained 5254 complete metadata/xlsx pairs, all matching full source CSV rows and all from nuplan_train; the av2_motion_forecasting directories in the archive contained no metadata/xlsx files. Merged full source rows with the complete subsets_for_yiru combined CSV for the 5000 overlapping subset rows and full HPC case artifacts for 5254 additional rows. Generated the full combined CSV with 10335 rows, 10254 ok rows, and 81 missing rows.
+Verification: generated selected_interactive_segments_nuplan_agv_full_with_ipv_combined.csv has 10335 rows with status_counts ok=10254 and missing_case=81; completed-only CSV has 10254 ok rows; missing CSV has 81 rows split av2_motion_forecasting=10 and nuplan_train=71; artifact index has 5254 rows with metadata_status ok and artifact_nonmatching_count=0. Summary written to interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/_combined_ipv_analysis/summary.json.
+Artifacts: interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/selected_interactive_segments_nuplan_agv_full_with_ipv_combined.csv; interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/selected_interactive_segments_nuplan_agv_full_with_ipv_combined_completed_only.csv; interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/_combined_ipv_analysis/full_dataset_missing_cases.csv; interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/_combined_ipv_analysis/summary.json.
+[2026-06-08 10:44:00 +08:00] STATUS: COMPLETED | TASK: Rerun remaining full AV2/nuPlan IPV cases and monitor to completion.
+Outcome:
+- Excluded previously completed subset rows and reran the remaining full-set cases with subset-style reference clipping/resampling.
+- First rerun completed all remaining nuPlan cases and identified 10 AV2 cases blocked by Windows path length.
+- Updated process_subsets_for_yiru_ipv.py to compact overly long Windows case output paths and shorten exclude CSV suffixes.
+- Reran the final 10 AV2 cases successfully; final scan complete_rows=5335, incomplete_rows=0 for full non-subset cases.
+- Rebuilt the full+subset combined IPV CSV; complete_rows=10335, missing_rows=0.
+Verification:
+- python -m pytest tests/test_process_subsets_for_yiru_ipv.py -> 25 passed.
+- python -m py_compile process_subsets_for_yiru_ipv.py -> passed.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/selected_interactive_segments_nuplan_agv_full_with_ipv_combined.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/selected_interactive_segments_nuplan_agv_full_with_ipv_combined_completed_only.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/_combined_ipv_analysis/summary.json
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all/_combined_ipv_analysis/full_dataset_missing_cases.csv
+[2026-06-08 11:17:53 +08:00] STATUS: COMPLETED | TASK: Fill IPV results into all_results priority rebuild CSV copy and clean process files.
+Outcome:
+- Created/updated all_results_priority_rebuild_filtered_pet_lt_045_usable_with_av2_with_ipv_filled.csv.
+- Rechecked nuPlan/AV2 matching: exact ordered key_agents matched 5003 rows; unordered key_agents with same start/end matched 8183 rows, including 3180 swapped-order rows with IPV agent columns swapped into target order.
+- Did not force-fill 1725 nuPlan/AV2 rows lacking same unordered key_agents and start/end in computed results.
+- Preserved legacy Waymo/Lyft fills: 22829 ok rows.
+- Final filled copy: rows=38241, ok_rows=31012, missing_rows=7229.
+- Removed rerun monitor files, scan/temporary processing CSV/JSON files, and the empty failed long-path AV2 duplicate directory.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/all_results_priority_rebuild_filtered_pet_lt_045_usable_with_av2_with_ipv_filled.csv
+[2026-06-08 11:22:19 +08:00] STATUS: COMPLETED | TASK: Sync agent type ordering after swapped-agent IPV fill.
+Outcome:
+- Re-audited swapped nuPlan/AV2 rows in all_results_priority_rebuild_filtered_pet_lt_045_usable_with_av2_with_ipv_filled.csv.
+- Confirmed 3180 nuPlan/AV2 swapped-order rows have IPV columns aligned to target key_agents order.
+- Inferred key_agents_type from track_id + vehicle_type and updated 12 rows with blank/mismatched key_agents_type (10 Lyft, 2 nuPlan).
+- Overwrote the filled CSV copy successfully and removed the temporary agent_type_synced file.
+Verification:
+- rows=38241, ok_rows=31012, missing_rows=7229, nuplan_av2_ok=8183.
+- remaining_ok_type_mismatch=0 and blank_key_agents_type_ok_rows=0.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/all_results_priority_rebuild_filtered_pet_lt_045_usable_with_av2_with_ipv_filled.csv
+[2026-06-08 11:30:48 +08:00] STATUS: COMPLETED | TASK: Diagnose missing IPV cases in filled full-dataset CSV.
+Outcome:
+- Diagnosed 7229 missing rows in all_results_priority_rebuild_filtered_pet_lt_045_usable_with_av2_with_ipv_filled.csv.
+- nuPlan/AV2 missing rows=1725: 1134 absent from nuPlan/AV2 IPV full input scenario set; 591 have scenario context but no exact same unordered key_agents + start/end case in the IPV input/computed results.
+- Waymo/Lyft missing rows=5504: all key-agent vehicles were found in original raw JSON; 649 have no legacy result scenario directory, 4849 have scenario results but not the requested key-agent pair, and 6 have track_id results for a different pair rather than target key_agents.
+- No remaining evidence of an exact-case matching bug after unordered key_agents + start/end matching and agent-type synchronization.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/_missing_case_analysis/missing_case_reason_summary.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/_missing_case_analysis/missing_case_diagnosis_unified.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/_missing_case_analysis/nuplan_av2_missing_diagnosis.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/_missing_case_analysis/legacy_waymo_lyft_missing_diagnosis.csv
+[2026-06-08 12:24:06 +08:00] STATUS: COMPLETED | TASK: Explain AV2 and nuPlan missing IPV cases in detail.
+Outcome:
+- AV2 target rows=2406, ok=2356, missing=50; all missing rows are multi-agent cases present at scenario/time level but not as the same exact key_agents pair in the nuPlan/AV2 IPV input/computed results.
+- nuPlan target rows=7502, ok=5827, missing=1675; 1134 are absent from the nuPlan/AV2 IPV full input scenario set, and 541 have scenario context but no same exact unordered key_agents + start/end case.
+- Highlighted AV-included missing counts: AV2 missing has 15 AV; nuPlan missing has 104 AV.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/_missing_case_analysis/nuplan_av2_missing_diagnosis.csv
+2026-06-08 09:27 - Removed intermediate files from subsets_for_yiru IPV processing outputs.
+Status: completed.
+Key outcomes: deleted local_rerun_logs, processing_summary_incomplete_dataset_nuplan_train.json, processing_summary_limit_incomplete_dataset_nuplan_train.json, .pytest_cache, and Python __pycache__ directories while preserving final cases, combined CSVs, and the HTML report.
+Verification: confirmed deleted process targets are absent; confirmed selected_interactive_segments_equalized_with_ipv_combined.csv and selected_interactive_segments_equalized_with_ipv_combined_completed_only.csv still exist; confirmed cases/ and ipv_distribution_report/ipv_distribution_report.html still exist; combined CSV remains 7500 ok with nuplan_train=2500, waymo_train=2500, av2_motion_forecasting=2500.
+Artifacts: cleaned interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru output directory.
+[2026-06-08 20:25:45 +08:00] STATUS: COMPLETED | TASK: Reorganize confirmed valid full-dataset IPV cases and archive old case layouts.
+Outcome:
+- Created a unified curated valid-case entry point under interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases.
+- Generated valid_cases_manifest.csv with 31012 confirmed ok IPV cases, stable case_uid values, canonical case keys, aligned key_agents/key_agents_type, IPV summary fields, and source file paths.
+- Archived previous full-dataset run layouts under interhub_traj_lane/1_ipv_estimation_results/full_datasets/_archive/20260608/case_src and moved superseded CSV/diagnostic artifacts under _archive/20260608/old.
+- Updated the filled full-dataset CSV so legacy result paths now point to the archived source locations.
+Verification:
+- Manifest rows=31012; duplicate case_uid=0; duplicate canonical_case_key=0.
+- Source existence checks: missing_case_dir=0, missing_metadata=0, missing_ipv_table=0.
+- Valid cases by family: av2=2356, lyft=4076, nuplan=5827, waymo=18753.
+- Top-level full_datasets now contains only curated_valid_ipv_cases, _archive, and all_results_priority_rebuild_filtered_pet_lt_045_usable_with_av2_with_ipv_filled.csv.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_manifest.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_summary_by_dataset.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_summary_by_family.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/_archive/20260608/[2026-06-10 10:24:54 +08:00] STATUS: COMPLETED | TASK: Backfill curated IPV manifest from full-dataset index.csv with blank IPV values for missing cases.
+Outcome:
+- Reconciled curated valid_cases_manifest.csv against interhub_traj_lane/0_raw_data/full_datasets/index.csv using canonical_case_key = dataset|folder|scenario_idx|sorted key_agents|start|end.
+- Added 7226 index cases missing from the previous computed-only manifest with blank IPV columns and curation_status=missing_ipv_from_index.
+- Preserved 10 previously computed Lyft rows that are not present in this index.csv snapshot with curation_status=ipv_available_not_in_index.
+- Refreshed README, schema, dataset/family summaries, and generated missing/not-in-index detail CSVs.
+Verification:
+- index rows=38228; previous manifest rows=31012; final manifest rows=38238.
+- IPV available rows=31012; IPV missing rows=7226.
+- Missing by dataset: av2_motion_forecasting=50, lyft_train_full=1039, nuplan_train=1672, waymo_train=4465.
+- duplicate case_uid=0 and duplicate canonical_case_key=0; blank IPV values confirmed for all 7226 missing rows.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_manifest.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/index_missing_ipv_cases.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_not_in_index.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/index_backfill_summary.json
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_manifest_before_index_backfill_20260610.csv[2026-06-10 10:48:33 +08:00] STATUS: COMPLETED | TASK: Audit raw PKL availability for missing-IPV curated cases.
+Outcome:
+- Checked all 7226 curation_status=missing_ipv_from_index rows against interhub_traj_lane/0_raw_data/full_datasets/pkl.
+- Derived expected PKL file from dataset/folder and matched top-level PKL keys by index_scene_unique_id.
+- Verified both key_agents are present in trajectories, start/end frame numbers are covered by timestamps, and each key agent has valid xy positions in the requested window.
+- Merged raw audit columns into valid_cases_manifest.csv and index_missing_ipv_cases.csv for rerun planning.
+Verification:
+- pkl files expected=15; pkl file missing cases=0.
+- scene_found=7226, scene_missing=0.
+- key_agents_found=7226, key_agents_missing=0.
+- time_window_covered=7226, time_window_not_covered=0.
+- raw_usable_for_ipv_input=7226, not_usable_for_ipv_input=0.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/missing_ipv_raw_data_audit.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/missing_ipv_raw_data_audit_summary.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/missing_ipv_raw_data_audit_summary.json
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/index_missing_ipv_cases.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_manifest.csv[2026-06-10 11:22:04 +08:00] STATUS: COMPLETED | TASK: Prepare HPC scripts for full-dataset missing-IPV rerun.
+Outcome:
+- Added full_datasets PKL compatibility to process_subsets_for_yiru_ipv.py for scene_unique_id -> timestamps/trajectories/lane_centerlines events while preserving the older metadata/vehicles/road_info path.
+- Added finite-motion filtering so NaN-padded trajectory rows do not enter common-timestamp alignment.
+- Added tools/build_missing_ipv_rerun_input.py and generated interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.csv with 7226 raw-usable missing-IPV rows.
+- Added Slurm scripts for 4 array shards, each requesting 1 node and 96 CPUs, plus a merge script.
+- Added HPC_MISSING_IPV_RERUN_COMMANDS.md with upload, preflight, submit, monitor, rerun, and merge commands.
+- Default reference controls for this heavier batch are clip_margin_m=60, reference_max_points=40, reference_smooth_points=40; per-case timeout is 1800 seconds.
+Verification:
+- Rerun input rows=7226, duplicate_keys=0, missing_scene_id=0.
+- Local preflight matched_rows=7226 and unmatched_rows=0 across 15 PKL files.
+- Smoke test with reference_max_points=40 completed 1 case successfully in about 186 seconds locally; a 180-second timeout test recorded failure metadata without blocking subsequent work.
+- python -m pytest tests/test_process_subsets_for_yiru_ipv.py passed: 27 passed.
+- python -m py_compile process_subsets_for_yiru_ipv.py tools/build_missing_ipv_rerun_input.py passed.
+Artifacts:
+- process_subsets_for_yiru_ipv.py
+- tools/build_missing_ipv_rerun_input.py
+- submit_full_datasets_missing_ipv_array.sh
+- submit_full_datasets_missing_ipv_merge.sh
+- HPC_MISSING_IPV_RERUN_COMMANDS.md
+- interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.csv
+- interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.summary.json

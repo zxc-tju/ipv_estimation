@@ -70,6 +70,31 @@ def _event(*, folder="fold", scenario_idx=7, key_agents="a;b", track_ids=None):
     }
 
 
+def _full_dataset_event():
+    return {
+        "timestamps": [10, 11, 12, 13],
+        "trajectories": {
+            "a": {
+                "positions": [[np.nan, np.nan, 0], [0, 0, 0], [1, 0, 0], [2, 0, 0]],
+                "velocities": [[np.nan, np.nan], [1, 0], [1, 0], [1, 0]],
+                "headings": [np.nan, 0.0, 0.1, 0.2],
+                "reference_lane_ids": [[], ["L1"], ["L1"], ["L2"]],
+            },
+            "b": {
+                "positions": [[0, 1, 0], [1, 1, 0], [2, 1, 0], [np.nan, np.nan, 0]],
+                "velocities": [[1, 0], [1, 0], [1, 0], [np.nan, np.nan]],
+                "headings": [0.0, 0.1, 0.2, np.nan],
+                "reference_lane_ids": [["L3"], ["L3"], ["L3"], []],
+            },
+        },
+        "lane_centerlines": {
+            "L1": [[0, 0], [1, 0]],
+            "L2": [[1, 0], [2, 0]],
+            "L3": [[0, 1], [2, 1]],
+        },
+    }
+
+
 def test_build_event_index_uses_folder_scenario_key_agents_and_track_id(tmp_path):
     event = _event(folder="demo_folder", scenario_idx=42, key_agents="b;a", track_ids=["a", "b"])
     pkl_path = tmp_path / "demo.pkl"
@@ -82,6 +107,54 @@ def test_build_event_index_uses_folder_scenario_key_agents_and_track_id(tmp_path
     assert key in index
     assert index[key].segment_id == "segment_1"
     assert index[key].pkl_path == pkl_path
+
+
+def test_build_event_index_uses_scene_id_for_full_dataset_pkl_without_metadata(tmp_path):
+    pkl_path = tmp_path / "full.pkl"
+    with pkl_path.open("wb") as f:
+        pickle.dump({"ipv_000001": _full_dataset_event()}, f)
+    source = pd.DataFrame(
+        {
+            "scene_unique_id": ["ipv_000001"],
+            "folder": ["train_vegas3"],
+            "scenario_idx": [2400],
+            "track_id": ["a;b"],
+            "key_agents": ["a;b"],
+        }
+    )
+
+    index = mod.build_event_index(tmp_path, source)
+
+    key = ("train_vegas3", "2400", "a;b", "a;b")
+    assert key in index
+    assert index[key].segment_id == "ipv_000001"
+
+
+def test_load_event_normalizes_full_dataset_schema_and_filters_nan_motion(tmp_path):
+    pkl_path = tmp_path / "full.pkl"
+    with pkl_path.open("wb") as f:
+        pickle.dump({"ipv_000001": _full_dataset_event()}, f)
+    event_ref = mod.EventRef(pkl_path=pkl_path, segment_id="ipv_000001")
+    row = {
+        "dataset": "nuplan_train",
+        "folder": "train_vegas3",
+        "scenario_idx": 2400,
+        "track_id": "a;b",
+        "key_agents": "a;b",
+        "scene_unique_id": "ipv_000001",
+    }
+
+    event = mod.load_event(event_ref, row)
+    ref, source = mod.build_vehicle_reference(event, "a")
+    aligned = mod.align_key_agent_motion(event, ["a", "b"], min_steps=2)
+
+    assert event["metadata"]["scene_unique_id"] == "ipv_000001"
+    assert set(event["vehicles"]) == {"a", "b"}
+    assert source == "frame_lane_ids"
+    np.testing.assert_allclose(ref, [[0, 0], [1, 0], [2, 0]])
+    assert aligned.timestamps == [11, 12]
+    np.testing.assert_allclose(aligned.primary_motion[:, 0], [0, 1])
+    np.testing.assert_allclose(aligned.secondary_motion[:, 0], [1, 2])
 
 
 def test_reference_uses_lane_ids_then_frame_lane_ids():
@@ -235,6 +308,39 @@ def test_case_output_dir_uses_short_hash_instead_of_full_segment_id(tmp_path):
     assert segment_id not in str(case_dir)
     assert "row_00000_" in case_dir.name
     assert len(case_dir.name) < 24
+
+
+def test_case_output_dir_compacts_duplicate_folder_when_windows_path_is_too_long(tmp_path, monkeypatch):
+    monkeypatch.setattr(mod.os, "name", "nt")
+    row = {
+        "dataset": "av2_motion_forecasting",
+        "folder": "av2_motion_forecasting",
+        "scenario_idx": 249233,
+    }
+    segment_id = "av2_motion_forecasting_249233_0123456789abcdef_fedcba9876543210"
+    output_root = tmp_path / ("x" * 40)
+    legacy_dir = (
+        output_root
+        / "cases"
+        / "av2_motion_forecasting"
+        / "av2_motion_forecasting"
+        / "scenario_249233"
+        / "row_10334_74e08ad69983"
+    )
+    assert len(str((legacy_dir / "data" / "running_metadata.json").resolve(strict=False))) >= 260
+
+    case_dir = mod.case_output_dir(output_root, 10334, row, segment_id)
+
+    assert case_dir.parts.count("av2_motion_forecasting") == 1
+    assert len(str((case_dir / "data" / "running_metadata.json").resolve(strict=False))) < 260
+
+
+def test_exclude_csv_suffix_is_short_for_full_dataset_batch_outputs():
+    suffix = mod.exclude_csv_suffix(Path("selected_interactive_segments_equalized.csv"))
+
+    assert suffix.startswith("_excluding_")
+    assert len(suffix) <= len("_excluding_") + 24
+    assert "equalized" not in suffix
 
 
 def test_select_shard_rows_uses_modulo_positions_and_preserves_indices():

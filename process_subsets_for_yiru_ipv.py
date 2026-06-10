@@ -43,6 +43,8 @@ HEADING_THRESHOLD_DEG = 12.0
 WORKER_CANDIDATES = [1, 2, 4, 8, 12, 16]
 BENCHMARK_SAMPLE_SIZE = 48
 DATASET_DOWNSAMPLE_FACTORS = {"nuplan_train": 2}
+WINDOWS_MAX_PATH = 260
+EXCLUDE_CSV_SUFFIX_MAX_LEN = 24
 CSV_OUTPUT_COLUMNS = [
     "ipv_key_agent_1_mean",
     "ipv_key_agent_1_error_mean",
@@ -57,6 +59,7 @@ CSV_OUTPUT_COLUMNS = [
     "ipv_reference_source_2",
 ]
 CSV_KEY_COLUMNS = ["folder", "scenario_idx", "key_agents", "track_id"]
+SCENE_ID_COLUMNS = ("index_scene_unique_id", "scene_unique_id", "ipv_segment_id")
 
 _PKL_CACHE: Dict[Path, Mapping[str, object]] = {}
 
@@ -143,11 +146,24 @@ def _safe_name(value: object, max_len: int = 140) -> str:
     return (safe or "case")[:max_len]
 
 
-def _dedupe_preserve_order(values: Iterable[object]) -> List[str]:
+def _iter_reference_ids(values: object) -> Iterable[str]:
+    if values is None:
+        return
+    if isinstance(values, np.ndarray):
+        values = values.tolist()
+    if isinstance(values, (list, tuple, set)):
+        for item in values:
+            yield from _iter_reference_ids(item)
+        return
+    text = str(values)
+    if text and text.lower() != "nan" and text not in {"None", "-1"}:
+        yield text
+
+
+def _dedupe_preserve_order(values: object) -> List[str]:
     result: List[str] = []
-    for value in values:
-        text = str(value)
-        if text and text != "nan" and text not in result:
+    for text in _iter_reference_ids(values):
+        if text not in result:
             result.append(text)
     return result
 
@@ -169,7 +185,12 @@ def _as_xy_array(value: object) -> Optional[np.ndarray]:
         return None
     if arr.ndim != 2 or arr.shape[0] < 2 or arr.shape[1] < 2:
         return None
-    return _drop_consecutive_duplicate_points(arr[:, :2])
+    xy = arr[:, :2]
+    finite_mask = np.isfinite(xy).all(axis=1)
+    xy = xy[finite_mask]
+    if len(xy) < 2:
+        return None
+    return _drop_consecutive_duplicate_points(xy)
 
 
 def _load_pickle(path: Path) -> Mapping[str, object]:
@@ -210,19 +231,50 @@ def csv_key(row: Mapping[str, object]) -> Tuple[str, str, str, str]:
     )
 
 
-def build_event_index(pkl_root: Path) -> Dict[Tuple[str, str, str, str], EventRef]:
+def _scene_id_from_row(row: Mapping[str, object]) -> Optional[str]:
+    for column in SCENE_ID_COLUMNS:
+        value = row.get(column)
+        if value is None or pd.isna(value):
+            continue
+        text = str(value).strip()
+        if text and text.lower() != "nan":
+            return text
+    return None
+
+
+def _csv_scene_key_map(df: Optional[pd.DataFrame]) -> Dict[str, Tuple[str, str, str, str]]:
+    if df is None:
+        return {}
+    mapping: Dict[str, Tuple[str, str, str, str]] = {}
+    for _, row in df.iterrows():
+        row_dict = row.to_dict()
+        scene_id = _scene_id_from_row(row_dict)
+        if scene_id is not None:
+            mapping[scene_id] = csv_key(row_dict)
+    return mapping
+
+
+def build_event_index(
+    pkl_root: Path,
+    source_df: Optional[pd.DataFrame] = None,
+) -> Dict[Tuple[str, str, str, str], EventRef]:
     """Index pkl events by ``folder, scenario_idx, key_agents, track_id``."""
     index: Dict[Tuple[str, str, str, str], EventRef] = {}
     duplicates: List[Tuple[str, str, str, str]] = []
+    scene_key_map = _csv_scene_key_map(source_df)
     for pkl_path in sorted(Path(pkl_root).rglob("*.pkl")):
         data = _load_pickle(pkl_path)
         for segment_id, event in data.items():
             if not isinstance(event, Mapping):
                 continue
+            key = None
             metadata = event.get("metadata", {})
-            if not isinstance(metadata, Mapping):
+            if isinstance(metadata, Mapping) and metadata:
+                key = event_key_from_metadata(metadata)
+            else:
+                key = scene_key_map.get(str(segment_id))
+            if key is None:
                 continue
-            key = event_key_from_metadata(metadata)
             if key in index:
                 duplicates.append(key)
             index[key] = EventRef(pkl_path=Path(pkl_path), segment_id=str(segment_id))
@@ -231,12 +283,66 @@ def build_event_index(pkl_root: Path) -> Dict[Tuple[str, str, str, str], EventRe
     return index
 
 
-def load_event(event_ref: EventRef) -> Mapping[str, object]:
+def _metadata_from_row(row: Optional[Mapping[str, object]]) -> Dict[str, object]:
+    if row is None:
+        return {}
+    track_id = row.get("track_id", "")
+    try:
+        track_ids = parse_key_agents(track_id)
+    except ValueError:
+        track_ids = [part.strip() for part in str(track_id).split(";") if part.strip()]
+    return {
+        "dataset": row.get("dataset"),
+        "folder": row.get("folder"),
+        "scenario_idx": row.get("scenario_idx"),
+        "track_ids": track_ids,
+        "key_agents": row.get("key_agents"),
+        "two_multi": row.get("two/multi", row.get("two_multi")),
+        "scene_unique_id": _scene_id_from_row(row),
+    }
+
+
+def normalize_event_for_processing(
+    event: Mapping[str, object],
+    row: Optional[Mapping[str, object]] = None,
+) -> Mapping[str, object]:
+    """Normalize supported pkl event schemas to metadata/vehicles/road_info."""
+    if "vehicles" in event:
+        return event
+    trajectories = event.get("trajectories")
+    timestamps = event.get("timestamps")
+    if not isinstance(trajectories, Mapping) or timestamps is None:
+        return event
+
+    normalized_vehicles: Dict[str, Dict[str, object]] = {}
+    event_timestamps = list(timestamps)
+    for vehicle_id, vehicle in trajectories.items():
+        if not isinstance(vehicle, Mapping):
+            continue
+        vehicle_data = dict(vehicle)
+        vehicle_data.setdefault("timestamps", event_timestamps)
+        if "frame_lane_ids" not in vehicle_data:
+            for lane_column in ("reference_lane_ids", "current_lane_ids", "possible_lane_ids"):
+                if lane_column in vehicle_data:
+                    vehicle_data["frame_lane_ids"] = vehicle_data[lane_column]
+                    break
+        normalized_vehicles[str(vehicle_id)] = vehicle_data
+
+    return {
+        "metadata": _metadata_from_row(row),
+        "vehicles": normalized_vehicles,
+        "road_info": {"all_lane_centerlines": event.get("lane_centerlines", {})},
+        "timestamps": event_timestamps,
+        "_source_schema": "full_dataset_trajectories",
+    }
+
+
+def load_event(event_ref: EventRef, row: Optional[Mapping[str, object]] = None) -> Mapping[str, object]:
     data = _load_pickle(event_ref.pkl_path)
     event = data[event_ref.segment_id]
     if not isinstance(event, Mapping):
         raise TypeError(f"Event {event_ref.segment_id} is not dict-like")
-    return event
+    return normalize_event_for_processing(event, row=row)
 
 
 def build_vehicle_reference(event: Mapping[str, object], vehicle_id: str) -> Tuple[np.ndarray, str]:
@@ -255,7 +361,13 @@ def build_vehicle_reference(event: Mapping[str, object], vehicle_id: str) -> Tup
         if isinstance(raw_lane_map, Mapping):
             lane_map = {str(key): value for key, value in raw_lane_map.items()}
 
-    for source_name in ("lane_ids", "frame_lane_ids"):
+    for source_name in (
+        "lane_ids",
+        "frame_lane_ids",
+        "reference_lane_ids",
+        "current_lane_ids",
+        "possible_lane_ids",
+    ):
         lane_ids = _dedupe_preserve_order(vehicle.get(source_name, []))
         pieces: List[np.ndarray] = []
         for lane_id in lane_ids:
@@ -355,7 +467,23 @@ def _motion_arrays(vehicle: Mapping[str, object]) -> Tuple[np.ndarray, np.ndarra
     min_len = min(len(positions), len(velocities), len(headings), len(timestamps))
     if min_len == 0:
         raise ValueError("empty motion arrays")
-    return positions[:min_len, :2], velocities[:min_len, :2], headings[:min_len], timestamps[:min_len]
+    positions = positions[:min_len, :2]
+    velocities = velocities[:min_len, :2]
+    headings = headings[:min_len]
+    timestamps = timestamps[:min_len]
+    finite_mask = (
+        np.isfinite(positions).all(axis=1)
+        & np.isfinite(velocities).all(axis=1)
+        & np.isfinite(headings)
+    )
+    if not finite_mask.any():
+        raise ValueError("no finite motion rows")
+    return (
+        positions[finite_mask],
+        velocities[finite_mask],
+        headings[finite_mask],
+        [timestamp for timestamp, keep in zip(timestamps, finite_mask) if keep],
+    )
 
 
 def _motion_for_timestamps(vehicle: Mapping[str, object], timestamps: Sequence[object]) -> np.ndarray:
@@ -540,7 +668,7 @@ def dataset_filter_suffix(dataset_filter: Optional[Sequence[str]]) -> str:
 def exclude_csv_suffix(exclude_csv_path: Optional[Path]) -> str:
     if exclude_csv_path is None:
         return ""
-    return f"_excluding_{_safe_name(Path(exclude_csv_path).stem, max_len=80)}"
+    return f"_excluding_{_safe_name(Path(exclude_csv_path).stem, max_len=EXCLUDE_CSV_SUFFIX_MAX_LEN)}"
 
 
 def incomplete_suffix(only_incomplete: bool) -> str:
@@ -759,13 +887,37 @@ def _plot_case_summary(
     plt.close(fig)
 
 
+def _path_length(path: Path) -> int:
+    try:
+        return len(str(Path(path).resolve(strict=False)))
+    except OSError:
+        candidate = Path(path)
+        if not candidate.is_absolute():
+            candidate = Path.cwd() / candidate
+        return len(str(candidate))
+
+
+def _windows_path_too_long(path: Path) -> bool:
+    return os.name == "nt" and _path_length(path) >= WINDOWS_MAX_PATH
+
+
 def case_output_dir(output_root: Path, row_index: int, row: Mapping[str, object], segment_id: str) -> Path:
     dataset = _safe_name(row.get("dataset", "dataset"))
     folder = _safe_name(row.get("folder", "folder"))
     scenario = _safe_name(row.get("scenario_idx", "scenario"))
     segment_hash = hashlib.sha1(str(segment_id).encode("utf-8")).hexdigest()[:12]
     case = f"row_{row_index:05d}_{segment_hash}"
-    return Path(output_root) / "cases" / dataset / folder / f"scenario_{scenario}" / case
+    legacy = Path(output_root) / "cases" / dataset / folder / f"scenario_{scenario}" / case
+    if not _windows_path_too_long(legacy / "data" / "running_metadata.json"):
+        return legacy
+
+    compact = Path(output_root) / "cases" / dataset / f"scenario_{scenario}" / case
+    if not _windows_path_too_long(compact / "data" / "running_metadata.json"):
+        return compact
+
+    dataset_hash = hashlib.sha1(dataset.encode("utf-8")).hexdigest()[:10]
+    scenario_hash = hashlib.sha1(scenario.encode("utf-8")).hexdigest()[:10]
+    return Path(output_root) / "cases" / f"d_{dataset_hash}" / f"s_{scenario_hash}" / case
 
 
 def inspect_case_completion(
@@ -865,7 +1017,7 @@ def process_case(task: CaseTask) -> Dict[str, object]:
         "ipv_reference_source_2": "",
     }
     try:
-        event = load_event(task.event_ref)
+        event = load_event(task.event_ref, row)
         key_agents = parse_key_agents(row["key_agents"])
         aligned = align_key_agent_motion(
             event,
@@ -1305,7 +1457,7 @@ def _summarize_reference_coverage(
         event_ref = event_index.get(csv_key(row.to_dict()))
         if event_ref is None:
             continue
-        event = load_event(event_ref)
+        event = load_event(event_ref, row.to_dict())
         dataset = str(row.get("dataset"))
         for vehicle_id in parse_key_agents(row["key_agents"]):
             try:
@@ -1348,7 +1500,7 @@ def run_preflight(
     df = pd.read_csv(csv_path)
     source_rows = len(df)
     df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
-    event_index = build_event_index(pkl_root)
+    event_index = build_event_index(pkl_root, df)
     matched = 0
     unmatched_examples: List[Dict[str, object]] = []
     for row_index, row in df.iterrows():
@@ -1428,7 +1580,7 @@ def run_worker_benchmark(
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
-    event_index = build_event_index(pkl_root)
+    event_index = build_event_index(pkl_root, df)
     sample_indices = _benchmark_sample_indices(df)
     sample_df = df.loc[sample_indices]
     records: List[Dict[str, object]] = []
@@ -1562,7 +1714,7 @@ def run_processing(
     df = select_dataset_rows(df, dataset_filter)
     dataset_selected_rows = len(df)
     df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
-    event_index = build_event_index(pkl_root)
+    event_index = build_event_index(pkl_root, df)
     completion_status_counts: Dict[str, int] = {}
     incomplete_total: Optional[int] = None
     if only_incomplete:
@@ -1787,7 +1939,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     if args.scan_incomplete_only:
         df = select_dataset_rows(pd.read_csv(args.csv), args.dataset_filter)
         df, exclude_summary = exclude_csv_rows(df, args.exclude_csv)
-        event_index = build_event_index(args.pkl_root)
+        event_index = build_event_index(args.pkl_root, df)
         completion_df = scan_case_completion(df, event_index, output_root=args.output_root)
         suffix = incomplete_suffix(True) + dataset_filter_suffix(args.dataset_filter) + exclude_csv_suffix(args.exclude_csv)
         scan_csv = args.output_root / f"case_completion_scan{suffix}.csv"
