@@ -422,6 +422,7 @@ def test_merge_shard_outputs_combines_csv_columns_by_key(tmp_path):
     summary = mod.merge_shard_outputs(csv_path, output_root, shard_count=2)
     merged = pd.read_csv(summary["csv_output"])
 
+    assert Path(summary["csv_output"]).name == "selected_interactive_segments_equalized_with_ipv.csv"
     assert summary["merged_rows"] == 3
     assert merged["ipv_result_status"].tolist() == ["ok", "ok", "ok"]
     assert merged["ipv_key_agent_1_mean"].tolist() == ["s0-a0", "s1-a0", "s0-a1"]
@@ -470,6 +471,7 @@ def test_merge_shard_outputs_can_patch_existing_base_csv(tmp_path):
     )
     merged = pd.read_csv(summary["csv_output"])
 
+    assert Path(summary["csv_output"]).name == "selected_interactive_segments_equalized_with_ipv.csv"
     assert summary["merged_rows"] == 1
     assert summary["missing_rows"] == 1
     assert merged["ipv_key_agent_1_mean"].tolist() == ["new-nuplan", "keep-waymo"]
@@ -498,17 +500,49 @@ def test_merge_shard_outputs_uses_exclude_suffix_and_reports_excluded_rows(tmp_p
     output_root.mkdir()
     suffix = mod.exclude_csv_suffix(exclude_csv)
     patch.to_csv(
-        output_root / f"selected_interactive_segments_equalized_with_ipv{suffix}_shard_00_of_01.csv",
+        output_root / f"selected_interactive_segments_nuplan_agv_full_with_ipv{suffix}_shard_00_of_01.csv",
         index=False,
     )
 
     summary = mod.merge_shard_outputs(csv_path, output_root, shard_count=1, exclude_csv_path=exclude_csv)
     merged = pd.read_csv(summary["csv_output"])
 
+    assert Path(summary["csv_output"]).name == "selected_interactive_segments_nuplan_agv_full_with_ipv.csv"
     assert summary["merged_rows"] == 2
     assert summary["excluded_rows"] == 1
     assert summary["missing_rows"] == 1
     assert merged["ipv_result_status"].fillna("").tolist() == ["ok", "", "ok"]
+
+
+def test_merge_shard_outputs_accepts_legacy_shard_names(tmp_path):
+    source = pd.DataFrame(
+        {
+            "folder": ["a"],
+            "scenario_idx": [1],
+            "track_id": ["ta"],
+            "key_agents": ["ka1;ka2"],
+        }
+    )
+    csv_path = tmp_path / "missing_ipv_rerun_input.csv"
+    source.to_csv(csv_path, index=False)
+
+    patch = source.copy()
+    for column in mod.CSV_OUTPUT_COLUMNS:
+        patch[column] = ""
+    patch["ipv_result_status"] = "ok"
+
+    output_root = tmp_path / "out"
+    output_root.mkdir()
+    patch.to_csv(
+        output_root / "selected_interactive_segments_equalized_with_ipv_shard_00_of_01.csv",
+        index=False,
+    )
+
+    summary = mod.merge_shard_outputs(csv_path, output_root, shard_count=1)
+
+    assert Path(summary["csv_output"]).name == "missing_ipv_rerun_input_with_ipv.csv"
+    assert Path(summary["shard_files"][0]).name == "selected_interactive_segments_equalized_with_ipv_shard_00_of_01.csv"
+    assert summary["merged_rows"] == 1
 
 
 def test_run_processing_propagates_save_plots_flag(tmp_path, monkeypatch):

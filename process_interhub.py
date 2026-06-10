@@ -695,6 +695,22 @@ def shard_suffix(shard_index: int, shard_count: int) -> str:
     return f"_shard_{shard_index:0{width}d}_of_{shard_count:0{width}d}"
 
 
+def output_csv_stem(csv_path: Path) -> str:
+    """Return the result CSV stem derived from the input CSV name."""
+    return f"{Path(csv_path).stem}_with_ipv"
+
+
+def result_csv_path(
+    output_root: Path,
+    csv_path: Path,
+    suffix: str = "",
+    *,
+    legacy_name: bool = False,
+) -> Path:
+    stem = "selected_interactive_segments_equalized_with_ipv" if legacy_name else output_csv_stem(csv_path)
+    return Path(output_root) / f"{stem}{suffix}.csv"
+
+
 def merge_shard_outputs(
     csv_path: Path,
     output_root: Path,
@@ -733,10 +749,12 @@ def merge_shard_outputs(
     unmatched_shard_keys: List[Tuple[str, str, str, str]] = []
     suffix = incomplete_suffix(only_incomplete) + dataset_filter_suffix(dataset_filter) + exclude_csv_suffix(exclude_csv_path)
     for shard_index in range(shard_count):
-        shard_path = (
-            output_root
-            / f"selected_interactive_segments_equalized_with_ipv{suffix}{shard_suffix(shard_index, shard_count)}.csv"
-        )
+        shard_name_suffix = f"{suffix}{shard_suffix(shard_index, shard_count)}"
+        shard_path = result_csv_path(output_root, csv_path, shard_name_suffix)
+        if not shard_path.exists():
+            legacy_shard_path = result_csv_path(output_root, csv_path, shard_name_suffix, legacy_name=True)
+            if legacy_shard_path.exists():
+                shard_path = legacy_shard_path
         if not shard_path.exists():
             raise FileNotFoundError(f"Missing shard CSV: {shard_path}")
         shard_files.append(str(shard_path))
@@ -761,7 +779,7 @@ def merge_shard_outputs(
         raise ValueError(f"Shard rows not found in source CSV: {unmatched_shard_keys[:5]}")
 
     output_root.mkdir(parents=True, exist_ok=True)
-    csv_output = output_root / "selected_interactive_segments_equalized_with_ipv.csv"
+    csv_output = result_csv_path(output_root, csv_path)
     merged.to_csv(csv_output, index=False, encoding="utf-8-sig")
     missing_rows = len(merged) - len(seen_keys)
     status_counts = {
@@ -1769,7 +1787,7 @@ def run_processing(
     suffix += exclude_csv_suffix(exclude_csv_path)
     if shard_index is not None and shard_count is not None:
         suffix += shard_suffix(shard_index, shard_count)
-    csv_output = output_root / f"selected_interactive_segments_equalized_with_ipv{suffix}.csv"
+    csv_output = result_csv_path(output_root, csv_path, suffix)
     csv_copy.to_csv(csv_output, index=False, encoding="utf-8-sig")
     status_counts: Dict[str, int] = {}
     for result in results.values():

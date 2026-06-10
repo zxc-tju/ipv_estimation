@@ -164,7 +164,7 @@ python process_interhub.py \
 Merged output:
 
 ```text
-interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/selected_interactive_segments_equalized_with_ipv.csv
+interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/missing_ipv_rerun_input_with_ipv.csv
 ```
 
 ## 7. Failure policy and knobs
