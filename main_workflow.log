@@ -867,3 +867,21 @@ Artifacts:
 - interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/local_archive_csv_merge_summary.json
 - interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_manifest.csv
 - interhub_traj_lane/1_ipv_estimation_results/full_datasets/valid_cases_manifest.csv
+[2026-06-10 22:46:42 +08:00] STATUS: COMPLETED | TASK: Resolve ambiguous missing-IPV result CSV naming.
+Outcome:
+- Updated process_interhub.py so IPV output CSV stems are derived from the input CSV name instead of always using selected_interactive_segments_equalized_with_ipv.
+- Future missing-IPV reruns now write missing_ipv_rerun_input_with_ipv.csv and matching shard names.
+- Kept legacy shard-name fallback in merge_shard_outputs so older shard outputs remain mergeable.
+- Renamed the local downloaded missing-IPV merged CSV and shard CSVs to missing_ipv_rerun_input_with_ipv*.csv.
+- Updated local manifest and summary references from selected_interactive_segments_equalized_with_ipv.csv to missing_ipv_rerun_input_with_ipv.csv.
+- Pulled the new code on HPC, regenerated merge_summary.json, renamed remote shard CSVs, removed old selected_interactive_segments_equalized_with_ipv*.csv files, and verified they are absent.
+Verification:
+- python -m py_compile process_interhub.py process_subsets_for_yiru_ipv.py process_interhub_json_legacy.py passed.
+- python -m pytest tests/test_process_subsets_for_yiru_ipv.py -q passed with 28 tests.
+- Local missing_ipv_rerun directory has no selected_interactive_segments_equalized_with_ipv*.csv files.
+- Local and HPC merge_summary.json point to missing_ipv_rerun_input_with_ipv.csv and missing_ipv_rerun_input_with_ipv_incomplete_shard_*.csv.
+Artifacts:
+- process_interhub.py
+- tests/test_process_subsets_for_yiru_ipv.py
+- HPC_MISSING_IPV_RERUN_COMMANDS.md
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/missing_ipv_rerun_input_with_ipv.csv
