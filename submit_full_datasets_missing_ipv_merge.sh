@@ -17,7 +17,7 @@ conda activate ipv
 
 cd "${SLURM_SUBMIT_DIR:-$(pwd)}"
 
-SCRIPT="process_subsets_for_yiru_ipv.py"
+SCRIPT="process_interhub.py"
 CSV_PATH="interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.csv"
 PKL_ROOT="interhub_traj_lane/0_raw_data/full_datasets/pkl"
 OUTPUT_ROOT="interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun"

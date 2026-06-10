@@ -20,7 +20,7 @@ Remote repository:
   `curation_status == missing_ipv_from_index`.
 - The generated rerun CSV is:
   `interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.csv`.
-- The raw pkl schema is `scene_unique_id -> {timestamps, trajectories, lane_centerlines}`, not the earlier `metadata/vehicles/road_info` schema. `process_subsets_for_yiru_ipv.py` handles both schemas.
+- The raw pkl schema is `scene_unique_id -> {timestamps, trajectories, lane_centerlines}`, not the earlier `metadata/vehicles/road_info` schema. `process_interhub.py` handles both schemas.
 - All 7,226 missing-IPV rows were audited locally as raw-usable.
 - nuPlan still runs at 10Hz through the built-in downsample factor 2.
 - This batch has long references and heavier cases. Defaults are conservative:
@@ -85,7 +85,7 @@ conda activate ipv
 
 python tools/build_missing_ipv_rerun_input.py
 
-python process_subsets_for_yiru_ipv.py \
+python process_interhub.py \
   --csv interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.csv \
   --pkl-root interhub_traj_lane/0_raw_data/full_datasets/pkl \
   --output-root interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun \
@@ -130,7 +130,7 @@ squeue -u u25310231
 Check completion without computing:
 
 ```bash
-python process_subsets_for_yiru_ipv.py \
+python process_interhub.py \
   --skip-preflight \
   --scan-incomplete-only \
   --csv interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.csv \
@@ -151,7 +151,7 @@ SHARD_COUNT=4 sbatch submit_full_datasets_missing_ipv_merge.sh
 Or merge directly on the login node:
 
 ```bash
-python process_subsets_for_yiru_ipv.py \
+python process_interhub.py \
   --skip-preflight \
   --merge-shards \
   --only-incomplete \

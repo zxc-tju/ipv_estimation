@@ -810,3 +810,19 @@ Verification:
 - Parent nuplan_agv_all directory remains present; only the stale pkl subdirectory was removed.
 Artifacts:
 - HPC_MISSING_IPV_RERUN_COMMANDS.md
+[2026-06-10 18:28:57 +08:00] STATUS: COMPLETED | TASK: Rename current InterHub CSV/pkl IPV entrypoint.
+Outcome:
+- Renamed the current CSV/pkl IPV pipeline to process_interhub.py.
+- Moved the old JSON-oriented InterHub script to process_interhub_json_legacy.py.
+- Kept process_subsets_for_yiru_ipv.py as a backward-compatible wrapper for older commands/imports.
+- Updated Slurm scripts, HPC command guides, tests, AGENTS.md, and PROJECT_STRUCTURE.md to point current InterHub runs at process_interhub.py.
+Verification:
+- python -m py_compile process_interhub.py process_subsets_for_yiru_ipv.py process_interhub_json_legacy.py tools/build_missing_ipv_rerun_input.py passed.
+- python -m pytest tests/test_process_subsets_for_yiru_ipv.py -q passed with 27 tests.
+Artifacts:
+- process_interhub.py
+- process_interhub_json_legacy.py
+- process_subsets_for_yiru_ipv.py
+- submit_full_datasets_missing_ipv_array.sh
+- submit_full_datasets_missing_ipv_merge.sh
+- HPC_MISSING_IPV_RERUN_COMMANDS.md

@@ -1,4 +1,4 @@
-﻿# 2_sociality_estimation 项目结构文档
+# 2_sociality_estimation 项目结构文档
 
 ## 1. 项目定位
 本项目围绕“交互偏好值（IPV, Interaction Preference Value）”展开，包含两条主线：
@@ -16,7 +16,8 @@
 ├─ simulator.py                 # 交互仿真框架（Scenario/Simulator）
 ├─ ipv_estimation.py            # 面向数据管线的 IPV 估计封装
 ├─ process_argoverse.py         # Argoverse 批处理入口
-├─ process_interhub.py          # Interhub JSON 批处理入口
+├─ process_interhub.py          # InterHub CSV/pkl IPV 批处理入口
+├─ process_interhub_json_legacy.py # 旧版 InterHub JSON 批处理入口
 ├─ batch_process_ipv.py         # 二次统计：回写 mean_ipv 到 metadata
 ├─ submit.sh                    # SLURM 集群批处理脚本（Interhub）
 ├─ requirements.txt             # 依赖列表
@@ -98,16 +99,17 @@
   - 若启用调试，导出虚拟轨迹图。
 - 并行：`ProcessPoolExecutor`（`max_workers` 控制）。
 
-### Interhub 管线（`process_interhub.py`）
-- 输入：`interhub_traj_lane/trajectory_data_*.json`
+### InterHub 管线（`process_interhub.py`）
+- 输入：InterHub CSV 索引 + pkl 事件数据，支持 subset 与 full dataset。
 - 处理步骤：
-  - `_load_dataset`：清洗与按 scenario/vehicle 重组；
-  - `_select_vehicle_pair`：优先 AV-HV，其次 HV-HV；
-  - `_classify_heading`：按航向变化分类 `lt/rt/gs`；
-  - `_build_motion_sequence` + `estimate_ipv_pair`；
-  - 输出 Excel、IPV 曲线、metadata；
-  - 对跳过样本生成诊断图。
-- 并行：`ProcessPoolExecutor`（支持 `--workers`）。
+  - 按 CSV 元数据索引 pkl 事件；
+  - 提取 `key_agents` 对应双车轨迹；
+  - 从 lane centerline 或观测轨迹构建参考线；
+  - 对 nuPlan 数据下采样到 10Hz；
+  - 调用 `estimate_ipv_pair`；
+  - 输出 per-case metadata、CSV 汇总、失败记录和可选诊断图。
+- 并行：`ProcessPoolExecutor`（支持 `--workers`、shard、only-incomplete 和 case timeout）。
+- 旧版 JSON 管线保留在 `process_interhub_json_legacy.py`。
 
 ---
 
@@ -151,7 +153,7 @@ simulator.py
 
 ### 7.1 输入
 - Argoverse：代码当前按脚本目录下 `0_souce_data/` 读取。
-- Interhub：`interhub_traj_lane/trajectory_data_*.json`。
+- InterHub：CSV 索引 + pkl 事件数据；旧版 JSON 输入由 `process_interhub_json_legacy.py` 处理。
 - 仿真附属资源：`background_pic/*`、`NDS_analysis`（当前仓库未包含该模块文件）。
 
 ### 7.2 输出
@@ -167,7 +169,7 @@ simulator.py
 - 集群并行：`submit.sh`
   - SLURM array（`--array=0-6`）映射多个 JSON；
   - 每任务 `--cpus-per-task=96`；
-  - 调用 `python process_interhub.py --workers "$WORKERS" "$TARGET"`。
+  - 旧版 JSON 批处理调用 `python process_interhub_json_legacy.py --workers "$WORKERS" "$TARGET"`。
 
 ---
 

@@ -28,7 +28,7 @@ JSON_FILES=(
     "trajectory_data_lyft_train_full.json"
 )
 
-SCRIPT="process_interhub.py"
+SCRIPT="process_interhub_json_legacy.py"
 TARGET=${JSON_FILES[$SLURM_ARRAY_TASK_ID]}
 WORKERS=$((SLURM_NTASKS * SLURM_CPUS_PER_TASK))   # 1 node × 96 cores = 96
 

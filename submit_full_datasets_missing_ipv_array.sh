@@ -27,7 +27,7 @@ export SCIPY_NUM_THREADS=${SCIPY_NUM_THREADS:-1}
 export MPLBACKEND=Agg
 export PYTHONUNBUFFERED=1
 
-SCRIPT="process_subsets_for_yiru_ipv.py"
+SCRIPT="process_interhub.py"
 INPUT_BUILDER="tools/build_missing_ipv_rerun_input.py"
 CSV_PATH="interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.csv"
 PKL_ROOT="interhub_traj_lane/0_raw_data/full_datasets/pkl"

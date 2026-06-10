@@ -1,10 +1,10 @@
-﻿# Repository Guidelines
+# Repository Guidelines
 
 ## Project Structure & Module Organization
-Core estimation logic lives in `agent.py`, `simulator.py`, and `ipv_estimation.py`; keep shared helpers in `tools/`. Dataset-specific pipelines are `process_argoverse.py` (expects folders under `argoverse/0_souce_data/`) and `process_interhub.py` (targets JSONs in `interhub_traj_lane/`). Generated reports land in `argoverse/1_experiment_result/` and `interhub_traj_lane/ipv_estimation/`; these paths are gitignored, so stage only code and lightweight configs.
+Core estimation logic lives in `agent.py`, `simulator.py`, and `ipv_estimation.py`; keep shared helpers in `tools/`. Dataset-specific pipelines are `process_argoverse.py` (expects folders under `argoverse/0_souce_data/`) and `process_interhub.py` (targets InterHub CSV/pkl datasets, including subset and full-dataset runs). The legacy JSON InterHub entrypoint is `process_interhub_json_legacy.py`. Generated reports land in `argoverse/1_experiment_result/` and `interhub_traj_lane/ipv_estimation/`; these paths are gitignored, so stage only code and lightweight configs.
 
 ## Build, Test, and Development Commands
-Create environments with `python -m venv venv && venv\Scripts\activate` on Windows or `conda create -n ipv python=3.9`. Install dependencies via `pip install -r requirements-minimal.txt` for clusters or `requirements.txt` locally. Run Argoverse processing with `python process_argoverse.py`; invoke Interhub jobs through `python process_interhub.py --diagnostics trajectory_data_interaction_single.json`. For batch HPC runs submit `sbatch submit.sh`, which parallelises across JSON datasets and propagates the `--workers` value.
+Create environments with `python -m venv venv && venv\Scripts\activate` on Windows or `conda create -n ipv python=3.9`. Install dependencies via `pip install -r requirements-minimal.txt` for clusters or `requirements.txt` locally. Run Argoverse processing with `python process_argoverse.py`; invoke current InterHub CSV/pkl jobs through `python process_interhub.py --csv <input.csv> --pkl-root <pkl_dir>`. For legacy JSON batch HPC runs submit `sbatch submit.sh`, which parallelises across JSON datasets and propagates the `--workers` value.
 
 ## Coding Style & Naming Conventions
 Follow PEP 8 with 4-space indents, `snake_case` functions, and `CamelCase` classes. Modules favour explicit type hints and docstrings; mirror that when extending APIs. Prefer `logging` over `print` (see existing `LOGGER` usage) and keep plotting helpers under the dataset modules. Place reusable utilities inside `tools/` rather than the dataset scripts.

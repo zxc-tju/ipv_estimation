@@ -6,7 +6,7 @@
 C:/Users/46936/OneDrive/Desktop/Projects/1_Codes/2_sociality_estimation/interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all
 ```
 
-CSV 共有 10335 行，当前本地预检结果是 `pkl_events=10335`、`matched_rows=10335`、`unmatched_rows=0`。其中 `nuplan_train=7825`、`av2_motion_forecasting=2510`。现有 `process_subsets_for_yiru_ipv.py` 已经对 `nuplan_train` 使用下采样因子 2，也就是 20Hz -> 10Hz；Argoverse/AV2 保持原采样。
+CSV 共有 10335 行，当前本地预检结果是 `pkl_events=10335`、`matched_rows=10335`、`unmatched_rows=0`。其中 `nuplan_train=7825`、`av2_motion_forecasting=2510`。现有 `process_interhub.py` 已经对 `nuplan_train` 使用下采样因子 2，也就是 20Hz -> 10Hz；Argoverse/AV2 保持原采样。
 
 本次 full dataset 计算默认排除已经在 `interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv` 中出现过的 case。按 `folder + scenario_idx + key_agents + track_id` 匹配，当前重叠 5000 行，排除后实际需要计算 5335 行：`nuplan_train=5325`、`av2_motion_forecasting=10`。子集结果后续再统一汇总进 full 结果。
 
@@ -22,7 +22,7 @@ REMOTE_HOST="u25310231@logini.tongji.edu.cn"
 REMOTE_REPO="/share/home/u25310231/ZXC/ipv_estimation"
 
 rsync -avz --progress -e "ssh -p 10022" \
-  "$LOCAL_REPO/process_subsets_for_yiru_ipv.py" \
+  "$LOCAL_REPO/process_interhub.py" \
   "$LOCAL_REPO/submit_full_datasets_nuplan_agv_ipv_array.sh" \
   "$LOCAL_REPO/submit_full_datasets_nuplan_agv_ipv_merge.sh" \
   "$REMOTE_HOST:$REMOTE_REPO/"
@@ -46,7 +46,7 @@ cd /share/home/u25310231/ZXC/ipv_estimation
 source /share/apps/miniconda3/etc/profile.d/conda.sh
 conda activate ipv
 
-python process_subsets_for_yiru_ipv.py \
+python process_interhub.py \
   --csv interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl/selected_interactive_segments_nuplan_agv_full.csv \
   --pkl-root interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl \
   --output-root interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all \
@@ -70,7 +70,7 @@ unmatched_rows=0
 如果之前任务被终止，先扫描 case artifacts。这个命令不会计算，只统计已经完成和还没完成的 case：
 
 ```bash
-python process_subsets_for_yiru_ipv.py \
+python process_interhub.py \
   --csv interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl/selected_interactive_segments_nuplan_agv_full.csv \
   --pkl-root interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl \
   --output-root interhub_traj_lane/1_ipv_estimation_results/full_datasets/nuplan_agv_all \

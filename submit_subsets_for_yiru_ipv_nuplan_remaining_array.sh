@@ -27,7 +27,7 @@ export SCIPY_NUM_THREADS=${SCIPY_NUM_THREADS:-1}
 export MPLBACKEND=Agg
 export PYTHONUNBUFFERED=1
 
-SCRIPT="process_subsets_for_yiru_ipv.py"
+SCRIPT="process_interhub.py"
 CSV_PATH="interhub_traj_lane/0_raw_data/subsets_for_yiru/selected_interactive_segments_equalized.csv"
 PKL_ROOT="interhub_traj_lane/0_raw_data/subsets_for_yiru/pkl"
 OUTPUT_ROOT="interhub_traj_lane/1_ipv_estimation_results/subsets_for_yiru"
