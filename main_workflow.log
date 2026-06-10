@@ -826,3 +826,18 @@ Artifacts:
 - submit_full_datasets_missing_ipv_array.sh
 - submit_full_datasets_missing_ipv_merge.sh
 - HPC_MISSING_IPV_RERUN_COMMANDS.md
+[2026-06-10 20:44:49 +08:00] STATUS: COMPLETED | TASK: Run and monitor HPC missing-IPV rerun through completion.
+Outcome:
+- Submitted and monitored Slurm array job 1642356 for 7,226 missing-IPV InterHub cases using 4 nodes with 96 CPUs per shard.
+- Confirmed all case artifacts completed: metadata_json=7226, failure_metadata_json=0.
+- Ran completion scan with complete_rows=7226, incomplete_rows=0, reason_counts={complete: 7226}.
+- Merged four shard CSV outputs into interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/selected_interactive_segments_equalized_with_ipv.csv.
+- Confirmed merged_rows=7226, ipv_result_status ok=7226, and no missing mean IPV rows.
+- Final IPV nonzero health check: valid=7226, nonzero_cases=6740, all_zero_cases=486, read_errors=0.
+Verification:
+- HPC verify_hpc_missing_ipv_done.py reported merged_csv_exists=true, merged_rows=7226, status_counts={ok: 7226}, metadata_json=7226, failure_metadata_json=0, scan_incomplete_rows=0.
+- Final by-dataset all-zero counts: AV2 1/50, Lyft 156/1039, nuPlan 8/1672, Waymo 321/4465.
+Artifacts:
+- /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/selected_interactive_segments_equalized_with_ipv.csv
+- /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/case_completion_scan_incomplete.json
+- /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/ipv_nonzero_completed_report.json
