@@ -10,13 +10,13 @@ import pandas as pd
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_MISSING_CSV = (
+DEFAULT_SOURCE_CSV = (
     REPO_ROOT
     / "interhub_traj_lane"
     / "1_ipv_estimation_results"
     / "full_datasets"
     / "curated_valid_ipv_cases"
-    / "index_missing_ipv_cases.csv"
+    / "valid_cases_manifest.csv"
 )
 DEFAULT_OUTPUT_CSV = (
     REPO_ROOT
@@ -68,13 +68,13 @@ def _first_existing_column(df: pd.DataFrame, candidates: List[str]) -> pd.Series
 
 
 def build_rerun_input(
-    missing_csv: Path,
+    source_csv: Path,
     output_csv: Path,
     summary_json: Path,
     *,
     include_unusable: bool = False,
 ) -> Dict[str, object]:
-    df = pd.read_csv(missing_csv, low_memory=False)
+    df = pd.read_csv(source_csv, low_memory=False)
     if "curation_status" in df.columns:
         df = df[df["curation_status"].astype(str).eq("missing_ipv_from_index")].copy()
     if "raw_usable_for_ipv_input" in df.columns and not include_unusable:
@@ -121,7 +121,7 @@ def build_rerun_input(
     output_csv.parent.mkdir(parents=True, exist_ok=True)
     output.to_csv(output_csv, index=False, encoding="utf-8-sig")
     summary = {
-        "source_csv": str(missing_csv),
+        "source_csv": str(source_csv),
         "output_csv": str(output_csv),
         "rows": int(len(output)),
         "duplicate_keys": duplicate_keys,
@@ -142,7 +142,18 @@ def build_rerun_input(
 
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--missing-csv", type=Path, default=DEFAULT_MISSING_CSV)
+    parser.add_argument(
+        "--source-csv",
+        "--missing-csv",
+        dest="source_csv",
+        type=Path,
+        default=DEFAULT_SOURCE_CSV,
+        help=(
+            "Source CSV. Defaults to the curated all-case manifest and filters "
+            "curation_status=missing_ipv_from_index. The legacy --missing-csv "
+            "alias is still accepted."
+        ),
+    )
     parser.add_argument("--output-csv", type=Path, default=DEFAULT_OUTPUT_CSV)
     parser.add_argument("--summary-json", type=Path, default=DEFAULT_SUMMARY_JSON)
     parser.add_argument("--include-unusable", action="store_true")
@@ -152,7 +163,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = build_arg_parser().parse_args()
     summary = build_rerun_input(
-        args.missing_csv,
+        args.source_csv,
         args.output_csv,
         args.summary_json,
         include_unusable=args.include_unusable,
