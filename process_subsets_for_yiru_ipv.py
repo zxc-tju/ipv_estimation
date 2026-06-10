@@ -17,7 +17,7 @@ from contextlib import contextmanager
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Dict, Iterable, Iterator, List, Mapping, Optional, Sequence, Tuple
 
 import matplotlib
 
@@ -206,6 +206,21 @@ def _load_pickle(path: Path) -> Mapping[str, object]:
     return data
 
 
+def iter_pickle_files(pkl_root: Path) -> Iterator[Path]:
+    """Yield real pickle files while ignoring temporary hidden directories."""
+    root = Path(pkl_root)
+    for path in sorted(root.rglob("*.pkl")):
+        if not path.is_file():
+            continue
+        try:
+            relative_path = path.relative_to(root)
+        except ValueError:
+            relative_path = path
+        if any(part.startswith(".") for part in relative_path.parts[:-1]):
+            continue
+        yield path
+
+
 def parse_key_agents(value: object) -> List[str]:
     agents = [part.strip() for part in str(value).split(";") if part.strip()]
     if len(agents) != 2:
@@ -262,7 +277,7 @@ def build_event_index(
     index: Dict[Tuple[str, str, str, str], EventRef] = {}
     duplicates: List[Tuple[str, str, str, str]] = []
     scene_key_map = _csv_scene_key_map(source_df)
-    for pkl_path in sorted(Path(pkl_root).rglob("*.pkl")):
+    for pkl_path in iter_pickle_files(pkl_root):
         data = _load_pickle(pkl_path)
         for segment_id, event in data.items():
             if not isinstance(event, Mapping):
@@ -1517,7 +1532,7 @@ def run_preflight(
         "csv_rows": int(source_rows),
         "selected_rows": int(len(df)),
         **exclude_summary,
-        "pkl_files": [path.relative_to(pkl_root).as_posix() for path in sorted(Path(pkl_root).rglob("*.pkl"))],
+        "pkl_files": [path.relative_to(pkl_root).as_posix() for path in iter_pickle_files(pkl_root)],
         "pkl_events": int(len(event_index)),
         "matched_rows": int(matched),
         "unmatched_rows": int(len(df) - matched),
