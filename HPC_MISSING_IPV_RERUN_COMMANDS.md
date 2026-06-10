@@ -44,7 +44,7 @@ ssh tongji-hpc "cd /share/home/u25310231/ZXC/ipv_estimation && \
      tools/build_missing_ipv_rerun_input.py"
 ```
 
-## 2. Sync the minimum data needed
+## 2. Sync the required data
 
 The process files under `curated_valid_ipv_cases` are archived locally, so only the all-case manifest is needed.
 
@@ -61,38 +61,18 @@ scp `
   "tongji-hpc:$REMOTE_REPO/interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/"
 ```
 
-HPC already has the earlier nuPlan/AV2 pkl files under:
-
-```text
-interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl
-```
-
-Link them into the new unified pkl root:
-
-```bash
-ssh tongji-hpc 'cd /share/home/u25310231/ZXC/ipv_estimation && \
-  mkdir -p interhub_traj_lane/0_raw_data/full_datasets/pkl && \
-  cd interhub_traj_lane/0_raw_data/full_datasets/pkl && \
-  for f in ../nuplan_agv_all/pkl/*.pkl; do ln -sfn "$f" "$(basename "$f")"; done'
-```
-
-Then sync the pkl files that are not already on HPC: Lyft and Waymo.
+The earlier HPC `nuplan_agv_all/pkl` files were from an older data layout and should not be reused. Sync the current full pkl set from local:
 
 ```powershell
-scp `
-  "$LOCAL_REPO\interhub_traj_lane\0_raw_data\full_datasets\pkl\lyft_train_full.pkl" `
-  "$LOCAL_REPO\interhub_traj_lane\0_raw_data\full_datasets\pkl\waymo_0-299.pkl" `
-  "$LOCAL_REPO\interhub_traj_lane\0_raw_data\full_datasets\pkl\waymo_300-499.pkl" `
-  "$LOCAL_REPO\interhub_traj_lane\0_raw_data\full_datasets\pkl\waymo_500-799.pkl" `
-  "$LOCAL_REPO\interhub_traj_lane\0_raw_data\full_datasets\pkl\waymo_800-999.pkl" `
+scp "$LOCAL_REPO\interhub_traj_lane\0_raw_data\full_datasets\pkl\*.pkl" `
   "tongji-hpc:$REMOTE_REPO/interhub_traj_lane/0_raw_data/full_datasets/pkl/"
 ```
 
-Check the pkl root. Expected count is 15 files or symlinks:
+Check the pkl root. Expected count is 15 pkl files:
 
 ```bash
 ssh tongji-hpc "cd /share/home/u25310231/ZXC/ipv_estimation && \
-  find interhub_traj_lane/0_raw_data/full_datasets/pkl -maxdepth 1 \( -type f -o -type l \) -name '*.pkl' | wc -l"
+  find interhub_traj_lane/0_raw_data/full_datasets/pkl -maxdepth 1 -type f -name '*.pkl' | wc -l"
 ```
 
 ## 3. Generate rerun input and preflight

@@ -800,4 +800,13 @@ Artifacts:
 - HPC_MISSING_IPV_RERUN_COMMANDS.md
 - tools/build_missing_ipv_rerun_input.py
 - interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.csv
-- interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.summary.json
+- interhub_traj_lane/0_raw_data/full_datasets/missing_ipv_rerun_input.summary.json[2026-06-10 17:21:34 +08:00] STATUS: COMPLETED | TASK: Remove stale HPC nuPlan/AV2 pkl data and update missing-IPV rerun sync plan.
+Outcome:
+- Deleted stale HPC raw pkl directory /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/0_raw_data/full_datasets/nuplan_agv_all/pkl after verifying the exact resolved path.
+- Updated HPC_MISSING_IPV_RERUN_COMMANDS.md to stop linking/reusing old nuPlan/AV2 pkl files.
+- Revised the plan to sync the current full_datasets/pkl/*.pkl set into the unified HPC pkl root.
+Verification:
+- HPC deletion check returned OLD_PKL_ABSENT.
+- Parent nuplan_agv_all directory remains present; only the stale pkl subdirectory was removed.
+Artifacts:
+- HPC_MISSING_IPV_RERUN_COMMANDS.md
