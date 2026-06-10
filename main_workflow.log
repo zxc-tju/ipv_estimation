@@ -841,3 +841,29 @@ Artifacts:
 - /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/selected_interactive_segments_equalized_with_ipv.csv
 - /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/case_completion_scan_incomplete.json
 - /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/ipv_nonzero_completed_report.json
+[2026-06-10 21:47:40 +08:00] STATUS: COMPLETED | TASK: Clean invalid OneDrive Mac mini conflict files.
+Outcome:
+- Removed invalid conflict copies process_interhub-xiaocong的Mac mini.py and process_subsets_for_yiru_ipv-xiaocong的Mac mini.py.
+- Restored tracked canonical files process_interhub.py and process_interhub_json_legacy.py from HEAD after OneDrive marked them deleted.
+Verification:
+- git status no longer reports process_interhub.py or process_interhub_json_legacy.py as deleted.
+- No *xiaocong*Mac mini*.py conflict files remain in the repository root.
+Artifacts:
+- main_workflow.log
+[2026-06-10 22:02:23 +08:00] STATUS: COMPLETED | TASK: Download and merge HPC missing-IPV results locally.
+Outcome:
+- Downloaded HPC missing-IPV merged CSV, shard CSVs, completion scan, preflight, processing summaries, and IPV nonzero report into interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun.
+- Filled 7,226 HPC rerun rows into curated_valid_ipv_cases/valid_cases_manifest.csv and the top-level full_datasets/valid_cases_manifest.csv.
+- Updated manifest status so all 38,238 rows have IPV values and ipv_available=True; source type hpc_missing_ipv_rerun_csv covers 7,226 rows.
+- Also filled the archive all_results_priority_rebuild_filtered_pet_lt_045_usable_with_av2_with_ipv_filled.csv for the same 7,226 rows; three older missing rows remain outside the HPC rerun input.
+Verification:
+- HPC merged CSV rows=7,226, status ok=7,226, missing IPV value rows=0.
+- Both manifest copies are byte-identical, rows=38,238, missing IPV value rows=0, curation_status counts: ipv_available=38,228 and ipv_available_not_in_index=10.
+- Archive filled CSV rows=38,241, status ok=38,238, remaining missing_case=3.
+- Final nonzero report valid=7,226, nonzero_cases=6,740, all_zero_cases=486, read_errors=0.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/selected_interactive_segments_equalized_with_ipv.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/local_merge_summary.json
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/missing_ipv_rerun/local_archive_csv_merge_summary.json
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/curated_valid_ipv_cases/valid_cases_manifest.csv
+- interhub_traj_lane/1_ipv_estimation_results/full_datasets/valid_cases_manifest.csv
