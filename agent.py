@@ -57,7 +57,7 @@ INITIAL_IPV_GUESS = 0
 virtual_agent_IPV_range = np.array([-3, -2, -1, 0, 1, 2, 3]) * math.pi / 8
 
 # likelihood function
-sigma = 0.02
+sigma = 0.1
 sigma2 = 0.05
 
 
