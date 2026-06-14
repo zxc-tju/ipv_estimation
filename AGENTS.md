@@ -18,5 +18,18 @@ Commits in this repo use short, imperative subjects (for example, `Enhance proce
 ## Data & Configuration Notes
 Large trajectory files stay outside version control; if you must share samples, provide download instructions instead. Keep environment-specific tweaks in separate config files or guarded by CLI flags, and sanitise paths before publishing job scripts.
 
+## Scientific Analysis & Reporting Guidelines
+Start every research analysis by making the research question, unit of analysis, variable meanings, inclusion/exclusion criteria, and data provenance explicit. When semantics are unclear, inspect local dictionaries, source documentation, or generation scripts before interpreting a field. Distinguish descriptive patterns, predictive associations, and causal claims; do not use causal language unless the design supports it.
+
+Treat publication-oriented analyses as claim-indexed research, not as a dashboard of interesting plots. Prioritize conclusions with broad relevance, practical or theoretical guidance value, and some generalizability across contexts, while stating boundaries and limitations explicitly. A conclusion is not stable unless it is supported by multiple views of the data, including positive evidence, boundary cases, uncertainty, and robustness or negative checks.
+
+For high-stakes or full-dataset conclusion reports, use multiple independent evidence roles and at least three rounds of discussion/review before freezing major claims. A good default sequence is independent exploration, cross-review and falsification, then final no-blocker review. Aim for a small set of stable conclusions only when the data genuinely support them; do not inflate weak, local, or sampling-driven patterns into publication-level claims.
+
+Every conclusion in a report artifact must have its own dedicated evidence and figure bundle. Figures under a conclusion must directly explain, test, qualify, or falsify that conclusion; remove charts that are merely adjacent or generally interesting. Use publication-grade figure standards: clean multi-panel layouts, readable labels, explicit units and sample sizes, uncertainty intervals or effect sizes where appropriate, colorblind-safe palettes, and export both PNG for viewing and PDF/SVG for publication editing when possible.
+
+Before accepting any result set, check numerical health, coverage, and data integrity. Look for pathological constants, impossible values, duplicate keys, failed or missing cases, leakage, extreme sparsity, context imbalance, and sensitivity to preprocessing or model parameters. When comparing experimental batches, keep searchable summary tables and long-form detail tables, then compare distributions, signs, effect sizes, uncertainty, and data-health indicators.
+
+Keep report packages reproducible but tidy. The reader-facing report folder should retain the final report, figure exports, figure manifest or chart map, conclusions summary, and evidence summary. Move rebuild inputs, scripts, review notes, old report iterations, obsolete figures, and audit files into a report-linked process archive with a README and integrity-check record. Delete only reproducible caches unless the user explicitly approves deeper cleanup.
+
 ## Agent Workflow & Logging
 Every time an agent workflow finishes, a summary of the task and its status must be logged in the `main_workflow.log` file located at the repository root. This log should capture the completion status, key outcomes, and any persistent artifacts generated.

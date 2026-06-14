@@ -16,6 +16,9 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# Local agent/tool state
+.omx/
+
 # Interhub data - ignore everything except process_interhub.py
 interhub_traj_lane/*
 argoverse/*
