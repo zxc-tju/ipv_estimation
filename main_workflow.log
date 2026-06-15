@@ -1144,3 +1144,61 @@ Artifacts:
 - .gitignore
 - AGENTS.md
 - main_workflow.log
+[2026-06-15 07:34:21 +08:00] STATUS: COMPLETED | TASK: Optimize IPV estimation runtime for online use.
+Outcome:
+- Cached and reused prepared reference lines across IPV windows/candidates, including default target references inside optimization objectives.
+- Replaced candidate-Agent deepcopy with lightweight candidate construction, and vectorized individual/group cost calculations without changing their cost definitions.
+- Added solver presets to estimate_ipv_pair: accurate (legacy SLSQP defaults), balanced (maxiter=20, ftol=1e-3), and realtime (maxiter=8, ftol=1e-2).
+- Added estimate_ipv_current() for receding-horizon online use so callers can estimate only the newest paired IPV instead of recomputing the whole sequence.
+- Synthetic benchmark: full paired raw-reference run improved from 18.0s to 6.4s for the exact path; final raw-reference accurate/balanced/realtime run was 3.32s/0.59s/0.27s; prepared-reference current-step accurate/balanced/realtime run was 0.60s/0.13s/0.057s.
+Verification:
+- python -m pytest tests passed: 37 passed, 1 SciPy deprecation warning.
+- python -m py_compile agent.py ipv_estimation.py process_interhub.py process_argoverse.py process_interhub_json_legacy.py passed.
+- git diff --check completed with only CRLF conversion warnings.
+Artifacts:
+- agent.py
+- ipv_estimation.py
+- tests/test_ipv_runtime_optimizations.py
+- main_workflow.log
+[2026-06-15 07:42:30 +08:00] STATUS: COMPLETED | TASK: Expose IPV solver presets through process_interhub CLI.
+Outcome:
+- Added --solver-preset to process_interhub.py with accurate, balanced, and realtime choices.
+- Passed solver_preset through CaseTask, worker benchmark, auto-worker resolution, run_processing, per-case metadata, failure metadata, processing_summary, and workflow-log summaries.
+- Kept the default as accurate to preserve legacy batch-output behavior unless callers opt into balanced/realtime.
+Verification:
+- python -m pytest tests passed: 38 passed, 1 SciPy deprecation warning.
+- python -m py_compile agent.py ipv_estimation.py process_interhub.py process_argoverse.py process_interhub_json_legacy.py passed.
+- git diff --check completed with only CRLF conversion warnings.
+Artifacts:
+- process_interhub.py
+- tests/test_ipv_runtime_optimizations.py
+- main_workflow.log
+[2026-06-15 07:41:56 +08:00] STATUS: COMPLETED | TASK: Smoke-test realtime IPV CLI on one InterHub case.
+Outcome:
+- Ran process_interhub.py with --limit 1, --workers 1, --solver-preset realtime, no plots, reference_max_points=40, reference_smooth_points=40, and case_timeout_seconds=120.
+- The run processed 1 selected InterHub case with status_counts ok=1 and wrote outputs under the gitignored _codex_runtime_smoke result folder.
+- Observed progress timing was about 5.77 seconds for the full case pipeline, including loading, alignment, artifact writing, and IPV estimation.
+Verification:
+- Command exited 0 and processing summary reported processed_task_count=1, result_count=1, status_counts={ok: 1}, solver_preset=realtime.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/_codex_runtime_smoke/selected_interactive_segments_equalized_with_ipv_limit.csv
+- interhub_traj_lane/1_ipv_estimation_results/_codex_runtime_smoke/processing_summary_limit.json
+[2026-06-15 08:08:30 +08:00] STATUS: COMPLETED | TASK: Small-batch solver preset accuracy comparison against original IPV estimator.
+Outcome:
+- Compared Git HEAD original estimator against current accurate, balanced, and realtime presets on a stratified InterHub sample: 2 nuPlan, 2 Waymo, and 2 AV2 cases.
+- Used 12 downsampled timesteps per case, history_window=8, min_observation=4, reference_max_points=40, and reference_smooth_points=40 to isolate solver-preset effects.
+- Overall mean absolute IPV delta vs original: accurate=0.0284, balanced=0.3513, realtime=0.5413 across 96 agent-step estimates.
+- Overall sign consistency with neutral threshold 0.05: accurate=97.9%, balanced=65.6%, realtime=46.9%.
+- Total runtime speedup vs original: accurate=1.49x, balanced=9.12x, realtime=14.60x on the sampled windows.
+Artifacts:
+- interhub_traj_lane/1_ipv_estimation_results/_codex_solver_preset_analysis_stratified/sample_cases.csv
+- interhub_traj_lane/1_ipv_estimation_results/_codex_solver_preset_analysis_stratified/case_mode_results.csv
+- interhub_traj_lane/1_ipv_estimation_results/_codex_solver_preset_analysis_stratified/agent_step_deltas.csv
+- interhub_traj_lane/1_ipv_estimation_results/_codex_solver_preset_analysis_stratified/solver_preset_summary.csv
+- interhub_traj_lane/1_ipv_estimation_results/_codex_solver_preset_analysis_stratified/solver_preset_by_dataset.csv
+- interhub_traj_lane/1_ipv_estimation_results/_codex_solver_preset_analysis_stratified/solver_preset_summary.json
+[2026-06-15 10:42:47 +08:00] Task: Real-time IPV sign-accuracy feasibility analysis after allowing optimization-structure changes. Status: analysis complete, design pending user approval. Outcomes: tested mid-SLSQP caps, direct observed-cost proxy, reduced candidate sets, temporal hold, warm-start rolling SLSQP, existing linearized LP planner, and anchor interpolation on the 6-case stratified sample. Fast approximate structural replacements did not reach 90% three-class sign accuracy; 5-candidate raw positive/negative sign reached 90.625% on the small sample but only 88.542% with the 0.05 neutral threshold. Recommendation: implement a parallel exact-candidate online estimator as the guaranteed path, with adaptive coarse/fallback modes only after larger validation.
+[2026-06-15 11:06:43 +08:00] Task: Implement realtime IPV parallel estimator. Status: implemented and small-batch verified, larger validation still recommended before publication-level guarantee. Outcomes: added parallel_accurate solver preset, RealtimeIPVEstimator with persistent worker pool, pair-level batching of both agents' IPV candidates, explicit candidate_ipv_values for sign-prioritized candidate grids, and CLI acceptance for parallel_accurate. Verification: python -m pytest tests -q passed 45 tests. Stratified 6-case online benchmark artifacts in interhub_traj_lane/1_ipv_estimation_results/_codex_parallel_accurate_realtime_check. Strict 7-candidate parallel_accurate: sign_match_005=0.979167, raw_sign=0.989583, mean pair-step latency=0.104805s, median=0.103148s. Fast 5-candidate grid [-3,-1,0,1,3]*pi/8: raw_sign=0.90625, sign_match_005=0.885417, mean latency=0.087894s, median=0.085648s.
+[2026-06-15 11:46:55 +08:00] Task: Expanded realtime IPV validation and safe default update. Status: implemented and validated overall >90% sign accuracy; NuPlan subset remains the documented weak slice for dataset-specific guarantees. Outcomes: estimate_ipv_current now defaults to parallel_accurate, RealtimeIPVEstimator remains the recommended persistent-pool interface, and docs/realtime_ipv_estimator.md documents usage, validation, and caveats. Validation: python -m pytest tests -q passed 46 tests; py_compile passed for production and validation scripts; git diff --check reported only CRLF warnings. Full-reference validation on 80 cases (20 per dataset, 1,280 agent-step labels, max_workers=20, history_window=10, seven candidates, full-run reference params) achieved sign_match_005=0.9640625, Wilson95 lower=0.9523978, raw_sign=0.90625, mean pair-step latency=0.117242s, median=0.106234s. Dataset rates: AV2=0.984375, Lyft=0.996875, nuPlan=0.88125, Waymo=0.99375. Artifacts: interhub_traj_lane/1_ipv_estimation_results/_codex_parallel_accurate_realtime_check/full_reference_20perdataset_parallel_accurate_w20_matchedrefs_*.
+[2026-06-15 12:05:00 +08:00] Task: Realtime IPV optimizer restructuring and sign-accuracy validation. Status: implemented, code-verified, and documented with overall >90% sign-accuracy evidence; dataset-specific NuPlan guarantee remains open. Outcomes: added pair-level parallel accurate candidate evaluation, persistent RealtimeIPVEstimator, solver preset plumbing through process_interhub.py, custom candidate-grid support, sign_ipv_values, and estimate_sign_current. Verification: python -m pytest tests -q passed 48 tests; python -m py_compile agent.py ipv_estimation.py process_interhub.py passed; git diff --check exited 0 with only CRLF normalization warnings. Validation evidence: 80-case full-reference check (20 per dataset, 1,280 agent-step labels, history_window=10, max_workers=20, seven candidates) sign_match_005=0.9640625, Wilson95 lower=0.9523978, raw_sign=0.90625, mean pair-step latency=0.117242s, median=0.106234s; NuPlan subset sign_match_005=0.88125. Artifacts: docs/realtime_ipv_estimator.md, tests/test_ipv_runtime_optimizations.py, docs/superpowers/plans/2026-06-15-realtime-ipv-parallel-estimator.md, and validation CSVs under interhub_traj_lane/1_ipv_estimation_results/_codex_parallel_accurate_realtime_check/.
+[2026-06-15 12:36:43 +08:00] Task: Finalize realtime IPV sign-accuracy scheme and refresh validation evidence. Status: implemented and validated for overall mixed-distribution sign accuracy above 90%; per-dataset NuPlan and hard-deadline guarantees remain documented limitations. Outcomes: added SIGN_REALTIME_CANDIDATE_IPV_VALUES and RealtimeIPVEstimator.for_realtime_sign() for the five-candidate sign-optimized realtime path; refreshed docs/realtime_ipv_estimator.md with current 80-case and 200-case validation; extended the ignored validation probe script with dataset filtering, pred_ipv_error output, reliability-mode probes, and thread/process executor comparison. Verification: python -m pytest tests -q passed 50 tests; python -m py_compile agent.py ipv_estimation.py process_interhub.py and the validation script passed; git diff --check exited 0 with CRLF normalization warnings only. Current recommendation: use RealtimeIPVEstimator.for_realtime_sign(history_window=10, max_workers=10) for sign-only online use. Evidence: 200-case mixed validation (50 per dataset, 3,200 agent-step labels, five candidates, pkl motion, full-run reference params) achieved sign_match_005=0.9228125, Wilson95 lower=0.91305, mean pair-step latency=0.11023s, median=0.09871s, p95=0.23502s. Dataset rates were AV2=0.94125, Lyft=0.98125, NuPlan=0.81125, Waymo=0.9575. Additional probes found threshold tuning, temporal smoothing, ThreadPool execution, log-distance reliability, and denser grids did not produce a NuPlan-specific >90% solution without new modeling work.[2026-06-15 12:45:00 +08:00] Task: Report overall realtime IPV deviation analysis. Status: completed. Outcomes: summarized signed IPV bias, MAE, RMSE, p95 absolute error, dataset breakdown, and largest-error cases for the current five-candidate realtime sign mode and seven-candidate accuracy mode. Key findings: five-candidate 200-case sign mode mean_bias=-0.004963, MAE=0.080192, RMSE=0.176434, p95_abs=0.392366, sign_match=0.9228125; seven-candidate 80-case accuracy mode mean_bias=-0.002596, MAE=0.053760, RMSE=0.139326, p95_abs=0.333225, sign_match=0.940625. NuPlan remains the main source of IPV magnitude and sign errors.

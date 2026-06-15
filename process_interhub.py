@@ -93,6 +93,7 @@ class CaseTask:
     pkl_root: Path
     history_window: int
     min_observation: int
+    solver_preset: str = "accurate"
     save_plots: bool = True
     case_timeout_seconds: int = 0
     reference_clip_margin_m: float = 0.0
@@ -1118,6 +1119,7 @@ def process_case(task: CaseTask) -> Dict[str, object]:
                     "segment_id": task.event_ref.segment_id,
                     "status": "running",
                     "case_timeout_seconds": task.case_timeout_seconds,
+                    "solver_preset": task.solver_preset,
                     "reference_clip_margin_m": task.reference_clip_margin_m,
                     "reference_max_points": task.reference_max_points,
                     "reference_smooth_points": task.reference_smooth_points,
@@ -1156,6 +1158,7 @@ def process_case(task: CaseTask) -> Dict[str, object]:
                 seq_secondary,
                 history_window=task.history_window,
                 min_observation=task.min_observation,
+                solver_preset=task.solver_preset,
             )
         summary = compute_valid_ipv_summary(
             ipv_values,
@@ -1199,6 +1202,7 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             "reference_source_2": secondary_ref_source,
             "history_window": task.history_window,
             "min_observation": task.min_observation,
+            "solver_preset": task.solver_preset,
             "downsample_factor": downsample_factor,
             "save_plots": task.save_plots,
             "case_timeout_seconds": task.case_timeout_seconds,
@@ -1241,6 +1245,7 @@ def process_case(task: CaseTask) -> Dict[str, object]:
             "status": "failed",
             "error": base_result["ipv_result_error"],
             "case_timeout_seconds": task.case_timeout_seconds,
+            "solver_preset": task.solver_preset,
             "reference_clip_margin_m": task.reference_clip_margin_m,
             "reference_max_points": task.reference_max_points,
             "reference_smooth_points": task.reference_smooth_points,
@@ -1262,6 +1267,7 @@ def _build_tasks(
     output_root: Path,
     history_window: int,
     min_observation: int,
+    solver_preset: str = "accurate",
     save_plots: bool = True,
     case_timeout_seconds: int = 0,
     reference_clip_margin_m: float = 0.0,
@@ -1292,6 +1298,7 @@ def _build_tasks(
                 pkl_root=Path(pkl_root),
                 history_window=history_window,
                 min_observation=min_observation,
+                solver_preset=solver_preset,
                 save_plots=save_plots,
                 case_timeout_seconds=case_timeout_seconds,
                 reference_clip_margin_m=reference_clip_margin_m,
@@ -1604,6 +1611,7 @@ def run_worker_benchmark(
     history_window: int,
     min_observation: int,
     max_workers: int,
+    solver_preset: str = "accurate",
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
     case_timeout_seconds: int = 0,
@@ -1628,6 +1636,7 @@ def run_worker_benchmark(
             output_root=worker_root,
             history_window=history_window,
             min_observation=min_observation,
+            solver_preset=solver_preset,
             case_timeout_seconds=case_timeout_seconds,
             reference_clip_margin_m=reference_clip_margin_m,
             reference_max_points=reference_max_points,
@@ -1659,6 +1668,7 @@ def run_worker_benchmark(
         "candidate_workers": _worker_candidates(max_workers),
         "records": records,
         "recommended_workers": recommended,
+        "solver_preset": solver_preset,
         "case_timeout_seconds": case_timeout_seconds,
         "reference_clip_margin_m": reference_clip_margin_m,
         "reference_max_points": reference_max_points,
@@ -1692,6 +1702,7 @@ def _resolve_workers(
     history_window: int,
     min_observation: int,
     max_workers: int,
+    solver_preset: str = "accurate",
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
     case_timeout_seconds: int = 0,
@@ -1710,6 +1721,7 @@ def _resolve_workers(
         output_root,
         history_window=history_window,
         min_observation=min_observation,
+        solver_preset=solver_preset,
         max_workers=max_workers,
         exclude_csv_path=exclude_csv_path,
         mp_start_method=mp_start_method,
@@ -1729,6 +1741,7 @@ def run_processing(
     workers: int,
     history_window: int,
     min_observation: int,
+    solver_preset: str = "accurate",
     limit: Optional[int] = None,
     shard_index: Optional[int] = None,
     shard_count: Optional[int] = None,
@@ -1771,6 +1784,7 @@ def run_processing(
         output_root=output_root,
         history_window=history_window,
         min_observation=min_observation,
+        solver_preset=solver_preset,
         save_plots=save_plots,
         case_timeout_seconds=case_timeout_seconds,
         reference_clip_margin_m=reference_clip_margin_m,
@@ -1798,6 +1812,7 @@ def run_processing(
         "pkl_root": str(pkl_root),
         "output_root": str(output_root),
         "workers": workers,
+        "solver_preset": solver_preset,
         "mp_start_method": mp_start_method,
         "case_timeout_seconds": case_timeout_seconds,
         "reference_clip_margin_m": reference_clip_margin_m,
@@ -1838,6 +1853,7 @@ def _append_workflow_log(summary: Mapping[str, object], *, task_name: str) -> No
         f"- Workers: {summary.get('workers')}.\n"
         f"- Multiprocessing start method: {summary.get('mp_start_method')}.\n"
         f"- Case timeout seconds: {summary.get('case_timeout_seconds')}.\n"
+        f"- Solver preset: {summary.get('solver_preset')}.\n"
         f"- Reference clip margin m: {summary.get('reference_clip_margin_m')}.\n"
         f"- Reference max points: {summary.get('reference_max_points')}.\n"
         f"- Reference smooth points: {summary.get('reference_smooth_points')}.\n"
@@ -1862,6 +1878,17 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--history-window", type=int, default=HISTORY_WINDOW)
     parser.add_argument("--min-observation", type=int, default=MIN_OBSERVATION)
+    parser.add_argument(
+        "--solver-preset",
+        choices=("accurate", "parallel_accurate", "balanced", "realtime"),
+        default="accurate",
+        help=(
+            "IPV optimizer preset: accurate preserves legacy SLSQP defaults, "
+            "parallel_accurate preserves the accurate solver while evaluating "
+            "candidate IPVs in parallel, balanced bounds iterations "
+            "conservatively, realtime prioritizes latency."
+        ),
+    )
     parser.add_argument(
         "--reference-clip-margin-m",
         type=float,
@@ -2007,6 +2034,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             args.output_root,
             history_window=args.history_window,
             min_observation=args.min_observation,
+            solver_preset=args.solver_preset,
             max_workers=args.max_workers,
             exclude_csv_path=args.exclude_csv,
             mp_start_method=args.mp_start_method,
@@ -2025,6 +2053,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         output_root=args.output_root,
         history_window=args.history_window,
         min_observation=args.min_observation,
+        solver_preset=args.solver_preset,
         max_workers=args.max_workers,
         exclude_csv_path=args.exclude_csv,
         mp_start_method=args.mp_start_method,
@@ -2040,6 +2069,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         workers=workers,
         history_window=args.history_window,
         min_observation=args.min_observation,
+        solver_preset=args.solver_preset,
         limit=args.limit,
         shard_index=args.shard_index,
         shard_count=args.shard_count,

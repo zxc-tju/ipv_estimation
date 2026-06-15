@@ -61,6 +61,103 @@ sigma = 0.1
 sigma2 = 0.05
 
 
+def _is_prepared_reference(ref):
+    return isinstance(ref, tuple) and len(ref) == 2
+
+
+def _prepare_reference(target, origin_point, ref):
+    if ref is None:
+        if target in {'gs_nds', 'lt_nds'}:
+            return get_central_vertices(target, origin_point)
+        return get_central_vertices(target, None)
+    if _is_prepared_reference(ref):
+        return ref
+    return smooth_ployline(ref)
+
+
+def _solve_candidate_ipv_track(task):
+    candidate_agent = Agent(
+        np.array(task["position"], copy=True),
+        np.array(task["velocity"], copy=True),
+        task["heading"],
+        task["target"],
+        acceleration=(
+            None
+            if task["acceleration"] is None
+            else np.array(task["acceleration"], copy=True)
+        ),
+    )
+    candidate_agent.reference = task["reference"]
+    candidate_agent.ipv = task["ipv"]
+    solver_options = task["solver_options"]
+    if solver_options is None:
+        virtual_track = candidate_agent.solve_optimization(task["inter_track"])
+    else:
+        virtual_track = candidate_agent.solve_optimization(
+            task["inter_track"],
+            solver_options=solver_options,
+        )
+    return virtual_track[:, 0:2]
+
+
+def _resolve_candidate_ipv_values(candidate_ipv_values=None):
+    if candidate_ipv_values is None:
+        return virtual_agent_IPV_range
+    return np.asarray(candidate_ipv_values, dtype=float)
+
+
+def _build_candidate_ipv_tasks(
+    subject,
+    inter_track,
+    solver_options,
+    candidate_ipv_values=None,
+):
+    ipv_range = _resolve_candidate_ipv_values(candidate_ipv_values)
+    return [
+        {
+            "position": subject.position,
+            "velocity": subject.velocity,
+            "heading": subject.heading,
+            "target": subject.target,
+            "acceleration": subject.acceleration,
+            "reference": subject.reference,
+            "ipv": ipv_temp,
+            "inter_track": inter_track,
+            "solver_options": solver_options,
+        }
+        for ipv_temp in ipv_range
+    ]
+
+
+def _apply_candidate_ipv_tracks(
+    subject,
+    self_actual_track,
+    virtual_tracks_recent,
+    *,
+    return_details=False,
+    candidate_ipv_values=None,
+):
+    ipv_range = _resolve_candidate_ipv_values(candidate_ipv_values)
+    for track_xy in virtual_tracks_recent:
+        subject.virtual_track_collection.append(track_xy)
+
+    ipv_weight = cal_traj_reliability(
+        [],
+        self_actual_track,
+        virtual_tracks_recent,
+        subject.target,
+    )
+    subject.ipv = sum(ipv_range * ipv_weight)
+    subject.ipv_error = 1 - np.sqrt(sum(ipv_weight ** 2))
+    if return_details:
+        return {
+            "virtual_tracks": virtual_tracks_recent,
+            "weights": ipv_weight,
+            "ipv_range": ipv_range,
+        }
+    return None
+
+
 class Agent:
     def __init__(self, position, velocity, heading, target, acceleration=None):
         self.position = position
@@ -494,7 +591,7 @@ class Agent:
             if count_iter > iter_limit:  # limited to less than 10 iterations
                 break
 
-    def solve_optimization(self, inter_track):
+    def solve_optimization(self, inter_track, *, solver_options=None):
         """
         Solve optimization to output best solution given interacting counterpart's track
         非线性轨迹博弈中的优化问题定义
@@ -524,9 +621,16 @@ class Agent:
         # 非线性效用函数
         fun = utility_fun(self_info, inter_track)  # objective function
 
+        minimize_kwargs = {
+            "bounds": bds,
+            "method": 'SLSQP',
+        }
+        if solver_options is not None:
+            minimize_kwargs["options"] = dict(solver_options)
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            res = minimize(fun, u0, bounds=bds, method='SLSQP')
+            res = minimize(fun, u0, **minimize_kwargs)
 
         x = np.reshape(res.x, [2, track_len - 1]).T
         self.action = x
@@ -559,7 +663,16 @@ class Agent:
             virtual_agent_track_collection.append(virtual_inter_agent.trj_solution)
         self.estimated_inter_agent[0].virtual_track_collection.append(virtual_agent_track_collection)
 
-    def estimate_self_ipv(self, self_actual_track, inter_track, *, return_details=False):
+    def estimate_self_ipv(
+        self,
+        self_actual_track,
+        inter_track,
+        *,
+        return_details=False,
+        solver_options=None,
+        candidate_executor=None,
+        candidate_ipv_values=None,
+    ):
         """
         用于分析自然驾驶数据中的轨迹IPV
         Parameters
@@ -569,18 +682,22 @@ class Agent:
 
         """
 
-        ipv_range = virtual_agent_IPV_range
         # plt.plot(self_actual_track[:, 0], self_actual_track[:, 1], color='green')
-        virtual_tracks_recent = []
-        for ipv_temp in ipv_range:
-            agent_self_temp = copy.deepcopy(self)
-            agent_self_temp.ipv = ipv_temp
-            # generate track with varied ipv
-            virtual_track_temp = agent_self_temp.solve_optimization(inter_track)
-            # save track into a collection
-            track_xy = virtual_track_temp[:, 0:2]
-            self.virtual_track_collection.append(track_xy)
-            virtual_tracks_recent.append(track_xy)
+        candidate_tasks = _build_candidate_ipv_tasks(
+            self,
+            inter_track,
+            solver_options,
+            candidate_ipv_values,
+        )
+        if candidate_executor is None:
+            virtual_tracks_recent = [
+                _solve_candidate_ipv_track(task) for task in candidate_tasks
+            ]
+        else:
+            virtual_tracks_recent = list(
+                candidate_executor.map(_solve_candidate_ipv_track, candidate_tasks)
+            )
+
         #     plt.plot(virtual_track_temp[:, 0], virtual_track_temp[:, 1])
         # plt.show()
 
@@ -589,20 +706,13 @@ class Agent:
         #                              self_actual_track,
         #                              self.virtual_track_collection,
         #                              self.target)
-        ipv_weight = cal_traj_reliability([], self_actual_track, virtual_tracks_recent, self.target)
-
-        # weighted sum of all candidates' IPVs
-        self.ipv = sum(ipv_range * ipv_weight)
-        self.ipv_error = 1 - np.sqrt(sum(ipv_weight ** 2))
-        # # save updated ipv and estimation error
-        # self.ipv_collection.append(self.ipv)
-        # self.ipv_error_collection.append(self.ipv_error)
-        if return_details:
-            return {
-                "virtual_tracks": virtual_tracks_recent,
-                "weights": ipv_weight,
-                "ipv_range": ipv_range,
-            }
+        return _apply_candidate_ipv_tracks(
+            self,
+            self_actual_track,
+            virtual_tracks_recent,
+            return_details=return_details,
+            candidate_ipv_values=candidate_ipv_values,
+        )
 
 
 def get_cost_param(last_track_features, last_track_self, last_track_inter_collection, ipv):
@@ -748,20 +858,13 @@ def cal_individual_cost(track, target, ref=None):
     计算个体行为相关的损失项
     """
 
-    if ref is None:
-        if target in {'gs_nds', 'lt_nds'}:
-            cv, s = get_central_vertices(target, track[0, :])
-        else:
-            cv, s = get_central_vertices(target, None)
-    elif isinstance(ref, tuple) and len(ref) == 2:
-        cv, s = ref
-    else:
-        cv, s = smooth_ployline(ref)
+    cv, s = _prepare_reference(target, track[0, :], ref)
 
     # initialize an array to store distance from each point in the track to cv
-    dis2cv = np.zeros([np.size(track, 0), 1])
-    for i in range(np.size(track, 0)):
-        dis2cv[i] = np.amin(np.linalg.norm(cv - track[i, 0:2], axis=1))
+    track_xy = np.asarray(track)[:, 0:2]
+    cv_xy = np.asarray(cv)[:, 0:2]
+    diff = cv_xy[None, :, :] - track_xy[:, None, :]
+    dis2cv = np.sqrt(np.min(np.sum(diff * diff, axis=2), axis=1))
 
     "1. cost of travel delay"
     "行程延迟损失"
@@ -787,7 +890,7 @@ def cal_group_cost(track_packed):
     """
     计算群体行为相关的损失项：相对速度矢量在相对位置矢量方向上的投影
     """
-    track_self, track_inter = track_packed
+    track_self, track_inter = (np.asarray(track_packed[0]), np.asarray(track_packed[1]))
     pos_rel = track_inter - track_self
     dis_rel = np.linalg.norm(pos_rel, axis=1)
 
@@ -795,15 +898,10 @@ def cal_group_cost(track_packed):
     vel_inter = (track_inter[1:, :] - track_inter[0:-1, :]) / dt
     vel_rel = vel_self - vel_inter
 
-    vel_rel_along_sum = 0
-    for i in range(np.size(vel_rel, 0)):
-        if dis_rel[i + 1] > 3:
-            collision_factor = 0.5
-        else:
-            collision_factor = 1.5
-        nearness_temp = collision_factor * pos_rel[i + 1, :].dot(vel_rel[i, :]) / dis_rel[i + 1]
-        # do not give reward to negative nearness (flee action)
-        vel_rel_along_sum = vel_rel_along_sum + (nearness_temp + np.abs(nearness_temp)) * 0.5
+    collision_factor = np.where(dis_rel[1:] > 3, 0.5, 1.5)
+    nearness = collision_factor * np.sum(pos_rel[1:, :] * vel_rel, axis=1) / dis_rel[1:]
+    # do not give reward to negative nearness (flee action)
+    vel_rel_along_sum = np.sum((nearness + np.abs(nearness)) * 0.5)
     cost_group = vel_rel_along_sum / TRACK_LEN
 
     # print('group cost:', cost_group)
@@ -906,12 +1004,7 @@ def idm_model(para, vel_self, vel_rel, gap):
 
 
 def utility_fun(self_info, track_inter):
-    prepared_ref = None
-    if self_info[5] is not None:
-        if isinstance(self_info[5], tuple) and len(self_info[5]) == 2:
-            prepared_ref = self_info[5]
-        else:
-            prepared_ref = smooth_ployline(self_info[5])
+    prepared_ref = _prepare_reference(self_info[4], self_info[0], self_info[5])
 
     def fun(u):
         """
