@@ -19,7 +19,6 @@
 ├─ process_interhub.py          # InterHub CSV/pkl IPV 批处理入口
 ├─ process_interhub_json_legacy.py # 旧版 InterHub JSON 批处理入口
 ├─ batch_process_ipv.py         # 二次统计：回写 mean_ipv 到 metadata
-├─ submit.sh                    # SLURM 集群批处理脚本（Interhub）
 ├─ requirements.txt             # 依赖列表
 ├─ main_workflow.log            # 工作流日志（仓库要求持续追加）
 └─ tools
@@ -37,7 +36,6 @@
 - `process_interhub.py`
 - `batch_process_ipv.py`
 - `simulator.py`
-- `submit.sh`
 
 负责数据加载、任务分发、并行执行、结果落盘。
 
@@ -166,7 +164,7 @@ simulator.py
 
 ## 8. 并行与集群
 - 本地并行：`process_argoverse.py`、`process_interhub.py`、`batch_process_ipv.py` 都使用 `ProcessPoolExecutor`。
-- 集群并行：`submit.sh`
+- 集群并行：历史 Slurm 脚本已移入 `interhub_traj_lane/` 下对应结果包的 `01_process/hpc_run_files/` 归档目录。
   - SLURM array（`--array=0-6`）映射多个 JSON；
   - 每任务 `--cpus-per-task=96`；
   - 旧版 JSON 批处理调用 `python process_interhub_json_legacy.py --workers "$WORKERS" "$TARGET"`。

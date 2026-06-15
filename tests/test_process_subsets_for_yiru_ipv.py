@@ -808,16 +808,3 @@ def test_run_processing_exclude_csv_skips_existing_subset_rows(tmp_path, monkeyp
     assert processed_rows == [0, 2]
     assert summary["excluded_rows"] == 1
     assert summary["selected_rows"] == 2
-
-
-def test_full_dataset_hpc_script_defaults_to_four_incomplete_shards():
-    repo_root = Path(__file__).resolve().parents[1]
-    array_script = (repo_root / "submit_full_datasets_nuplan_agv_ipv_array.sh").read_text(encoding="utf-8")
-    merge_script = (repo_root / "submit_full_datasets_nuplan_agv_ipv_merge.sh").read_text(encoding="utf-8")
-
-    assert "#SBATCH --array=0-3" in array_script
-    assert "#SBATCH --cpus-per-task=96" in array_script
-    assert "SHARD_COUNT=${SHARD_COUNT:-4}" in array_script
-    assert "ONLY_INCOMPLETE=${ONLY_INCOMPLETE:-1}" in array_script
-    assert "--only-incomplete" in array_script
-    assert "SHARD_COUNT=${SHARD_COUNT:-4}" in merge_script
