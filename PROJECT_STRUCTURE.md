@@ -15,12 +15,10 @@
 ├─ agent.py                     # 核心智能体：规划、博弈、IPV估计
 ├─ simulator.py                 # 交互仿真框架（Scenario/Simulator）
 ├─ ipv_estimation.py            # 面向数据管线的 IPV 估计封装
-├─ process_argoverse.py         # Argoverse 批处理入口
 ├─ process_interhub.py          # InterHub CSV/pkl IPV 批处理入口
-├─ process_interhub_json_legacy.py # 旧版 InterHub JSON 批处理入口
-├─ batch_process_ipv.py         # 二次统计：回写 mean_ipv 到 metadata
 ├─ requirements.txt             # 依赖列表
 ├─ main_workflow.log            # 工作流日志（仓库要求持续追加）
+├─ archived/legacy_scripts      # 旧版入口脚本归档（按需恢复并核对路径）
 └─ tools
    ├─ utility.py                # 几何/平滑/运动学通用工具
    ├─ lattice_planner.py        # Lattice 规划入口封装
@@ -32,12 +30,12 @@
 ## 3. 分层架构
 
 ### 3.1 入口层（脚本）
-- `process_argoverse.py`
 - `process_interhub.py`
-- `batch_process_ipv.py`
 - `simulator.py`
 
 负责数据加载、任务分发、并行执行、结果落盘。
+
+旧版 Argoverse CSV、InterHub JSON、subset 兼容包装和 mean-IPV metadata 后处理脚本已归档到 `archived/legacy_scripts/`。
 
 ### 3.2 核心算法层
 - `ipv_estimation.py`：把 `Agent.estimate_self_ipv` 封装成可复用的双车估计函数 `estimate_ipv_pair(...)`。
@@ -76,7 +74,7 @@
 
 ## 5. 两条主业务流水线
 
-## 5.1 数据估计流水线（Argoverse / Interhub）
+## 5.1 数据估计流水线（当前 InterHub CSV/pkl；旧入口已归档）
 
 ### 公共核心（`ipv_estimation.py`）
 1. `estimate_ipv_pair(primary, counterpart, ...)`
@@ -87,15 +85,9 @@
    - 记录 `ipv_values[t, :]` 与 `ipv_errors[t, :]`。
 3. 可选返回 diagnostics（虚拟轨迹、权重、选定步）。
 
-### Argoverse 管线（`process_argoverse.py`）
-- 数据组织：按 `ARGO_CONFIG` 的数据版本/场景/子集迭代。
-- 处理步骤：
-  - 读取 case CSV（含轨迹与参考线）；
-  - 构建 `MotionSequence`；
-  - 调用 `estimate_ipv_pair`；
-  - 导出 `*_ipv_results.xlsx` 与 `*_ipv_curve.png`；
-  - 若启用调试，导出虚拟轨迹图。
-- 并行：`ProcessPoolExecutor`（`max_workers` 控制）。
+### 归档 Argoverse 管线（`archived/legacy_scripts/process_argoverse.py`）
+- 旧脚本按 `ARGO_CONFIG` 的数据版本/场景/子集迭代，读取 case CSV、构建 `MotionSequence`、调用 `estimate_ipv_pair`，并导出 Excel/PNG。
+- 当前仓库中的 Argoverse 数据位于 `argoverse/0_souce_data/`，而该旧脚本按脚本所在目录旁的 `0_souce_data/` 读取；恢复使用前必须核对并修正路径。
 
 ### InterHub 管线（`process_interhub.py`）
 - 输入：InterHub CSV 索引 + pkl 事件数据，支持 subset 与 full dataset。
@@ -107,7 +99,7 @@
   - 调用 `estimate_ipv_pair`；
   - 输出 per-case metadata、CSV 汇总、失败记录和可选诊断图。
 - 并行：`ProcessPoolExecutor`（支持 `--workers`、shard、only-incomplete 和 case timeout）。
-- 旧版 JSON 管线保留在 `process_interhub_json_legacy.py`。
+- 旧版 JSON 管线保留在 `archived/legacy_scripts/process_interhub_json_legacy.py`。
 
 ---
 
@@ -130,7 +122,7 @@
 
 ## 6. 调用关系（核心链路）
 ```text
-process_argoverse.py / process_interhub.py
+process_interhub.py
             -> ipv_estimation.estimate_ipv_pair
             -> Agent.estimate_self_ipv
             -> Agent.solve_optimization
@@ -150,30 +142,30 @@ simulator.py
 ## 7. 输入输出与路径约定
 
 ### 7.1 输入
-- Argoverse：代码当前按脚本目录下 `0_souce_data/` 读取。
-- InterHub：CSV 索引 + pkl 事件数据；旧版 JSON 输入由 `process_interhub_json_legacy.py` 处理。
+- InterHub：CSV 索引 + pkl 事件数据。
+- 归档 Argoverse：旧脚本按脚本目录下 `0_souce_data/` 读取，当前数据位于 `argoverse/0_souce_data/`。
+- 归档 InterHub JSON：旧 JSON 文件现在仅在 `interhub_traj_lane/0_raw_data/full_datasets/archived/` 可见，旧脚本需修正路径后才能复用。
 - 仿真附属资源：`background_pic/*`、`NDS_analysis`（当前仓库未包含该模块文件）。
 
 ### 7.2 输出
 - Argoverse：`1_experiment_result/ipv_estimation/...`
-- Interhub：`interhub_traj_lane/ipv_estimation/...`
+- Interhub：`interhub_traj_lane/1_ipv_estimation_results/...`
 - 选择失败诊断：`interhub_traj_lane/diagnostics_selection_skipped/...`
 - 仿真输出：`simulator.py` 中按函数内路径写入 `../outputs/...`
 
 ---
 
 ## 8. 并行与集群
-- 本地并行：`process_argoverse.py`、`process_interhub.py`、`batch_process_ipv.py` 都使用 `ProcessPoolExecutor`。
+- 本地并行：当前 `process_interhub.py` 使用 `ProcessPoolExecutor`；归档脚本也可能包含旧并行逻辑，但不再作为当前入口。
 - 集群并行：历史 Slurm 脚本已移入 `interhub_traj_lane/` 下对应结果包的 `01_process/hpc_run_files/` 归档目录。
-  - SLURM array（`--array=0-6`）映射多个 JSON；
-  - 每任务 `--cpus-per-task=96`；
-  - 旧版 JSON 批处理调用 `python process_interhub_json_legacy.py --workers "$WORKERS" "$TARGET"`。
+  - 当前 full/subset CSV+pkl 任务应通过归档的命令文档或新的 `process_interhub.py` 参数恢复。
+  - 旧版 JSON 批处理脚本已归档，不再是根目录命令。
 
 ---
 
 ## 9. 当前可见的工程注意点
 - `simulator.py` 依赖 `NDS_analysis`，但该文件不在当前仓库内，直接运行相关入口可能失败。
-- `batch_process_ipv.py` 默认根目录是 `interhub_traj_lane/ipv_estimation_results`，与 `process_interhub.py` 的 `OUTPUT_ROOT=interhub_traj_lane/ipv_estimation` 命名不一致，使用前需核对目录。
+- `archived/legacy_scripts/batch_process_ipv.py` 默认根目录是 `interhub_traj_lane/ipv_estimation_results`，与当前 `process_interhub.py` 输出结构不一致，恢复前需核对目录。
 - `agent.py` 的全局参数（如 `dt`、`TRACK_LEN`）会影响估计与仿真行为，切换实验场景时应统一配置。
 
 ---
@@ -181,5 +173,5 @@ simulator.py
 ## 10. 建议的阅读顺序
 1. 先看 `ipv_estimation.py`（最清晰的公共估计接口）。
 2. 再看 `agent.py`（理解 IPV 的本体逻辑）。
-3. 然后看 `process_interhub.py` / `process_argoverse.py`（数据管线）。
+3. 然后看 `process_interhub.py`（当前数据管线）。
 4. 最后看 `simulator.py` + `tools/Lattice.py`（仿真与规划细节）。

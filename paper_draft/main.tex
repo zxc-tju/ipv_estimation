@@ -1,0 +1,563 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+
+% Page setup
+\geometry{margin=1in}
+\doublespacing
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Online Social-Compliance Verification for AVs}
+
+% Helper: planned (NSFC) content not yet supported by results
+\newcommand{\planned}[1]{{\color{blue!60!black}\textit{[PLANNED: #1]}}}
+% Helper: figure placeholder box (keeps the file compilable without image files)
+\newcommand{\figph}[2]{\fbox{\parbox[c][#1][c]{0.92\linewidth}{\centering\itshape #2}}}
+
+% Title and author information
+\title{Online runtime verification of socially compliant autonomous driving}
+\author{
+    Author Name\thanks{Corresponding author: author@institution.edu} \\
+    \textit{Department, Institution} \\
+    \textit{City, Country}
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+Autonomous vehicles are certified for collision safety, yet they operate within human
+traffic where competent behaviour is governed by implicit, context-dependent social
+norms. We recast social compliance as \emph{state-conditioned online runtime
+verification}. From 38{,}228 multi-source human interactions we estimate empirical
+normative envelopes of an interaction preference value (IPV) over a
+risk\,$\times$\,geometry\,$\times$\,role\,$\times$\,time state space, and build an online
+verifier that estimates each agent's IPV causally from past trajectory and scores its
+deviation from the state-conditioned envelope in real time. Social compliance is strongly
+state-dependent: the priority-related preference gap reverses sign with collision risk
+($+0.058$ to $-0.034$) and is robust across data sources and binning choices. The
+verifier's social signal is causal and deployable; we explicitly quantify the residual
+online/offline gap, which is confined to risk-state recovery rather than to the social
+signal. We position the verifier as an auditable monitoring layer that complements, rather
+than relabels, collision-safety verification, advancing certifiable, human-aligned autonomy.
+\end{abstract}
+
+% ======================================================================
+\section{Introduction}
+% ----------------------------------------------------------------------
+Autonomous vehicles (AVs) must share the road with human drivers, cyclists and
+pedestrians whose behaviour is shaped not only by physical constraints but also by
+implicit social norms. A manoeuvre that is collision-free in isolation may still be
+perceived as aggressive, hesitant or norm-violating when performed in the wrong
+interaction context, eroding the predictability on which mixed human--machine traffic
+depends. Recent controlled experiments show that machine agents embedded in human groups
+can suppress beneficial social norms such as reciprocity, with collective
+consequences~\cite{shirado2023reciprocity}. Social competence is therefore not a cosmetic
+add-on but part of what it means for autonomy to be safe \emph{in a human world}.
+
+Two established families of methods address adjacent but distinct questions. Offline
+behavioural evaluation asks ``did the AV, on average, drive like a human?'', typically by
+reporting a single aggregate sociality score over a dataset. Formal safety verification
+asks ``will this trajectory collide or violate a hard constraint?'', and can guarantee
+legal safety as an online layer around a planner~\cite{pek2020online}. Neither answers the
+question a socially aware AV actually faces moment to moment: \emph{given the current
+interaction state, is this behaviour within the range that competent humans exhibit?} This
+question is local in time, conditional on context, and graded rather than binary.
+
+We formulate socially compliant driving as the \emph{runtime verification of
+online-inferred interaction preferences}. The property being monitored is not a
+hand-written temporal-logic specification but a \emph{data-driven, state-conditioned
+empirical norm} learned from large-scale human interaction. Concretely, we represent
+driving norms as a state-conditioned social-norm field: for each interaction state, the
+field defines an empirical envelope of socially typical behaviour, expressed through the
+interaction preference value (IPV), a trajectory-derived measure of how an agent balances
+its own progress against the group's. Given this field, an AV can ask online whether its
+current or planned behaviour falls within the empirical envelope expected under the present
+state, and a monitor can expose the answer to the planner as a warning, soft cost,
+fallback trigger or audit record.
+
+This framing differs from three existing paradigms. Unlike offline AV evaluation, it is
+online, per-timestep and state-conditioned rather than aggregate. Unlike runtime
+verification of formal specifications, the monitored property is an empirical normative
+distribution estimated from human data rather than a logical rule. Unlike socially
+compliant planning, it does not encode sociality into a planner's objective but provides a
+pluggable, planner-agnostic monitor that any planner can be checked against.
+
+Our contributions are fourfold. First, we formalise social compliance as a state-conditioned
+runtime-verification problem and instantiate it as a four-layer online verifier. Second, we
+provide strong empirical evidence that social norms are state-dependent: the social meaning
+of right-of-way reverses with collision risk, and this reversal is robust across four
+independent data sources. Third, we show that the verifier's social signal---a dynamic IPV
+estimated causally from past trajectory---is online by construction, and we honestly
+quantify the residual runtime gap, which is confined to recovering the risk state online.
+Fourth, \planned{external validation on an independent real-vehicle challenge dataset, and
+a demonstration that social-compliance deviation carries information about outcomes that
+collision-safety checks miss}. The present manuscript reports the first three contributions
+in full and scopes the fourth as planned validation.
+
+% ======================================================================
+\section{Results}
+% ----------------------------------------------------------------------
+
+\subsection{Social compliance is a state, not a score}
+We analysed 38{,}228 interaction cases drawn from four naturalistic sources within the
+InterHub corpus (Waymo 23{,}218; nuPlan 7{,}499; Lyft 5{,}105; Argoverse-2 2{,}406;
+3{,}695{,}981 trajectory frames). For each interacting agent we computed the IPV,
+parameterised as an angle $\theta\in[-\pi/2,\pi/2]$, where $\theta>0$ denotes cooperative
+or prosocial behaviour and $\theta<0$ competitive behaviour.
+
+The social meaning of right-of-way is not a static label but is gated by collision risk
+(Fig.~\ref{fig:state-dependence}). The difference in IPV between the priority and
+non-priority agent reverses sign as post-encroachment time (PET) increases: under high risk
+(PET\,$\le$\,1.0\,s) the priority agent is markedly more prosocial
+($+0.058$, 95\%\,CI $[+0.050,+0.067]$, $n=9{,}799$); at intermediate risk the gap vanishes
+($+0.001$, $[-0.004,+0.006]$, $n=22{,}833$); and under low risk (PET\,$>$\,2.0\,s) it
+inverts, the priority agent becoming relatively more competitive
+($-0.034$, $[-0.045,-0.023]$, $n=4{,}863$). Right-of-way is thus a risk-modulated
+negotiation variable rather than a fixed disposition.
+
+The same state dependence appears in the normative envelopes themselves
+(Fig.~\ref{fig:envelopes}). Across 16 high-support main-text cells (of 432 total; 79 with
+$n\ge200$), the median IPV and prosocial share fall monotonically as risk decreases: from
+median $0.137$ and prosocial share $0.738$ in the high-risk priority-conflict cell to
+median $-0.003$ and share $0.476$ in the low-risk priority-pre cell. A coarse geometric
+prior is stable across sources: merging/proceeding and straight--straight configurations
+are prosocial in 4/4 datasets. A hierarchical partial-pooling estimator recovers these
+envelopes with leave-one-dataset-out median absolute error $0.142$, below both
+dataset-specific ($0.145$) and fully pooled ($0.150$) alternatives.
+
+These conclusions survive extensive robustness checks (Extended Data): the
+direction of the risk-gated priority effect is preserved under dropping Waymo, under
+three-, five- and quantile-binning of PET, under geometry coarsening, and under
+reliability thresholds of $n\ge100/200/300$. Social compliance therefore cannot be reduced
+to a single average; it must be described as a function of
+risk\,$\times$\,geometry\,$\times$\,role\,$\times$\,time.
+
+\subsection{An online verifier with a causal social signal}
+We instantiate the verifier as four layers (Fig.~\ref{fig:architecture}): a state
+recogniser, an empirical normative envelope, a deviation scorer and a planner interface.
+The design explicitly separates an \emph{offline calibration layer} from an \emph{online
+monitoring layer}.
+
+The monitored social signal is online by construction. The dynamic IPV is estimated
+causally from a trailing window of observed trajectory for both the ego agent and its
+counterpart; it uses no future information and is therefore a strict-online quantity,
+distinct from the full-window, case-mean IPV that is used only as an offline calibration
+label. What remains genuinely incomplete online is the \emph{risk state} used to index the
+envelope. Reconstructing it from causal features, the best online risk proxy---the minimum
+of a projected anticipated-PET and a pair-closing time-to-collision---agrees with the
+offline PET bin in $52.1\%$ (balanced) to $57.8\%$ (weighted) of cases, with high-risk
+recall $0.67$ and precision $0.48$; a rolling phase detector aligns with offline phases on
+$72.2\%$ of frames and triggers a median $0.6$\,s before the offline conflict onset, but
+overlaps the offline conflict window with an intersection-over-union of only $0.30$. We
+report this runtime gap as a concept-level result rather than concealing it: online
+information is intrinsically partial, which is precisely why a runtime verifier---rather
+than an offline label---is required.
+
+\subsection{State-conditioned envelopes are interpretable monitoring references}
+Under a unified leave-one-dataset-out protocol (estimate and calibrate on three sources,
+evaluate on the held-out source) we compared the full state-conditioned envelope against
+scalar, identity, priority-only, risk-only and geometry-only baselines
+(Fig.~\ref{fig:ladder}). The full-state model is consistently but \emph{modestly} better:
+relative to the stateless scalar it reduces interval width by $2.1\%$ ($0.684$ vs $0.699$)
+and pinball loss by $3.5\%$ ($0.0598$ vs $0.0619$), and raises a synthetic-deviation
+detection AUC from $0.797$ to $0.814$ (fold SD\,$\approx0.038$). Crucially, coverage does
+not improve ($0.759$ vs $0.768$): the gain reflects sharper, more informative references,
+not better-calibrated guarantees. A shuffled-state negative control collapses to scalar
+performance ($\approx0.507$), confirming the gain originates in genuine state conditioning.
+We therefore position the state-conditioned verifier as an \emph{interpretable monitoring
+architecture and normative reference}, and explicitly \emph{not} as a predictively superior
+model.
+
+\subsection{A social-deviation signal can precede the conflict window}
+Descriptively, a non-zero IPV is already present before the labelled interaction onset in
+$71.4\%$ of cases, suggesting that social intent is observable early. However, when
+evaluated as a strict online early-warning detector at a controlled $5\%$ false-positive
+rate (Fig.~\ref{fig:earlywarning}), the capability is limited: ROC-AUC $0.648$, recall
+$12.8\%$ ($[11.9,13.7]$) at lead $\ge0$\,s, $7.4\%$ ($[6.6,8.1]$) at $\ge1$\,s and $1.1\%$
+at $\ge2$\,s, with a detected-horizon median of $1.1$\,s ($[0.2,1.9]$); the full-state model
+does not exceed the scalar baseline here. We therefore report early warning as a
+\emph{proof of concept}: the descriptive ``signal precedes conflict'' observation does not
+yet constitute a high-recall online alarm.
+
+\subsection{Verifier output as a planner-facing channel}
+The deviation score maps to planner-facing outputs---a one-sided soft cost active only where
+the norm expects prosociality, a quality-gated warning, a fallback trigger and a social-risk
+monitor record (Fig.~\ref{fig:planner}). Injecting a counterfactual ``more competitive''
+violation into $4{,}800$ case-agents raises the fallback-trigger rate from $3.0\%$ to
+$12.9\%$ and lifts the median pre-onset cost by $+0.252$, while leaving compliant streams
+largely unpenalised (mean social cost $0.134$, false-trigger rate $3.0\%$). This is an
+\emph{interface demonstration} of actionability, not a closed-loop planner result: it shows
+that verifier output can be exposed as a usable signal, without claiming improved planner
+performance or any safety guarantee. Offline deviation sensitivity also transfers
+moderately across sources (held-out deviation AUC $0.830$ vs scalar $0.817$), whereas online
+calibration remains source-dependent (Waymo held-out coverage $0.706$; Lyft online
+false-positive rate $19.8\%$).
+
+\subsection{External validation on an independent real-vehicle challenge}
+\planned{We will run the verifier on the award-winning algorithms of a national real-vehicle
+autonomous-driving challenge, whose official rankings, per-scenario scores and safety-event
+records provide an independent outcome ground truth. The analysis will test (i) criterion
+validity---whether algorithms ranked higher sit closer to the human normative envelope; and
+(ii) the consequence chain---whether higher social-compliance deviation predicts more
+safety events and lower scores (Fig.~\ref{fig:nsfc-validation}).}
+
+\subsection{Discriminant value beyond collision-safety verification}
+\planned{Using the same challenge data, we will quantify the verifier's value relative to
+conventional safety checks: identifying cases that pass formal safety verification yet are
+flagged by the social verifier, and testing whether social-compliance deviation retains
+predictive power for independent scores and safety events after controlling for standard
+safety and rule-compliance metrics (Fig.~\ref{fig:discriminant}). This establishes the
+verifier as complementary to, not a relabelling of, collision-safety verification.}
+
+% ======================================================================
+\section{Discussion}
+% ----------------------------------------------------------------------
+We have reframed AV social behaviour from an offline evaluation metric into an online
+runtime-verification property, learned empirical state-conditioned normative envelopes from
+multi-source human data, and shown that the social signal monitored by the verifier is
+causal and deployable. The central empirical result---that social compliance is strongly
+state-dependent, with right-of-way preference reversing sign across the risk axis---argues
+that any scalar ``sociality score'' is ill-posed, and that compliance must be judged
+relative to a state-conditioned human envelope.
+
+Our claims are deliberately bounded. The verifier is an empirical, probabilistic monitor,
+not a formal proof, and it complements rather than replaces safety verification such as
+reachability-based legal-safety layers~\cite{pek2020online}. Three boundaries are explicit.
+The predictive advantage of state conditioning over a scalar baseline is small and is not
+better-calibrated; we therefore frame the contribution as an interpretable monitoring
+reference. Early warning is a proof of concept, limited by the absence of causal
+conflict-event timestamps and by synthetic violation labels. A further rival explanation is
+that the IPV re-encodes kinematics such as relative speed, braking or passing order rather
+than a genuine social preference; the shuffled-state control argues against a pure artifact,
+but kinematic-only and IPV-ablated comparisons are needed to exclude it. And generalisation is local:
+the corpus is Waymo-dominated (61\% of cases, 85\% of AV cases), online calibration drifts
+across sources, and only coarse, high-support states transfer reliably. The planned
+external validation directly targets these boundaries by supplying real algorithms and
+independent outcome labels.
+
+Beyond driving, the framework offers a template for monitoring whether autonomous agents
+behave within human normative envelopes online, under uncertainty and distribution shift,
+rather than optimising a single average behavioural metric---a question of growing
+importance wherever machine agents act within human social systems.
+
+% ======================================================================
+\section{Methods}
+% ----------------------------------------------------------------------
+
+\subsection{Data and interaction extraction}
+We used 38{,}228 interaction cases from four sources within InterHub (Waymo, nuPlan, Lyft,
+Argoverse-2), comprising 3{,}695{,}981 trajectory frames; 17 all-zero-IPV cases were
+retained as boundary cases. Each case identifies a dyadic interaction with an annotated
+priority (right-of-way) agent. We emphasise that the priority label denotes the
+right-of-way agent identity, not a numerical rank or the realised passing order.
+
+\subsection{IPV estimation and causal online inference}
+The interaction preference value quantifies an agent's balance between self-interest and
+group reward, parameterised as $\theta\in[-\pi/2,\pi/2]$. We estimate a \emph{dynamic} IPV
+for both agents from a trailing window of observed trajectory, yielding a time-varying,
+strictly causal signal suitable for online deployment. \emph{[To specify: window length;
+whether predicted-intention trajectories are used in addition to observed history; and the
+convergence/bias of the rolling estimate relative to the full-window estimate.]} The
+full-window, case-mean IPV is used only as an offline calibration label and is never an
+online input.
+
+\subsection{State space and normative envelopes}
+The primary state space is
+$\text{risk\_bin(PET, 3)}\times\text{geometry(path category)}\times
+\text{role(priority/non-priority)}\times\text{phase(pre/conflict/post)}$, giving 432 cells,
+of which 79 are reliable ($n\ge200$) and 16 are high-support main-text cells. Envelopes are
+estimated as per-state quantiles ($q_{05},q_{50},q_{95}$) via hierarchical partial pooling
+with bootstrap intervals; sparse cells fall back to parent levels. To match the online
+signal, envelopes should be calibrated on the same dynamic-IPV process at matched
+window length / interaction progress, exploiting the existing time axis of the state space,
+so that the online comparison is like-for-like rather than rolling-versus-full-window.
+
+\subsection{Online verification: dynamic envelopes and the conditional criterion}
+
+\paragraph{Notation.}
+We consider a dyadic interaction between an ego agent $i$ and its principal counterpart
+$j$. At time $t$ we observe a trailing window $W_t=\{x(t'):\,t-\Delta\le t'\le t\}$ of
+kinematic states. A causal estimator $g$ returns a \emph{dynamic} interaction preference
+value (IPV) for each agent, $\hat\theta_i(t)=g(W_t;i)$ and $\hat\theta_j(t)=g(W_t;j)$, with
+$\theta\in[-\pi/2,\pi/2]$ and $\theta>0$ denoting prosocial behaviour. Because $g$ reads only
+past observations, $\hat\theta(t)$ is a strict-online signal, distinct from the full-window,
+case-mean IPV used only as an offline calibration label.
+\emph{[TO SPECIFY: window length $\Delta$; whether predicted-intention trajectories augment
+$W_t$; reported convergence/bias of $\hat\theta(t)$ relative to the full-window estimate.]}
+
+\paragraph{Interaction state.}
+We summarise the situation by a state $s(t)=(r(t),h,\rho_i,\tau(t))$, where $r(t)$ is an
+online risk bin from the hybrid proxy $r=\min(\widehat{\mathrm{APET}},\mathrm{TTC}_{\mathrm{close}})$,
+$h$ is the coarse geometry (path category), $\rho_i\in\{\text{priority},\text{non-priority}\}$
+is the map-derived role, and $\tau(t)\in[0,1]$ is the interaction progress from a causal
+rolling-phase detector. The progress index $\tau$ is essential: it makes the norm a function
+of how far the interaction has developed, so that the online signal is compared with a norm
+estimated at the same stage rather than with a whole-episode summary.
+
+\paragraph{Dynamic normative envelope.}
+Offline, for each state cell $c=(r,h,\rho_i)$ and progress $\tau$, we estimate the
+distribution of the dynamic IPV computed with the \emph{same} window $\Delta$ on human data,
+not the full-window mean. The marginal envelope is the set of conditional quantiles
+\begin{equation}
+Q_\alpha(c,\tau)=\inf\{\theta:\hat F(\theta\mid c,\tau)\ge\alpha\},\qquad
+\text{reported as } [q_{05},q_{50},q_{95}].
+\end{equation}
+Calibrating on the rolling estimator removes the rolling-versus-full-window mismatch, so an
+online value is scored against a like-for-like reference. Sparse cells back off to a parent
+level by hierarchical partial pooling.
+
+\paragraph{Conditional criterion $P(\theta_i\mid\theta_j)$.}
+Human interactions show event-level coupling: simultaneous strong competition is rare, so an
+agent's socially reasonable preference depends on its counterpart's. We therefore verify the
+ego against the \emph{conditional} norm. For state $c$ and progress $\tau$ we estimate
+$\hat F(\theta_i\mid\theta_j,c,\tau)$ and define the reasonable band
+\begin{equation}
+B_{1-\eta}(\theta_j,c,\tau)=\bigl[\,Q_{\eta/2}(\theta_j,c,\tau),\;Q_{1-\eta/2}(\theta_j,c,\tau)\,\bigr],
+\end{equation}
+the central $1-\eta$ conditional interval of ego IPV given the counterpart's current IPV.
+When the counterpart is competitive ($\theta_j\ll0$) the band shifts prosocial; an ego that
+is simultaneously competitive then falls outside the band, flagging the configuration that
+empirically precedes conflict.
+\emph{[TO SPECIFY: conditional quantiles via binning on $\theta_j$ within each cell, or a
+monotone quantile regression; chosen per cell support.]}
+
+\paragraph{Deviation score.}
+The signed, normalised nonconformity of the ego is
+\begin{equation}
+\delta_i(t)=\frac{\hat\theta_i(t)-Q_{1/2}\!\bigl(\hat\theta_j(t),c,\tau\bigr)}
+{w\!\bigl(\hat\theta_j(t),c,\tau\bigr)},
+\qquad
+w=\tfrac{1}{2}\bigl(Q_{1-\eta/2}-Q_{\eta/2}\bigr),
+\end{equation}
+so $|\delta_i(t)|>1$ marks a value outside the reasonable band and the sign gives the
+direction (competitive versus over-yielding). For a calibrated flag we wrap $\delta$ in a
+per-cell (Mondrian) split-conformal threshold $\kappa_c$ estimated on held-out human data; a
+flag at level $\beta$ then means $\delta$ exceeds the $1-\beta$ human quantile for that cell.
+Because coverage degrades under source shift, $\kappa_c$ is calibrated source-aware and
+reported with its empirical coverage rather than assumed nominal. The online score is
+smoothed by an exponentially weighted moving average,
+$\bar\delta(t)=\lambda\,\delta_i(t)+(1-\lambda)\,\bar\delta(t-1)$, and persistence is required
+before escalation.
+
+\paragraph{Verdict and planner interface.}
+A verdict is emitted only after quality gates pass: sufficient cell support, admissible input
+provenance (leakage contract), bounded estimator uncertainty, and temporal hysteresis. The
+gated score maps to a graded output: a monitor record always; a one-sided soft cost
+$c_{\mathrm{social}}=\max(0,\bar\delta-\theta_{\mathrm{warn}})\cdot\mathbf{1}[\text{norm prosocial}]$;
+a warning above $\theta_{\mathrm{warn}}$; and a fallback candidate above $\theta_{\mathrm{fb}}$
+under sustained high risk.
+\emph{[TO SPECIFY: thresholds $\theta_{\mathrm{warn}},\theta_{\mathrm{fb}}$ set on the
+calibration set; demonstrative values used in pilot analyses were $0.25$ and $0.85$.]}
+
+\begin{algorithm}[t]
+\caption{Offline calibration of dynamic and conditional envelopes}
+\label{alg:calib}
+\begin{algorithmic}[1]
+\REQUIRE human interactions $\mathcal{D}$; window $\Delta$; levels $\alpha,\eta,\beta$;
+         min support $n_{\min}$
+\ENSURE marginal $Q$, conditional bands $B$, per-cell thresholds $\kappa$
+\STATE split $\mathcal{D}$ into estimation set $\mathcal{D}_e$ and calibration set $\mathcal{D}_k$
+\STATE $\mathcal{T}\leftarrow\emptyset$
+\FOR{each interaction in $\mathcal{D}_e$ and each time $t$}
+    \STATE $\theta_i,\theta_j\leftarrow g(W_t;i),\,g(W_t;j)$ \COMMENT{causal dynamic IPV}
+    \STATE $(r,h,\rho_i,\tau)\leftarrow \textsc{RecognizeState}(W_t)$
+    \STATE append $\bigl((r,h,\rho_i),\tau,\theta_i,\theta_j\bigr)$ to $\mathcal{T}$
+\ENDFOR
+\FOR{each cell $c$ and progress bin $\tau$ in $\mathcal{T}$}
+    \IF{$\mathrm{support}(c,\tau)<n_{\min}$}
+        \STATE attach $c$ to $\textsc{Parent}(c)$ \COMMENT{hierarchical fallback}
+    \ENDIF
+    \STATE $Q_\alpha(c,\tau)\leftarrow$ empirical quantiles of $\theta_i$
+    \STATE $B_{1-\eta}(\theta_j,c,\tau)\leftarrow$ conditional quantiles of $\theta_i$ given $\theta_j$
+\ENDFOR
+\STATE on $\mathcal{D}_k$: $\kappa_c\leftarrow (1-\beta)$ quantile of $|\delta|$ per cell \COMMENT{Mondrian split-conformal, source-aware}
+\RETURN $Q,\,B,\,\kappa$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t]
+\caption{Online social-compliance verification step at time $t$}
+\label{alg:online}
+\begin{algorithmic}[1]
+\REQUIRE window $W_t$; calibrated $Q,B,\kappa$; gates; previous EWMA $\bar\delta_{t-1}$;
+         smoothing $\lambda$; thresholds $\theta_{\mathrm{warn}},\theta_{\mathrm{fb}}$
+\ENSURE verdict and planner-facing signal
+\STATE $\theta_i,\theta_j\leftarrow g(W_t;i),\,g(W_t;j)$ \COMMENT{strict-online; no future info}
+\STATE $(r,h,\rho_i,\tau)\leftarrow \textsc{RecognizeState}(W_t)$
+\STATE $c\leftarrow(r,h,\rho_i)$;\quad \textbf{if} $\mathrm{support}(c,\tau)<n_{\min}$ \textbf{then} $c\leftarrow\textsc{Parent}(c)$
+\STATE $m\leftarrow Q_{1/2}(\theta_j,c,\tau)$;\quad $w\leftarrow\tfrac12\bigl(Q_{1-\eta/2}-Q_{\eta/2}\bigr)(\theta_j,c,\tau)$
+\STATE $\delta\leftarrow (\theta_i-m)/w$ \COMMENT{signed conditional nonconformity}
+\STATE $\bar\delta\leftarrow \lambda\,\delta+(1-\lambda)\,\bar\delta_{t-1}$ \COMMENT{EWMA}
+\IF{\textbf{not} \textsc{QualityGates}$(c,\text{provenance},\text{uncertainty})$}
+    \RETURN $\textsc{Monitor}(\bar\delta)$ \COMMENT{insufficient support/quality: record only}
+\ENDIF
+\IF{$\bar\delta>\kappa_c$ \textbf{and} $r$ high \textbf{and} persistent}
+    \STATE $\text{signal}\leftarrow\textsc{FallbackCandidate}$
+\ELSIF{$\bar\delta>\theta_{\mathrm{warn}}$}
+    \STATE $\text{signal}\leftarrow\textsc{Warning}$, with soft cost $\max(0,\bar\delta-\theta_{\mathrm{warn}})\cdot\mathbf{1}[\text{norm prosocial}]$
+\ELSE
+    \STATE $\text{signal}\leftarrow\textsc{Monitor}$
+\ENDIF
+\RETURN $(\bar\delta,\ \text{signal})$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent\textbf{Complexity and determinism.} Each online step is $O(1)$ given precomputed
+envelope tables (state recognition, two table look-ups and a scalar update), so the verifier
+runs within a planning cycle and is deterministic given $W_t$, supporting auditability.
+
+\subsection{Leakage contract}
+We enforce a strict separation of online and offline variables. Dynamic/rolling IPV and
+current kinematics are strict-online and admissible as verifier inputs; anticipated-PET/TTC
+proxies and map-derived priority are conditional-online; observed PET, realised passing
+order, full-window IPV, closest-frame and post-hoc phase labels are offline-only and are
+used solely for calibration and evaluation, never as deployed inputs.
+
+\subsection{Evaluation protocols}
+Model comparison uses leave-one-dataset-out estimation and evaluation across the four
+sources, scoring coverage, interval width, pinball loss, median absolute error and a
+synthetic-deviation detection AUC, with shuffled-state and random cross-state negative
+controls. Planned ablations include kinematic-only and IPV-removed variants that test
+whether the social signal is separable from raw kinematics. Early warning is evaluated at a
+controlled $5\%$ false-positive rate with
+Wilson confidence intervals and lead-time-binned recall. The planner interface is evaluated
+by counterfactual violation injection with an over-conservatism check on compliant streams.
+
+\subsection{Planned external validation protocol}
+\planned{The verifier will be applied to the trajectories of award-winning algorithms from a
+national real-vehicle challenge. We will align scenarios, compute per-algorithm and
+per-scenario deviation, and relate deviation to official rankings, per-scenario scores and
+safety events via correlation and incremental regression that controls for conventional
+safety and rule-compliance metrics; where human reference trajectories are available, AV
+algorithms and humans will be placed within the same normative envelope.}
+
+% ======================================================================
+% Figures (placeholders kept compilable; replace \figph with \includegraphics)
+% ======================================================================
+\begin{figure}[t]\centering
+\figph{3.2cm}{Figure 1 placeholder. Source: agent\_F\_figures/round5/fig1\_architecture}
+\caption{\textbf{Online social-compliance verification framework.} An offline calibration
+layer maps multi-source interactions to a state space and empirical normative envelopes
+(PET, start/end and full-window IPV used only as offline labels), and an online monitoring
+layer maps streaming features (causal risk proxy, rolling phase, geometry, role, dynamic
+IPV) through a state recogniser, envelope lookup with fallback, deviation scorer and planner
+interface. The residual runtime gap is annotated, not hidden.}
+\label{fig:architecture}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.2cm}{Figure 2 placeholder. Source: agent\_F\_figures/round2/fig2\_state\_space\_map}
+\caption{\textbf{Empirical social-compliance state space.} Support and sample size of each
+risk\,$\times$\,geometry\,$\times$\,role\,$\times$\,phase cell, highlighting the 16
+high-support main-text cells and the sparse/Extended-Data regions.}
+\label{fig:state-space}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.2cm}{Figure 3 placeholder. Source: agent\_F\_figures/round1\&2 (PET-gating, envelopes, geometry)}
+\caption{\textbf{Social norms are state-dependent.} The priority-minus-non-priority IPV gap
+reverses with PET risk ($+0.058\!\to\!+0.001\!\to\!-0.034$) with 95\% confidence intervals
+and per-source forest plots; coarse geometry provides a cross-source prosocial prior;
+state-conditioned normative envelopes (median, 25--75\%, 10--90\%) flatten as risk decreases.}
+\label{fig:envelopes}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 4 placeholder. Source: agent\_F\_figures/round2\&4 (online feasibility, deviation over time)}
+\caption{\textbf{Causal online verification and the runtime gap.} The dynamic IPV deviation
+is computed online from past trajectory; the online risk proxy recovers $\sim$55\% of the
+offline PET stratification and the rolling phase detector overlaps the offline conflict
+window at IoU $0.30$. The gap is confined to risk-state indexing, not to the social signal.}
+\label{fig:state-dependence}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 5 placeholder. Source: agent\_F\_figures/round3/fig6\_baseline\_ladder}
+\caption{\textbf{State-conditioned envelope versus baselines (leave-one-dataset-out).}
+Coverage and width, pinball and median absolute error, and synthetic-deviation AUC. The
+full-state model is sharper and has the highest AUC ($0.814$ vs $0.797$) but does not
+improve coverage; gains are modest and originate in state conditioning (shuffled-state
+control $\approx$ scalar).}
+\label{fig:ladder}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 6 placeholder. Source: agent\_F\_figures/round4/fig5\_early\_warning}
+\caption{\textbf{Early-warning performance (proof of concept).} At a controlled $5\%$
+false-positive rate, ROC-AUC is $0.648$ and recall is $7.4\%$ at lead $\ge1$\,s; the
+full-state model does not exceed the scalar baseline. Suitable as a planner soft-cost or
+fallback signal, not as a reliable low-false-alarm alarm.}
+\label{fig:earlywarning}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 7 placeholder. Source: agent\_F\_figures/round5/fig7\_planner\_demo}
+\caption{\textbf{Planner-facing soft-cost demonstration.} Counterfactual violation injection
+raises the fallback-trigger rate from $3.0\%$ to $12.9\%$ and the median pre-onset cost by
+$+0.252$, while leaving compliant streams largely unpenalised. An interface demonstration,
+not a closed-loop or safety guarantee.}
+\label{fig:planner}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{2.8cm}{Figure 8 placeholder \planned{NSFC external validation}}
+\caption{\planned{\textbf{External validation on an independent real-vehicle challenge.}
+Per-algorithm social-compliance deviation versus official ranking and per-scenario scores;
+deviation versus safety-event rate.}}
+\label{fig:nsfc-validation}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{2.8cm}{Figure 9 placeholder \planned{NSFC discriminant value}}
+\caption{\planned{\textbf{Discriminant value beyond safety verification.} Cases that pass
+safety verification yet are flagged by the social verifier, and incremental prediction of
+scores/events after controlling for conventional safety metrics.}}
+\label{fig:discriminant}
+\end{figure}
+
+% ======================================================================
+\section*{Data Availability}
+InterHub-derived interaction cases and source datasets (Waymo, nuPlan, Lyft, Argoverse-2)
+are governed by their respective licences; processed state-space derivatives will be made
+available upon publication. \planned{Real-vehicle challenge data availability to be stated
+per the challenge organiser's terms.}
+
+\section*{Code Availability}
+Implementation, leakage-contract unit tests and figure-generation code will be released
+upon publication.
+
+\section*{References}
+\bibliographystyle{unsrt}
+\bibliography{bibliography/biblio}
+
+\section*{Acknowledgements}
+% (Funding sources, institutional support, data providers)
+
+\section*{Author Contributions}
+% (Individual contributions following Nature journal format)
+
+\section*{Competing Interests}
+The authors declare no competing interests.
+
+\section*{Additional Information}
+\subsection*{Supplementary Information}
+\subsection*{Supplementary Tables}
+\subsection*{Supplementary Figures}
+
+\end{document}

@@ -3,6 +3,7 @@ argoverse/0_souce_data/
 argoverse/1_experiment_result/
 argoverse/2_data_process/
 background_pic/
+onsite_competition_results/
 
 # Notebook artifacts
 *.ipynb
