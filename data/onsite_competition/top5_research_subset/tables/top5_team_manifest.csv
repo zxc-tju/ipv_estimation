@@ -1,0 +1,11 @@
+﻿area,area_dir,team_dir,team_code,official_name,score_rows,score_mean_comprehensive,file_count,total_bytes,session_count,session_ids,zip_count,video_count,pdf_count,team_info_txt_count,onsite_runtime_log_count,evidence_png_count,notes
+beijing,北京赛区,4-Panda,T17,panda,15,89.4153,10,646192587,1,6931-1766206339,0,1,1,1,1,0,
+beijing,北京赛区,1-KUST-BPS,T14,bps,15,89.29,10,676199721,1,6922-1766197115,0,1,1,1,1,0,
+beijing,北京赛区,3-WUT-AutoAILab,T16,autoailab,15,88.3827,9,659667498,1,6926-1766199712,0,1,1,1,1,0,
+beijing,北京赛区,2-wulawula,T15,wulala,15,83.9773,10,665986612,1,6924-1766198444,0,1,1,1,0,1,
+beijing,北京赛区,7-MM妙妙妙,T20,mm,15,82.168,12,691757995,1,6941-1766212682,0,1,1,1,1,2,
+shanghai,上海赛区,武汉理工大学_WUT_FSD,T11,wsd,15,89.4387,8,816122063,1,6923-1766197775,1,1,1,0,0,0,
+shanghai,上海赛区,清华&贵州大学_thicv2025,T6,thicv2025,15,85.6093,7,883156619,1,6921-1766196941,1,1,1,0,0,0,
+shanghai,上海赛区,江苏大学_测试无极限,T5,limitless,15,81.7913,9,1267352938,1,6925-1766198568,1,1,1,0,0,0,
+shanghai,上海赛区,上海海事大学_SMU智驾出航,T7,SMU,15,80.3893,8,1488558298,1,6938-1766210823,1,1,1,0,0,0,
+shanghai,上海赛区,上海交大_SJTU_ADVRC,T8,ADVRC,15,79.366,7,1492129434,1,6932-1766206403,1,1,1,0,0,0,

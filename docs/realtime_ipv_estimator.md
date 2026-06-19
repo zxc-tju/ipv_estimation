@@ -9,7 +9,7 @@ Use `RealtimeIPVEstimator.for_realtime_sign()` when the control loop only needs
 the IPV sign and must stay close to 10 Hz:
 
 ```python
-from ipv_estimation import MotionSequence, RealtimeIPVEstimator
+from sociality_estimation.core.ipv_estimation import MotionSequence, RealtimeIPVEstimator
 
 with RealtimeIPVEstimator.for_realtime_sign(
     history_window=10,
@@ -50,7 +50,7 @@ reused across frames.
 
 Validation artifacts are under:
 
-`interhub_traj_lane/1_ipv_estimation_results/ipv_rt_final/`
+`reports/interhub/ipv_estimation_results/ipv_rt_final/`
 
 The final CSV evidence is in `ipv_rt_final/evidence/`, and the rebuild script is
 in `ipv_rt_final/scripts/run_full_reference_validation.py`.

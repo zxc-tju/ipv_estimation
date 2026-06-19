@@ -1,0 +1,11 @@
+﻿area,area_dir,team_dir,team_code,official_name,session_id,session_relative_path,required_logs_present,missing_required_logs,optional_logs_present,json_first_line_bad_logs,monitor_bytes,simulation_bytes,vehicle_perception_simulation_bytes,vehicle_perception_bytes,vehicle_trajectory_bytes
+beijing,北京赛区,4-Panda,T17,panda,6931-1766206339,北京赛区/4-Panda/6931-1766206339,True,,vehicle_perception_trajectory.log,,479494,71133570,53077170,52898252,4286828
+beijing,北京赛区,1-KUST-BPS,T14,bps,6922-1766197115,北京赛区/1-KUST-BPS/6922-1766197115,True,,vehicle_perception_trajectory.log,,493672,72746443,56724830,56533022,4483565
+beijing,北京赛区,3-WUT-AutoAILab,T16,autoailab,6926-1766199712,北京赛区/3-WUT-AutoAILab/6926-1766199712,True,,vehicle_perception_trajectory.log,,520383,72671672,56684838,56481777,4717241
+beijing,北京赛区,2-wulawula,T15,wulala,6924-1766198444,北京赛区/2-wulawula/6924-1766198444,True,,vehicle_perception_trajectory.log,,521725,71946778,70006309,69810695,4704434
+beijing,北京赛区,7-MM妙妙妙,T20,mm,6941-1766212682,北京赛区/7-MM妙妙妙/6941-1766212682,True,,vehicle_perception_trajectory.log,,511504,70048388,54892697,54698442,4643602
+shanghai,上海赛区,武汉理工大学_WUT_FSD,T11,wsd,6923-1766197775,上海赛区/武汉理工大学_WUT_FSD/6923-1766197775,True,,,,324363,51634277,37014224,,3279587
+shanghai,上海赛区,清华&贵州大学_thicv2025,T6,thicv2025,6921-1766196941,上海赛区/清华&贵州大学_thicv2025/6921-1766196941,True,,,,404726,64364371,50814452,,3878812
+shanghai,上海赛区,江苏大学_测试无极限,T5,limitless,6925-1766198568,上海赛区/江苏大学_测试无极限/6925-1766198568,True,,vehicle_perception_trajectory.log,,613697,86487098,71449037,71820895,5529491
+shanghai,上海赛区,上海海事大学_SMU智驾出航,T7,SMU,6938-1766210823,上海赛区/上海海事大学_SMU智驾出航/6938-1766210823,True,,vehicle_perception_trajectory.log,,588459,76228444,71852049,71620714,5277403
+shanghai,上海赛区,上海交大_SJTU_ADVRC,T8,ADVRC,6932-1766206403,上海赛区/上海交大_SJTU_ADVRC/6932-1766206403,True,,,,608785,79501781,59795497,,5317547

@@ -1,177 +1,219 @@
 # 2_sociality_estimation 项目结构文档
 
 ## 1. 项目定位
-本项目围绕“交互偏好值（IPV, Interaction Preference Value）”展开，包含两条主线：
-- 轨迹数据离线估计：从数据集轨迹中估计双车 IPV 序列并导出结果。
+
+本项目围绕“交互偏好值”（IPV, Interaction Preference Value）展开，当前保留两条主线：
+
+- 轨迹数据离线/在线估计：从 InterHub CSV/pkl 等轨迹数据中估计双车 IPV 序列并导出结果。
 - 交互行为仿真分析：基于博弈/规则控制器进行双车交互仿真与分析。
 
-核心是 `Agent` 的规划与 IPV 估计能力，数据脚本和仿真脚本都在调用这一核心能力。
+核心能力只放在 `src/sociality_estimation/`；数据管线、仿真入口和报告脚本调用这个公共包。
 
 ---
 
-## 2. 目录与文件总览（当前仓库）
+## 2. 当前目录总览
+
 ```text
 .
-├─ agent.py                     # 核心智能体：规划、博弈、IPV估计
-├─ simulator.py                 # 交互仿真框架（Scenario/Simulator）
-├─ ipv_estimation.py            # 面向数据管线的 IPV 估计封装
-├─ process_interhub.py          # InterHub CSV/pkl IPV 批处理入口
-├─ requirements.txt             # 依赖列表
-├─ main_workflow.log            # 工作流日志（仓库要求持续追加）
-├─ archived/legacy_scripts      # 旧版入口脚本归档（按需恢复并核对路径）
-└─ tools
-   ├─ utility.py                # 几何/平滑/运动学通用工具
-   ├─ lattice_planner.py        # Lattice 规划入口封装
-   └─ Lattice.py                # Lattice 规划核心实现
+├─ src/sociality_estimation/
+│  ├─ core/
+│  │  ├─ agent.py              # 核心智能体：规划、博弈、IPV 估计
+│  │  └─ ipv_estimation.py     # 面向数据管线/在线调用的 IPV 估计封装
+│  └─ planning/
+│     ├─ utility.py            # 几何、平滑、运动学通用工具
+│     ├─ lattice_planner.py    # Lattice 规划入口封装
+│     └─ Lattice.py            # Lattice 规划核心实现
+├─ pipelines/
+│  ├─ interhub/
+│  │  ├─ process_interhub.py   # 当前 InterHub CSV/pkl 批处理主入口
+│  │  └─ tools/                # InterHub rerun、合并、报告辅助脚本
+│  └─ simulation/
+│     └─ simulator.py          # 交互仿真框架（Scenario/Simulator）
+├─ docs/                       # 轻量说明文档
+├─ paper/                      # 论文草稿与材料
+├─ reports/                    # InterHub 与 onsite competition 报告/结果包
+├─ data/                       # 数据入口：README/manifest 可跟踪，raw payload 被忽略
+├─ archived/
+│  ├─ compat_wrappers_20260619 # 已归档的旧根入口/旧 tools 兼容层
+│  └─ legacy_scripts/          # 旧版数据脚本归档
+├─ requirements.txt
+└─ main_workflow.log
 ```
+
+根目录不再保留 `agent.py`、`ipv_estimation.py`、`process_interhub.py`、`simulator.py` 或 `tools/`。这些短期兼容包装已归档到 `archived/compat_wrappers_20260619/`，不再是活跃入口。
+
+大型原始数据已归到 `data/` 入口，但 raw 子目录继续被 git 忽略：
+
+- InterHub 原始数据在 `data/interhub/raw/`。
+- Onsite competition 原始回放/队伍材料在 `data/onsite_competition/raw/` 和
+  `data/onsite_competition/top5_research_subset/teams/`。
+- Argoverse 历史数据/结果在 `archived/argoverse/`。
 
 ---
 
 ## 3. 分层架构
 
-### 3.1 入口层（脚本）
-- `process_interhub.py`
-- `simulator.py`
+### 3.1 核心算法层
 
-负责数据加载、任务分发、并行执行、结果落盘。
+- `src/sociality_estimation/core/agent.py`
+  - 轨迹优化、IBR、IDM、IPV 估计、成本函数与约束构建。
+- `src/sociality_estimation/core/ipv_estimation.py`
+  - `MotionSequence`
+  - `estimate_ipv_pair(...)`
+  - `estimate_ipv_current(...)`
+  - `RealtimeIPVEstimator`
 
-旧版 Argoverse CSV、InterHub JSON、subset 兼容包装和 mean-IPV metadata 后处理脚本已归档到 `archived/legacy_scripts/`。
+新代码使用包路径导入：
 
-### 3.2 核心算法层
-- `ipv_estimation.py`：把 `Agent.estimate_self_ipv` 封装成可复用的双车估计函数 `estimate_ipv_pair(...)`。
-- `agent.py`：包含轨迹优化、IBR、IDM、IPV 估计、成本函数与约束构建。
+```python
+from sociality_estimation.core.agent import Agent
+from sociality_estimation.core.ipv_estimation import MotionSequence, estimate_ipv_pair
+```
 
-### 3.3 工具与底层规划层
-- `tools/utility.py`：参考线平滑、几何操作、简化运动学模型。
-- `tools/lattice_planner.py` + `tools/Lattice.py`：Lattice 路径规划与避障。
+### 3.2 规划与工具层
+
+- `src/sociality_estimation/planning/utility.py`
+- `src/sociality_estimation/planning/lattice_planner.py`
+- `src/sociality_estimation/planning/Lattice.py`
+
+新代码使用：
+
+```python
+from sociality_estimation.planning.utility import smooth_ployline
+from sociality_estimation.planning.Lattice import TrajPoint
+```
+
+### 3.3 数据管线层
+
+- `pipelines/interhub/process_interhub.py`
+  - 当前 InterHub CSV/pkl 主入口。
+  - 默认 CSV/pkl/output 路径以仓库根目录为基准。
+- `pipelines/interhub/tools/`
+  - `build_missing_ipv_rerun_input.py`
+  - `merge_subsets_for_yiru_ipv_archives.py`
+  - `update_ipv_distribution_report.py`
+
+推荐命令：
+
+```bash
+python pipelines/interhub/process_interhub.py --csv <input.csv> --pkl-root <pkl_dir>
+```
+
+### 3.4 仿真层
+
+- `pipelines/simulation/simulator.py`
+  - `Scenario`
+  - `Simulator`
+  - T-intersection、ramp merge、NDS 分析入口函数
+
+注意：该模块仍引用外部 `NDS_analysis`，当前仓库快照不包含该模块；直接运行相关仿真入口可能失败。这是迁移前已有风险。
 
 ---
 
 ## 4. 核心对象与职责
 
-### 4.1 `MotionSequence`（`ipv_estimation.py`）
+### 4.1 `MotionSequence`
+
+位置：`src/sociality_estimation/core/ipv_estimation.py`
+
 - 数据结构：`[x, y, vx, vy, heading]`
 - 额外字段：`target`（如 `lt_argo`、`gs`、`rt` 等），`reference`（可选参考线）
-- 用途：作为数据脚本与 Agent 之间的标准输入容器。
+- 用途：作为数据脚本与 `Agent` 之间的标准输入容器。
 
-### 4.2 `Agent`（`agent.py`）
-- 规划相关
-  - `lp_ibr_interact(...)`：线性化 IBR
-  - `solve_linear_programming(...)`：线性规划求解
-  - `ibr_interact(...)` + `solve_optimization(...)`：非线性博弈求解
-  - `idm_plan(...)` / `cruise_plan(...)`：规则控制
-- 状态维护
+### 4.2 `Agent`
+
+位置：`src/sociality_estimation/core/agent.py`
+
+- 规划相关：
+  - `lp_ibr_interact(...)`
+  - `solve_linear_programming(...)`
+  - `ibr_interact(...)`
+  - `solve_optimization(...)`
+  - `idm_plan(...)`
+  - `cruise_plan(...)`
+- 状态维护：
   - `update_state(...)`
-  - `trj_solution`、`observed_trajectory`、`action_collection`
-- IPV 估计
-  - `estimate_self_ipv(...)`：枚举虚拟 IPV 候选，比较观测轨迹与虚拟轨迹相似性，输出 `ipv` 与 `ipv_error`。
+  - `trj_solution`
+  - `observed_trajectory`
+  - `action_collection`
+- IPV 估计：
+  - `estimate_self_ipv(...)`
 
-### 4.3 `Scenario` / `Simulator`（`simulator.py`）
+### 4.3 `Scenario` / `Simulator`
+
+位置：`pipelines/simulation/simulator.py`
+
 - `Scenario`：双车初始状态与控制器类型容器。
-- `Simulator`：执行交互循环、调用 Agent 控制器、可视化、语义结果判定、元数据导出。
+- `Simulator`：执行交互循环、调用 `Agent` 控制器、可视化、语义结果判定、元数据导出。
 
 ---
 
 ## 5. 两条主业务流水线
 
-## 5.1 数据估计流水线（当前 InterHub CSV/pkl；旧入口已归档）
+### 5.1 InterHub 数据估计流水线
 
-### 公共核心（`ipv_estimation.py`）
-1. `estimate_ipv_pair(primary, counterpart, ...)`
-2. 对每个时刻 `t`：
-   - 用历史窗口切片轨迹；
-   - 分别构造 primary/counterpart 两个 `Agent`；
-   - 调用 `Agent.estimate_self_ipv(...)`；
-   - 记录 `ipv_values[t, :]` 与 `ipv_errors[t, :]`。
-3. 可选返回 diagnostics（虚拟轨迹、权重、选定步）。
+1. `pipelines/interhub/process_interhub.py`
+2. `sociality_estimation.core.ipv_estimation.estimate_ipv_pair(...)`
+3. `Agent.estimate_self_ipv(...)`
+4. `Agent.solve_optimization(...)`
+5. `utility_fun`、`cal_individual_cost`、`cal_group_cost`
+6. planning utilities / bicycle model / reference-line tools
 
-### 归档 Argoverse 管线（`archived/legacy_scripts/process_argoverse.py`）
-- 旧脚本按 `ARGO_CONFIG` 的数据版本/场景/子集迭代，读取 case CSV、构建 `MotionSequence`、调用 `estimate_ipv_pair`，并导出 Excel/PNG。
-- 当前仓库中的 Argoverse 数据位于 `argoverse/0_souce_data/`，而该旧脚本按脚本所在目录旁的 `0_souce_data/` 读取；恢复使用前必须核对并修正路径。
+归档的 Argoverse CSV、InterHub JSON、subset 兼容包装和 `mean_ipv` metadata 后处理脚本仍在 `archived/legacy_scripts/`。恢复前必须核对硬编码路径和导入路径。
 
-### InterHub 管线（`process_interhub.py`）
-- 输入：InterHub CSV 索引 + pkl 事件数据，支持 subset 与 full dataset。
-- 处理步骤：
-  - 按 CSV 元数据索引 pkl 事件；
-  - 提取 `key_agents` 对应双车轨迹；
-  - 从 lane centerline 或观测轨迹构建参考线；
-  - 对 nuPlan 数据下采样到 10Hz；
-  - 调用 `estimate_ipv_pair`；
-  - 输出 per-case metadata、CSV 汇总、失败记录和可选诊断图。
-- 并行：`ProcessPoolExecutor`（支持 `--workers`、shard、only-incomplete 和 case timeout）。
-- 旧版 JSON 管线保留在 `archived/legacy_scripts/process_interhub_json_legacy.py`。
+### 5.2 仿真分析流水线
 
----
-
-## 5.2 仿真分析流水线（`simulator.py`）
-1. 构造 `Scenario`（初始位置/速度/航向/IPV/控制器类型）。
+1. 构造 `Scenario`。
 2. `Simulator.initialize(...)` 实例化双车 `Agent` 并互设估计对手。
-3. `Simulator.interact(...)` 按步循环：
-   - 每车按 `conl_type` 选择控制器：
-     - `linear-gt`（线性 IBR）
-     - `gt` / `opt`（非线性博弈/单次优化）
-     - `idm`
-     - `lattice`
-     - `replay`
-   - `update_state(...)` 更新状态与轨迹历史。
-4. 后处理：
-   - `get_semantic_result(...)` 判定语义（yield/rush/crashed 等）；
-   - 结果可视化与 Excel 落盘。
+3. `Simulator.interact(...)` 按步循环调用控制器：
+   - `linear-gt`
+   - `gt` / `opt`
+   - `idm`
+   - `lattice`
+   - `replay`
+4. `get_semantic_result(...)` 判定语义结果并落盘可视化/表格。
 
 ---
 
-## 6. 调用关系（核心链路）
-```text
-process_interhub.py
-            -> ipv_estimation.estimate_ipv_pair
-            -> Agent.estimate_self_ipv
-            -> Agent.solve_optimization
-            -> utility_fun + (cal_individual_cost, cal_group_cost)
-            -> bicycle_model / reference-line tools
-```
+## 6. 输入输出与路径约定
 
-```text
-simulator.py
-   -> Simulator.interact
-      -> Agent.lp_ibr_interact / Agent.ibr_interact / Agent.idm_plan / lattice_planning
-      -> Agent.update_state
-```
+### 输入
 
----
-
-## 7. 输入输出与路径约定
-
-### 7.1 输入
 - InterHub：CSV 索引 + pkl 事件数据。
-- 归档 Argoverse：旧脚本按脚本目录下 `0_souce_data/` 读取，当前数据位于 `argoverse/0_souce_data/`。
-- 归档 InterHub JSON：旧 JSON 文件现在仅在 `interhub_traj_lane/0_raw_data/full_datasets/archived/` 可见，旧脚本需修正路径后才能复用。
-- 仿真附属资源：`background_pic/*`、`NDS_analysis`（当前仓库未包含该模块文件）。
+- Onsite competition：本地大数据包与轻量 manifest 均在 `data/onsite_competition/`，其中 raw/team payload 被 git 忽略。
+- 归档 Argoverse：旧脚本按脚本目录旁的 `0_souce_data/` 读取，当前历史数据位置需要按实际路径核对。
+- 仿真附属资源：`background_pic/*`、`NDS_analysis`（当前仓库未包含）。
 
-### 7.2 输出
-- Argoverse：`1_experiment_result/ipv_estimation/...`
-- Interhub：`interhub_traj_lane/1_ipv_estimation_results/...`
-- 选择失败诊断：`interhub_traj_lane/diagnostics_selection_skipped/...`
-- 仿真输出：`simulator.py` 中按函数内路径写入 `../outputs/...`
+### 输出
 
----
-
-## 8. 并行与集群
-- 本地并行：当前 `process_interhub.py` 使用 `ProcessPoolExecutor`；归档脚本也可能包含旧并行逻辑，但不再作为当前入口。
-- 集群并行：历史 Slurm 脚本已移入 `interhub_traj_lane/` 下对应结果包的 `01_process/hpc_run_files/` 归档目录。
-  - 当前 full/subset CSV+pkl 任务应通过归档的命令文档或新的 `process_interhub.py` 参数恢复。
-  - 旧版 JSON 批处理脚本已归档，不再是根目录命令。
+- InterHub：`reports/interhub/ipv_estimation_results/...`
+- Onsite competition：`reports/onsite_competition/social_compliance_report/...`
+- Argoverse 历史结果：`archived/argoverse/...`
+- 仿真输出：仍按 `pipelines/simulation/simulator.py` 内部函数配置写入，部分旧函数使用相对 `../outputs/...`。
 
 ---
 
-## 9. 当前可见的工程注意点
-- `simulator.py` 依赖 `NDS_analysis`，但该文件不在当前仓库内，直接运行相关入口可能失败。
-- `archived/legacy_scripts/batch_process_ipv.py` 默认根目录是 `interhub_traj_lane/ipv_estimation_results`，与当前 `process_interhub.py` 输出结构不一致，恢复前需核对目录。
-- `agent.py` 的全局参数（如 `dt`、`TRACK_LEN`）会影响估计与仿真行为，切换实验场景时应统一配置。
+## 7. 并行与集群
+
+- 本地并行：`pipelines/interhub/process_interhub.py` 使用 `ProcessPoolExecutor`。
+- 集群并行：历史 Slurm 脚本保留在对应结果包的 `01_process/hpc_run_files/` 归档目录。
+- 当前 full/subset CSV+pkl 任务应通过 `pipelines/interhub/process_interhub.py` 新入口恢复。
 
 ---
 
-## 10. 建议的阅读顺序
-1. 先看 `ipv_estimation.py`（最清晰的公共估计接口）。
-2. 再看 `agent.py`（理解 IPV 的本体逻辑）。
-3. 然后看 `process_interhub.py`（当前数据管线）。
-4. 最后看 `simulator.py` + `tools/Lattice.py`（仿真与规划细节）。
+## 8. 当前工程注意点
+
+- `pipelines/simulation/simulator.py` 仍依赖不在仓库内的 `NDS_analysis`。
+- `archived/legacy_scripts/batch_process_ipv.py` 默认根目录是旧的 `interhub_traj_lane/ipv_estimation_results`，与当前输出结构不一致。
+- `src/sociality_estimation/core/agent.py` 的全局参数（如 `dt`、`TRACK_LEN`）会影响估计与仿真行为，切换实验场景时应统一配置。
+- 不要重新创建根目录 `agent.py`、`ipv_estimation.py`、`process_interhub.py`、`simulator.py` 或 `tools/` 作为活跃代码入口。
+
+---
+
+## 9. 建议阅读顺序
+
+1. `src/sociality_estimation/core/ipv_estimation.py`
+2. `src/sociality_estimation/core/agent.py`
+3. `pipelines/interhub/process_interhub.py`
+4. `pipelines/simulation/simulator.py`
+5. `src/sociality_estimation/planning/Lattice.py`

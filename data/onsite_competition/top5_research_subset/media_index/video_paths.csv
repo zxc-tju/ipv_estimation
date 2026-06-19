@@ -1,0 +1,11 @@
+﻿area,area_rank,team_code,official_name,file_role,bytes,source_relative_path
+beijing,1,T17,panda,video,457248783,北京赛区/4-Panda/04 Panda 武汉理工大学.mp4
+beijing,2,T14,bps,video,480927777,北京赛区/1-KUST-BPS/01 KUST-BPS 昆明理工大学.mp4
+beijing,3,T16,autoailab,video,461103522,北京赛区/3-WUT-AutoAILab/03 WUT-AutoAILAB 武汉理工大学.mp4
+beijing,4,T15,wulala,video,444131740,北京赛区/2-wulawula/02 wulala 长安大学.mp4
+beijing,5,T20,mm,video,499162135,北京赛区/7-MM妙妙妙/08 MM妙妙妙 北京航空航天大学.mp4
+shanghai,1,T11,wsd,video,711763539,上海赛区/武汉理工大学_WUT_FSD/WUT_FSD_20251220_102945.mp4
+shanghai,2,T6,thicv2025,video,749460656,上海赛区/清华&贵州大学_thicv2025/thicv_20251220_101548.mp4
+shanghai,3,T5,limitless,video,1001529360,上海赛区/江苏大学_测试无极限/测试无极限_20251220_104257.mp4
+shanghai,4,T7,SMU,video,1229544335,上海赛区/上海海事大学_SMU智驾出航/SMU智驾出航20251220_140712.mp4
+shanghai,5,T8,ADVRC,video,1329002707,上海赛区/上海交大_SJTU_ADVRC/STJU_ADVRC_20251220_125336.mp4

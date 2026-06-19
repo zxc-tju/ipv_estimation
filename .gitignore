@@ -1,8 +1,9 @@
-# Data directories
+# Legacy data directories, kept ignored if recreated
 argoverse/0_souce_data/
 argoverse/1_experiment_result/
 argoverse/2_data_process/
 background_pic/
+interhub_traj_lane/
 onsite_competition_results/
 
 # Notebook artifacts
@@ -19,7 +20,18 @@ Thumbs.db
 
 # Local agent/tool state
 .omx/
+.codex-fleet/
 
-# Interhub data - ignore everything except process_interhub.py
-interhub_traj_lane/*
+# Raw/local data and generated report payloads
 argoverse/*
+data/interhub/raw/
+data/onsite_competition/raw/
+data/onsite_competition/top5_research_subset/teams/
+archived/argoverse/
+archived/20260610_sigma_0_0_2_full/
+archived/archived_case_files/
+archived/interhub_traj_lane_legacy/
+archived/ipv_rt_final/
+archived/onsite_competition_results_legacy/
+reports/interhub/ipv_estimation_results/
+reports/onsite_competition/social_compliance_report/

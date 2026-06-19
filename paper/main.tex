@@ -1,0 +1,464 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+
+% Page setup
+\geometry{margin=1in}
+\doublespacing
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Online Social-Compliance Verification for AVs}
+
+% Helper: planned (NSFC) content not yet supported by results
+\newcommand{\planned}[1]{{\color{blue!60!black}\textit{[PLANNED: #1]}}}
+% Helper: figure placeholder box (keeps the file compilable without image files)
+\newcommand{\figph}[2]{\fbox{\parbox[c][#1][c]{0.92\linewidth}{\centering\itshape #2}}}
+
+% Title and author information
+\title{Online runtime verification of socially compliant autonomous driving}
+\author{
+    Author Name\thanks{Corresponding author: author@institution.edu} \\
+    \textit{Department, Institution} \\
+    \textit{City, Country}
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+Autonomous vehicles are certified for collision safety, yet they operate within human
+traffic where competent behaviour is governed by implicit, context-dependent social norms.
+We recast social compliance as online runtime verification: given an interaction, we ask
+whether a vehicle's behaviour falls within the range that competent humans exhibit in the
+same situation. Using 38{,}228 multi-source human interactions, we first show that social
+compliance is state-dependent: the priority-related interaction preference reverses sign
+with collision risk ($+0.058$ to $-0.034$) and is robust across data sources and binning
+choices, so a single sociality score is ill-posed. We then ask what an online verifier must
+read. Counterintuitively, predicting risk and looking up an empirical envelope barely
+narrows the reasonable interval, whereas the human reasonable range conditioned on the
+driver's own early-window causal preference, calibrated by conformal prediction, narrows it
+by $42\%$ at nominal $90\%$ coverage and, uniquely, transfers across a held-out data source
+($0.902$). The
+resulting verifier is sharp, calibrated and source-transferable, excludes risk from its
+online inputs, and exposes a deviation signal to the planner, advancing auditable,
+human-aligned autonomy.
+\end{abstract}
+
+% ======================================================================
+\section{Introduction}
+% ----------------------------------------------------------------------
+Autonomous vehicles (AVs) must share the road with human drivers, cyclists and pedestrians
+whose behaviour is shaped not only by physical constraints but also by implicit social
+norms. A manoeuvre that is collision-free in isolation may still be perceived as aggressive,
+hesitant or norm-violating when performed in the wrong interaction context, eroding the
+predictability on which mixed human--machine traffic depends. Controlled experiments show
+that machine agents embedded in human groups can suppress beneficial social norms such as
+reciprocity, with collective consequences~\cite{shirado2023reciprocity}. Social competence
+is therefore not a cosmetic add-on but part of what it means for autonomy to be safe in a
+human world.
+
+Two established families of methods address adjacent but distinct questions. Offline
+behavioural evaluation asks whether an AV, on average, drove like a human, typically by
+reporting a single aggregate sociality score over a dataset. Formal safety verification asks
+whether a trajectory will collide or violate a hard constraint, and can guarantee legal
+safety as an online layer around a planner~\cite{pek2020online}. Neither answers the
+question a socially aware AV faces moment to moment: given the current interaction state, is
+this behaviour within the range that competent humans exhibit? This question is local in
+time, conditional on context, and graded rather than binary.
+
+We formulate socially compliant driving as the runtime verification of online-inferred
+interaction preferences. The monitored property is not a hand-written temporal-logic
+specification but a data-driven empirical norm learned from large-scale human interaction,
+expressed through the interaction preference value (IPV), a trajectory-derived measure of
+how an agent balances its own progress against the group's. An online verifier estimates the
+IPV, compares it with the human reasonable range for the current situation, and exposes the
+result to the planner as a warning, soft cost, fallback trigger or audit record.
+
+This framing differs from three existing paradigms. Unlike offline AV evaluation, it is
+online, per-timestep and context-conditioned rather than aggregate. Unlike runtime
+verification of formal specifications, the monitored property is an empirical normative
+distribution estimated from human data. Unlike socially compliant planning, it does not
+encode sociality into a planner's objective but provides a pluggable, planner-agnostic
+monitor that any planner can be checked against.
+
+Our contributions are fourfold. First, we formalise social compliance as a runtime
+verification problem and instantiate it as an online verifier. Second, we show that social
+compliance is state-dependent: the social meaning of right-of-way reverses with collision
+risk, robustly across four independent data sources, so compliance cannot be a scalar.
+Third, and counterintuitively, we show that the verifier should not estimate risk: the
+reasonable IPV interval is set by the driver's own early-window causal preference, and a
+self-anchored, conformally calibrated verifier is sharp, attains nominal coverage and
+transfers across a held-out source, whereas risk-based envelope lookup does not. Fourth,
+\planned{external validation on an independent real-vehicle challenge dataset, and a
+demonstration that social-compliance deviation carries information about outcomes that
+collision-safety checks miss}. The present manuscript reports the first three contributions
+in full and scopes the fourth as planned validation.
+
+% ======================================================================
+\section{Results}
+% ----------------------------------------------------------------------
+
+\subsection{Social compliance is a state, not a score}
+We analysed 38{,}228 interaction cases from four naturalistic sources within the InterHub
+corpus (Waymo 23{,}218; nuPlan 7{,}499; Lyft 5{,}105; Argoverse-2 2{,}406; 3{,}695{,}981
+trajectory frames). For each interacting agent we computed the IPV, parameterised as an
+angle $\theta\in[-\pi/2,\pi/2]$, where $\theta>0$ denotes cooperative behaviour.
+
+The social meaning of right-of-way is gated by collision risk (Fig.~\ref{fig:state-dep}).
+The difference in IPV between the priority and non-priority agent reverses sign as
+post-encroachment time (PET) increases: under high risk (PET\,$\le$\,1.0\,s) the priority
+agent is markedly more prosocial ($+0.058$, 95\%\,CI $[+0.050,+0.067]$, $n=9{,}799$); at
+intermediate risk the gap vanishes ($+0.001$, $n=22{,}833$); and under low risk
+(PET\,$>$\,2.0\,s) it inverts, the priority agent becoming relatively more competitive
+($-0.034$, $[-0.045,-0.023]$, $n=4{,}863$). Right-of-way is thus a risk-modulated
+negotiation variable rather than a fixed disposition. A coarse geometric prior is stable
+across sources, and a hierarchical partial-pooling estimator recovers the per-state norms
+with leave-one-dataset-out median absolute error $0.142$. The direction of the risk-gated
+effect is preserved under dropping Waymo, under three-, five- and quantile-binning of PET,
+and under geometry coarsening (Extended Data). Social compliance therefore cannot be reduced
+to a single average; it is a contextual property.
+
+\subsection{The reasonable interval is conditioned on the driver's own behaviour, not on risk}
+Establishing that the norm is contextual does not by itself tell us what an online verifier
+should read. The natural approach is to predict the situation's risk and look up the
+corresponding empirical envelope. This adds little. On held-out human interactions, even
+\emph{oracle} knowledge of PET narrows the reasonable IPV interval by only about $3\%$
+relative to a global interval (mean width $0.833$ versus $0.857$ at matched $\approx$$90\%$
+coverage; Fig.~\ref{fig:reframe}). Risk bins are not the principal source of information
+about how tightly an individual's behaviour is bounded.
+
+The driver's own early behaviour is. Conditioning the interval on the agent's early-window
+causal rolling-IPV, reconstructed from a trailing trajectory prefix and a static
+map-lane-centreline reference, narrows it to $0.485$ (a $42\%$ reduction) while holding
+coverage near nominal ($0.901$); kinematics without the self-anchor reach $0.627$. The
+dominant uncertainty in any single interaction is between-driver, and a driver's preference
+is temporally self-consistent, so the most informative covariate is the agent's own recent
+IPV rather than the situation's risk. Crucially, the reasonable range itself remains the
+\emph{human population's conditional distribution} of full-interaction IPV given the early
+signal and context: the early-window IPV locates an agent within the human range, it is not a
+licence for an agent to define its own norm, and the range is calibrated to cover human
+outcomes by split-conformal prediction (necessary because raw quantile models under-cover,
+around $0.86$). Whether conditioning on an agent's own behaviour could mask a persistently
+non-compliant agent is an explicit validity question we treat in the limitations and planned
+validation.
+
+\subsection{A calibrated, source-transferable online verifier}
+The decisive test is transfer across data sources. On a locked balanced slice, holding out
+the entire Waymo source for evaluation, the self-anchored interval is the only method that
+reaches nominal coverage ($0.902$, Wilson 95\%\,CI $[0.894,0.910]$; width $0.628$); a global
+interval ($0.868$), oracle-PET envelope ($0.860$) and self-anchor-free kinematics ($0.857$)
+all under-cover (Fig.~\ref{fig:transfer}). Cross-source generalisation is therefore carried
+by the driver's own early-window preference, not by risk binning or generic kinematics.
+
+This early-window signal is causal rather than a leakage artifact. Reconstructed against an
+observed-trajectory-prefix reference, the causal rolling-IPV correlates only weakly with the
+offline IPV (corr $0.281$); reconstructed against a static map-lane-centreline reference,
+which is route-conditioned and available online, the correlation rises to $0.993$ (MAE
+$0.027$; Extended Data). The self-anchor signal thus derives from the trajectory prefix and
+static map geometry, under the deployment assumption that the lane or route is known at
+decision time.
+
+Replacing the empirical-envelope lookup with the self-anchored interval in an otherwise
+identical verifier, behind the same deviation-score interface, improves the verifier
+(Fig.~\ref{fig:ab}). In-distribution, coverage is unchanged while the interval narrows
+($0.485$ versus $0.833$) and the false-flag rate does not rise ($0.052$ versus $0.051$).
+Under the held-out source, the self-anchored verifier improves coverage ($0.823$ versus
+$0.786$), narrows the interval ($0.488$ versus $0.678$) and lowers the false-flag rate
+($0.114$ versus $0.142$). The held-out coverage of the integrated verifier remains below
+nominal, so the supported deployment uses the signal as a soft cost, warning or monitor, and
+reserves hard constraints for after target-domain recalibration.
+
+\subsection{Verifier output as a planner-facing channel}
+The calibrated interval yields a signed deviation score that maps to planner-facing
+outputs: a monitor record, a one-sided soft cost active only where the norm expects
+prosociality, a warning, and a fallback candidate (Fig.~\ref{fig:planner}). As a second,
+joint check, the verifier also evaluates whether the pair-sum and pair-difference of the two
+agents' IPVs fall within their human reasonable ranges, capturing configurations such as
+mutual competition that are individually plausible but jointly anomalous; this paired check
+is a gate rather than a stronger primary predictor. Injecting a counterfactual
+more-competitive violation into $4{,}800$ case-agents raises the fallback-trigger rate from
+$3.0\%$ to $12.9\%$ and lifts the median pre-onset cost by $+0.252$, while leaving compliant
+streams largely unpenalised (mean social cost $0.134$, false-trigger rate $3.0\%$). This is
+an interface demonstration of actionability, not a closed-loop planner result.
+
+\subsection{External validation on an independent real-vehicle challenge}
+\planned{We will run the verifier on the award-winning algorithms of a national real-vehicle
+autonomous-driving challenge, whose official rankings, per-scenario scores and safety-event
+records provide an independent outcome ground truth. The analysis will test criterion
+validity (whether higher-ranked algorithms sit closer to the human reasonable interval), the
+consequence chain (whether higher deviation predicts more safety events and lower scores;
+Fig.~\ref{fig:nsfc-validation}), and discriminant value: whether social-compliance deviation
+retains predictive power for independent scores and events after controlling for
+conventional safety and rule-compliance metrics, including cases that pass safety
+verification yet are flagged socially (Fig.~\ref{fig:discriminant}). This establishes the
+verifier as complementary to, not a relabelling of, collision-safety verification.}
+
+% ======================================================================
+\section{Discussion}
+% ----------------------------------------------------------------------
+We have reframed AV social behaviour from an offline evaluation metric into an online
+runtime-verification property, and identified what such a verifier should read. Social
+compliance is contextual: the human norm's location shifts with collision risk and geometry.
+Yet for verifying an individual online, the informative signal is not the situation's risk
+but the driver's own early-window preference. Anchoring on that signal and calibrating it
+with conformal prediction yields intervals that are simultaneously sharp, nominally covered
+and transferable across a held-out source, the property that risk-based and global
+references both fail to achieve. Because the verifier deliberately excludes risk and PET from
+its online inputs, it cannot be a relabelling of collision-safety verification; it measures a
+distinct, complementary property.
+
+Our claims are bounded. The verifier is an empirical, probabilistic monitor, not a formal
+proof, and complements rather than replaces reachability-based safety
+layers~\cite{pek2020online}. The self-anchored path is deployable on roughly $74\%$ of cases,
+where a lane or route reference is available; the remainder fall back to a self-anchor-free
+kinematic interval. The strong cross-source result holds on a balanced, lane-referenced
+locked slice and is not an unconditional guarantee for arbitrary maps or routes, and the
+integrated verifier still under-covers under source shift, so hard-constraint deployment
+requires target-domain recalibration. A rival explanation is that the IPV re-encodes
+kinematics such as relative speed or passing order rather than a genuine social preference;
+the lane-reference causal reconstruction and self-anchor-free controls argue against a pure
+artifact, but kinematic-only and IPV-ablated comparisons are needed to exclude it. A central
+and related concern is norm-laundering: conditioning the reasonable range on an agent's own
+early behaviour could in principle make a persistently non-compliant agent appear normal. The
+range is the human population's conditional distribution rather than the agent's own, but
+confirming that it still flags self-consistent, human-implausible behaviour, that it
+generalises to unseen drivers, and that its verdicts track independent outcomes requires
+dedicated validation (cross-individual coverage, a consistent-deviator stress test, and
+adjudication of self-anchored versus situational verdicts against downstream outcomes), which
+we set out as planned work. Beyond
+driving, the framework offers a template for monitoring whether autonomous agents behave
+within human normative ranges online, under uncertainty and distribution shift, rather than
+optimising a single average behavioural metric.
+
+% ======================================================================
+\section{Methods}
+% ----------------------------------------------------------------------
+
+\subsection{Data and interaction extraction}
+We used 38{,}228 interaction cases from four sources within InterHub (Waymo, nuPlan, Lyft,
+Argoverse-2), comprising 3{,}695{,}981 trajectory frames. Each case identifies a dyadic
+interaction with an annotated priority (right-of-way) agent; the priority label denotes the
+right-of-way agent identity, not a numerical rank or the realised passing order. The
+interval-estimation results use a balanced locked slice of 5{,}000 cases (10{,}000
+agent-rows) on which a lane or route reference is available.
+
+\subsection{Interaction preference value and causal self-anchor}
+The IPV quantifies an agent's balance between self-interest and group reward, parameterised
+as $\theta\in[-\pi/2,\pi/2]$. For online use we estimate a \emph{dynamic} IPV from a trailing
+trajectory prefix (history window of order $1$--$2$\,s) using a real-time estimator with a
+static map-lane-centreline reference, yielding a strictly causal self-anchor signal. The
+choice of reference is decisive for causality: against an observed-prefix reference the
+causal estimate correlates only weakly with the offline IPV (corr $0.281$), whereas against
+the static map-lane reference it agrees closely (corr $0.993$, MAE $0.027$), confirming that
+the signal derives from the prefix and static geometry rather than future information.
+\emph{[TO SPECIFY: exact history-window length; estimator configuration.]}
+
+\subsection{Reasonable-interval estimation and calibration}
+We estimate the human reasonable interval of the (full-window) IPV by conditional quantile
+regression on the self-anchored signal together with geometry, right-of-way role, AV/HV
+identity, kinematics and the counterpart's lagged IPV; PET and other risk variables are
+\emph{excluded} from the online feature path. Model quantiles are turned into a calibrated
+interval at target coverage by split-conformal prediction. When source health is degraded or
+the data source is unknown, the system switches to a more conservative source-guard
+calibration radius; when a lane reference is unavailable, it falls back to a self-anchor-free
+causal-kinematics interval. The signed nonconformity of the current IPV relative to the
+calibrated interval is the deviation score exposed to the planner.
+
+\subsection{Paired joint reasonableness}
+As a second-layer check the verifier evaluates the pair-sum and pair-difference of the two
+agents' IPVs against their human reasonable ranges. Empirically the paired signal is a joint
+gate rather than a stronger primary predictor (a paired-only interval improves coverage by
+under half a percentage point while widening the interval), so it is used to flag jointly
+anomalous configurations, not to replace the self-anchored marginal check.
+
+\subsection{Leakage contract}
+Dynamic self-anchored IPV, current kinematics and static map-lane references are
+strict-online and admissible as verifier inputs; observed PET, realised passing order,
+full-window IPV and post-hoc phase labels are offline-only, used solely for calibration and
+evaluation, never as deployed inputs.
+
+\subsection{Evaluation protocols}
+We report coverage, mean interval width and the Winkler interval score, with Wilson
+confidence intervals on coverage. Cross-source robustness uses leave-one-dataset-out
+evaluation, holding out the entire Waymo source. The verifier is evaluated head-to-head
+against the empirical-envelope lookup behind a shared deviation-score interface. Planned
+ablations include kinematic-only and IPV-removed variants that test whether the social signal
+is separable from raw kinematics.
+
+\subsection{Planned external validation protocol}
+\planned{The verifier will be applied to the trajectories of award-winning algorithms from a
+national real-vehicle challenge. We will align scenarios, compute per-algorithm and
+per-scenario deviation, and relate deviation to official rankings, per-scenario scores and
+safety events via correlation and incremental regression that controls for conventional
+safety and rule-compliance metrics; where human reference trajectories are available, AV
+algorithms and humans will be placed within the same reasonable interval.}
+
+% ---------------------------------------------------------------------
+\begin{algorithm}[t]
+\caption{Offline calibration of the self-anchored reasonable interval}
+\label{alg:calib}
+\begin{algorithmic}[1]
+\REQUIRE human interactions $\mathcal{D}$; history window; target coverage $1-\alpha$
+\ENSURE quantile model $\hat{Q}$, conformal radius $\kappa$, source-guard radii
+\STATE split $\mathcal{D}$ into estimation set $\mathcal{D}_e$ and calibration set $\mathcal{D}_k$
+\FOR{each interaction in $\mathcal{D}_e$}
+    \STATE $\theta^{\mathrm{self}}\leftarrow$ causal rolling-IPV from prefix + map-lane reference
+    \STATE features $\leftarrow$ ($\theta^{\mathrm{self}}$, geometry, role, AV/HV, kinematics, counterpart lagged IPV) \COMMENT{no PET}
+    \STATE target $\leftarrow$ full-window IPV
+\ENDFOR
+\STATE fit conditional quantile model $\hat{Q}_{[q_{05},q_{50},q_{95}]}$ on (features, target)
+\STATE on $\mathcal{D}_k$: $\kappa\leftarrow$ split-conformal radius for coverage $1-\alpha$
+\STATE per source: source-guard radius from source-conditioned calibration
+\RETURN $\hat{Q},\,\kappa,\,\text{source-guard}$
+\end{algorithmic}
+\end{algorithm}
+
+% ---------------------------------------------------------------------
+\begin{algorithm}[t]
+\caption{Online social-compliance verification step at time $t$}
+\label{alg:online}
+\begin{algorithmic}[1]
+\REQUIRE prefix window $W_t$; map-lane reference; calibrated $\hat{Q},\kappa$; source health
+\ENSURE reasonable interval, deviation score, joint flag, planner signal
+\IF{lane/route reference available}
+    \STATE $\theta^{\mathrm{self}}_i\leftarrow$ causal rolling-IPV from $W_t$ + map-lane \COMMENT{strict-online}
+\ELSE
+    \STATE fall back to self-anchor-free causal-kinematics features \COMMENT{$\approx$26\% of cases}
+\ENDIF
+\STATE features $\leftarrow$ ($\theta^{\mathrm{self}}_i$, geometry, role, AV/HV, kinematics, $\theta_j$ lagged) \COMMENT{PET excluded}
+\STATE mode $\leftarrow$ source-guard \textbf{if} source unknown/drift \textbf{else} CQR
+\STATE $[q_{05},q_{50},q_{95}]\leftarrow \hat{Q}(\text{features})$ widened by $\kappa$(mode) \COMMENT{conformal interval}
+\STATE $\delta\leftarrow$ signed nonconformity of current $\theta_i$ vs interval
+\STATE joint $\leftarrow$ (pair-sum and pair-diff of $\theta_i,\theta_j$ within human bands)
+\IF{\textbf{not} \textsc{QualityGates}(support, provenance, source health)}
+    \RETURN \textsc{Monitor}($\delta$, joint)
+\ENDIF
+\STATE signal $\leftarrow$ \textsc{Warning}+soft cost \textbf{if} $\delta$ exceeds threshold \textbf{else} \textsc{Monitor}
+\RETURN (interval, $\delta$, joint, signal)
+\end{algorithmic}
+\end{algorithm}
+
+\noindent\textbf{Complexity.} Each online step is $O(1)$ given the fitted quantile model and
+conformal radius (one estimator call, one interval evaluation, a scalar deviation and a
+paired check), so the verifier runs within a planning cycle and is auditable.
+
+% ======================================================================
+% Figures (placeholders kept compilable; replace \figph with \includegraphics)
+% ======================================================================
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 1 placeholder. Online verifier architecture (self-anchored path).}
+\caption{\textbf{Online social-compliance verification framework.} A real-time estimator
+reconstructs the driver's causal early-window IPV from a trajectory prefix and a static
+map-lane reference; geometry, role, AV/HV identity and kinematics condition a
+conformally-calibrated reasonable interval, with PET excluded from the online path. The
+deviation score, a paired joint check, a source-guard calibration switch and a lane-fallback
+branch feed the planner interface.}
+\label{fig:architecture}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 2 placeholder. State dependence of the population norm.}
+\caption{\textbf{Social compliance is state-dependent.} The priority-minus-non-priority IPV
+gap reverses with PET risk ($+0.058\!\to\!+0.001\!\to\!-0.034$) with 95\% confidence
+intervals and per-source forest plots, and a coarse geometry prior is prosocial across all
+four sources. A single sociality score is ill-posed.}
+\label{fig:state-dep}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 3 placeholder. Source: fig1\_reframe.}
+\caption{\textbf{Risk barely narrows the reasonable interval; the driver's own preference
+does.} On held-out interactions, oracle PET narrows the interval by only $\approx$$3\%$
+relative to a global interval ($0.833$ versus $0.857$), whereas causal rolling-IPV narrows it
+to $0.485$ ($-42\%$), with coverage near nominal in all cases.}
+\label{fig:reframe}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 4 placeholder. Source: fig2\_cross\_dataset.}
+\caption{\textbf{Only the self-anchored interval transfers across sources.} With Waymo held
+out (locked balanced slice), causal rolling-IPV is the only method reaching nominal $0.90$
+coverage ($0.902$, Wilson 95\%\,CI $[0.894,0.910]$); global, oracle-PET and self-anchor-free
+baselines under-cover.}
+\label{fig:transfer}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 5 placeholder. Source: fig4\_verifier\_ab.}
+\caption{\textbf{Verifier A/B: self-anchored interval versus empirical-envelope lookup.}
+Behind the same deviation interface, the self-anchored verifier is markedly narrower in and
+out of distribution and does not increase false flags; under the held-out source it improves
+coverage and lowers the false-flag rate ($0.142\to0.114$).}
+\label{fig:ab}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{3.0cm}{Figure 6 placeholder. Planner-facing interface demonstration.}
+\caption{\textbf{Planner-facing soft-cost demonstration.} Counterfactual violation injection
+raises the fallback-trigger rate from $3.0\%$ to $12.9\%$ and the median pre-onset cost by
+$+0.252$, while leaving compliant streams largely unpenalised. An interface demonstration,
+not a closed-loop or safety guarantee.}
+\label{fig:planner}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{2.8cm}{Figure 7 placeholder \planned{NSFC external validation}}
+\caption{\planned{\textbf{External validation on an independent real-vehicle challenge.}
+Per-algorithm social-compliance deviation versus official ranking and per-scenario scores;
+deviation versus safety-event rate.}}
+\label{fig:nsfc-validation}
+\end{figure}
+
+\begin{figure}[t]\centering
+\figph{2.8cm}{Figure 8 placeholder \planned{NSFC discriminant value}}
+\caption{\planned{\textbf{Discriminant value beyond safety verification.} Cases that pass
+safety verification yet are flagged by the social verifier, and incremental prediction of
+scores and events after controlling for conventional safety metrics.}}
+\label{fig:discriminant}
+\end{figure}
+
+% ======================================================================
+\section*{Data Availability}
+InterHub-derived interaction cases and source datasets (Waymo, nuPlan, Lyft, Argoverse-2)
+are governed by their respective licences; processed derivatives will be made available upon
+publication. \planned{Real-vehicle challenge data availability to be stated per the
+challenge organiser's terms.}
+
+\section*{Code Availability}
+Implementation, the real-time IPV estimator, leakage-contract unit tests and
+figure-generation code will be released upon publication.
+
+\section*{References}
+\bibliographystyle{unsrt}
+\bibliography{bibliography/biblio}
+
+\section*{Acknowledgements}
+% (Funding sources, institutional support, data providers)
+
+\section*{Author Contributions}
+% (Individual contributions following Nature journal format)
+
+\section*{Competing Interests}
+The authors declare no competing interests.
+
+\section*{Additional Information}
+\subsection*{Supplementary Information}
+\subsection*{Supplementary Tables}
+\subsection*{Supplementary Figures}
+
+\end{document}

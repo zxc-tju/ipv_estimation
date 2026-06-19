@@ -1,0 +1,24 @@
+﻿area,area_dir,team_dir,team_code,official_name,score_rows,score_mean_comprehensive,file_count,total_bytes,session_count,session_ids,zip_count,video_count,pdf_count,team_info_txt_count,onsite_runtime_log_count,evidence_png_count,notes
+shanghai,上海赛区,UE,,,,,1,6148,0,,0,0,0,0,0,0,non-team UE metadata folder | no materialized replay session directory | no official team code inferred from archived mapping
+shanghai,上海赛区,上海交大_SJTU_ADVRC,T8,ADVRC,15,79.366,7,1492129434,1,6932-1766206403,1,1,1,0,0,0,
+shanghai,上海赛区,上海海事大学_SMU智驾出航,T7,SMU,15,80.3893,8,1488558298,1,6938-1766210823,1,1,1,0,0,0,
+shanghai,上海赛区,东南大学_e2e,T3,e2e,15,75.4387,8,1422925654,1,6930-1766202635,1,1,1,0,0,0,
+shanghai,上海赛区,东南大学_流浪东南号,T2,Liulang,15,61.3853,8,2859494095,1,6947-1766215908,1,2,1,0,0,0,
+shanghai,上海赛区,华南理工_SCUT1216,T4,1216,15,70.8627,15,2997963133,2,6927-1766200590;6944-1766214451,2,2,1,0,0,0,
+shanghai,上海赛区,同济大学_tiev-plus,T10,tievplus,15,57.4053,15,3923280736,2,6933-1766207438;6948-1766217297,2,2,1,0,0,0,
+shanghai,上海赛区,武汉理工大学_WUT_FSD,T11,wsd,15,89.4387,8,816122063,1,6923-1766197775,1,1,1,0,0,0,
+shanghai,上海赛区,江苏大学_测试无极限,T5,limitless,15,81.7913,9,1267352938,1,6925-1766198568,1,1,1,0,0,0,
+shanghai,上海赛区,深圳技术大学_超车92队,T9,takeover92,15,78.9593,8,1523202998,1,6928-1766201641,1,1,1,0,0,0,
+shanghai,上海赛区,清华&贵州大学_thicv2025,T6,thicv2025,15,85.6093,7,883156619,1,6921-1766196941,1,1,1,0,0,0,
+shanghai,上海赛区,西华大学_西华明德贰队,T12,mingde,15,49.8787,14,2465646011,2,6935-1766208365;6953-1766219816,2,1,1,0,0,0,
+shanghai,上海赛区,重庆大学_CQUauto,T1,CQUauto,15,75.5267,15,1827168140,1,6940-1766211847,1,1,1,0,0,0,duplicate session extractions: 6940-1766211847: 6940-1766211847|重庆大学_CQUauto-2025_6940-1766211847\6940-1766211847
+shanghai,上海赛区,长沙理工大学_csust,,,,,2,457663716,0,,0,2,0,0,0,0,no materialized replay session directory | no official team code inferred from archived mapping
+beijing,北京赛区,1-KUST-BPS,T14,bps,15,89.29,10,676199721,1,6922-1766197115,0,1,1,1,1,0,
+beijing,北京赛区,2-wulawula,T15,wulala,15,83.9773,10,665986612,1,6924-1766198444,0,1,1,1,0,1,
+beijing,北京赛区,3-WUT-AutoAILab,T16,autoailab,15,88.3827,9,659667498,1,6926-1766199712,0,1,1,1,1,0,
+beijing,北京赛区,4-Panda,T17,panda,15,89.4153,10,646192587,1,6931-1766206339,0,1,1,1,1,0,
+beijing,北京赛区,5-BIT_Site,T18,bitsite,15,69.0047,6,755547791,0,,0,1,1,1,1,1,no materialized replay session directory
+beijing,北京赛区,6-223,T19,223,15,29.6013,10,1226319812,1,6937-1766209673,0,2,1,1,1,0,
+beijing,北京赛区,7-MM妙妙妙,T20,mm,15,82.168,12,691757995,1,6941-1766212682,0,1,1,1,1,2,
+beijing,北京赛区,8-高中部,,,,,3,393176710,0,,0,1,1,1,0,0,no materialized replay session directory | no official team code inferred from archived mapping
+beijing,北京赛区,9-SCUT_VTB_917,T21,vtb917,15,61.334,10,1262185514,1,6934-1766207726,0,1,1,1,1,0,
