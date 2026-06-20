@@ -25,13 +25,39 @@ Thumbs.db
 # Raw/local data and generated report payloads
 argoverse/*
 data/interhub/raw/
+data/derived/
 data/onsite_competition/raw/
 data/onsite_competition/top5_research_subset/teams/
 archived/argoverse/
 archived/20260610_sigma_0_0_2_full/
 archived/archived_case_files/
+archived/subsets_for_yiru/
+archived/report_local_state/
+archived/report_process/
 archived/interhub_traj_lane_legacy/
 archived/ipv_rt_final/
 archived/onsite_competition_results_legacy/
 reports/interhub/ipv_estimation_results/
 reports/onsite_competition/social_compliance_report/
+
+# Generated study report payloads. Keep lightweight RQ indexes and knowledge
+# files tracked; keep rendered reports, caches, models, and process payloads
+# local unless explicitly requested.
+reports/studies/**/00_entry/
+reports/studies/**/01_results/
+reports/studies/**/02_process/
+reports/studies/**/agents/
+reports/studies/**/assets/
+reports/studies/**/board/
+reports/studies/**/cache/
+reports/studies/**/data/
+reports/studies/**/data_sources/
+reports/studies/**/logs/
+reports/studies/**/metadata/
+reports/studies/**/scripts/
+reports/studies/**/tmp/
+reports/studies/**/work/
+reports/studies/**/*.html
+reports/studies/**/*.joblib
+reports/studies/**/*.parquet
+reports/studies/**/venv/

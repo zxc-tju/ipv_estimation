@@ -30,21 +30,41 @@
 │  └─ simulation/
 │     └─ simulator.py          # 交互仿真框架（Scenario/Simulator）
 ├─ docs/                       # 轻量说明文档
-├─ paper/                      # 论文草稿与材料
-├─ reports/                    # InterHub 与 onsite competition 报告/结果包
+├─ reports/
+│  ├─ studies/                 # 执行层：RQ/执行版本/report package
+│  └─ knowledge/               # 判断层：review、synthesis、decision
 ├─ data/                       # 数据入口：README/manifest 可跟踪，raw payload 被忽略
 ├─ archived/
 │  ├─ compat_wrappers_20260619 # 已归档的旧根入口/旧 tools 兼容层
 │  └─ legacy_scripts/          # 旧版数据脚本归档
 ├─ requirements.txt
+├─ STUDIES.md
 └─ main_workflow.log
 ```
 
 根目录不再保留 `agent.py`、`ipv_estimation.py`、`process_interhub.py`、`simulator.py` 或 `tools/`。这些短期兼容包装已归档到 `archived/compat_wrappers_20260619/`，不再是活跃入口。
 
+论文/Overleaf 工作区已拆分为独立仓库，不再是本项目的 `paper/` 子目录：
+
+- 本地 clean clone：`../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`
+- 远端：`https://github.com/zxc-tju/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`
+
+主项目只保留数据、代码、报告和分析管线；不要重新创建顶层 `paper/` 作为活跃论文入口。
+
+研究知识库保留在本仓库，分两层；`reports/` 第一层只保留
+`studies/` 与 `knowledge/`：
+
+- `reports/studies/`：执行层，记录每个 RQ 的 execution、report package
+  路径、evidence.csv、命令、环境和偏离计划情况。
+- `reports/knowledge/`：判断层，记录 ChatGPT/Claude/Codex/human review、综合判断
+  和最终 `decision.md`。
+
+根目录 `STUDIES.md` 是所有研究问题的总索引。
+
 大型原始数据已归到 `data/` 入口，但 raw 子目录继续被 git 忽略：
 
 - InterHub 原始数据在 `data/interhub/raw/`。
+- InterHub 派生大结果数据在 `data/derived/interhub/`。
 - Onsite competition 原始回放/队伍材料在 `data/onsite_competition/raw/` 和
   `data/onsite_competition/top5_research_subset/teams/`。
 - Argoverse 历史数据/结果在 `archived/argoverse/`。
@@ -186,8 +206,10 @@ python pipelines/interhub/process_interhub.py --csv <input.csv> --pkl-root <pkl_
 
 ### 输出
 
-- InterHub：`reports/interhub/ipv_estimation_results/...`
-- Onsite competition：`reports/onsite_competition/social_compliance_report/...`
+- InterHub 派生大结果：`data/derived/interhub/...`
+- 研究执行报告：`reports/studies/RQxxx_topic/RQxxx_n_topic_date/...`
+- 研究判断记录：`reports/knowledge/RQxxx_topic/...`
+- 报告过程归档：`archived/report_process/...`
 - Argoverse 历史结果：`archived/argoverse/...`
 - 仿真输出：仍按 `pipelines/simulation/simulator.py` 内部函数配置写入，部分旧函数使用相对 `../outputs/...`。
 
