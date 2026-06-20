@@ -9,6 +9,8 @@ organized report packages by research question.
 reports/studies/
   RQ001_online_ipv_interval/
     README.md
+    plan.md
+    plans/
     executions.csv
     RQ001_1_current_ipv_distribution_20260618/
     RQ001_2_interval_query_20260618/
@@ -20,6 +22,8 @@ Rules:
 - Use `RQxxx_topic/` for a research question.
 - Use `RQxxx_n_short_topic_YYYYMMDD/` for an execution report; `n` is the
   execution version under that RQ.
+- Put the currently approved pre-execution plan at `plan.md` when one exists.
+  Preserve earlier or named plan versions under `plans/`.
 - Keep rendered reports and generated result payloads local/ignored unless a
   task explicitly asks to track them.
 - Put reviewer synthesis and final claim decisions in

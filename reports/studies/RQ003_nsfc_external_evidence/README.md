@@ -4,6 +4,12 @@ Question: what can NSFC onsite competition data support as external evidence?
 
 Knowledge layer: `reports/knowledge/RQ003_nsfc_external_evidence/`
 
+## Plans
+
+| Plan | Status | Notes |
+|---|---|---|
+| `plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md` | archived-approved | Frozen confirmatory spec for NSFC real-vehicle external validation. Moved here from PAPER001 manuscript context so RQ003 owns the pre-execution plan. |
+
 ## Executions
 
 | Version | Report package | Role |

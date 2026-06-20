@@ -14,9 +14,10 @@ here conflicts with `../manuscript_structure.md` (v3), **v3 wins**.
 - `methods_revision_memo_online_verifier.md` — guard/floor/abstain Methods revision
   (situational floor + moderate-Δ abstention; guarded Algorithm 1/2 patches; the
   "why deliberately standard tools" defense). **Not yet fully landed in `main.tex`.**
-- `nsfc_ipv_validation_plan_v2.md` — frozen confirmatory spec for the NSFC real-vehicle
-  external validation; also flags two still-open `main.tex` issues (deviation-sign /
-  one-sided soft cost; rolling-vs-full-window).
+- `reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md`
+  — frozen confirmatory spec for the NSFC real-vehicle external validation; also flags
+  two still-open `main.tex` issues (deviation-sign / one-sided soft cost;
+  rolling-vs-full-window).
 - `../drafts/` (`main_remote_github_before_sync_2026-06-19_113002.tex` v2 draft +
   `structure_remote_v2_before_sync_2026-06-19.md` v2 outline +
   `main_tex_version_note.md`) — retained for a deliberate merge pass (see *Pending merge*).
@@ -93,13 +94,13 @@ retained v2 draft.
   (InterHub is Waymo-dominated replay); (3) no deviation→consequence loop.
 - Division of labour: **InterHub establishes the norm; NSFC tests it against an independent
   world.** *(source: NMI_论文撰写思路 — superseded on method, but this framing is still used by
-  nsfc_ipv_validation_plan_v2)*
+  RQ003 plan v2)*
 
 ### Known `main.tex` issues still open (do not lose)
 - **Deviation-sign / one-sided soft cost:** with θ>0=prosocial, δ=(θ−m)/w makes the positive
   side *over-yielding*, but current `main.tex` fires a one-sided "more competitive" cost on the
   positive side → sign inverted. Fix with two-tailed D_comp / D_yield.
-  *(nsfc_ipv_validation_plan_v2 §11.2; visible in the retained v2 main.tex deviation block)*
+  *(RQ003 plan v2 §11.2; visible in the retained v2 main.tex deviation block)*
 - **E1 label-overlap:** ensure the scoring target is a non-overlapping post-early window
   (t > anchor end) before any strict no-leakage claim. *(methods_revision_memo §3)*
 
