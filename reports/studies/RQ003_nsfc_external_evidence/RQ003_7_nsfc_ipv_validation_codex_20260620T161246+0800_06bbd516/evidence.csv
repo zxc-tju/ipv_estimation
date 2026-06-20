@@ -1,0 +1,4 @@
+evidence_id,stage,claim,artifact,status,notes
+E0A-001,Stage 0A,Repository synchronized safely to origin/main,02_process/00_meta/repo_sync_report.md,PASS,Fetch and ff-only pull succeeded; already up to date.
+E0A-002,Stage 0A,Frozen plan hash recorded,02_process/00_meta/plan_sha256.txt,PASS,98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1
+E0A-003,Stage 0A,Unique run and derived roots initialized,02_process/00_meta/run_manifest.json,PASS,RQ003_7

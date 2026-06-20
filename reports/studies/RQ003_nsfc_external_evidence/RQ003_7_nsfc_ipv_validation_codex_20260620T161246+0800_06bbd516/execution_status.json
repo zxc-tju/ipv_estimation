@@ -1,0 +1,17 @@
+{
+  "EXECUTION_VERSION": "RQ003_7",
+  "RUN_ID": "RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516",
+  "STATUS": "PASS",
+  "blocked": false,
+  "blockers": [],
+  "completed_at": "2026-06-20T16:12:46+08:00",
+  "next_phase": "Stage 0B / Gate -1 provenance audit, if authorized by controller",
+  "phase": "Stage 0A",
+  "scope_exclusions": [
+    "No Gate -1 audit",
+    "No Gate 0 audit",
+    "No IPV/outcome calculation",
+    "No plots",
+    "No paper repository access"
+  ]
+}
