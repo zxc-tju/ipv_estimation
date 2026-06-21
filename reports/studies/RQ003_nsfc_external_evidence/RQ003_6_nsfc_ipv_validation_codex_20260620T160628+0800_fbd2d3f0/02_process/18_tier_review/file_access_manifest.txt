@@ -1,0 +1,74 @@
+worker_id: RQ003_phase9_tier_001
+role: Phase 9 Tier reviewer
+run_id: RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0
+generated_utc: 2026-06-20T15:45:00Z
+
+Read:
+- START_HERE.md
+- 02_process/00_meta/run_manifest.json
+- 02_process/00_meta/plan_sha256.txt
+- 02_process/00_meta/artifact_index.csv
+- 02_process/02_gate_minus1/gate_minus1_status.json
+- 02_process/03_gate_minus1_review/gate_minus1_review_status.json
+- 02_process/04_gate0_measurement/gate0_status.json
+- 02_process/04_gate0_measurement/ipv_sign_contract.md
+- 02_process/04_gate0_measurement/support_definition.md
+- 02_process/05_gate0_review/gate0_review_status.json
+- 02_process/06_analysis_freeze/analysis_freeze.yaml
+- 02_process/07_freeze_review/freeze_review_status.json
+- 02_process/08_directional_ipv/prep_status.json
+- 02_process/08_directional_ipv/g0r_cond_001_status.json
+- 02_process/09_baseline_models/baseline_report.md
+- 02_process/10_confirmatory_analysis/confirmatory_analysis_report.md
+- 02_process/10_confirmatory_analysis/statistical_independent_review/stats_review_status.json
+- 02_process/10_confirmatory_analysis/statistical_independent_review/stats_rereview_status.json
+- 02_process/11_negative_controls/negative_control_report.md
+- 02_process/12_blind_annotation/annotation_status.json
+- 02_process/13_state_dependence/state_dependence_report.md
+- 02_process/14_npc_analysis/npc_feasibility_and_boundary.md
+- 02_process/15_red_team/red_team_status.json
+- 02_process/16_red_team_fixes/fix_status.json
+- 02_process/16_red_team_fixes/interp_fix/interpretation_correction.md
+- 02_process/16_red_team_fixes/interp_fix/rt2_blockers_resolution.json
+- 02_process/16_red_team_fixes/red_team2/red_team2_status.json
+- 02_process/16_red_team_fixes/red_team2/red_team2_report.md
+- 02_process/16_red_team_fixes/red_team3/red_team3_status.json
+- 02_process/16_red_team_fixes/red_team3/red_team3_report.md
+- 02_process/16_red_team_fixes/stats_rereview2/stats_rereview2_status.json
+- 02_process/16_red_team_fixes/stats_rereview2/stats_rereview2_report.md
+- 02_process/17_independent_replication/replication_status.json
+- 02_process/17_independent_replication/replication2/replication2_status.json
+- 02_process/17_independent_replication/replication2/independent_replication2_report.md
+- 01_results/tables/confirmatory_results.csv
+- 01_results/tables/confirmatory_results_interpretation.csv
+- 01_results/tables/negative_controls.csv
+- 01_results/tables/state_dependence_results.csv
+- 01_results/tables/state_dependence_counterexamples.csv
+- 01_results/tables/support_coverage.csv
+- 01_results/tables/coverage_matrix.csv
+- 01_results/tables/implementation_comparison_v2.csv
+- 01_results/tables/data_provenance_manifest.csv
+- 01_results/tables/baseline_feature_manifest.csv
+- 01_results/tables/scenario_crosswalk_corrected.csv
+
+Written:
+- 02_process/18_tier_review/tier_review.md
+- 02_process/18_tier_review/tier_decision.json
+- 02_process/18_tier_review/claim_boundary_matrix.csv
+- 02_process/18_tier_review/paper_handoff.md
+- 02_process/18_tier_review/file_access_manifest.txt
+- 02_process/18_tier_review/worker_report.json
+- 02_process/18_tier_review/artifact_manifest.csv
+- 02_process/00_meta/artifact_index.csv (append-only)
+
+Commands run:
+- sed -n reads for START_HERE.md and selected markdown/yaml artifacts
+- find reports/.../RUN_ID -maxdepth ... for run package inventory
+- python3 read-only JSON/CSV summarization scripts for status and table spot checks
+- head/tail on 02_process/00_meta/artifact_index.csv
+- date for generated timestamps
+
+Write-scope notes:
+- No paper repository path was edited.
+- No analysis artifact, freeze artifact, STUDIES.md, or knowledge decision file was edited.
+- main_workflow.log and START_HERE.md were not edited because this worker's write scope was restricted to 02_process/18_tier_review and append-only META artifact_index.

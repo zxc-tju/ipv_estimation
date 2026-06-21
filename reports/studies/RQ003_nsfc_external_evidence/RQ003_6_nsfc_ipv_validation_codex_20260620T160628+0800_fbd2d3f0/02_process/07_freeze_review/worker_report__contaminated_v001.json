@@ -1,0 +1,66 @@
+{
+  "status": "BLOCKED",
+  "worker_id": "RQ003_phase3_freeze_review_001",
+  "role": "freeze reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "identity_verified": true,
+  "scope_completed": [
+    "Read START_HERE.md for repository orientation.",
+    "Verified RUN_ROOT, FRZ, and FRZR exist.",
+    "Verified run_manifest.json run id and plan_sha256.txt match the fixed context.",
+    "Reviewed clean freeze artifacts, the plan, Gate 0 operational parameters, sanitized Gate 0 spec, and spec deviation log.",
+    "Performed preliminary checks for confirmatory family, freeze firewall, frozen thresholds, capacity match, fold no-leakage rules, and plan coverage.",
+    "Attempted scenario-membership source check and discovered score/rank-bearing top-five metadata was opened, contaminating this reviewer session.",
+    "Stopped before issuing PASS and wrote BLOCKED review artifacts."
+  ],
+  "files_created": [
+    "02_process/07_freeze_review/review_report.md",
+    "02_process/07_freeze_review/review_findings.csv",
+    "02_process/07_freeze_review/freeze_review_status.json",
+    "02_process/07_freeze_review/worker_report.json",
+    "02_process/07_freeze_review/file_access_manifest.txt",
+    "02_process/07_freeze_review/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "02_process/00_meta/artifact_index.csv"
+  ],
+  "commands_run": [
+    "pwd and sed START_HERE.md",
+    "test required run/freeze/review directories",
+    "jq run_manifest.json run id",
+    "tr plan_sha256.txt",
+    "find clean freeze directory",
+    "wc allowed plan/Gate0/freeze files",
+    "nl/sed allowed plan, Gate0 operational parameters, sanitized spec, spec deviation log, clean freeze artifacts, and selected structural manifests",
+    "find top5_research_subset tree",
+    "apply_patch review deliverables",
+    "shasum artifact validation"
+  ],
+  "tests_run": [],
+  "key_evidence": {
+    "single_confirmatory_confirmation": "Clean freeze has exactly one confirmatory comparison: state+causal kinematics+safety vs the same baseline plus D_comp/D_yield.",
+    "freeze_outcome_read_count": "Clean freeze file_access_manifest reports outcome/score/rank/predictor-result read counts of 0.",
+    "thresholds_frozen_verdict": "Preliminary PASS: thresholds are sourced to InterHub calibration or engineering guard values.",
+    "capacity_match_verdict": "Preliminary PASS: baseline and full differ only by D_comp/D_yield with the same online budget/folds/preprocessing/tuning.",
+    "fold_leakage_verdict": "Preliminary PASS by rule construction: leave-one-team/scenario/family rules are disjoint by group; Phase 4 must save concrete row IDs before fitting.",
+    "scenario_membership_availability": "Allowed session manifests and directory tree did not expose full per-cell A1-C5 membership; review then became contaminated by score/rank-bearing top-five metadata reads.",
+    "freeze_review_status": "BLOCKED with conditions FRZR-COND-001, FRZR-COND-002, FRZR-COND-003, and G0R-COND-001."
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": "PASS",
+    "seven_checks_independently_performed": "PARTIAL_BLOCKED_AT_CHECK_7",
+    "status_json_explicit": "PASS",
+    "reviewer_stayed_outcome_clean": "FAIL",
+    "no_out_of_scope_writes": "PASS_EXPECTED_AFTER_DIFF_CHECK"
+  },
+  "spec_deviations": [
+    "This reviewer did not update START_HERE.md or main_workflow.log because the user write scope allowed only FRZR and append-only META artifact_index.csv.",
+    "This reviewer opened score/rank-bearing top-five metadata during the scenario-membership source check; the session is not outcome-clean and cannot issue PASS."
+  ],
+  "unresolved_blockers": [
+    "Fresh outcome-clean freeze review required before Phase 4 formal result computation.",
+    "Scenario/family membership for team x scenario cells must be obtained from outcome-free metadata or a newly generated outcome-free map."
+  ],
+  "recommended_next_codex_task": "Phase 3 fresh freeze review rerun under stricter denylist for score/rank-bearing top-five metadata; if PASS, proceed to Phase 4 directional IPV + baseline + confirmatory + negative controls.",
+  "git_diff_summary": "New BLOCKED freeze-review artifacts under 02_process/07_freeze_review and append-only artifact index entries."
+}

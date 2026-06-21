@@ -1,0 +1,91 @@
+{
+  "worker_id": "RQ003_phase4_stats_rereview_001",
+  "role": "Phase 4 statistical re-review",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_utc": "2026-06-20T13:34:37Z",
+  "status": "PASS",
+  "scope_completed": [
+    "Verified run identity against RUN_ID and plan SHA-256.",
+    "Read the prior statistical FAIL and the negative-control fix artifacts.",
+    "Verified the repaired future-leaky feature-health evidence is nonconstant and materially different from rolling features.",
+    "Verified the repaired leaky row has nonzero computed LOTO values and is not a placeholder.",
+    "Verified negative-control language excludes the leaky diagnostic from NULL-robustness claims.",
+    "Verified primary confirmatory LOTO values and SHA-256 remained unchanged.",
+    "Verified the other 10 negative controls are unchanged versus the before-fix CSV."
+  ],
+  "commands_run": [
+    "sed -n '1,240p' START_HERE.md",
+    "git status --short",
+    "identity verification Python read-only script using the requested project Python",
+    "find NEG and REV scoped artifacts",
+    "sed/head/cat reads of scoped reports, CSVs, scripts, and JSON health artifacts",
+    "independent Python CSV comparison for primary values, leaky values, language checks, and other-control invariance",
+    "date -u +%Y-%m-%dT%H:%M:%SZ"
+  ],
+  "tests_run": [
+    "Read-only identity preflight: PASS.",
+    "Feature-health check review: PASS.",
+    "Primary value comparison: PASS.",
+    "Other 10 negative-control row comparison against before-fix CSV: PASS.",
+    "Language/scope string audit: PASS."
+  ],
+  "key_evidence": {
+    "identity": {
+      "run_manifest_RUN_ID": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+      "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1"
+    },
+    "leaky_genuineness": {
+      "feature_health_status": "PASS",
+      "D_comp_nonconstant": true,
+      "D_yield_nonconstant": true,
+      "theta_nonconstant": true,
+      "differs_from_rolling": true,
+      "D_comp_unique_rounded_1e12": 44,
+      "D_yield_unique_rounded_1e12": 44,
+      "theta_unique_rounded_1e12": 48,
+      "changed_cells_D_comp": 47,
+      "changed_cells_D_yield": 46,
+      "mean_abs_delta_D_comp": 0.1414955408465355,
+      "mean_abs_delta_D_yield": 0.20927295683384806
+    },
+    "fixed_leaky_row": {
+      "delta_spearman": -0.08206686930091184,
+      "delta_spearman_ci_low": -0.1886515914278722,
+      "delta_spearman_ci_high": 0.05248347449132109,
+      "p_delta_spearman_greater": 0.2,
+      "delta_mae_reduction": -0.4094253239715062,
+      "delta_cv_r2": -0.056862625685136337,
+      "old_before_fix_delta_spearman": 0.0,
+      "old_before_fix_ci": "[0, 0]",
+      "old_before_fix_p": 1.0
+    },
+    "language_scope": {
+      "excludes_from_null_robustness": true,
+      "states_10_valid_negative_controls": true,
+      "reports_leaky_separately": true,
+      "old_strengthening_claim_removed": true
+    },
+    "primary_unchanged": {
+      "base_spearman": 0.3541033434650456,
+      "delta_spearman": -0.11029092488059053,
+      "confirmatory_results_sha256": "9b3b79f0704a09e5509780d9b096570b18d9275fd3a52d1381b2f74ea3be90d8",
+      "matches_pre_fix_sha_recorded_by_fix_worker": true
+    },
+    "other_controls_unchanged": {
+      "count": 10,
+      "row_dictionary_differences": []
+    }
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": "PASS",
+    "leaky_genuineness_confirmed": "PASS",
+    "primary_unchanged_verified": "PASS",
+    "explicit_final_phase4_status": "PASS"
+  },
+  "spec_deviations": [
+    "Did not update START_HERE.md or main_workflow.log because the user constrained writes to REV plus append-only META artifact_index.csv."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Phase 5 blind annotation preparation",
+  "final_phase4_status": "PASS"
+}

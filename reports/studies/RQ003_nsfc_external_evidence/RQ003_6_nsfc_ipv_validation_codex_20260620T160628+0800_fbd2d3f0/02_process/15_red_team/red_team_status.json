@@ -1,0 +1,18 @@
+{
+  "status": "BLOCKERS_FOUND",
+  "worker_id": "RQ003_phase7_red_team_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_at_local": "2026-06-20T22:09:15+0800",
+  "blocking_count": 2,
+  "nonblocking_count": 16,
+  "attack_items_addressed": 20,
+  "summary": "Red-team review completed. The primary null/reverse result is blocked by a scenario-label mismatch between structural scenario_map_outcome_free labels and official score-map scenario labels in 120/150 cells. A scratch official-label LOTO check changes the primary increment direction, so the NULL cannot be treated as robust until the scenario crosswalk and all downstream analyses are rerun.",
+  "top_blockers": [
+    "RT-BLOCK-001 scenario-label mismatch invalidates scenario fixed effects, LOSO, and A1 exclusion.",
+    "RT-BLOCK-002 A1 zero-score/safety reporting is false under the assembled tables."
+  ],
+  "null_verdict": "PROVISIONAL_NOT_ROBUST_TO_SCENARIO_LABEL_FIX",
+  "coordination_circularity_verdict": "Official generated/report metric with rule/kinematic components; acceptable only as official-score prediction outcome, not independent expert social ground truth.",
+  "narrative_overclaim_verdict": "No final reader report overclaim exists, but Phase 4 report text overstates/incorrectly describes A1 safety handling and must be regenerated.",
+  "recommended_next_codex_task": "Phase 7 fixer: repair scenario crosswalk, rerun Phase 4/controls/state-dependence, then rerun independent replication and red team."
+}

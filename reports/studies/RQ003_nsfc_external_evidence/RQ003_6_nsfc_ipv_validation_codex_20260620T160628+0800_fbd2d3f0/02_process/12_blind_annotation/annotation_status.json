@@ -1,0 +1,27 @@
+{
+  "agreement_computed": false,
+  "anonymization_leakage_audit_result": "PASS",
+  "created_at_utc": "2026-06-20T13:50:57.159317+00:00",
+  "event_ipv_test_computed": false,
+  "h3_status": "BLOCKED",
+  "mechanism_sample_n": 12,
+  "overall_status": "PARTIAL",
+  "package_description": "a blind behavioral criterion reference independent of the official score and IPV outputs",
+  "package_status": "PARTIAL",
+  "phase": 5,
+  "reason": "no real two-human annotations",
+  "required_human_steps": [
+    "Coordinator uses controlled_identity_map.csv to issue source media or trajectory material under blinded filenames/reference IDs without revealing team names, official scores, ranks, or IPV outputs.",
+    "Human annotator 01 independently completes annotator_01_template.csv using annotation_codebook.md and the blinded item materials only.",
+    "Human annotator 02 independently completes annotator_02_template.csv using annotation_codebook.md and the blinded item materials only.",
+    "A later authorized merge worker runs merge_annotations.py on the two completed real human files; the script must refuse templates, empty files, and simulated labels.",
+    "Only after real two-human annotations are merged may a separate authorized analysis worker consider any behavioral-event to IPV or outcome tests."
+  ],
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "simulated_labels_generated": false,
+  "updated_at_utc": "2026-06-20T13:52:09.236633+00:00",
+  "validation_random_seed": 20260620,
+  "validation_sample_n": 30,
+  "validation_sampling_method": "scenario-stratified random, 2 per scenario, independent of IPV and official outcomes",
+  "worker_id": "RQ003_phase5_blind_annotation_001"
+}

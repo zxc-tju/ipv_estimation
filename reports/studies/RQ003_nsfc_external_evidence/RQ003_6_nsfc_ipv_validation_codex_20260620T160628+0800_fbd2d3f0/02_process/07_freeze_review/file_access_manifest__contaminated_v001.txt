@@ -1,0 +1,88 @@
+# RQ003 Phase 3 Freeze Review File Access Manifest
+
+Worker: RQ003_phase3_freeze_review_001
+Role: freeze reviewer
+Run: RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0
+Status: BLOCKED
+
+## Firewall Summary
+
+- Hard-denylist reads intentionally performed: 0
+- `01_results/tables/**` reads: 0
+- `02_process/02_gate_minus1/**` reads: 0
+- `02_process/03_gate_minus1_review/**` reads: 0
+- `top5_scenario_scores.csv` reads: 0
+- `top5_selection_summary.csv` reads: 0
+- `validation_summary.csv` reads: 0
+- `score_team_coverage.csv` reads: 0
+- Predictor-outcome result reads: 0
+- Reviewer score/rank contamination: yes
+
+## Contaminating Reads
+
+These paths were opened because they appeared to be structural top-five metadata, but they contain score and/or rank values. This makes the reviewer session not outcome-clean.
+
+- `data/onsite_competition/top5_research_subset/README.md`
+- `data/onsite_competition/top5_research_subset/tables/materialized_analysis_files.csv`
+- `data/onsite_competition/top5_research_subset/teams/beijing/01_T17_panda/README.md`
+
+## Files Read or Parsed Before Blocked Status
+
+Repository orientation and identity:
+
+- `START_HERE.md`
+- `02_process/00_meta/run_manifest.json`
+- `02_process/00_meta/plan_sha256.txt`
+
+Allowed plan and Gate 0 context:
+
+- `reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md`
+- `02_process/04_gate0_measurement/operational_parameters.yaml`
+- `02_process/01_inventory/gate0_sanitized_spec.md`
+- `02_process/00_meta/spec_deviation_log.md`
+
+Clean freeze deliverables read:
+
+- `02_process/06_analysis_freeze/analysis_freeze.yaml`
+- `02_process/06_analysis_freeze/acceptance_matrix.csv`
+- `02_process/06_analysis_freeze/artifact_manifest.csv`
+- `02_process/06_analysis_freeze/claims_register.md`
+- `02_process/06_analysis_freeze/exclusion_and_safe_subset.md`
+- `02_process/06_analysis_freeze/file_access_manifest.txt`
+- `02_process/06_analysis_freeze/fold_contract.csv`
+- `02_process/06_analysis_freeze/ipv_sign_contract.md`
+- `02_process/06_analysis_freeze/model_capacity_contract.md`
+- `02_process/06_analysis_freeze/pre_outcome_operationalization.md`
+- `02_process/06_analysis_freeze/primary_endpoints.md`
+- `02_process/06_analysis_freeze/worker_report.json`
+
+Outcome-free structural manifests read before contamination:
+
+- `data/onsite_competition/00_manifest/README.md`
+- `data/onsite_competition/00_manifest/session_manifest.csv`
+- `data/onsite_competition/00_manifest/file_inventory.csv`
+- `data/onsite_competition/top5_research_subset/tables/top5_session_manifest.csv`
+
+Metadata-only listings:
+
+- `02_process/06_analysis_freeze/`
+- `data/onsite_competition/00_manifest/`
+- `data/onsite_competition/top5_research_subset/`
+- `data/onsite_competition/top5_research_subset/teams/`
+
+## Files Written
+
+- `02_process/07_freeze_review/review_report.md`
+- `02_process/07_freeze_review/review_findings.csv`
+- `02_process/07_freeze_review/freeze_review_status.json`
+- `02_process/07_freeze_review/worker_report.json`
+- `02_process/07_freeze_review/file_access_manifest.txt`
+- `02_process/07_freeze_review/artifact_manifest.csv`
+
+Append-only metadata:
+
+- `02_process/00_meta/artifact_index.csv`
+
+## Outcome-Clean Notes
+
+The clean freeze v2 appears to record zero outcome/score/rank reads and proper quarantine of the tainted v1 freeze. This reviewer cannot certify that outcome-cleanly because the scenario-membership source check opened score/rank-bearing top-five metadata. A fresh reviewer must rerun the review with those files denylisted.

@@ -1,0 +1,12 @@
+finding_id,area,severity,agree,evidence,recommendation
+SR-001,identity,info,true,RUN_ID and plan SHA matched; required scripts/tables present; REV created.,None.
+SR-002,nesting_pseudoreplication,info,true,"150 assembled cells; 48 primary unique cells; 16,771 frame rows aggregated to cell-level; 48 primary predictions.",Keep cell-level N in all claims.
+SR-003,residualization_preprocessing_leakage,info,true,Train-only residualization/preprocessing in script; held-out outcome perturbation changed predictions by 0.,None.
+SR-004,permutation_bootstrap,info,true,Scenario-stratified permutation in code; spot p=0.60 vs reported 0.58; scenario-cluster bootstrap CI spot consistent.,None.
+SR-005,generalization_tiers,info,true,"LOTO primary, LOSO secondary, LOFO boundary/no significance headline in freeze/report/results.",Do not promote LOFO to significance headline.
+SR-006,capacity_match,info,true,"Full model differs from baseline only by D_comp/D_yield; same folds, preprocessing, ridge loss, and alpha grid.",None.
+SR-007,negative_controls,info,true,"Kinematics-only delta=0, state shuffle degrades baseline, IPV corruptions null/reverse.",Keep controls labelled non-confirmatory.
+SR-008,feature_outcome_cleanliness,info,true,No coordination/score/rank/residual columns in feature tables; 150 unique cell IDs in both tables.,"Keep feature worker PARTIAL note as provenance caveat, not contamination."
+SR-009,solver_preset,minor,true,Balanced SLSQP used after parallel_accurate sandbox block; real optimizer sign reconfirmation PASS.,Preserve caveat that balanced mode can attenuate power/noisy measurement.
+SR-010,future_leaky_control,blocking,false,48/48 future-leaky rows have theta and D columns exactly zero; recomputed metrics equal kinematics-only with delta=0 and p=1.0.,"Reclassify current future_leaky_full_window_ipv as invalid/no-op: remove language claiming it is a meaningful bounded upper bound or that it strengthens the no-criterion-validity conclusion. Either recompute a genuine future-leaky control with nonconstant leaky theta/D features and explicit feature-health checks, or mark the leaky upper-bound control unavailable and exclude it from NULL robustness claims."
+SR-011,null_disclosure_power,info,true,Confirmatory report discloses null/reverse result and N=48 power limitation.,"Use no detected incremental utility, not proven absence of effect."

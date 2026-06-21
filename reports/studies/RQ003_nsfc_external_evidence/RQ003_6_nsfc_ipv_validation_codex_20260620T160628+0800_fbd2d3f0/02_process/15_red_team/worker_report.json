@@ -1,0 +1,60 @@
+{
+  "status": "PASS_REVIEW_COMPLETED_BLOCKERS_FOUND",
+  "worker_id": "RQ003_phase7_red_team_001",
+  "role": "Phase 7 independent red team",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "generated_at_local": "2026-06-20T22:09:15+0800",
+  "identity_verification": {
+    "run_root_exists": true,
+    "red_team_dir_exists": true,
+    "run_manifest_run_id_match": true,
+    "plan_sha256_match": true,
+    "python_exists": true
+  },
+  "scope_completed": [
+    "All 20 requested attack surfaces addressed.",
+    "Run package, process reports, result tables, scripts, estimator code, and derived frame-level artifacts were inspected or spot-checked.",
+    "Spot recomputations covered D formulas, IPV-kinematic correlations, scenario-label crosswalk, A1/safety handling, fold overlap, pseudoreplication, state-dependence FDR, and official-label sensitivity."
+  ],
+  "key_evidence": {
+    "blocking_count": 2,
+    "scenario_label_matches": 30,
+    "scenario_label_mismatches": 120,
+    "structural_primary_delta_spearman": -0.1102909248805905,
+    "official_label_spot_delta_spearman": 0.1368327689082406,
+    "structural_primary_n": 48,
+    "official_label_spot_n": 53,
+    "max_ipv_kinematic_abs_spearman_primary": 0.33401282682611677,
+    "formula_rows_checked": 14127,
+    "max_abs_D_comp_diff": 8.881784197001252e-16,
+    "max_abs_D_yield_diff": 1.3322676295501878e-15
+  },
+  "files_created": [
+    "red_team_report.md",
+    "blocking_findings.csv",
+    "nonblocking_findings.csv",
+    "required_fixes.md",
+    "red_team_status.json",
+    "worker_report.json",
+    "file_access_manifest.txt",
+    "artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "02_process/00_meta/artifact_index.csv (append only)"
+  ],
+  "tests_run": [
+    "Identity checks",
+    "Frame-level D_comp/D_yield formula recomputation",
+    "Scenario-label crosswalk recomputation",
+    "Scratch official-label LOTO sensitivity recomputation",
+    "Fold overlap and primary prediction uniqueness checks"
+  ],
+  "spec_deviations": [
+    "Did not append main_workflow.log because user write scope allowed only 15_red_team and append-only artifact_index.csv."
+  ],
+  "unresolved_blockers": [
+    "Scenario crosswalk must be fixed and all downstream analyses rerun before Tier review."
+  ],
+  "recommended_next_codex_task": "Phase 7 fixer"
+}

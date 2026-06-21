@@ -1,0 +1,41 @@
+parameter_or_lock,value,source_path,source_sha256,notes
+plan_sha256,98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1,reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md,98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1,frozen plan identity
+git_head,c23074a091f9ff57b1034144571f68f771db9d8d,reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/run_manifest.json,e6e6664f500a2ca30873b4091bdf2d98812e3f53d7b368e0ab33b841e6cfcc45,local HEAD for current run
+IPV estimator default history_window,10,src/sociality_estimation/core/ipv_estimation.py; pipelines/interhub/process_interhub.py,f55b9854c83095e655ed84ad1d40978edfce357da49af4f8d93facf05d978ece,present in estimator and InterHub pipeline
+IPV estimator default min_observation,4,src/sociality_estimation/core/ipv_estimation.py; pipelines/interhub/process_interhub.py,1da01dfabb4f479dfd7037fd7104e625c9a1f52f71b4cf88d85b4e1c431e91be,present in estimator and InterHub pipeline
+Realtime sign candidate grid,"[-3,-1,0,1,3] * pi/8",src/sociality_estimation/core/ipv_estimation.py,f55b9854c83095e655ed84ad1d40978edfce357da49af4f8d93facf05d978ece,recommended online sign grid
+Legacy candidate grid,"[-3,-2,-1,0,1,2,3] * pi/8",src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,legacy accurate grid
+Agent dt,0.1,src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,argoverse1 setting
+Agent TRACK_LEN,8,src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,optimizer track length
+Agent MAX_DELTA_UT,1e-4,src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,optimization threshold
+Agent MIN_DIS,5,src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,interaction distance constant
+Agent WEIGHT_DELAY / WEIGHT_DEVIATION,0.3 / 0.8 normalized,src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,interior cost weights
+Agent WEIGHT_INT / WEIGHT_GRP,1 / 0.22,src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,interior/group cost weights
+Agent action bounds,max steering pi/6; max acceleration 1.0; max jerk 2.0,src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,optimizer action bounds
+Likelihood sigma / sigma2,0.1 / 0.05,src/sociality_estimation/core/agent.py,94ecc15806b05d64415b0ab3ee588e887f0a03b4f17e06b009b884354b2a6bea,candidate reliability likelihood widths
+Solver presets,accurate=None; parallel_accurate=None; balanced maxiter=20 ftol=1e-3; realtime maxiter=8 ftol=1e-2,src/sociality_estimation/core/ipv_estimation.py,f55b9854c83095e655ed84ad1d40978edfce357da49af4f8d93facf05d978ece,optimizer preset values
+Lattice delta_t,0.12 seconds,src/sociality_estimation/planning/Lattice.py,f3ca6075748e77d15e790316aaf28dfcb67710d2ef0091f52f64f301d926e70a,planner sampling interval
+Lattice vehicle size,VEH_L=3; VEH_W=1.5,src/sociality_estimation/planning/Lattice.py,f3ca6075748e77d15e790316aaf28dfcb67710d2ef0091f52f64f301d926e70a,planning collision geometry constants
+Lattice target speed / sight range,v_tgt=7.0; sight_range=10,src/sociality_estimation/planning/Lattice.py,f3ca6075748e77d15e790316aaf28dfcb67710d2ef0091f52f64f301d926e70a,planning sampling constants
+Lattice planner theta threshold,pi/6 primary; pi/3 fallback,src/sociality_estimation/planning/lattice_planner.py,fd9b885f791159a021823a411bc9846f4c34041ec5264a1627af869080660c09,planner heading threshold
+Lattice planner TTC samples,"[2,3,4,5,6,7] primary; [2,3,4,5,6,7,8] fallback",src/sociality_estimation/planning/lattice_planner.py,fd9b885f791159a021823a411bc9846f4c34041ec5264a1627af869080660c09,planner static TTC sample grid
+InterHub heading threshold,12.0 degrees,pipelines/interhub/process_interhub.py,1da01dfabb4f479dfd7037fd7104e625c9a1f52f71b4cf88d85b4e1c431e91be,reference/motion alignment constant
+InterHub worker candidates,"[1,2,4,8,12,16]",pipelines/interhub/process_interhub.py,1da01dfabb4f479dfd7037fd7104e625c9a1f52f71b4cf88d85b4e1c431e91be,benchmark worker candidate set
+InterHub benchmark sample size,48,pipelines/interhub/process_interhub.py,1da01dfabb4f479dfd7037fd7104e625c9a1f52f71b4cf88d85b4e1c431e91be,worker benchmark sample size
+InterHub dataset downsample factors,{nuplan_train: 2},pipelines/interhub/process_interhub.py,1da01dfabb4f479dfd7037fd7104e625c9a1f52f71b4cf88d85b4e1c431e91be,NuPlan frame downsampling
+Recommended online sign mode max_workers,10,START_HERE.md,95b05439f0be8933aecb559b38a94734a101aad369a03c90e5409c0809a21dd4,operating brief recommendation; not code default
+Accuracy-preserving online value solver_preset,parallel_accurate,START_HERE.md,95b05439f0be8933aecb559b38a94734a101aad369a03c90e5409c0809a21dd4,operating brief recommendation
+D_comp formula,"max(0, (Q_low(theta_npc,s,tau)-theta_ego)/w)",reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md,98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1,formula locked in plan; numeric envelope missing
+D_yield formula,"max(0, (theta_ego-Q_high(theta_npc,s,tau))/w)",reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md,98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1,formula locked in plan; numeric envelope missing
+Q_low numeric quantile,MISSING,No current-run frozen parameter file found,,must be set pre-outcome
+Q_high numeric quantile,MISSING,No current-run frozen parameter file found,,must be set pre-outcome
+w_min,MISSING,No current-run frozen parameter file found,,must be set pre-outcome
+short/mid/long window durations,MISSING,PLAN §4.1 only names sensitivity set qualitatively,,must be numerically frozen pre-outcome
+primary window delta,MISSING,PLAN §4.1,,must be frozen before outcome access
+support threshold high-support coverage line,MISSING,PLAN §4.4/§4.5,,must be frozen before outcome access
+conflict-window definition,MISSING,PLAN §6,,must be operationalized before IPV trace generation
+state binning / geometry-role-progress bins,MISSING,PLAN §4.2/§4.4,,must be frozen before outcome access
+fold seeds / CV assignment,MISSING,PLAN §6/§9,,not needed for Gate 0 measurement only but required before held-out association
+InterHub conformal calibration split,MISSING,PLAN §4.3,,threshold split must be frozen; no NSFC tuning
+safe subset TTC threshold,MISSING,PLAN §7,,S3 threshold named but numeric value missing
+safe subset lateral-gap threshold,MISSING,PLAN §7,,S3 threshold named but numeric value missing

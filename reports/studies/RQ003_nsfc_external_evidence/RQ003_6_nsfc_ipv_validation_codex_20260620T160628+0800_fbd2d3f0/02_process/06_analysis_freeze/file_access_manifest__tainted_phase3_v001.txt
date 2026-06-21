@@ -1,0 +1,39 @@
+# File Access Manifest - Phase 3 Analysis Freeze Attempt
+
+Worker: RQ003_phase3_freeze_001
+Run: RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0
+Status: FAIL
+
+## Allowed / Intended Reads
+
+- START_HERE.md
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/run_manifest.json
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/plan_sha256.txt
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/05_gate0_review/gate0_review_status.json
+- reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/operational_parameters.yaml
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/support_definition.md
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/gate0_sanitized_spec.md
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/existing_locked_parameters.csv
+- data/onsite_competition/top5_research_subset/tables/top5_session_manifest.csv
+
+## Outcome-Bearing Read That Violated Firewall
+
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/replay_score_mapping.csv
+  - Intended use: derive team/scenario/family structure.
+  - Actual content: included official score columns, including coordination.
+  - Outcome values copied into artifacts: no.
+
+## Directory Listings / Metadata Commands
+
+- pwd
+- ls -la reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/06_analysis_freeze
+- find reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory -maxdepth 1 -type f -print
+- find reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0 -maxdepth 3 -type f
+- find data/onsite_competition -maxdepth 3 -type f
+
+## Write Actions
+
+- Created failure audit artifacts only.
+- Did not create analysis_freeze.yaml or confirmatory freeze markdown files.
+

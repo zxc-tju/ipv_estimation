@@ -1,0 +1,68 @@
+{
+  "STATUS": "PASS_NO_BLOCKERS",
+  "WORKER_ID": "RQ003_phase7_red_team3_001",
+  "ROLE": "RED TEAM v3 closure re-check",
+  "RUN_ID": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "PLAN_SHA256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "created_utc": "2026-06-20T15:38:18.843509+00:00",
+  "created_local": "2026-06-20T23:38:18.843509+08:00",
+  "scope_completed": [
+    "Verified pre-write identity and required interp-fix artifacts.",
+    "Verified RT2-BLOCK-001/002/003/004 closure in active corrected reports.",
+    "Scanned for new overclaim, numeric/narrative inconsistency, and integrity blockers.",
+    "Verified interp fix did not change numeric result tables using hashes against scenario-fix and interp-fix records.",
+    "Issued PASS_NO_BLOCKERS and clearance for Tier review without making a Tier decision."
+  ],
+  "files_created": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/red_team3/red_team3_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/red_team3/red_team3_status.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/red_team3/blocking_findings3.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/red_team3/worker_report.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/red_team3/file_access_manifest.txt",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/red_team3/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/main_workflow.log"
+  ],
+  "commands_run": [
+    "sed -n on START_HERE.md and AGENTS.md",
+    "test -d RUN_ROOT and inspect run_manifest/plan_sha256/interp resolution",
+    "rg --files over META, FIX, corrected tables, confirmatory, negative-control, state-dependence, and replication2 directories",
+    "nl -ba on RT2 report/required fixes/interp correction/active corrected reports/replication2 report",
+    "python3 -m json.tool on red_team2_status.json, replication2_status.json, interp worker_report.json, fix_status.json",
+    "python3 CSV audits for confirmatory results, negative controls, interpretation table, and state FDR counts",
+    "shasum -a 256 on confirmatory_results.csv, negative_controls.csv, and state_dependence_results.csv",
+    "rg wording scan for overclaim and proven-null phrases across active corrected reports and interp correction",
+    "python3 RT3 artifact writer and append-only artifact index/log update"
+  ],
+  "tests_run": [
+    "Pre-write identity gate passed for RUN_ROOT, RUN_ID, PLAN_SHA256, and interp RT2 resolution artifact.",
+    "Numeric table hashes matched Phase 7 scenario-fix artifact_manifest.csv and interp-fix recorded hashes.",
+    "Wording scan reviewed guarded occurrences of robust/support/favorable/IPV-specific/effect-null language in active corrected reports.",
+    "CSV consistency audit confirmed primary N=53, controls matching/exceeding primary, failed degradation controls, S1/S2 duplication, S3 n=6, and no interpretable state q<=0.10."
+  ],
+  "key_evidence": {
+    "RT2-BLOCK-001": "Closed: controls match/exceed primary and failed degradation controls are stated in active reports; no IPV-specific signal claimed.",
+    "RT2-BLOCK-002": "Closed: replication2 corrected N=53 reproduced reported-alpha refit delta Spearman +0.136833 and independent-tuned favorable direction +0.054669.",
+    "RT2-BLOCK-003": "Closed: S1/S2 duplicate primary N=53; S3 n=6 null/reverse; safe-subset robustness claim removed.",
+    "RT2-BLOCK-004": "Closed: wording downgraded to suggestive/nonsignificant/non-generalizing/non-IPV-specific and not a proven-null claim.",
+    "new_blockers_count": 0,
+    "cleared_for_tier_review": true,
+    "numeric_tables_unchanged_by_interp_fix": true
+  },
+  "acceptance_criteria_results": {
+    "each_rt2_blocker_explicitly_verified": "PASS",
+    "new_blocker_scan_done": "PASS",
+    "numeric_tables_unchanged_verified": "PASS",
+    "explicit_final_status": "PASS_NO_BLOCKERS",
+    "clearance_for_tier_verdict": "CLEARED_FOR_TIER_REVIEW_NOT_A_TIER_DECISION"
+  },
+  "spec_deviations": [
+    "No fixes, plotting, heavy recompute, or Tier decision were performed.",
+    "START_HERE.md was not changed because this closure re-check did not change canonical operating facts.",
+    "main_workflow.log was appended to satisfy repository workflow logging policy; RT3 research artifacts remain confined to the requested RT3 directory plus append-only artifact_index.csv."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "If the study owner promotes this run for external reading, run a separate reader-facing entry/status metadata cleanup aligned to the settled no-robust-utility conclusion."
+}

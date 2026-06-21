@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RQ003 Tier B Offline Reader</title>
+<style>
+:root {
+  --ink: #272727;
+  --muted: #606060;
+  --line: #d8d8d8;
+  --panel: #f7f7f7;
+  --accent: #484878;
+  --warn: #b64342;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--ink); background: white; line-height: 1.5; }
+header, main { max-width: 1120px; margin: 0 auto; padding: 24px; }
+header { border-bottom: 1px solid var(--line); }
+h1 { font-size: 28px; line-height: 1.12; margin: 0 0 12px; letter-spacing: 0; }
+h2 { font-size: 20px; margin: 36px 0 10px; border-top: 1px solid var(--line); padding-top: 18px; }
+h3 { font-size: 14px; margin: 18px 0 8px; }
+p, li { font-size: 14px; }
+.lede { font-size: 16px; max-width: 980px; }
+.tag { display: inline-block; border: 1px solid var(--line); padding: 2px 7px; margin: 2px 4px 2px 0; font-size: 12px; background: var(--panel); }
+.tier { color: var(--accent); font-weight: 700; }
+.warn { color: var(--warn); font-weight: 700; }
+nav { columns: 2; column-gap: 32px; margin: 18px 0 0; }
+nav a { display: block; break-inside: avoid; color: var(--accent); text-decoration: none; margin: 3px 0; font-size: 13px; }
+figure { margin: 20px 0; padding: 0; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); }
+figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.downloads { white-space: normal; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0 18px; font-size: 12px; }
+th, td { border: 1px solid var(--line); padding: 6px 7px; vertical-align: top; }
+th { background: var(--panel); text-align: left; }
+code { background: var(--panel); padding: 1px 4px; border-radius: 3px; }
+pre { background: var(--panel); border: 1px solid var(--line); padding: 12px; overflow-x: auto; font-size: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.callout { border-left: 4px solid var(--accent); background: var(--panel); padding: 10px 12px; margin: 12px 0; }
+.callout.warnbox { border-left-color: var(--warn); }
+@media print {
+  header, main { max-width: none; padding: 12mm; }
+  nav { columns: 1; }
+  a { color: black; text-decoration: none; }
+  figure img { break-inside: avoid; }
+  h2 { break-after: avoid; }
+}
+</style>
+</head>
+<body>
+<header id="title">
+<h1>RQ003 NSFC External Evidence - Corrected Tier B Reader Package</h1>
+<p class="lede"><span class="tier">Settled conclusion:</span> No robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated (power-limited, top-five cohort, N=53; apparent favorable direction not IPV-specific).</p>
+<p>
+<span class="tag">RUN_ID: RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0</span>
+<span class="tag">Git: c23074a091f9ff57b1034144571f68f771db9d8d</span>
+<span class="tag">Plan SHA-256: 98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1</span>
+<span class="tag">Generated UTC: 2026-06-20T16:21:47.932862Z</span>
+</p>
+<p>This offline package is reader-facing only. It does not edit manuscript files and does not claim manuscript changes.</p>
+<nav>
+<a href="#title">1. Title and identity</a><a href="#executed">2. Executed vs not executed</a><a href="#sources">3. Data sources and coverage</a><a href="#gate-minus1">4. Gate -1 provenance</a><a href="#gate0">5. Gate 0 measurement</a><a href="#freeze">6. Frozen analysis</a><a href="#directional">7. Directional IPV</a><a href="#capacity">8. Capacity-matched baseline</a><a href="#heldout">9. Held-out CV</a><a href="#controls">10. Negative controls</a><a href="#blind">11. Blind annotation status</a><a href="#state">12. State dependence</a><a href="#npc">13. NPC boundary</a><a href="#redteam">14. Red team</a><a href="#replication">15. Independent replication</a><a href="#tier">16. Tier decision</a><a href="#limits">17. Limitations and blockers</a><a href="#boundary">18. Confirmatory/exploratory boundary</a><a href="#reproduce">19. Reproduction commands</a><a href="#artifacts">20. Artifact index</a><a href="#evidence">21. Claim-level evidence matrix</a><a href="#handoff">22. Paper-handoff summary</a>
+</nav>
+</header>
+<main>
+<section id="executed">
+<h2>2. Executed vs not executed</h2>
+<p>The corrected package executed provenance, measurement, frozen confirmatory analysis, controls, state-dependence boundary mapping, replication, red-team closure, and Tier review. It did not execute a full-universe validity analysis, a real two-human blind-annotation analysis, an NPC effect analysis, or any paper edit.</p>
+<table><thead><tr><th>phase</th><th>status</th><th>scope</th></tr></thead><tbody><tr><td>Gate -1</td><td>PASS</td><td>approved_RQ003_plan_top5_cohort_only</td></tr><tr><td>Gate 0</td><td>PASS</td><td>measurement/sign/support boundary</td></tr><tr><td>Freeze review</td><td>PASS</td><td>PASS_WITH_PHASE4_CONDITIONS</td></tr><tr><td>Red team v1</td><td>BLOCKERS_FOUND</td><td>scenario-label blocker found</td></tr><tr><td>Scenario fix</td><td>PASS</td><td>120/150 cells relabelled</td></tr><tr><td>Red team v3</td><td>PASS_NO_BLOCKERS</td><td>CLEARED_FOR_TIER_REVIEW_NOT_A_TIER_DECISION</td></tr><tr><td>Tier review</td><td>B</td><td>no robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated (power-limited, top-five cohort, N=53; apparent favorable direction not IPV-specific)</td></tr></tbody></table>
+</section>
+<section id="sources">
+<h2>3. Data sources and coverage</h2>
+<p>Source data are the corrected post-scenario-fix tables under <code>01_results/tables/</code> plus Tier review and interpretation-fix artifacts. The plan was not a strict pre-registration; it is an archived approved plan and freeze package with later correction/review history.</p>
+<figure id="fig01_provenance_coverage"><img src="../01_results/figures/fig01_provenance_coverage.png" alt="Provenance and coverage boundary"><figcaption><strong>Provenance and coverage boundary</strong>. Bars show cell counts and denominators; hatches mark boundary or correction categories. <span class="downloads">Downloads: <a href="../01_results/figures/fig01_provenance_coverage.svg">SVG</a> | <a href="../01_results/figures/fig01_provenance_coverage.pdf">PDF</a> | <a href="../01_results/figures/fig01_provenance_coverage_source.csv">source CSV</a> | <a href="../01_results/figures/fig01_provenance_coverage_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="gate-minus1">
+<h2>4. Gate -1 provenance</h2>
+<p>Gate -1 passed for the approved top-five cohort only: 150/150 planned cells had clean usable mapping. The full scored universe remains outside the analysis-ready scope because 33/300 cells are missing or not clean under the clean-mapping definition.</p>
+<figure id="fig02_missingness_selection_bias"><img src="../01_results/figures/fig02_missingness_selection_bias.png" alt="Missingness and selection-bias diagnostic"><figcaption><strong>Missingness and selection-bias diagnostic</strong>. Panel b shows descriptive mean-score differences only; no IPV-outcome association is computed. <span class="downloads">Downloads: <a href="../01_results/figures/fig02_missingness_selection_bias.svg">SVG</a> | <a href="../01_results/figures/fig02_missingness_selection_bias.pdf">PDF</a> | <a href="../01_results/figures/fig02_missingness_selection_bias_source.csv">source CSV</a> | <a href="../01_results/figures/fig02_missingness_selection_bias_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="gate0">
+<h2>5. Gate 0 measurement</h2>
+<p>Gate 0 passed the measurement firewall, sign orientation, rolling-window handling, and InterHub-calibrated support-boundary checks. NSFC does NOT support nominal conformal coverage; the conformal element is a support/OOD/abstention boundary.</p>
+<figure id="fig03_support_ood_abstention"><img src="../01_results/figures/fig03_support_ood_abstention.png" alt="Support, OOD and abstention coverage"><figcaption><strong>Support, OOD and abstention coverage</strong>. Rates are cell-level support fractions; frame counts aggregate corrected support-coverage rows. <span class="downloads">Downloads: <a href="../01_results/figures/fig03_support_ood_abstention.svg">SVG</a> | <a href="../01_results/figures/fig03_support_ood_abstention.pdf">PDF</a> | <a href="../01_results/figures/fig03_support_ood_abstention_source.csv">source CSV</a> | <a href="../01_results/figures/fig03_support_ood_abstention_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="freeze">
+<h2>6. Frozen analysis</h2>
+<p>The freeze review passed with Phase 4 conditions that were later closed by the real-optimizer directional-IPV check. The freeze was outcome-clean; contaminated earlier freeze-review artifacts were quarantined and are not the active basis.</p>
+</section>
+<section id="directional">
+<h2>7. Directional IPV</h2>
+<p><code>D_comp</code> marks below-norm competitive shortfall and <code>D_yield</code> marks above-norm yielding excess relative to the InterHub human conditional norm. These are directional diagnostics, not independent behavioral ground truth.</p>
+<figure id="fig04_directional_ipv_signature"><img src="../01_results/figures/fig04_directional_ipv_signature.png" alt="D_comp and D_yield directional IPV signatures"><figcaption><strong>D_comp and D_yield directional IPV signatures</strong>. Scatter points are cells; bars show means with nonzero counts annotated. <span class="downloads">Downloads: <a href="../01_results/figures/fig04_directional_ipv_signature.svg">SVG</a> | <a href="../01_results/figures/fig04_directional_ipv_signature.pdf">PDF</a> | <a href="../01_results/figures/fig04_directional_ipv_signature_source.csv">source CSV</a> | <a href="../01_results/figures/fig04_directional_ipv_signature_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="capacity">
+<h2>8. Capacity-matched baseline</h2>
+<p>The prespecified comparison adds directional IPV summaries to a kinematic+safety baseline under matched model capacity. The corrected favorable direction is not sufficient for a utility claim because significance, generalization, and specificity are not established.</p>
+</section>
+<section id="heldout">
+<h2>9. Held-out CV</h2>
+<p>The scenario-label fix changed the primary LOTO delta Spearman from -0.110 to 0.137; both intervals cross zero. LOSO was approximately zero and did not establish scenario generalization.</p>
+<table><thead><tr><th>analysis</th><th>N</th><th>delta_spearman</th><th>CI</th><th>p</th><th>status</th></tr></thead><tbody><tr><td>Before scenario fix primary LOTO</td><td>48</td><td>-0.110</td><td>[-0.262, 0.075]</td><td>0.58</td><td>nonsignificant, pre-fix label path</td></tr><tr><td>After scenario fix primary LOTO</td><td>53</td><td>0.137</td><td>[-0.039, 0.306]</td><td>0.3</td><td>suggestive, nonsignificant, non-specific</td></tr><tr><td>LOSO generalization</td><td>53</td><td>0.017</td><td>[-0.178, 0.164]</td><td>0.36</td><td>approximately zero; not scenario-general</td></tr></tbody></table>
+<figure id="fig05_scenario_fix_before_after"><img src="../01_results/figures/fig05_scenario_fix_before_after.png" alt="Capacity-matched comparison before and after scenario correction"><figcaption><strong>Capacity-matched comparison before and after scenario correction</strong>. Bars are effect estimates; error bars are bootstrap 95% CIs from the source tables. <span class="downloads">Downloads: <a href="../01_results/figures/fig05_scenario_fix_before_after.svg">SVG</a> | <a href="../01_results/figures/fig05_scenario_fix_before_after.pdf">PDF</a> | <a href="../01_results/figures/fig05_scenario_fix_before_after_source.csv">source CSV</a> | <a href="../01_results/figures/fig05_scenario_fix_before_after_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="controls">
+<h2>10. Negative controls</h2>
+<p>Negative controls prevent a specificity claim: future-window, time-shuffle, counterpart-swap, role-flip, and sign-flip controls matched or exceeded the primary delta Spearman; degradation controls also failed as diagnostics.</p>
+<figure id="fig06_negative_controls"><img src="../01_results/figures/fig06_negative_controls.png" alt="Negative-control specificity diagnostic"><figcaption><strong>Negative-control specificity diagnostic</strong>. Panel a shows delta Spearman with bootstrap 95% CIs; hatched red markers match or exceed the primary estimate. <span class="downloads">Downloads: <a href="../01_results/figures/fig06_negative_controls.svg">SVG</a> | <a href="../01_results/figures/fig06_negative_controls.pdf">PDF</a> | <a href="../01_results/figures/fig06_negative_controls_source.csv">source CSV</a> | <a href="../01_results/figures/fig06_negative_controls_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="blind">
+<h2>11. Blind annotation status</h2>
+<p>Blind annotation has NO real two-human results in this package. H3 is <span class="warn">BLOCKED</span>: agreement and event-IPV tests were not computed, simulated labels were not generated, and the templates are not evidence.</p>
+<table><thead><tr><th>h3_status</th><th>overall_status</th><th>reason</th><th>agreement_computed</th><th>event_ipv_test_computed</th><th>simulated_labels_generated</th></tr></thead><tbody><tr><td>BLOCKED</td><td>PARTIAL</td><td>no real two-human annotations</td><td>False</td><td>False</td><td>False</td></tr></tbody></table>
+</section>
+<section id="state">
+<h2>12. State dependence</h2>
+<p>State-dependence results are exploratory boundary mapping. No interpretable row reached q&lt;=0.10, and reverse or low-n rows require abstention rather than rescue interpretation.</p>
+<figure id="fig07_state_dependence_boundary"><img src="../01_results/figures/fig07_state_dependence_boundary.png" alt="State-dependence boundary map"><figcaption><strong>State-dependence boundary map</strong>. Panel a shows Spearman rho with bootstrap 95% CIs; panel b compares minimum FDR q with the q&lt;=0.10 threshold. <span class="downloads">Downloads: <a href="../01_results/figures/fig07_state_dependence_boundary.svg">SVG</a> | <a href="../01_results/figures/fig07_state_dependence_boundary.pdf">PDF</a> | <a href="../01_results/figures/fig07_state_dependence_boundary_source.csv">source CSV</a> | <a href="../01_results/figures/fig07_state_dependence_boundary_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="npc">
+<h2>13. NPC boundary</h2>
+<p>NPC pre-onset matching is not identifiable from allowed fields. No NPC effect analysis was run; future wording should be limited to matched opportunity-structure requirements if independent pre-onset evidence is added.</p>
+</section>
+<section id="redteam">
+<h2>14. Red team</h2>
+<p>Red-team v1 found a scenario-label blocker and A1 safety-reporting issue. The scenario fix reconciled 150 cells and relabelled 120/150 cells. Red-team v2 found interpretation blockers; the interpretation fix closed them. Red-team v3 reported PASS_NO_BLOCKERS and cleared the package for Tier review.</p>
+</section>
+<section id="replication">
+<h2>15. Independent replication</h2>
+<p>Replication1 was discrepant under an independent model specification. Replication2 used corrected N=53, exactly reproduced the reported-alpha refit direction, and independently reproduced a favorable direction under separate tuning. This verifies implementation soundness, not robust utility.</p>
+<figure id="fig08_independent_replication"><img src="../01_results/figures/fig08_independent_replication.png" alt="Independent replication agreement"><figcaption><strong>Independent replication agreement</strong>. Bars show corrected Phase 7 and replication2 estimates; labels mark directional reproduction. <span class="downloads">Downloads: <a href="../01_results/figures/fig08_independent_replication.svg">SVG</a> | <a href="../01_results/figures/fig08_independent_replication.pdf">PDF</a> | <a href="../01_results/figures/fig08_independent_replication_source.csv">source CSV</a> | <a href="../01_results/figures/fig08_independent_replication_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="tier">
+<h2>16. Tier decision</h2>
+<p>The settled Tier is <span class="tier">B</span>: diagnostic alignment without robust independent incremental utility. The conclusion is power-limited, top-five only, and non-specific under controls.</p>
+<figure id="fig09_tier_b_evidence_map"><img src="../01_results/figures/fig09_tier_b_evidence_map.png" alt="Tier B evidence boundary map"><figcaption><strong>Tier B evidence boundary map</strong>. Cells encode accepted, not-supported, and blocked claim boundaries; text labels avoid color-only status encoding. <span class="downloads">Downloads: <a href="../01_results/figures/fig09_tier_b_evidence_map.svg">SVG</a> | <a href="../01_results/figures/fig09_tier_b_evidence_map.pdf">PDF</a> | <a href="../01_results/figures/fig09_tier_b_evidence_map_source.csv">source CSV</a> | <a href="../01_results/figures/fig09_tier_b_evidence_map_metadata.json">metadata JSON</a>.</span></figcaption></figure>
+</section>
+<section id="limits">
+<h2>17. Limitations and blockers</h2>
+<ul>
+<li>Top-five cohort only; full 20-team universe is not analysis-ready.</li>
+<li>Primary corrected sample is N=53 cells.</li>
+<li>Outcome is an official/generated coordination score, not an independently annotated behavioral endpoint.</li>
+<li>Safe-subset support is mechanical: S1 and S2 duplicate the primary cells, while S3 has n=6.</li>
+<li>H3 is blocked pending real two-human annotation files.</li>
+<li>NPC effect analysis is blocked by missing pre-onset matching fields.</li>
+</ul>
+</section>
+<section id="boundary">
+<h2>18. Confirmatory/exploratory boundary</h2>
+<p>Confirmatory: corrected primary LOTO against the prespecified kinematic+safety baseline. Sensitivity: LOSO, LOFO, safe subsets, fallback-inclusive analysis, before/after scenario-fix comparison, and negative controls. Exploratory: state-dependence boundary mapping and NPC feasibility audit. Null, reverse, blocked, and partial results are retained in the report rather than hidden.</p>
+</section>
+<section id="reproduce">
+<h2>19. Reproduction commands</h2>
+<p>From the repository root:</p>
+<pre><code>data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/19_report_build/build_reader_package.py</code></pre>
+<p>The command rebuilds figures, source CSVs, metadata, report HTML, manifests, and verification status from the corrected tables.</p>
+</section>
+<section id="artifacts">
+<h2>20. Artifact index</h2>
+<p>All links are relative and offline. HTML entries in <code>00_entry</code> and <code>90_report</code> are byte-identical.</p>
+<ul>
+<li><a href="../README.md">README.md</a></li><li><a href="../TRACEABILITY.md">TRACEABILITY.md</a></li><li><a href="../evidence.csv">evidence.csv</a></li><li><a href="../execution_status.json">execution_status.json</a></li><li><a href="../01_results/figures/figure_manifest.csv">figure_manifest.csv</a></li><li><a href="../02_process/19_report_build/nature_skill_manifest.json">nature_skill_manifest.json</a></li><li><a href="../02_process/19_report_build/report_build_status.json">report_build_status.json</a></li><li><a href="../02_process/19_report_build/artifact_manifest.csv">artifact_manifest.csv</a></li>
+</ul>
+<table><thead><tr><th>figure</th><th>title</th><th>source_csv</th><th>metadata</th></tr></thead><tbody><tr><td>fig01_provenance_coverage</td><td>Provenance and coverage boundary</td><td>01_results/figures/fig01_provenance_coverage_source.csv</td><td>01_results/figures/fig01_provenance_coverage_metadata.json</td></tr><tr><td>fig02_missingness_selection_bias</td><td>Missingness and selection-bias diagnostic</td><td>01_results/figures/fig02_missingness_selection_bias_source.csv</td><td>01_results/figures/fig02_missingness_selection_bias_metadata.json</td></tr><tr><td>fig03_support_ood_abstention</td><td>Support, OOD and abstention coverage</td><td>01_results/figures/fig03_support_ood_abstention_source.csv</td><td>01_results/figures/fig03_support_ood_abstention_metadata.json</td></tr><tr><td>fig04_directional_ipv_signature</td><td>D_comp and D_yield directional IPV signatures</td><td>01_results/figures/fig04_directional_ipv_signature_source.csv</td><td>01_results/figures/fig04_directional_ipv_signature_metadata.json</td></tr><tr><td>fig05_scenario_fix_before_after</td><td>Capacity-matched comparison before and after scenario correction</td><td>01_results/figures/fig05_scenario_fix_before_after_source.csv</td><td>01_results/figures/fig05_scenario_fix_before_after_metadata.json</td></tr><tr><td>fig06_negative_controls</td><td>Negative-control specificity diagnostic</td><td>01_results/figures/fig06_negative_controls_source.csv</td><td>01_results/figures/fig06_negative_controls_metadata.json</td></tr><tr><td>fig07_state_dependence_boundary</td><td>State-dependence boundary map</td><td>01_results/figures/fig07_state_dependence_boundary_source.csv</td><td>01_results/figures/fig07_state_dependence_boundary_metadata.json</td></tr><tr><td>fig08_independent_replication</td><td>Independent replication agreement</td><td>01_results/figures/fig08_independent_replication_source.csv</td><td>01_results/figures/fig08_independent_replication_metadata.json</td></tr><tr><td>fig09_tier_b_evidence_map</td><td>Tier B evidence boundary map</td><td>01_results/figures/fig09_tier_b_evidence_map_source.csv</td><td>01_results/figures/fig09_tier_b_evidence_map_metadata.json</td></tr></tbody></table>
+</section>
+<section id="evidence">
+<h2>21. Claim-level evidence matrix</h2>
+<p>The evidence matrix records claim status, confirmatory boundary, linked artifact, reviewer status, limitation, allowed wording, and wording warnings.</p>
+<table><thead><tr><th>claim_id</th><th>claim_status</th><th>confirmatory_status</th><th>artifact_path</th><th>figure_id</th><th>reviewer_status</th></tr></thead><tbody><tr><td>C_SCOPE_TOP5</td><td>accepted</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig01_provenance_coverage.png</td><td>fig01_provenance_coverage</td><td>Tier B accepted boundary</td></tr><tr><td>C_COORD_SOURCE</td><td>accepted</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig01_provenance_coverage.png</td><td>fig01_provenance_coverage</td><td>Tier B accepted boundary</td></tr><tr><td>C_PRIMARY_DIRECTION</td><td>accepted</td><td>confirmatory</td><td>01_results/figures/fig05_scenario_fix_before_after.png</td><td>fig05_scenario_fix_before_after</td><td>Tier B accepted boundary</td></tr><tr><td>C_INCREMENTAL_UTILITY</td><td>accepted</td><td>confirmatory</td><td>01_results/figures/fig09_tier_b_evidence_map.png</td><td>fig09_tier_b_evidence_map</td><td>Tier B accepted boundary</td></tr><tr><td>C_LOSO_GENERALIZATION</td><td>rejected</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig05_scenario_fix_before_after.png</td><td>fig05_scenario_fix_before_after</td><td>not supported as positive evidence</td></tr><tr><td>C_SAFE_SUBSETS</td><td>rejected</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig05_scenario_fix_before_after.png</td><td>fig05_scenario_fix_before_after</td><td>not supported as positive evidence</td></tr><tr><td>C_NEGATIVE_CONTROLS</td><td>rejected</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig06_negative_controls.png</td><td>fig06_negative_controls</td><td>not supported as positive evidence</td></tr><tr><td>C_REPLICATION</td><td>accepted</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig08_independent_replication.png</td><td>fig08_independent_replication</td><td>Tier B accepted boundary</td></tr><tr><td>C_H3_BLIND_ANNOTATION</td><td>blocked</td><td>boundary_or_sensitivity</td><td></td><td></td><td>blocked/excluded from Tier basis</td></tr><tr><td>C_NPC_BOUNDARY</td><td>blocked</td><td>boundary_or_sensitivity</td><td></td><td></td><td>blocked/excluded from Tier basis</td></tr><tr><td>C_STATE_DEPENDENCE</td><td>rejected</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig07_state_dependence_boundary.png</td><td>fig07_state_dependence_boundary</td><td>not supported as positive evidence</td></tr><tr><td>C_CONFORMAL_BOUNDARY</td><td>accepted</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig03_support_ood_abstention.png</td><td>fig03_support_ood_abstention</td><td>Tier B accepted boundary</td></tr><tr><td>C_SIGN_NARRATIVE</td><td>accepted</td><td>boundary_or_sensitivity</td><td>01_results/figures/fig04_directional_ipv_signature.png</td><td>fig04_directional_ipv_signature</td><td>Tier B accepted boundary</td></tr></tbody></table>
+</section>
+<section id="handoff">
+<h2>22. Paper-handoff summary</h2>
+<p>Allowed framing: no robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated (power-limited, top-five cohort, N=53; apparent favorable direction not IPV-specific)</p>
+<p>Recommended use is a limitation-aware supplementary diagnostic or short cautionary sentence. This phase did not modify the paper repository, and it does not supply a validation headline.</p>
+</section>
+</main>
+</body>
+</html>

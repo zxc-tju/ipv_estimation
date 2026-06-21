@@ -1,0 +1,100 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase3_freeze_002",
+  "role": "analysis freeze worker (rerun v2)",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "date": "2026-06-20",
+  "identity_verified": true,
+  "gate0_review_status": "PASS",
+  "gate0_required_condition": {
+    "condition_id": "G0R-COND-001",
+    "phase": "Phase 4",
+    "condition": "Install or restore scipy/matplotlib, run the real optimizer path, and reconfirm the sign contract on real theta outputs before any confirmatory NSFC result is trusted."
+  },
+  "firewall": {
+    "hard_denylist_read_count": 0,
+    "outcome_table_read_count": 0,
+    "predictor_outcome_result_read_count": 0,
+    "tainted_v1_artifacts_quarantined": true,
+    "tainted_v1_artifacts": [
+      "worker_report__tainted_phase3_v001.json",
+      "file_access_manifest__tainted_phase3_v001.txt",
+      "artifact_manifest__tainted_phase3_v001.csv"
+    ],
+    "incident_logged": true
+  },
+  "scope_completed": [
+    "Verified run identity, plan hash, freeze directory, and Gate 0 review PASS.",
+    "Quarantined prior tainted Phase 3 v1 artifacts before writing the rerun freeze.",
+    "Logged the firewall incident in spec_deviation_log.md.",
+    "Produced claims register with confirmatory, sensitivity, exploratory, and blocked tags.",
+    "Froze the single confirmatory comparison: state+causal kinematics+safety versus the same baseline plus D_comp and D_yield.",
+    "Froze the primary sample, outcome, predictor, generalization hierarchy, safe subsets, sign contract, capacity contract, folds, and acceptance matrix.",
+    "Recorded an explicit Phase 4 stop gate for scenario/family cell membership if it cannot be derived from outcome-free metadata."
+  ],
+  "files_created": [
+    "claims_register.md",
+    "primary_endpoints.md",
+    "exclusion_and_safe_subset.md",
+    "ipv_sign_contract.md",
+    "analysis_freeze.yaml",
+    "pre_outcome_operationalization.md",
+    "acceptance_matrix.csv",
+    "fold_contract.csv",
+    "model_capacity_contract.md",
+    "worker_report.json",
+    "file_access_manifest.txt",
+    "artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "02_process/00_meta/spec_deviation_log.md",
+    "02_process/00_meta/tried.md",
+    "02_process/00_meta/artifact_index.csv"
+  ],
+  "commands_run": [
+    "sed START_HERE.md",
+    "identity verification Python script over allowed metadata",
+    "ls freeze directory",
+    "mv tainted v1 artifacts to *__tainted_phase3_v001.*",
+    "sed allowed plan/Gate 0/inventory/manifest files",
+    "find allowed onsite structural directories",
+    "Python CSV filtering of input_inventory.csv rows only",
+    "SHA-256 fold seed derivation",
+    "apply_patch freeze artifact creation",
+    "Python artifact syntax and contract validation"
+  ],
+  "tests_run": [
+    "CSV parse for fold_contract.csv and acceptance_matrix.csv",
+    "Contract string checks for analysis_freeze.yaml"
+  ],
+  "key_evidence": {
+    "single_confirmatory_comparison": "state+causal kinematics+safety vs state+causal kinematics+safety+D_comp+D_yield",
+    "primary_unit": "team x scenario cell",
+    "primary_sample": "mapped AND high-support AND non-A1 AND collision-free",
+    "safe_subset_thresholds": {
+      "TTC_seconds": 1.5,
+      "lateral_gap_m": 2.0
+    },
+    "fold_seed": 2266481337,
+    "capacity_contract": "baseline and full differ only by D_comp/D_yield; identical folds, preprocessing, tuning, and online information budget",
+    "outcome_read_count": 0
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": "PASS",
+    "gate0_review_pass_confirmed": "PASS",
+    "tainted_v1_artifacts_quarantined": "PASS",
+    "firewall_incident_logged": "PASS",
+    "analysis_freeze_yaml_single_confirmatory_comparison": "PASS",
+    "frozen_values_sourced_without_nsfc_outcome_tuning": "PASS",
+    "hard_denylist_read_count_zero": "PASS",
+    "outcome_read_count_zero": "PASS"
+  },
+  "spec_deviations": [
+    "No root main_workflow.log entry was written because the user write scope allowed only FRZ plus append-only META files.",
+    "Allowed outcome-free manifests did not expose full per-cell scenario membership; fold labels are frozen and Phase 4 must block if membership exists only in score-joined tables."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "freeze reviewer",
+  "git_diff_summary": "New clean Phase 3 v2 freeze artifacts under 02_process/06_analysis_freeze; tainted v1 artifacts quarantined; meta logs/indexes appended."
+}

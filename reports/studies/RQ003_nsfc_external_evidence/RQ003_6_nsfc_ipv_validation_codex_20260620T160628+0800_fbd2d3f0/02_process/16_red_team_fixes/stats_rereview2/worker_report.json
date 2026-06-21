@@ -1,0 +1,70 @@
+{
+  "STATUS": "PASS",
+  "WORKER_ID": "RQ003_phase7_stats_rereview2_001",
+  "ROLE": "STATS RE-REVIEW v2 on CORRECTED scenario-fixed results",
+  "RUN_ID": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "SCOPE_COMPLETED": "Audited corrected confirmatory, negative-control, state-dependence, crosswalk/fold, freeze/script, and outcome artifacts after scenario-crosswalk fix.",
+  "FILES_CREATED": [
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/stats_rereview2/stats_rereview2_report.md",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/stats_rereview2/stats_rereview2_status.json",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/stats_rereview2/review_findings.csv",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/stats_rereview2/worker_report.json",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/stats_rereview2/file_access_manifest.txt",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/stats_rereview2/artifact_manifest.csv"
+  ],
+  "FILES_MODIFIED": [
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv"
+  ],
+  "COMMANDS_RUN": [
+    "sed -n START_HERE.md",
+    "find RUN_ROOT -maxdepth 3 -type f",
+    "verify RUN_ROOT and project PYTHON existence",
+    "read run_manifest.json and plan_sha256.txt",
+    "verify corrected confirmatory_results.csv, negative_controls.csv, scenario_crosswalk_corrected.csv",
+    "mkdir -p REV",
+    "summarize corrected/quarantined tables with pandas",
+    "read FIX reports/status and freeze contracts",
+    "inspect confirmatory/negative-control scripts with rg/sed",
+    "spot recompute primary LOTO predictions and selected negative controls with project Python",
+    "run 40 alternate state-shuffle degradation stress checks",
+    "verify corrected crosswalk against replay_score_mapping and fold/cv labels",
+    "inspect confirmatory, negative-control, state-dependence, red-team, and replication reports",
+    "write stats_rereview2 artifacts and append META/artifact_index.csv"
+  ],
+  "TESTS_RUN": [
+    "Pre-write identity gate: PASS",
+    "Corrected crosswalk join/mismatch audit: PASS",
+    "Fold/cv label consistency audit: PASS",
+    "Primary LOTO prediction spot recompute: PASS",
+    "Negative-control spot recompute for state_shuffle, wrong_state, counterpart_swap, kinematics_only: PASS",
+    "State-shuffle alternate-seed degradation stress check: completed",
+    "Safe-subset overlap audit: completed",
+    "Future-leaky cache health audit: completed"
+  ],
+  "KEY_EVIDENCE": {
+    "crosswalk_consistency": "150 rows, 0 official scenario/family mismatches, 0 fold/cv label mismatches; 120/150 relabelled versus old map.",
+    "leakage": "No leakage found; residualization/preprocessing/tuning are training-fold only; spot recompute matches saved predictions.",
+    "capacity": "Baseline and full differ only by D_comp/D_yield; zero-IPV controls exactly equal baseline.",
+    "honest_framing": "Primary favorable but nonsignificant p=0.30 CI includes 0; LOSO near zero; no validation overclaim found in corrected reports.",
+    "degradation_anomaly": "Non-blocking. State/wrong-state degradation controls fail because corrected baseline is weak/anti-predictive; 40-shuffle stress check supports fragility rather than defect.",
+    "safe_subset": "S1 and S2 duplicate the 53-cell primary sample; S3 n=6 null/reverse.",
+    "future_leaky": "Excluded appropriately; 48/53 cache coverage, 5 fold-local imputed cells, non-deployable p=0.09.",
+    "status": "PASS"
+  },
+  "ACCEPTANCE_CRITERIA_RESULTS": {
+    "1_crosswalk_authoritative_applied_consistently": "PASS",
+    "2_within_fold_residualization_no_leakage": "PASS",
+    "3_capacity_match_preserved": "PASS",
+    "4_primary_honest_nonsignificant_loso_disclosed": "PASS",
+    "5_negative_control_degradation_anomaly_scrutinized": "PASS_NONBLOCKING_CAVEAT",
+    "6_safe_subset_agreement_assessed": "PASS_WEAK_DUPLICATED",
+    "7_future_leaky_excluded_and_imputation_acceptable": "PASS"
+  },
+  "SPEC_DEVIATIONS": [
+    "Did not edit START_HERE.md or main_workflow.log because the task write scope was restricted to REV and append-only META/artifact_index.csv.",
+    "Performed script-level spot recomputation rather than a fresh full clean-room independent implementation; noted as residual risk."
+  ],
+  "UNRESOLVED_BLOCKERS": [],
+  "RECOMMENDED_NEXT_CODEX_TASK": "Prepare a concise downstream synthesis patch that explicitly downgrades degradation controls and duplicated S1/S2 safe-subset agreement to caveats before any reader-facing RQ003 claim is accepted.",
+  "GIT_DIFF_SUMMARY": "Created stats_rereview2 review artifacts under REV and appended their metadata to 02_process/00_meta/artifact_index.csv; did not edit analysis artifacts."
+}

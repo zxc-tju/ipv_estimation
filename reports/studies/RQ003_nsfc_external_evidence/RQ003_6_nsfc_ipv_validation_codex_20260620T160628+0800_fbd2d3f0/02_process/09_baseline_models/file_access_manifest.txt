@@ -1,0 +1,36 @@
+# Phase 4 Feature Worker File Access Manifest
+
+Outcome value reads: 0.
+Official score/rank/residual table reads for computation: 0.
+Predictor-outcome result reads for computation: 0.
+
+Firewall deviation: broad pre-script discovery touched score-field README/header text without exposing outcome values. The generated features below do not use those files or values, but strict zero-denylist-read acceptance is therefore not claimed.
+
+## Files read by feature script
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/interhub/20260612_sigma_0_1_full_rerun/00_hpc_outputs/sigma01_ipv_timeseries.csv
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/scenario_map_outcome_free.csv
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/plan_sha256.txt
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/run_manifest.json
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/operational_parameters.yaml
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/support_definition.md
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/06_analysis_freeze/analysis_freeze.yaml
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/06_analysis_freeze/fold_contract.csv
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/06_analysis_freeze/ipv_sign_contract.md
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/06_analysis_freeze/model_capacity_contract.md
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/06_analysis_freeze/pre_outcome_operationalization.md
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/08_directional_ipv/prep_status.json
+- data/onsite_competition/top5_research_subset/teams/beijing/01_T17_panda/sessions/6931-1766206339/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/beijing/02_T14_bps/sessions/6922-1766197115/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/beijing/03_T16_autoailab/sessions/6926-1766199712/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/beijing/04_T15_wulala/sessions/6924-1766198444/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/beijing/05_T20_mm/sessions/6941-1766212682/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/shanghai/01_T11_wsd/sessions/6923-1766197775/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/shanghai/02_T6_thicv2025/sessions/6921-1766196941/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/shanghai/03_T5_limitless/sessions/6925-1766198568/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/shanghai/04_T7_SMU/sessions/6938-1766210823/vehicle_perception_simulation_trajectory.log
+- data/onsite_competition/top5_research_subset/teams/shanghai/05_T8_ADVRC/sessions/6932-1766206403/vehicle_perception_simulation_trajectory.log
+
+## Commands
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python compute_phase4_features.py --stage calibration
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python compute_phase4_features.py --stage shard --shard-count 10 --solver-preset balanced --candidate-grid legacy7
+- /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python compute_phase4_features.py --stage merge

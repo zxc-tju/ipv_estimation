@@ -1,0 +1,62 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase7_stats_rereview2_001",
+  "role": "STATS RE-REVIEW v2 on CORRECTED scenario-fixed results",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_utc": "2026-06-20T15:08:33.962603+00:00",
+  "required_fixes": [],
+  "required_reporting_caveats": [
+    "Primary direction is favorable but nonsignificant/underpowered; do not claim validation or scenario generalization.",
+    "State/baseline degradation controls failed and should be treated as failed diagnostics caused by a weak anti-predictive baseline, not as robustness support.",
+    "S1 and S2 safe subsets are exact duplicates of the primary sample; safe_subset_agreement_count=2 is weak.",
+    "Future-leaky diagnostic remains non-deployable, cache-incomplete, and excluded from null-robustness."
+  ],
+  "degradation_anomaly_blocking": false,
+  "pipeline_defect_found": false,
+  "overclaim_found": false,
+  "verification_evidence": {
+    "crosswalk": {
+      "rows": 150,
+      "score_join_missing": 0,
+      "scenario_mismatches": 0,
+      "family_mismatches": 0,
+      "changed_vs_old": 120
+    },
+    "fold_prediction_label_mismatches": {
+      "fold_assignments": 0,
+      "cv_predictions": 0
+    },
+    "primary": {
+      "delta_spearman": 0.1368327689082406,
+      "ci_low": -0.0387811368476707,
+      "ci_high": 0.3057968968993576,
+      "p": 0.3,
+      "loso_delta_spearman": 0.0167315
+    },
+    "spot_recompute_max_abs_diff": {
+      "coordination_residual_oof": 1.7763568394002505e-15,
+      "pred_base_residual": 1.1102230246251565e-16,
+      "pred_full_residual": 4.440892098500626e-16,
+      "fixed_effect_prediction": 1.4210854715202004e-14
+    },
+    "state_shuffle_sensitivity": {
+      "alternate_shuffles": 40,
+      "degrade_ge2_metrics": 2,
+      "median_base_spearman": -0.11643283341396549,
+      "median_base_mae": 6.949435410504533,
+      "median_base_cv_r2": -0.011785721486456624
+    },
+    "safe_subset": {
+      "s1_equals_s2_primary": true,
+      "s1_n": 53,
+      "s2_n": 53,
+      "s3_n": 6
+    },
+    "future_leaky": {
+      "covered_primary_cells": 48,
+      "corrected_primary_cells": 53,
+      "missing_primary_cells": 5,
+      "p": 0.09
+    }
+  }
+}

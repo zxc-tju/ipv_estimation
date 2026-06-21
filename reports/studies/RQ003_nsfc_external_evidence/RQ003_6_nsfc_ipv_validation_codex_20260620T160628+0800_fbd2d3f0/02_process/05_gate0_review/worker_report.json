@@ -1,0 +1,79 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase2_gate0_review_001",
+  "role": "Gate 0 independent reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "scope_completed": [
+    "Verified run identity and fixed plan hash before writing review outputs.",
+    "Cross-checked the Gate 0 access manifest against the outcome denylist.",
+    "Reviewed frozen operational parameters and support definitions for outcome-derived values.",
+    "Re-derived D_comp/D_yield orientation with independent formula guards and trace-row recomputation.",
+    "Inspected estimator and InterHub pipeline rolling-window code paths.",
+    "Checked trace schema for future-leakage and outcome columns.",
+    "Recomputed support/OOD/abstention consistency and three result views from the trace sample.",
+    "Adjudicated the scipy/matplotlib optimizer-stub deviation."
+  ],
+  "files_created": [
+    "02_process/05_gate0_review/review_report.md",
+    "02_process/05_gate0_review/review_findings.csv",
+    "02_process/05_gate0_review/gate0_review_status.json",
+    "02_process/05_gate0_review/worker_report.json",
+    "02_process/05_gate0_review/file_access_manifest.txt",
+    "02_process/05_gate0_review/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "02_process/00_meta/artifact_index.csv"
+  ],
+  "commands_run_summary": [
+    "sed/head/tail reads for START_HERE, identity files, allowed Gate 0 deliverables, and artifact index format.",
+    "rg/nl source inspections limited to src/sociality_estimation/** and pipelines/interhub/**.",
+    "python3 stdlib-only checks for identity, denylist cross-check, formula orientation, static prefix slicing, trace schema, trace formula recomputation, support thresholds, and three-view recomputation.",
+    "git status/diff checks limited to the Gate 0 review directory and artifact index."
+  ],
+  "tests_run": [
+    "Independent formula orientation guards: PASS.",
+    "Static source prefix-slicing guard: PASS.",
+    "Trace formula recomputation for 80 rows: PASS, mismatch_count=0.",
+    "Trace forbidden-column check: PASS, forbidden_column_count=0.",
+    "Support-rule consistency check: PASS, violation_count=0.",
+    "Three-view trace recomputation: PASS."
+  ],
+  "key_evidence": {
+    "denylisted_read_count_independent": 0,
+    "auditor_manifest_paths_checked": 40,
+    "orientation_verdict": "PASS, not flipped",
+    "rolling_leakage_verdict": "PASS, rolling prefix only and trace is rolling-to-rolling",
+    "params_outcome_free_verdict": "PASS",
+    "support_counts": {
+      "high": 78,
+      "monitor_only": 2
+    },
+    "three_view_metrics": {
+      "high_support_nonabstained_rows": 78,
+      "conditional_cells": 46,
+      "scalar_mean_max_D": 0.700356126993
+    },
+    "optimizer_stub_adjudication": "PASS acceptable on measurement-logic grounds with required Phase 4 real-optimizer reconfirmation",
+    "gate0_review_status": "PASS"
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": true,
+    "firewall_independently_confirmed_zero_denylisted_reads": true,
+    "orientation_checked": true,
+    "rolling_to_rolling_checked": true,
+    "leakage_checked": true,
+    "support_checked": true,
+    "three_views_checked": true,
+    "conformal_checked": true,
+    "verifier_guard_separation_checked": true,
+    "optimizer_stub_adjudicated": true,
+    "out_of_scope_writes": false,
+    "outcome_clean": true
+  },
+  "spec_deviations": [
+    "Did not mutate environment or install scipy/matplotlib; optimizer limitation is recorded as a required Phase 4 condition.",
+    "Did not update main_workflow.log because the task write scope allowed only 05_gate0_review and append-only artifact_index.csv."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Phase 3 analysis-freeze worker"
+}

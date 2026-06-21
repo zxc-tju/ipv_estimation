@@ -1,0 +1,30 @@
+{
+  "component_status": {
+    "capacity_match": "PASS",
+    "feature_outcome_cleanliness": "PASS",
+    "future_leaky_control": "FAIL",
+    "identity_verification": "PASS",
+    "negative_controls_without_future_leaky": "PASS",
+    "permutation_bootstrap_units": "PASS",
+    "power_interpretation": "PASS_WITH_CAVEAT",
+    "primary_confirmatory_statistics": "PASS",
+    "pseudoreplication": "PASS",
+    "residualization_and_preprocessing_leakage": "PASS"
+  },
+  "generated_utc": "2026-06-20T13:03:46.183855+00:00",
+  "non_blocking_observations": [
+    "Feature worker PARTIAL status is provenance/header-touch related; feature values are outcome-clean by column/value audit.",
+    "Balanced solver preset is a power/noise caveat but not evidence of directional statistical bias.",
+    "Primary result should be stated as power-limited no detected incremental utility."
+  ],
+  "required_fixes": [
+    "Reclassify current future_leaky_full_window_ipv as invalid/no-op: remove language claiming it is a meaningful bounded upper bound or that it strengthens the no-criterion-validity conclusion.",
+    "Either recompute a genuine future-leaky control with nonconstant leaky theta/D features and explicit feature-health checks, or mark the leaky upper-bound control unavailable and exclude it from NULL robustness claims.",
+    "Rerun/update negative_controls.csv, negative_control_report.md, worker_report.json, and downstream status after the leaky-control fix; keep primary LOTO confirmatory results unchanged unless the fixed control exposes a broader pipeline issue."
+  ],
+  "role": "Phase 4 statistical independent reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "status": "FAIL",
+  "summary": "Primary confirmatory LOTO null/reverse result is statistically valid and reproducible, but the future-leaky negative control is a degenerate no-op that is over-interpreted as a bounded upper bound.",
+  "worker_id": "RQ003_phase4_stats_review_001"
+}

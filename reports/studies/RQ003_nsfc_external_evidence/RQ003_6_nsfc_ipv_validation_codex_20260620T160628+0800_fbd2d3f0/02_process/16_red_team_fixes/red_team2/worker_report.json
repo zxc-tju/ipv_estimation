@@ -1,0 +1,50 @@
+{
+  "worker_id": "RQ003_phase7_red_team2_001",
+  "role": "RED TEAM v2 on corrected results",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "status": "BLOCKERS_FOUND",
+  "scope_completed": true,
+  "prewrite_identity": {
+    "run_root_exists": true,
+    "run_manifest_run_id_matches": true,
+    "plan_sha256_matches": true,
+    "fix_status_rt_block_001_resolved": true,
+    "fix_status_rt_block_002_resolved": true,
+    "corrected_tables_exist": true
+  },
+  "summary": {
+    "crosswalk_correct": true,
+    "a1_safety_correct": true,
+    "flip_legitimacy": "label/inclusion error-fix is legitimate for primary LOTO",
+    "favorable_robustness": "blocked",
+    "overclaim": "blocked unless downgraded",
+    "degradation_anomaly": "blocking for robustness"
+  },
+  "files_created": [
+    "red_team2_report.md",
+    "blocking_findings2.csv",
+    "nonblocking_findings2.csv",
+    "required_fixes2.md",
+    "red_team2_status.json",
+    "worker_report.json",
+    "file_access_manifest.txt",
+    "artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "02_process/00_meta/artifact_index.csv"
+  ],
+  "tests_run": [
+    "Pre-write identity gate checks",
+    "Corrected metric recomputation from cv_predictions.csv",
+    "Primary inclusion before/after set comparison",
+    "A1/safety membership recomputation from replay_score_mapping.csv",
+    "Fold train/test overlap checks for LOTO, LOSO, LOFO",
+    "Negative-control ranking and controls-delta-ge-primary check",
+    "State-dependence FDR check",
+    "Corrected crosswalk spot checks against raw SQL case-name rows",
+    "SQL provenance pointer exact-session count",
+    "stats_rereview2 artifact conflict check"
+  ],
+  "recommended_next_codex_task": "Run independent corrected N=53 replication and rewrite result language/negative-control interpretation before accepting any corrected favorable claim.",
+  "note_on_prior_stats_rereview2": "stats_rereview2 passed internal statistical validity with caveats; this adversarial pass classifies the same degradation-control and safe-subset evidence as blocking for robustness claims."
+}

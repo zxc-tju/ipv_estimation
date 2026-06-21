@@ -1,0 +1,24 @@
+{
+  "worker_id": "RQ003_phase4_prep_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "status": "PASS",
+  "identity_verified": {
+    "run_root_exists": true,
+    "p4_exists": true,
+    "tables_exists": true,
+    "derived_root_exists": true,
+    "run_id_match": true,
+    "plan_sha256_match": true,
+    "freeze_review_status": "PASS"
+  },
+  "interpreter": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python",
+  "scipy_version": "1.18.0",
+  "matplotlib_version": "3.11.0",
+  "real_optimizer_path": "estimate_ipv_pair -> Agent.solve_optimization -> scipy.optimize.minimize(method=SLSQP)",
+  "real_theta_trace": "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/08_directional_ipv/real_theta_trace.csv",
+  "unit_tests": "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/08_directional_ipv/real_optimizer_unit_tests.csv",
+  "cut_in_D_comp": 5.79590737807092,
+  "cut_in_D_yield": 0.0,
+  "over_yield_D_comp": 0.0,
+  "over_yield_D_yield": 5.9999950695723525
+}

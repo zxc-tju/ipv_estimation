@@ -1,0 +1,19 @@
+{
+  "RUN_ID": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "RUN_ROOT": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "DERIVED_ROOT": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "EXECUTION_VERSION": "RQ003_6",
+  "RQ": "RQ003",
+  "TOPIC": "NSFC external evidence",
+  "PLAN": "v2",
+  "PLAN_STATUS": "archived-approved",
+  "PLAN_PATH": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md",
+  "PLAN_SHA256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "PLAN_MTIME": "2026-06-20T11:27:34.203793+08:00",
+  "GIT_HEAD": "c23074a091f9ff57b1034144571f68f771db9d8d",
+  "ORIGIN_MAIN": "c23074a091f9ff57b1034144571f68f771db9d8d",
+  "GIT_SYNC": "BLOCKED",
+  "created_time": "2026-06-20T16:06:28.748822+08:00",
+  "phase": "0A",
+  "worker_id": "RQ003_phase0A_bootstrap_001"
+}

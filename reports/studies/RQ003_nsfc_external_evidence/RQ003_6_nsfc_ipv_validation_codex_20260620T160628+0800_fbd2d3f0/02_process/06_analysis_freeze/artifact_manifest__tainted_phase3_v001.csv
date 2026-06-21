@@ -1,0 +1,4 @@
+artifact_path,artifact_type,status,notes
+02_process/06_analysis_freeze/worker_report.json,worker_report,created,"Failure report; freeze not produced because outcome firewall failed."
+02_process/06_analysis_freeze/file_access_manifest.txt,file_access_manifest,created,"Access audit including accidental outcome-bearing read."
+02_process/06_analysis_freeze/artifact_manifest.csv,artifact_manifest,created,"Manifest for failure artifacts only."

@@ -1,0 +1,97 @@
+# RQ003 Phase 3 Analysis Freeze v2 File Access Manifest
+
+Worker: RQ003_phase3_freeze_002
+Role: analysis freeze worker (rerun v2)
+Run: RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0
+Date: 2026-06-20
+
+## Firewall Summary
+
+- Hard-denylist content reads: 0
+- Outcome table reads: 0
+- Predictor-outcome result reads: 0
+- Official coordination/efficiency/comprehensive score value tables opened: 0
+- Rank tables opened: 0
+- Gate -1 process/review directories opened: 0
+- Prior v1 tainted artifacts opened: 0
+- Prior v1 tainted artifacts renamed/quarantined: 3
+
+The full plan was read because it was explicitly allowed. Any exploratory priors contained in the plan or user prompt were treated only as non-confirmatory context and logged in `tried.md`.
+
+## Hard Denylist Not Opened
+
+- `01_results/tables/**`
+- `02_process/02_gate_minus1/**`
+- `02_process/03_gate_minus1_review/**`
+- `02_process/01_inventory/gate0_outcome_denylist.txt`
+- Any path shown as `outcome_denylisted=yes` in inventory rows
+- Any official coordination/efficiency/comprehensive score file
+- Any rank file
+- Any predictor-outcome result table
+
+## Files Read or Parsed
+
+Identity and repo orientation:
+
+- `START_HERE.md`
+- `/Users/xiaocong/.codex/plugins/cache/openai-curated/superpowers/202e9242/skills/using-superpowers/SKILL.md`
+- `02_process/00_meta/run_manifest.json`
+- `02_process/00_meta/plan_sha256.txt`
+- `02_process/05_gate0_review/gate0_review_status.json`
+
+Allowed plan and Gate 0 sources:
+
+- `reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md`
+- `02_process/04_gate0_measurement/operational_parameters.yaml`
+- `02_process/04_gate0_measurement/support_definition.md`
+- `02_process/01_inventory/gate0_sanitized_spec.md`
+- `02_process/01_inventory/existing_locked_parameters.csv`
+- `02_process/01_inventory/input_inventory.csv` (rows/paths only; no listed path was opened)
+
+Outcome-free onsite structural sources:
+
+- `data/onsite_competition/00_manifest/README.md`
+- `data/onsite_competition/00_manifest/file_inventory.csv`
+- `data/onsite_competition/00_manifest/session_manifest.csv`
+- `data/onsite_competition/top5_research_subset/tables/top5_session_manifest.csv`
+- Directory names under `data/onsite_competition/top5_research_subset/teams/`
+
+Append-only metadata read for context before appending:
+
+- `02_process/00_meta/spec_deviation_log.md`
+- `02_process/00_meta/tried.md`
+- `02_process/00_meta/artifact_index.csv` (path index rows only; no referenced artifact was opened)
+
+## Metadata-Only Directory Listings
+
+- `02_process/06_analysis_freeze/`
+- `data/onsite_competition/00_manifest/`
+- `data/onsite_competition/top5_research_subset/`
+- `data/onsite_competition/top5_research_subset/teams/`
+
+## Files Written
+
+- `02_process/06_analysis_freeze/claims_register.md`
+- `02_process/06_analysis_freeze/primary_endpoints.md`
+- `02_process/06_analysis_freeze/exclusion_and_safe_subset.md`
+- `02_process/06_analysis_freeze/ipv_sign_contract.md`
+- `02_process/06_analysis_freeze/analysis_freeze.yaml`
+- `02_process/06_analysis_freeze/pre_outcome_operationalization.md`
+- `02_process/06_analysis_freeze/acceptance_matrix.csv`
+- `02_process/06_analysis_freeze/fold_contract.csv`
+- `02_process/06_analysis_freeze/model_capacity_contract.md`
+- `02_process/06_analysis_freeze/worker_report.json`
+- `02_process/06_analysis_freeze/file_access_manifest.txt`
+- `02_process/06_analysis_freeze/artifact_manifest.csv`
+
+## Files Renamed Without Reading Contents
+
+- `worker_report.json` -> `worker_report__tainted_phase3_v001.json`
+- `file_access_manifest.txt` -> `file_access_manifest__tainted_phase3_v001.txt`
+- `artifact_manifest.csv` -> `artifact_manifest__tainted_phase3_v001.csv`
+
+## Outcome-Clean Notes
+
+- `top5_session_manifest.csv` was marked `outcome_denylisted=no` in `input_inventory.csv` and was used for team/area/session structure.
+- Adjacent top-five tables such as `top5_scenario_scores.csv`, `top5_selection_summary.csv`, `top5_team_manifest.csv`, and `validation_summary.csv` were marked outcome-denylisted in `input_inventory.csv` and were not opened.
+- The allowed manifests did not expose a full outcome-free per-cell scenario membership table. The freeze therefore locks scenario/family fold labels and requires Phase 4 to populate cell membership from outcome-free scenario/session metadata, stopping if those labels exist only in score-joined tables.

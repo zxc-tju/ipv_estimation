@@ -1,0 +1,43 @@
+{
+  "figure_id": "fig02_missingness_selection_bias",
+  "title": "Missingness and selection-bias diagnostic",
+  "created_utc": "2026-06-20T16:21:47.932862Z",
+  "worker_id": "RQ003_phase10_report_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "nature_skill": {
+    "name": "nature-figure",
+    "version": "2.0.0",
+    "backend": "python",
+    "contract": "quantitative grid; SVG/PDF/PNG; editable SVG/PDF text; source CSV traceability"
+  },
+  "core_conclusion": "The approved top-five cohort has zero missing cells, while full-universe not-clean cells show a diagnostic selection boundary.",
+  "figure_archetype": "quantitative grid",
+  "target_output": "offline reader report and publication-editable static figure exports",
+  "final_size_inches": [
+    7.2,
+    4.8
+  ],
+  "panel_map": {
+    "a": "Observed and not-clean full-universe cells by stratum.",
+    "b": "Diagnostic score difference for not-clean cells where both means exist.",
+    "c": "Top-five missingness remains zero.",
+    "d": "Mapping-status classes contributing to the boundary."
+  },
+  "evidence_hierarchy": {
+    "hero_evidence": "Observed and not-clean full-universe cells by stratum.",
+    "controls_or_boundary": "Selection diagnostics cannot be promoted into criterion-validity evidence."
+  },
+  "statistics_notes": "Panel b shows descriptive mean-score differences only; no IPV-outcome association is computed.",
+  "source_data": [
+    "missingness_audit.csv",
+    "coverage_matrix.csv"
+  ],
+  "image_integrity_notes": "No raster scientific image manipulation; all charts are generated from corrected tabular sources.",
+  "reviewer_risk": "Selection diagnostics cannot be promoted into criterion-validity evidence.",
+  "exports": {
+    "svg": "01_results/figures/fig02_missingness_selection_bias.svg",
+    "pdf": "01_results/figures/fig02_missingness_selection_bias.pdf",
+    "png": "01_results/figures/fig02_missingness_selection_bias.png",
+    "source_csv": "01_results/figures/fig02_missingness_selection_bias_source.csv"
+  }
+}

@@ -1,0 +1,118 @@
+# RQ003 Phase 3 Freeze Review v2 File Access Manifest
+
+Worker: `RQ003_phase3_freeze_review_002`  
+Role: freeze reviewer (rerun v2)  
+Run: `RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0`  
+Date: `2026-06-20`
+
+## Firewall Summary
+
+- Reviewer outcome-clean: `true`
+- Hard-denylist content reads: `0`
+- Official score/rank file reads: `0`
+- Outcome table reads: `0`
+- Predictor-outcome result reads: `0`
+- Gate -1 process/review directory reads: `0`
+- Top-five README/team README reads: `0`
+- Top-five score/rank/validation summary file reads: `0`
+- Prior contaminated freeze-review artifacts read before quarantine: `0`
+- Prior contaminated freeze-review artifacts renamed/quarantined: `6`
+
+## Hard Denylist Not Opened
+
+- `01_results/tables/**`
+- `02_process/02_gate_minus1/**`
+- `02_process/03_gate_minus1_review/**`
+- `02_process/01_inventory/gate0_outcome_denylist.txt`
+- `data/onsite_competition/top5_research_subset/README.md`
+- `data/onsite_competition/top5_research_subset/teams/**/README.md`
+- `data/onsite_competition/top5_research_subset/tables/top5_selection_summary.csv`
+- `data/onsite_competition/top5_research_subset/tables/top5_scenario_scores.csv`
+- `data/onsite_competition/top5_research_subset/tables/validation_summary.csv`
+- `data/onsite_competition/00_manifest/score_team_coverage.csv`
+- Official coordination, efficiency, comprehensive score, score residual, score/rank, or predictor-outcome result materializations.
+
+## Files Read or Parsed
+
+Repo orientation and identity:
+
+- `START_HERE.md`
+- `02_process/00_meta/run_manifest.json`
+- `02_process/00_meta/plan_sha256.txt`
+- `02_process/00_meta/spec_deviation_log.md`
+
+Allowed plan and Gate 0 sources:
+
+- `reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md`
+- `02_process/04_gate0_measurement/operational_parameters.yaml`
+- `02_process/01_inventory/gate0_sanitized_spec.md`
+
+Clean freeze deliverables:
+
+- `02_process/06_analysis_freeze/acceptance_matrix.csv`
+- `02_process/06_analysis_freeze/analysis_freeze.yaml`
+- `02_process/06_analysis_freeze/artifact_manifest.csv`
+- `02_process/06_analysis_freeze/claims_register.md`
+- `02_process/06_analysis_freeze/exclusion_and_safe_subset.md`
+- `02_process/06_analysis_freeze/file_access_manifest.txt`
+- `02_process/06_analysis_freeze/fold_contract.csv`
+- `02_process/06_analysis_freeze/ipv_sign_contract.md`
+- `02_process/06_analysis_freeze/model_capacity_contract.md`
+- `02_process/06_analysis_freeze/pre_outcome_operationalization.md`
+- `02_process/06_analysis_freeze/primary_endpoints.md`
+- `02_process/06_analysis_freeze/worker_report.json`
+
+Outcome-free structural sources:
+
+- `data/onsite_competition/00_manifest/session_manifest.csv`
+- Raw replay/session log samples and bounded searches under `data/onsite_competition/raw/**` and `data/onsite_competition/top5_research_subset/teams/**/sessions/**` for score-free structural fields only (`caseId`, `taskId`, `recordId`, `caseName`, session path).
+- `data/onsite_competition/raw/beijing/tjjhs_db.sql` was searched for schema/case mapping terms; no official score/rank/outcome values were used or recorded.
+
+Validation reads:
+
+- `02_process/06_analysis_freeze/fold_contract.csv` parsed with Ruby CSV for fold counts and seed.
+- `02_process/06_analysis_freeze/worker_report.json` parsed with Ruby JSON for status/identity.
+- `02_process/07_freeze_review/freeze_review_status.json` parsed after writing.
+- `02_process/07_freeze_review/review_findings.csv` parsed after writing.
+
+## Metadata-Only Listings
+
+- Repository root listing.
+- `02_process/06_analysis_freeze/`
+- `02_process/07_freeze_review/`
+- `02_process/01_inventory/`
+- `02_process/04_gate0_measurement/`
+- `data/onsite_competition/00_manifest/`
+- `data/onsite_competition/raw/`
+- `data/onsite_competition/top5_research_subset/` directory and file names.
+- `data/onsite_competition/top5_research_subset/teams/` directory and file names.
+
+## Files Renamed Without Reading Contents
+
+- `freeze_review_status.json` -> `freeze_review_status__contaminated_v001.json`
+- `review_report.md` -> `review_report__contaminated_v001.md`
+- `review_findings.csv` -> `review_findings__contaminated_v001.csv`
+- `worker_report.json` -> `worker_report__contaminated_v001.json`
+- `file_access_manifest.txt` -> `file_access_manifest__contaminated_v001.txt`
+- `artifact_manifest.csv` -> `artifact_manifest__contaminated_v001.csv`
+
+## Process Deviations Recorded
+
+- A line-count command used a `06_analysis_freeze/*.csv` / `*.json` glob and therefore counted lines in `artifact_manifest__tainted_phase3_v001.csv` and `worker_report__tainted_phase3_v001.json`. Only line counts were exposed; no tainted contents, score/rank values, or outcome values were displayed or used.
+- A bounded raw-log search for scenario/source terms matched `caseId` and printed some trajectory-state records. These are raw predictor/source metadata, not outcome/score/rank material, and were used only to determine whether score-free case identifiers exist.
+- A bounded SQL search included schema and case metadata from `tjjhs_db.sql`; no official score/rank/outcome values were displayed or used.
+
+## Files Written
+
+- `02_process/07_freeze_review/review_report.md`
+- `02_process/07_freeze_review/review_findings.csv`
+- `02_process/07_freeze_review/freeze_review_status.json`
+- `02_process/07_freeze_review/worker_report.json`
+- `02_process/07_freeze_review/file_access_manifest.txt`
+- `02_process/07_freeze_review/artifact_manifest.csv`
+- Append-only: `02_process/00_meta/spec_deviation_log.md`
+- Append-only: `02_process/00_meta/artifact_index.csv`
+
+## Outcome-Clean Conclusion
+
+The reviewer did not open denylisted score/rank files or predictor-outcome result files. The scenario-source verdict is based on clean freeze artifacts, the score/rank-free session manifest, directory metadata, and raw replay/session structural fields. The review is outcome-clean.

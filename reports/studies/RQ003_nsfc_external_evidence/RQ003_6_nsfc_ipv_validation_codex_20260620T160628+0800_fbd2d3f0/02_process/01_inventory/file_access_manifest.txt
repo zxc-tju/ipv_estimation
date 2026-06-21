@@ -1,0 +1,39 @@
+# Phase 0B File Access Manifest
+
+Worker: `RQ003_phase0B_inventory_001`  
+Generated: 2026-06-20T16:37:49+08:00
+
+## Read Categories
+
+- Governance/context: `START_HERE.md`, `AGENTS.md` content from prompt, `PROJECT_STRUCTURE.md`/`STUDIES.md` references via inventory, current run meta files.
+- Frozen plan: `reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md`; used only to extract measurement definitions and acceptance criteria for sanitized spec.
+- Current run meta: `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/run_manifest.json`, `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/plan_sha256.txt`, `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/repo_state__after_sync.json`, `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/path_contract.json`.
+- NSFC/onsite inventory paths: `data/onsite_competition/**`, `archived/onsite_competition_results_legacy/**`.
+- InterHub inventory paths: `data/interhub/**`, `data/derived/interhub/**`.
+- Active implementation: `src/sociality_estimation/core/**`, `src/sociality_estimation/planning/**`, `pipelines/interhub/**`, `pipelines/simulation/**`.
+- Tests/scripts/archives: `tests/**`, `scripts/**`, `archived/legacy_scripts/**`, `archived/report_process/**`, `archived/report_local_state/**`.
+- RQ003 prior reports: `reports/studies/RQ003_nsfc_external_evidence/**`, `reports/knowledge/RQ003_nsfc_external_evidence/**` (locations only; outcome values not copied).
+- Claude Nature skill: `/Users/xiaocong/.claude/skills/nature-figure/SKILL.md`, `/Users/xiaocong/.claude/skills/nature-figure/manifest.yaml`, `/Users/xiaocong/.claude/skills/nature-figure/README.md`.
+
+## Writes Created Under Inventory Folder
+
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/inventory_report.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/requirement_gap_matrix.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/input_inventory.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/protected_paths.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/existing_locked_parameters.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/gate0_sanitized_spec.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/gate0_outcome_denylist.txt`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/nature_skill_capability_check.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/worker_report.json`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/file_access_manifest.txt`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/artifact_manifest.csv`
+
+## Explicit Meta Appends
+
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv` — append-only artifact rows.
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/input_manifest.csv` — append-only key input rows.
+
+## Outcome Hygiene
+
+Only path names and CSV headers were used for outcome-denylist construction. No official score/rank values or prior predictor-outcome result values were copied into generated artifacts.

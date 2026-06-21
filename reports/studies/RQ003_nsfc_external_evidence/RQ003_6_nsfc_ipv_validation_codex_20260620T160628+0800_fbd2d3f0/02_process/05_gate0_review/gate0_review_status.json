@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase2_gate0_review_001",
+  "role": "Gate 0 independent reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "review_date": "2026-06-20",
+  "identity_verified": true,
+  "independent_checks": {
+    "denylisted_read_count": 0,
+    "operational_parameters_outcome_free": true,
+    "support_definition_outcome_free": true,
+    "D_comp_orientation": "PASS",
+    "D_yield_orientation": "PASS",
+    "trace_formula_mismatch_count": 0,
+    "rolling_to_rolling": "PASS",
+    "future_leakage": "PASS",
+    "trace_forbidden_column_count": 0,
+    "support_rule_violation_count": 0,
+    "three_views_recomputable": "PASS",
+    "conformal_interhub_only": "PASS",
+    "empirical_verifier_safety_guard_separated": "PASS",
+    "competitor_distribution_renormalization": "NOT_FOUND",
+    "optimizer_stub_deviation": "PASS_WITH_REQUIRED_CONDITION"
+  },
+  "conditions": [
+    {
+      "condition_id": "G0R-COND-001",
+      "phase": "Phase 4",
+      "condition": "Install or restore scipy/matplotlib, run the real optimizer path, and reconfirm the sign contract on real theta outputs before any confirmatory NSFC result is trusted.",
+      "blocking_for": "confirmatory NSFC IPV-result interpretation",
+      "not_blocking_for": "Gate 0 measurement-logic PASS"
+    }
+  ],
+  "rationale": "Firewall, one-sided orientation, rolling-to-rolling prefix slicing, trace schema, support/OOD/abstention, three recomputable views, InterHub-only conformal boundary, and verifier/guard separation were independently checked without reading outcomes. The optimizer stub limits real-theta confirmation but does not undermine formula, slicing, schema, or firewall conclusions."
+}

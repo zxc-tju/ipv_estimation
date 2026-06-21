@@ -1,0 +1,128 @@
+{
+  "schema_version": "rq003_phase9_tier_decision_v1",
+  "worker_id": "RQ003_phase9_tier_001",
+  "role": "Phase 9 Tier reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_utc": "2026-06-20T15:45:00Z",
+  "identity_gate": {
+    "status": "PASS",
+    "run_manifest_run_id_matches": true,
+    "plan_sha256_matches": true,
+    "tier_dir_exists": true,
+    "red_team3_status": "PASS_NO_BLOCKERS"
+  },
+  "tier": "B",
+  "tier_label": "diagnostic_alignment_no_robust_independent_increment",
+  "scope": {
+    "cohort": "approved top-five NSFC cohort only",
+    "primary_n_cells": 53,
+    "teams": 9,
+    "scenarios": 14,
+    "full_20_team_universe_status": "not_analysis_ready",
+    "coordination_outcome": "official/generated report score"
+  },
+  "allowed_framing": "no robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated (power-limited, top-five cohort, N=53; apparent favorable direction not IPV-specific)",
+  "settled_conclusion": "No robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated.",
+  "tier_a_criteria": {
+    "gate_minus1_pass": {
+      "pass": true,
+      "evidence": "02_process/02_gate_minus1/gate_minus1_status.json; 02_process/03_gate_minus1_review/gate_minus1_review_status.json",
+      "rationale": "Approved top-five cohort mapping passed; full universe remains outside scope."
+    },
+    "gate0_pass": {
+      "pass": true,
+      "evidence": "02_process/04_gate0_measurement/gate0_status.json; 02_process/05_gate0_review/gate0_review_status.json; 02_process/08_directional_ipv/g0r_cond_001_status.json",
+      "rationale": "Sign, leakage, rolling-window, InterHub-only conformal boundary, and real-optimizer checks passed."
+    },
+    "frozen_analysis_uncontaminated": {
+      "pass": true,
+      "evidence": "02_process/06_analysis_freeze/analysis_freeze.yaml; 02_process/07_freeze_review/freeze_review_status.json",
+      "rationale": "Outcome-clean freeze review passed and prior contaminated review artifacts were quarantined."
+    },
+    "directional_ipv_consistent_in_safe_subsets": {
+      "pass": false,
+      "evidence": "01_results/tables/confirmatory_results.csv; 01_results/tables/confirmatory_results_interpretation.csv",
+      "rationale": "S1 and S2 duplicate the primary sample; S3 has n=6 and null/reverse behavior."
+    },
+    "two_genuinely_distinct_safe_subsets_agree": {
+      "pass": false,
+      "evidence": "02_process/10_confirmatory_analysis/confirmatory_analysis_report.md; 02_process/16_red_team_fixes/interp_fix/interpretation_correction.md",
+      "rationale": "The safe-subset agreement count is mechanical and vacuous, not genuinely distinct robustness evidence."
+    },
+    "leave_team_out_stable": {
+      "pass": false,
+      "evidence": "01_results/tables/confirmatory_results.csv; 02_process/17_independent_replication/replication2/replication2_status.json",
+      "rationale": "LOTO direction is reproduced but nonsignificant and has a CI crossing zero; replication verifies implementation rather than robust utility."
+    },
+    "leave_scene_not_contradicting": {
+      "pass": false,
+      "evidence": "01_results/tables/confirmatory_results.csv; 01_results/tables/confirmatory_results_interpretation.csv",
+      "rationale": "LOSO delta Spearman is approximately zero and MAE/CV-R2 deltas are unfavorable."
+    },
+    "stable_incremental_utility_over_prespecified_baseline": {
+      "pass": false,
+      "evidence": "02_process/10_confirmatory_analysis/confirmatory_analysis_report.md; 02_process/16_red_team_fixes/red_team3/red_team3_report.md",
+      "rationale": "Primary increment is nonsignificant, non-generalizing, and non-specific."
+    },
+    "negative_controls_behave_expected": {
+      "pass": false,
+      "evidence": "01_results/tables/negative_controls.csv; 02_process/11_negative_controls/negative_control_report.md",
+      "rationale": "Multiple controls match or exceed primary delta Spearman; degradation controls failed."
+    },
+    "blocking_red_team_findings_closed": {
+      "pass": true,
+      "evidence": "02_process/16_red_team_fixes/red_team3/red_team3_status.json",
+      "rationale": "Red-team v3 reports PASS_NO_BLOCKERS and cleared the package for Tier review."
+    },
+    "independent_replication_passed": {
+      "pass": true,
+      "evidence": "02_process/17_independent_replication/replication2/replication2_status.json",
+      "rationale": "Corrected direction reproduced exactly under reported-alpha refit and directionally under independent tuning."
+    },
+    "blind_annotation_backed_or_excluded": {
+      "pass": true,
+      "evidence": "02_process/12_blind_annotation/annotation_status.json",
+      "rationale": "H3 is BLOCKED for lack of real two-human labels and is excluded from Tier basis."
+    }
+  },
+  "tier_b_basis": {
+    "interpretable_diagnostic_alignment": true,
+    "no_robust_independent_heldout_increment": true,
+    "implementation_soundness_replicated": true,
+    "reader_facing_validation_claim_allowed": false
+  },
+  "tier_c_triggers": {
+    "gate_failure": false,
+    "integrity_domain_transfer_failure": false,
+    "single_scenario_or_single_area_only": false,
+    "cleanly_explained_by_baseline_only": false,
+    "low_support_only": false
+  },
+  "conditions": [
+    "Use only top-five-cohort scope.",
+    "Use official/generated score wording for the coordination outcome.",
+    "Exclude H3 blind-annotation claims unless real two-human labels are added in a new package.",
+    "Keep NPC material boundary-only and limited to matched opportunity structure wording.",
+    "Do not promote safe-subset agreement, LOSO, negative controls, or state-dependence as robustness support."
+  ],
+  "key_metrics": {
+    "primary_loto_delta_spearman": 0.1368327689082406,
+    "primary_loto_p_delta_spearman_greater": 0.30,
+    "primary_loto_ci": [-0.03878113684767078, 0.3057968968993576],
+    "primary_loto_delta_cv_r2": 0.08624895849533565,
+    "primary_loto_p_delta_cv_r2_greater": 0.13,
+    "loso_delta_spearman": 0.01673150966937409,
+    "safe_s1_n": 53,
+    "safe_s2_n": 53,
+    "safe_s3_n": 6,
+    "controls_matching_or_exceeding_primary": [
+      "future_leaky_full_window_ipv",
+      "ipv_time_shuffle",
+      "counterpart_swap",
+      "role_flip",
+      "sign_flip"
+    ],
+    "state_interpretable_rows": 90,
+    "state_min_fdr_q": 0.6283165352374775
+  }
+}

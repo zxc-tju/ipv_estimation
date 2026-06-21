@@ -1,0 +1,33 @@
+{
+  "execution_version_block": [
+    "EXECUTION_VERSION",
+    "RUN_ID",
+    "RUN_ROOT",
+    "DERIVED_ROOT",
+    "PLAN_SHA256",
+    "GIT_HEAD"
+  ],
+  "report_fields": [
+    "STATUS",
+    "WORKER_ID",
+    "ROLE",
+    "RUN_ID",
+    "SCOPE_COMPLETED",
+    "FILES_CREATED",
+    "FILES_MODIFIED",
+    "COMMANDS_RUN",
+    "TESTS_RUN",
+    "KEY_EVIDENCE",
+    "ACCEPTANCE_CRITERIA_RESULTS",
+    "SPEC_DEVIATIONS",
+    "UNRESOLVED_BLOCKERS",
+    "RECOMMENDED_NEXT_CODEX_TASK",
+    "GIT_DIFF_SUMMARY"
+  ],
+  "status_values": [
+    "PASS",
+    "FAIL",
+    "BLOCKED",
+    "PARTIAL"
+  ]
+}

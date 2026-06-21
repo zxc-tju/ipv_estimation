@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase2_gate0_audit_001",
+  "role": "Gate 0 IPV measurement auditor",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "denylisted_read_count": 0,
+  "unit_tests": {
+    "pass": 13,
+    "fail": 0,
+    "total": 13,
+    "pass_rate": 1.0
+  },
+  "checks": {
+    "identity_verification": "PASS",
+    "denylisted_reads": "PASS",
+    "sign_unit_tests_100pct": "PASS",
+    "competitive_shortfall_orientation": "PASS",
+    "yield_excess_orientation": "PASS",
+    "human_conditional_norm_frozen": "PASS",
+    "same_estimator_contract": "PASS",
+    "rolling_to_rolling": "PASS",
+    "no_future_leakage": "PASS",
+    "no_pet_order_phase_in_trace": "PASS",
+    "support_ood_abstention_computed": "PASS",
+    "three_views_recomputable": "PASS",
+    "conformal_interhub_only": "PASS",
+    "no_nsfc_outcome_tuning": "PASS",
+    "empirical_verifier_guard_separated": "PASS",
+    "no_competitor_distribution_renormalization": "PASS"
+  },
+  "operational_parameters_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/operational_parameters.yaml",
+  "trace_sample_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/traces/ipv_trace_sample.csv",
+  "interhub_calibration": {
+    "source": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/interhub/20260612_sigma_0_1_full_rerun/00_hpc_outputs/sigma01_ipv_timeseries.csv",
+    "rows_seen": 3695981,
+    "calibration_scenes": 30638,
+    "audit_holdout_scenes_seen": 7590,
+    "perspective_records_used": 5676048
+  },
+  "spec_deviations": [
+    "Raw PLAN_PATH was not opened because gate0_outcome_denylist.txt explicitly forbids raw-plan use for Gate 0 when the sanitized spec is available.",
+    "Trace sample is InterHub-only; top-five logs were inspected only for schema because the task permits InterHub and/or top-five sample traces.",
+    "Existing input inventory was allowed, but some exploratory/denylisted path strings appeared during early filtered searches; no denylisted file content or outcome values were opened or used.",
+    "Unit-test import used local plotting/optimizer stubs because matplotlib/scipy are unavailable; real optimizer was not invoked in monkeypatch leakage tests."
+  ],
+  "artifact_count": 12
+}

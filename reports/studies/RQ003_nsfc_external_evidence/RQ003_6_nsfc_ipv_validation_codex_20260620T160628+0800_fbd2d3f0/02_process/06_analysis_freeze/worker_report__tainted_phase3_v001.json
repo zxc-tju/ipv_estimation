@@ -1,0 +1,33 @@
+{
+  "status": "FAIL",
+  "worker_id": "RQ003_phase3_freeze_001",
+  "role": "analysis freeze worker",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "plan_sha256_expected": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "identity_verification": {
+    "run_root_exists": true,
+    "freeze_dir_exists": true,
+    "run_manifest_run_id_match": true,
+    "plan_sha256_match": true,
+    "gate0_review_status_pass": true
+  },
+  "firewall_status": "FAILED",
+  "denylisted_or_outcome_value_reads": [
+    {
+      "path": "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/replay_score_mapping.csv",
+      "reason": "Accidental structural lookup opened rows containing official score columns, including coordination values.",
+      "values_reproduced_in_artifacts": false
+    }
+  ],
+  "outcome_read_count": 1,
+  "predictor_outcome_association_read_count": 0,
+  "analysis_freeze_created": false,
+  "reason_not_created": "Confirmatory analysis freeze must be authored before any outcome values are read. This worker is tainted and stopped without writing the frozen specification.",
+  "files_created": [
+    "02_process/06_analysis_freeze/worker_report.json",
+    "02_process/06_analysis_freeze/file_access_manifest.txt",
+    "02_process/06_analysis_freeze/artifact_manifest.csv"
+  ],
+  "files_modified": [],
+  "recommended_next_codex_task": "Rerun Phase 3 analysis freeze with a fresh worker/context that does not read outcome-bearing tables; use only structural manifests or a sanitized structural extract."
+}

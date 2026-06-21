@@ -1,0 +1,250 @@
+{
+  "artifacts": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_control_cv_predictions.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_feature_health.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard00_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard01_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard02_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard03_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard04_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard05_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard06_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard07_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard08_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_frame_shard09_of_10.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_full_window_ipv_frame_detail.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_full_window_ipv_features.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_full_window_ipv_features__before_fix_invalid_noop.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/negative_controls.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/spec_deviation_log.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/artifact_manifest.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/file_access_manifest.txt",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/fix_future_leaky_control.py",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/leaky_control_fix_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_control_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_control_report__before_fix.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_controls__before_fix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/run_negative_controls.py",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/worker_report.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/worker_report__before_fix.json"
+  ],
+  "commands_run": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python /Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/fix_future_leaky_control.py --stage shard --shard-index <0..9> --shard-count 10",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python /Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/fix_future_leaky_control.py --stage merge --shard-count 10"
+  ],
+  "feature_health": {
+    "D_comp": {
+      "max": 0.8944177270429957,
+      "mean": 0.17063938690314776,
+      "min": 0.0,
+      "n_finite": 48,
+      "n_unique_rounded_1e12": 44,
+      "std": 0.17504706655022065
+    },
+    "D_yield": {
+      "max": 1.2050591350092403,
+      "mean": 0.22104829483397156,
+      "min": 0.0,
+      "n_finite": 48,
+      "n_unique_rounded_1e12": 44,
+      "std": 0.23792002779572471
+    },
+    "checks": {
+      "D_comp_nonconstant": true,
+      "D_yield_nonconstant": true,
+      "differs_from_rolling": true,
+      "sane_ranges": true,
+      "theta_nonconstant": true
+    },
+    "n_primary_cells": 48,
+    "rolling_difference": {
+      "changed_cells_D_comp": 47,
+      "changed_cells_D_yield": 46,
+      "mean_abs_delta_D_comp": 0.1414955408465355,
+      "mean_abs_delta_D_yield": 0.20927295683384806,
+      "spearman_corr_D_comp_vs_rolling": 0.16423718204727303,
+      "spearman_corr_D_yield_vs_rolling": -0.1007029180609342
+    },
+    "status": "PASS",
+    "theta_ego_mean": {
+      "max": 0.33167917095672544,
+      "mean": 0.04679606091904807,
+      "min": -0.17999362644697608,
+      "n_finite": 48,
+      "n_unique_rounded_1e12": 48,
+      "std": 0.09269982601944551
+    }
+  },
+  "fix_decision": "genuine_leaky_computed",
+  "fixed_leaky_row": {
+    "base_cv_r2": 0.026223027009374844,
+    "base_mae": 7.044133658371353,
+    "base_spearman": 0.3541033434650456,
+    "ci": "[-0.188652, 0.0524835]",
+    "control_name": "future_leaky_full_window_ipv",
+    "d_columns": "future_leaky_D_comp;future_leaky_D_yield",
+    "delta_cv_r2": -0.056862625685136337,
+    "delta_cv_r2_ci_high": 0.041418345778205815,
+    "delta_cv_r2_ci_low": -0.152885823781385,
+    "delta_mae": -0.4094253239715062,
+    "delta_mae_reduction": -0.4094253239715062,
+    "delta_mae_reduction_ci_high": 0.12654580945875127,
+    "delta_mae_reduction_ci_low": -0.9540247117814851,
+    "delta_spearman": -0.08206686930091184,
+    "delta_spearman_ci_high": 0.05248347449132109,
+    "delta_spearman_ci_low": -0.1886515914278722,
+    "expectation_kind": "future_leaky_genuine_diagnostic",
+    "expected": "genuine future-inclusive IPV diagnostic; non-deployable optimistic upper-bound attempt, excluded from NULL-robustness claims",
+    "full_cv_r2": -0.030639598675761492,
+    "full_mae": 7.45355898234286,
+    "full_spearman": 0.27203647416413373,
+    "n_bootstrap": 500,
+    "n_permutations": 99,
+    "n_predictions": 48,
+    "observed_behavior": "genuine non-deployable future-horizon leaky control did not show a statistically supported positive increment; reported separately and excluded from NULL-robustness strengthening claims",
+    "p": 0.2,
+    "p_delta_cv_r2_greater": 0.31,
+    "p_delta_mae_reduction_greater": 0.33,
+    "p_delta_spearman_greater": 0.2,
+    "pass_expected": true
+  },
+  "identity_verification": [
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+      "name": "RUN_ROOT exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls",
+      "name": "NEG exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+      "name": "DERIVED_ROOT exists",
+      "ok": true
+    },
+    {
+      "detail": "'RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0'",
+      "name": "run_manifest RUN_ID matches",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "plan_sha256 matches",
+      "ok": true
+    },
+    {
+      "detail": "'FAIL'",
+      "name": "stats review status is FAIL",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/negative_controls.csv",
+      "name": "negative_controls.csv exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/confirmatory_results.csv",
+      "name": "confirmatory_results.csv exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/cell_level_directional_ipv.csv",
+      "name": "cell_level_directional_ipv.csv exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/baseline_features_cells.csv",
+      "name": "baseline_features_cells.csv exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/scenario_map_outcome_free.csv",
+      "name": "scenario_map_outcome_free.csv exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/replay_score_mapping.csv",
+      "name": "replay_score_mapping.csv exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/run_negative_controls.py",
+      "name": "run_negative_controls.py exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/run_confirmatory_analysis.py",
+      "name": "run_confirmatory_analysis.py exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/compute_phase4_features.py",
+      "name": "compute_phase4_features.py exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/frame_level/frame_level_directional_ipv.csv",
+      "name": "frame_level_directional_ipv.csv exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python",
+      "name": "python exists",
+      "ok": true
+    },
+    {
+      "detail": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python",
+      "name": "running expected project Python",
+      "ok": true
+    },
+    {
+      "detail": "",
+      "name": "confirmatory script identity verification passes",
+      "ok": true
+    }
+  ],
+  "leaky_method": {
+    "candidate_grid": "legacy7",
+    "future_horizon_frames": 30,
+    "max_starts_per_cell": 30,
+    "shard_count": 10,
+    "solver_preset": "balanced"
+  },
+  "null_robustness_verdict": "PASS: primary NULL/REVERSE is supported by the frozen primary LOTO result and the 10 valid negative controls. The future-leaky control is reported separately as a non-deployable optimistic diagnostic and is not used to strengthen NULL-robustness claims.",
+  "pipeline_validity_verdict": "PASS: baseline retains signal and IPV/state corruptions behave as controls",
+  "protected_outputs": {
+    "confirmatory_results_sha256": "9b3b79f0704a09e5509780d9b096570b18d9275fd3a52d1381b2f74ea3be90d8",
+    "confirmatory_results_unchanged": true,
+    "other_10_controls_raw_lines_unchanged": true
+  },
+  "reference_primary_result": {
+    "base_cv_r2": 0.0262230270093748,
+    "base_mae": 7.044133658371353,
+    "base_spearman": 0.3541033434650456,
+    "delta_cv_r2": -0.0480343532751876,
+    "delta_mae_reduction": -0.7389074969454175,
+    "delta_spearman": -0.1102909248805905
+  },
+  "role": "Phase 4 negative-control fixer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "spec_deviations": [
+    "The before-fix full-window one-theta leaky control is reclassified as invalid/no-op and is not used as evidence.",
+    "The repaired leaky diagnostic is non-deployable and excluded from NULL-robustness strengthening claims.",
+    "Repository START_HERE.md/main_workflow.log maintenance was skipped because explicit worker WRITE_SCOPE excludes root files; this is logged in spec_deviation_log.md.",
+    "Legacy run_negative_controls.py wording was patched after the merge to remove the reviewer-flagged future-leaky upper-bound over-claim from future generated reports."
+  ],
+  "status": "PASS",
+  "tests_run": [
+    "Pre-write identity verification",
+    "Stats-review status verified FAIL before fix",
+    "Genuine leaky feature-health checks: D_comp nonconstant, D_yield nonconstant, theta nonconstant, rolling-difference, sane ranges",
+    "Frozen primary LOTO cross_validate() for repaired leaky control only",
+    "Scenario-cluster bootstrap and scenario-stratified permutation for repaired leaky control",
+    "confirmatory_results.csv sha256 unchanged",
+    "Other 10 negative-control CSV rows raw-line unchanged"
+  ],
+  "worker_id": "RQ003_phase4_negcontrol_fix_001"
+}

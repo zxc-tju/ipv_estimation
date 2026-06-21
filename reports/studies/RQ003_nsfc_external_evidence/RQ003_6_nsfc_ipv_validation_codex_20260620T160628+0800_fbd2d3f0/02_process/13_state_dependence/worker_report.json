@@ -1,0 +1,281 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase6_state_npc_001",
+  "role": "Phase 6 state-dependence + NPC boundary",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated": "2026-06-20T21:51:52+08:00",
+  "scope_completed": [
+    "identity verification",
+    "exploratory state-dependence strata",
+    "FDR on interpretable strata",
+    "counterexample extraction",
+    "NPC feasibility boundary"
+  ],
+  "files_created_or_modified": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/state_dependence_results.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/state_dependence_counterexamples.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/state_dependence_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/file_access_manifest.txt",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/artifact_manifest.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/worker_report.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/14_npc_analysis/npc_feasibility_and_boundary.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/14_npc_analysis/npc_matching_field_audit.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/14_npc_analysis/worker_report.json"
+  ],
+  "commands_run_summary": [
+    "read START_HERE and applicable skill files",
+    "verified RUN_ID/PLAN_SHA and required tables",
+    "profiled DIRT and DERIVED_ROOT cached tables",
+    "computed state-dependence results with cached Phase 4 features",
+    "audited NPC matching fields from top-five manifests/log schemas",
+    "wrote Phase 6 artifacts and appended artifact_index.csv"
+  ],
+  "tests_run": [
+    "identity assertions in generation script",
+    "artifact existence/hash validation in generation script"
+  ],
+  "key_evidence": {
+    "identity_verified": true,
+    "primary_context": {
+      "n_cells": 48,
+      "delta_spearman": -0.1102909248805905,
+      "delta_spearman_ci": [
+        -0.2623662252128965,
+        0.0747422195583012
+      ],
+      "direction": "null_or_reverse",
+      "safe_subset_agreement_count": 0,
+      "safe_subset_requirement_met": false
+    },
+    "fallback_context_nonconfirmatory": {
+      "n_cells": 68,
+      "delta_spearman": 0.0497003473680192,
+      "delta_spearman_ci": [
+        -0.0044184303004683,
+        0.1318115260388518
+      ],
+      "direction": "favorable"
+    },
+    "strongest_favorable_interpretable": [
+      {
+        "stratum_type": "geometry_lateral_gap_auc_tertile",
+        "stratum": "low",
+        "variant": "high_support_only",
+        "n": 19,
+        "effect": -0.47627490073737805,
+        "ci_low": -0.7769601893012368,
+        "ci_high": -0.0003313057686805445,
+        "q_value_fdr": 0.5078891993169611,
+        "usage_class": "local_alignment_signal_not_fdr_stable"
+      },
+      {
+        "stratum_type": "geometry_closing_fraction_tertile",
+        "stratum": "low",
+        "variant": "high_support_only",
+        "n": 12,
+        "effect": -0.2816971260815995,
+        "ci_low": -0.7978982601097827,
+        "ci_high": 0.3763440860215053,
+        "q_value_fdr": 0.9215541269387513,
+        "usage_class": "weak_or_uncertain_alignment_abstain"
+      },
+      {
+        "stratum_type": "risk_s3_primitive",
+        "stratum": "s3_clean",
+        "variant": "fallback_inclusive",
+        "n": 14,
+        "effect": -0.270627226468543,
+        "ci_low": -0.7511121351766511,
+        "ci_high": 0.35731156100432543,
+        "q_value_fdr": 0.9215541269387513,
+        "usage_class": "weak_or_uncertain_alignment_abstain"
+      },
+      {
+        "stratum_type": "geometry_closing_fraction_tertile",
+        "stratum": "middle",
+        "variant": "fallback_inclusive",
+        "n": 26,
+        "effect": -0.26974358974358975,
+        "ci_low": -0.6403991604514341,
+        "ci_high": 0.20673406746897963,
+        "q_value_fdr": 0.7382067329223229,
+        "usage_class": "weak_or_uncertain_alignment_abstain"
+      },
+      {
+        "stratum_type": "area_beijing_vs_shanghai",
+        "stratum": "beijing",
+        "variant": "high_support_only",
+        "n": 23,
+        "effect": -0.2423943284178526,
+        "ci_low": -0.5443688360326726,
+        "ci_high": 0.17239873030195593,
+        "q_value_fdr": 0.8829505457279011,
+        "usage_class": "weak_or_uncertain_alignment_abstain"
+      },
+      {
+        "stratum_type": "geometry_inverse_distance_tertile",
+        "stratum": "middle",
+        "variant": "high_support_only",
+        "n": 18,
+        "effect": -0.23279903877578798,
+        "ci_low": -0.7171950462840665,
+        "ci_high": 0.3074086837810865,
+        "q_value_fdr": 0.9215541269387513,
+        "usage_class": "weak_or_uncertain_alignment_abstain"
+      },
+      {
+        "stratum_type": "team",
+        "stratum": "T11",
+        "variant": "high_support_only",
+        "n": 12,
+        "effect": -0.23117373455165427,
+        "ci_low": -0.7184115523465704,
+        "ci_high": 0.4802375684173751,
+        "q_value_fdr": 0.9642796074528726,
+        "usage_class": "weak_or_uncertain_alignment_abstain"
+      },
+      {
+        "stratum_type": "risk_lateral_guard",
+        "stratum": "lat_gap_lt_2m",
+        "variant": "high_support_only",
+        "n": 41,
+        "effect": -0.22573527081341346,
+        "ci_low": -0.5148754158608126,
+        "ci_high": 0.1268216547790283,
+        "q_value_fdr": 0.7382067329223229,
+        "usage_class": "weak_or_uncertain_alignment_abstain"
+      }
+    ],
+    "strongest_reverse_interpretable": [
+      {
+        "stratum_type": "scenario",
+        "stratum": "A1",
+        "variant": "fallback_inclusive",
+        "n": 10,
+        "effect": 0.9361745372672995,
+        "ci_low": 0.6603773584905661,
+        "ci_high": 1.0,
+        "q_value_fdr": 0.0065173070606508255,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      },
+      {
+        "stratum_type": "team",
+        "stratum": "T6",
+        "variant": "high_support_only",
+        "n": 10,
+        "effect": 0.4724282017376836,
+        "ci_low": -0.35851522999136765,
+        "ci_high": 0.9461486364442676,
+        "q_value_fdr": 0.7382067329223229,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      },
+      {
+        "stratum_type": "family",
+        "stratum": "A",
+        "variant": "fallback_inclusive",
+        "n": 25,
+        "effect": 0.4177094055490344,
+        "ci_low": -0.0025540942531351433,
+        "ci_high": 0.7411848570949257,
+        "q_value_fdr": 0.5078891993169611,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      },
+      {
+        "stratum_type": "geometry_distance_auc_tertile",
+        "stratum": "middle",
+        "variant": "fallback_inclusive",
+        "n": 26,
+        "effect": 0.41648145590746993,
+        "ci_low": -0.009448597813971418,
+        "ci_high": 0.754332589719924,
+        "q_value_fdr": 0.5078891993169611,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      },
+      {
+        "stratum_type": "geometry_closing_fraction_tertile",
+        "stratum": "low",
+        "variant": "fallback_inclusive",
+        "n": 27,
+        "effect": 0.39627538242183047,
+        "ci_low": -0.020638584957062257,
+        "ci_high": 0.7016529535284105,
+        "q_value_fdr": 0.5078891993169611,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      },
+      {
+        "stratum_type": "geometry_inverse_distance_tertile",
+        "stratum": "middle",
+        "variant": "fallback_inclusive",
+        "n": 26,
+        "effect": 0.39049410726299727,
+        "ci_low": -0.04508245971585962,
+        "ci_high": 0.7186762368935741,
+        "q_value_fdr": 0.5078891993169611,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      },
+      {
+        "stratum_type": "geometry_closing_fraction_tertile",
+        "stratum": "high",
+        "variant": "fallback_inclusive",
+        "n": 26,
+        "effect": 0.37981185498937725,
+        "ci_low": -0.024388718606274958,
+        "ci_high": 0.6975822653376144,
+        "q_value_fdr": 0.5078891993169611,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      },
+      {
+        "stratum_type": "geometry_lateral_gap_auc_tertile",
+        "stratum": "middle",
+        "variant": "fallback_inclusive",
+        "n": 26,
+        "effect": 0.36997777938578197,
+        "ci_low": -0.05903678060344383,
+        "ci_high": 0.6827671602627555,
+        "q_value_fdr": 0.5078891993169611,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      }
+    ],
+    "fdr_q_le_0p10_rows": [
+      {
+        "stratum_type": "scenario",
+        "stratum": "A1",
+        "variant": "fallback_inclusive",
+        "n": 10,
+        "effect": 0.9361745372672995,
+        "ci_low": 0.6603773584905661,
+        "ci_high": 1.0,
+        "q_value_fdr": 0.0065173070606508255,
+        "usage_class": "reverse_or_context_mismatch_abstain"
+      }
+    ],
+    "low_n_counts": {
+      "interpretable": 97,
+      "low_n_not_interpretable": 50,
+      "not_estimable_no_feature": 22,
+      "constant_not_interpretable": 1
+    },
+    "counterexample_count": 18,
+    "npc_feasibility_verdict": "not_identifiable_no_effect_analysis_run",
+    "npc_missing_required_fields": [
+      "script_version",
+      "seed",
+      "ego_not_yet_influencing_npc_state"
+    ]
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": "PASS",
+    "strata_analyzed_with_n_effect_uncertainty": "PASS",
+    "low_n_flagged": "PASS",
+    "fdr_acknowledged": "PASS",
+    "exploratory_boundary_labeling": "PASS",
+    "npc_feasibility_verdict": "PASS",
+    "no_global_validity_overclaim": "PASS",
+    "no_edits_to_frozen_or_phase4_artifacts": "PASS"
+  },
+  "spec_deviations": [
+    "No main_workflow.log update because direct Phase 6 WRITE_SCOPE excludes repository-root files."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Phase 7 independent red team"
+}

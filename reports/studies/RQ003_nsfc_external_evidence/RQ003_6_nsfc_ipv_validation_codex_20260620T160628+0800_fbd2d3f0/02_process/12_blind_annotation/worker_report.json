@@ -1,0 +1,90 @@
+{
+  "agreement_computed": false,
+  "anonymization_leakage_audit_result": "PASS",
+  "codebook_labels": [
+    "aggressive intrusion",
+    "appropriate assertiveness",
+    "over-yielding-freeze",
+    "oscillation",
+    "deadlock",
+    "smooth reciprocal negotiation",
+    "unrelated failure"
+  ],
+  "commands_run": [
+    "sed -n 1,220p START_HERE.md",
+    "find run and derived roots for Phase 5 inputs",
+    "mkdir -p ${ANN} ${BA}",
+    "${PYTHON} identity verification and schema inspection snippets",
+    "apply_patch annotation_codebook.md merge_annotations.py",
+    "${PYTHON} Phase 5 blind annotation package generator",
+    "${PYTHON} Phase 5 path-scrub and audit refresh"
+  ],
+  "created_at_utc": "2026-06-20T13:50:57.159317+00:00",
+  "event_ipv_test_computed": false,
+  "h3_block_reason": "no real two-human annotations",
+  "h3_status": "BLOCKED",
+  "identity_verified": true,
+  "leak_findings": [],
+  "mechanism_sample_n": 12,
+  "mechanism_selection_groups": {
+    "mechanism_pattern_01": 3,
+    "mechanism_pattern_02": 3,
+    "mechanism_pattern_03": 3,
+    "mechanism_pattern_04": 3
+  },
+  "merge_script_guard": "Refuses missing files, empty CSVs, templates/no completed labels, partial labels, invalid labels, and placeholder/simulated markers before computing agreement.",
+  "package_description": "a blind behavioral criterion reference independent of the official score and IPV outputs",
+  "plan_sha256_verified": true,
+  "required_human_steps": [
+    "Coordinator uses controlled_identity_map.csv to issue source media or trajectory material under blinded filenames/reference IDs without revealing team names, official scores, ranks, or IPV outputs.",
+    "Human annotator 01 independently completes annotator_01_template.csv using annotation_codebook.md and the blinded item materials only.",
+    "Human annotator 02 independently completes annotator_02_template.csv using annotation_codebook.md and the blinded item materials only.",
+    "A later authorized merge worker runs merge_annotations.py on the two completed real human files; the script must refuse templates, empty files, and simulated labels.",
+    "Only after real two-human annotations are merged may a separate authorized analysis worker consider any behavioral-event to IPV or outcome tests."
+  ],
+  "role": "Phase 5 blind annotation preparation",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "scope_completed": [
+    "Mechanism case-card manifest prepared as purposive discovery sample only.",
+    "Validation manifest prepared as scenario-stratified random sample with fixed seed.",
+    "Blinded item cards and two blank annotator templates prepared.",
+    "Controlled identity map separated from annotator-facing materials.",
+    "Codebook and guarded merge script prepared.",
+    "H3 marked BLOCKED because no real two-human annotations exist."
+  ],
+  "simulated_labels_generated": false,
+  "status": "PARTIAL",
+  "tests_run": [
+    "Required deliverable existence and row-count verification: PASS",
+    "Annotator templates primary_label blank-count verification: PASS (0 nonblank labels)",
+    "annotation_status.json h3_status BLOCKED and overall_status PARTIAL verification: PASS",
+    "anonymization_audit.md leakage audit PASS verification: PASS",
+    "rg leakage scan over annotator-facing materials for team/path/IPV/score markers: PASS (no matches)",
+    "merge_annotations.py syntax check via py_compile: PASS",
+    "merge_annotations.py guard test on blank templates: PASS (refused with exit code 2; no agreement outputs written)"
+  ],
+  "updated_at_utc": "2026-06-20T13:54:11.449768+00:00",
+  "validation_per_scenario_counts": {
+    "A1": 2,
+    "A2": 2,
+    "A3": 2,
+    "A4": 2,
+    "A5": 2,
+    "B1": 2,
+    "B2": 2,
+    "B3": 2,
+    "B4": 2,
+    "B5": 2,
+    "C1": 2,
+    "C2": 2,
+    "C3": 2,
+    "C4": 2,
+    "C5": 2
+  },
+  "validation_random_seed": 20260620,
+  "validation_sample_n": 30,
+  "validation_sampling_probabilities": [
+    "0.200000"
+  ],
+  "worker_id": "RQ003_phase5_blind_annotation_001"
+}

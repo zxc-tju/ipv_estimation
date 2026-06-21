@@ -1,0 +1,75 @@
+{
+  "STATUS": "PASS",
+  "WORKER_ID": "RQ003_phase0B_inventory_001",
+  "ROLE": "read-only inventory & data reconnaissance worker (Phase 0B)",
+  "RUN_ID": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_at": "2026-06-20T16:37:49+08:00",
+  "identity_verification": {
+    "run_root_exists": true,
+    "inventory_dir_exists": true,
+    "run_manifest_run_id_match": true,
+    "plan_sha256_match": true
+  },
+  "scope_completed": [
+    "Catalogued NSFC/onsite raw, manifests, score locations, top-five subset, InterHub raw/derived data, active implementation, tests/scripts/archives, exploratory prior locations, and Nature skill.",
+    "Built outcome-free Gate 0 sanitized measurement spec and concrete outcome denylist.",
+    "Recorded locked constants found and missing pre-outcome parameters."
+  ],
+  "counts": {
+    "inventory_rows": 1278,
+    "nsfc_raw_files": 127,
+    "nsfc_raw_session_dirs": 24,
+    "nsfc_top5_session_dirs": 10,
+    "official_or_prior_outcome_denylisted_files": 202,
+    "interhub_raw_pkl_files": 48,
+    "rq003_prior_execution_dirs": 6,
+    "locked_parameter_rows_found": 28,
+    "locked_parameter_rows_missing": 12
+  },
+  "nature_skill_status": "FOUND_USABLE",
+  "files_created": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/inventory_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/requirement_gap_matrix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/input_inventory.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/protected_paths.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/existing_locked_parameters.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/gate0_sanitized_spec.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/gate0_outcome_denylist.txt",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/nature_skill_capability_check.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/worker_report.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/file_access_manifest.txt",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/01_inventory/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/input_manifest.csv"
+  ],
+  "commands_run": [
+    "pwd",
+    "sed START_HERE.md and current run meta files",
+    "find data/onsite_competition, data/interhub, data/derived, RQ003 reports",
+    "rg targeted code/report terms for locked parameters, safety primitives, score/outcome locations",
+    "sed active implementation files and Nature skill files",
+    "git status --short / git ls-files metadata checks",
+    "python3 metadata-only artifact generator"
+  ],
+  "tests_run": "none expected",
+  "acceptance_criteria_results": {
+    "identity_verification_passed": true,
+    "all_catalog_categories_addressed": true,
+    "sanitized_spec_measurement_only_self_check": true,
+    "outcome_denylist_concrete": true,
+    "nature_skill_status_recorded": true,
+    "no_core_code_or_raw_data_modified": true
+  },
+  "spec_deviations": [
+    "Repository instructions normally require START_HERE.md/main_workflow.log maintenance, but Phase 0B task denied writes outside inventory plus explicit meta append deliverables; those root files were not modified by this worker.",
+    "Two meta files outside INV were append-modified because the task explicitly required appending artifact and input manifests."
+  ],
+  "unresolved_blockers": [
+    "Gate -1 provenance questions remain: score source, replay-score uniqueness, missing-cell bias, and Beijing/Shanghai rubric consistency.",
+    "Gate 0 frozen human conditional norm numeric parameters are missing in current run artifacts."
+  ],
+  "recommended_next_codex_task": "Phase 1 Gate -1 provenance auditor",
+  "generated_at_finalized": "2026-06-20T16:38:42+08:00"
+}

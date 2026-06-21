@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "status_scope": "approved_RQ003_plan_top5_cohort_only",
+  "full_scored_universe_status": "FAIL_NOT_ANALYSIS_READY_WITHOUT_CORRECTION_OR_EXCLUSION",
+  "worker_id": "RQ003_phase1_gate_minus1_audit_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_at": "2026-06-20T16:58:14+08:00",
+  "identity_verified": true,
+  "no_predictor_outcome_association_run": true,
+  "no_ipv_computed": true,
+  "plan_top5_cells": 150,
+  "plan_top5_unique_usable_cells": 150,
+  "full_universe_cells": 300,
+  "full_universe_clean_usable_cells": 267,
+  "full_universe_candidate_usable_if_wrong_folder_accepted": 282,
+  "mapping_status_counts": {
+    "unique_clean": 225,
+    "candidate_wrong_folder_replay": 15,
+    "unmatched_no_sql_task_for_score_vector": 15,
+    "unique_sql_disambiguated_from_manifest_multi_session": 45
+  },
+  "manifest_naive_mapping_class_counts": {
+    "one_to_one": 240,
+    "unmatched": 15,
+    "one_to_many": 45
+  },
+  "coordination_source_verdict": "official generated/rule-kinematic report metric; human expert coordination rating not proven",
+  "beijing_shanghai_comparability": {
+    "same_numeric_scale": "supported_0_100_six_dimensions",
+    "same_report_schema": "partially_supported_by_matching_diagnosis_report_labels",
+    "same_judges": "not_supported_area_specific_judge_names_in_sql",
+    "same_formal_rubric": "not_established_no_rubric_file_found"
+  },
+  "rationale": [
+    "All 150 approved top-five plan cells have clean unique replay/session/case mapping and trajectory presence for ego plus counterpart.",
+    "Missingness for the plan cohort is zero; full-universe missingness is analyzed separately and flagged as selection-bias risk.",
+    "Outcome source is characterized from raw diagnosis PDFs and SQL fields without claiming expert-rated coordination.",
+    "Beijing/Shanghai comparability is stated within evidence limits.",
+    "Full 20-team universe is not passed because T18/T19 replay/source mapping is broken and some full-universe sessions have missing case IDs."
+  ],
+  "authorizes_next_step": "Gate -1 independent reviewer, then Gate 0 only for approved top-five cohort if reviewer concurs"
+}

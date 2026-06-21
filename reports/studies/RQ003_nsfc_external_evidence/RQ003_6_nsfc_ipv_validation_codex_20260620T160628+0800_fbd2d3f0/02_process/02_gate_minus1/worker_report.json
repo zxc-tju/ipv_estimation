@@ -1,0 +1,71 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase1_gate_minus1_audit_001",
+  "role": "Gate -1 provenance auditor",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "scope_completed": [
+    "identity verification",
+    "score/replay mapping audit",
+    "IPV feasibility from trajectory presence",
+    "coverage matrix",
+    "wrong-join/media-only/missing-cell audit",
+    "missingness selection-bias diagnostic without predictors",
+    "coordination-source characterization",
+    "Beijing/Shanghai comparability statement",
+    "provenance manifest and unresolved questions"
+  ],
+  "files_created": [
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/replay_score_mapping.csv",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/coverage_matrix.csv",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/missingness_audit.csv",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/data_provenance_manifest.csv",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/provenance_audit.md",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/unresolved_source_questions.md",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/gate_minus1_status.json",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv"
+  ],
+  "commands_run": [
+    "sed START_HERE.md and relevant skill files",
+    "identity verification of RUN_ROOT/G1/TABLES/run_manifest/plan_sha256/git HEAD",
+    "read Phase 0 inventory and protected paths",
+    "inspect score CSVs, manifests, SQL table definitions, PDFs, and replay-log samples",
+    "stream vehicle_perception_simulation_trajectory.log files for case/ego/counterpart feasibility counts",
+    "python3 Gate -1 artifact generator (this command)"
+  ],
+  "tests_run": "none expected; CSV/internal consistency checks performed in generator and verification step pending",
+  "key_evidence": {
+    "unique_mapping_rate_plan_top5": "150/150",
+    "computable_ipv_presence_count_plan_top5": 150,
+    "coverage_cells_plan_top5": 150,
+    "full_universe_clean_usable_cells": 267,
+    "duplicates": "0 duplicate (area, team_code, scenario) score keys",
+    "missing_or_not_clean_full_cells": 33,
+    "coordination_source_verdict": "official generated/rule-kinematic report metric; human expert coordination rating not proven",
+    "beijing_shanghai_comparability": {
+      "same_numeric_scale": "supported_0_100_six_dimensions",
+      "same_report_schema": "partially_supported_by_matching_diagnosis_report_labels",
+      "same_judges": "not_supported_area_specific_judge_names_in_sql",
+      "same_formal_rubric": "not_established_no_rubric_file_found"
+    },
+    "gate_minus1_status": "PASS",
+    "full_universe_status": "FAIL_NOT_ANALYSIS_READY_WITHOUT_CORRECTION_OR_EXCLUSION"
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": true,
+    "all_9_questions_answered": true,
+    "all_tables_produced": true,
+    "gate_status_json_written": true,
+    "no_predictor_outcome_association": true,
+    "no_unproven_expert_rated_claim": true
+  },
+  "spec_deviations": [
+    "main_workflow.log and START_HERE.md not modified because worker WRITE_SCOPE allowed only G1, TABLES, and append-only META/artifact_index.csv"
+  ],
+  "unresolved_blockers": [
+    "Full 20-team universe is not clean: T18/T19 replay/source inconsistency and partial full-universe case coverage. Plan top-five cohort has no blocker."
+  ],
+  "recommended_next_codex_task": "Gate -1 independent reviewer"
+}

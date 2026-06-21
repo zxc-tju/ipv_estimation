@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "status_label": "PASS_WITH_PHASE4_CONDITIONS",
+  "reviewer_outcome_clean": true,
+  "worker_id": "RQ003_phase3_freeze_review_002",
+  "role": "freeze reviewer (rerun v2)",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "review_time_local": "2026-06-20T18:25:04+08:00",
+  "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "identity_verified": true,
+  "prior_contaminated_review_quarantined": true,
+  "hard_denylist_read_count": 0,
+  "score_or_rank_read_count": 0,
+  "outcome_table_read_count": 0,
+  "predictor_outcome_result_read_count": 0,
+  "checks": {
+    "confirmatory_family_single": "PASS",
+    "freeze_outcome_cleanliness": "PASS",
+    "thresholds_frozen_outcome_free": "PASS",
+    "capacity_match": "PASS",
+    "fold_no_leakage": "PASS",
+    "plan_coverage": "PASS",
+    "scenario_membership_source": "PASS_WITH_CONDITIONS"
+  },
+  "conditions": [
+    {
+      "condition_id": "G0R-COND-001",
+      "phase": "Phase 4",
+      "severity": "blocking_before_confirmatory_interpretation",
+      "condition": "Install or restore scipy/matplotlib, run the real optimizer path, and reconfirm the sign contract on real theta outputs before any confirmatory NSFC result is trusted."
+    },
+    {
+      "condition_id": "FRZR-COND-004",
+      "phase": "Phase 4",
+      "severity": "blocking_before_outcome_read_or_model_fitting",
+      "condition": "Derive and confirm the team x scenario x family membership map from outcome-free raw replay/session metadata, such as caseId/session/task structural fields, before any outcome read, residualization, or model fitting. Stop if the map is available only in score/rank or score-joined files."
+    },
+    {
+      "condition_id": "FRZR-COND-005",
+      "phase": "Phase 4",
+      "severity": "firewall_enforcement",
+      "condition": "Do not use top-five README files, team README files, top5_selection_summary.csv, top5_scenario_scores.csv, validation_summary.csv, score_team_coverage.csv, Gate -1 process/review directories, official scores/ranks, or predictor-outcome results to derive the pre-outcome scenario map."
+    }
+  ],
+  "scenario_membership_source_verdict": {
+    "freeze_used_outcome_free_complete_cell_map": false,
+    "freeze_used_score_joined_map": false,
+    "freeze_used_source": "Team folds use session manifest structure; scenario/family folds use canonical plan labels and carry an explicit Phase 4 blocker requiring outcome-free cell membership derivation.",
+    "outcome_free_structural_evidence_available": [
+      "00_manifest/session_manifest.csv score/rank-free team/session structure",
+      "raw replay/session logs expose score/rank-free caseId/taskId/recordId/caseName fields"
+    ],
+    "complete_a_b_c_cell_map_materialized_in_allowed_review_sources": false,
+    "phase4_required_action": "Create or confirm a score-free team x scenario x family mapping before outcome access; block if only score-joined tables provide labels."
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": "PASS",
+    "prior_contaminated_artifacts_quarantined": "PASS",
+    "reviewer_outcome_clean_true": "PASS",
+    "all_seven_checks_evidenced": "PASS_WITH_CONDITIONS",
+    "explicit_status_and_conditions": "PASS"
+  },
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Phase 4 directional IPV + baseline + confirmatory + negative controls"
+}

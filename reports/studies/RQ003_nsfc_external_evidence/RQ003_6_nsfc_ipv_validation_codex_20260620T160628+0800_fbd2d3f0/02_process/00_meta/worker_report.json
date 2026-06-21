@@ -1,0 +1,96 @@
+{
+  "STATUS": "PASS",
+  "WORKER_ID": "RQ003_phase0A_bootstrap_001",
+  "ROLE": "repository bootstrap worker (Phase 0A)",
+  "RUN_ID": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "EXECUTION_VERSION": "RQ003_6",
+  "RUN_ROOT": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "DERIVED_ROOT": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "PLAN_SHA256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "GIT_HEAD": "c23074a091f9ff57b1034144571f68f771db9d8d",
+  "SCOPE_COMPLETED": [
+    "Recorded git state before and after blocked sync attempt",
+    "Confirmed local frozen plan and SHA-256",
+    "Read required governance files without research interpretation",
+    "Allocated RQ003_6 with permanent atomic lock",
+    "Created complete run and derived directory skeletons",
+    "Created initialization metadata, manifests, WIP top-level files, and offline HTML entries"
+  ],
+  "FILES_CREATED": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/archived/report_local_state/execution_locks/RQ003_nsfc_external_evidence/RQ003_6.lock",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/run_manifest.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/repo_state.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/path_contract.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/plan_snapshot.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/README.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/00_entry/index.html",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/90_report/index.html"
+  ],
+  "FILES_MODIFIED": [],
+  "COMMANDS_RUN": [
+    "sed -n 1,220p START_HERE.md",
+    "pwd",
+    "git rev-parse --is-inside-work-tree",
+    "git branch --show-current",
+    "git rev-parse HEAD",
+    "git remote get-url origin",
+    "git status --porcelain=v1",
+    "git fetch origin main",
+    "git rev-parse origin/main",
+    "git cat-file -e origin/main:reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md",
+    "git merge-base --is-ancestor HEAD origin/main",
+    "shasum -a 256 reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md",
+    "stat -f %m %z %Sm reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md",
+    "wc -l START_HERE.md AGENTS.md PROJECT_STRUCTURE.md STUDIES.md reports/studies/RQ003_nsfc_external_evidence/README.md reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md",
+    "find reports/studies/RQ003_nsfc_external_evidence -maxdepth 1 -type d -name 'RQ003_[0-9]*_*' -print",
+    "sed -n 1,120p AGENTS.md",
+    "sed -n 1,260p PROJECT_STRUCTURE.md",
+    "sed -n 1,120p STUDIES.md",
+    "sed -n 1,80p reports/studies/RQ003_nsfc_external_evidence/README.md",
+    "sed -n 1,320p reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md",
+    "python3 bootstrap metadata writer",
+    "final verification script"
+  ],
+  "TESTS_RUN": "none expected",
+  "KEY_EVIDENCE": {
+    "git_head_before": "c23074a091f9ff57b1034144571f68f771db9d8d",
+    "git_head_after": "c23074a091f9ff57b1034144571f68f771db9d8d",
+    "origin_main": "c23074a091f9ff57b1034144571f68f771db9d8d",
+    "sync_result": "BLOCKED",
+    "sync_reason": "git fetch origin main failed: error: cannot open '.git/FETCH_HEAD': Operation not permitted. No pull attempted. Pre-existing tracked modifications were also present in START_HERE.md and main_workflow.log; untracked scripts/ and tests/ were present.",
+    "lock_acquired": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/archived/report_local_state/execution_locks/RQ003_nsfc_external_evidence/RQ003_6.lock"
+  },
+  "ACCEPTANCE_CRITERIA_RESULTS": {
+    "safe_fast_forward_or_blocked_recorded": "pass",
+    "plan_exists_and_sha_recorded": "pass",
+    "unique_execution_version_lock_acquired": "pass",
+    "run_and_derived_roots_created_atomically": "pass",
+    "full_structure_present": "pass",
+    "path_contract_and_metadata_consistent": "pass",
+    "stdout_return_block": "pass"
+  },
+  "SPEC_DEVIATIONS": [
+    "GIT_SYNC=BLOCKED: fetch failed because .git/FETCH_HEAD was not writable in sandbox",
+    "START_HERE.md and main_workflow.log were not updated because user write scope allowed only new run root, derived root, and execution-lock directory"
+  ],
+  "UNRESOLVED_BLOCKERS": [
+    "Repository sync remains blocked until .git write permission/local dirty tracked files are resolved"
+  ],
+  "RECOMMENDED_NEXT_CODEX_TASK": "Phase 0B inventory worker",
+  "GIT_DIFF_SUMMARY": "No tracked files modified by this worker. New untracked run directory appears under reports/studies/RQ003_nsfc_external_evidence/RQ003_6...; pre-existing tracked modifications remain in START_HERE.md and main_workflow.log; pre-existing untracked scripts/ and tests/ remain. Derived root and local lock are under ignored/local paths.",
+  "FINAL_VERIFICATION": {
+    "status": "PASS",
+    "checks": [
+      "required run directories/files",
+      "derived directory skeleton",
+      "lock dir",
+      "RUN_ID consistency",
+      "plan snapshot hash",
+      "byte-identical HTML entries",
+      "evidence header",
+      "artifact manifest hashes"
+    ]
+  }
+}

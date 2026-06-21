@@ -1,0 +1,219 @@
+schema_version: "rq003_phase3_analysis_freeze_v2"
+worker_id: "RQ003_phase3_freeze_002"
+role: "analysis freeze worker (rerun v2)"
+run_id: "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0"
+frozen_date_local: "2026-06-20"
+plan_sha256: "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1"
+identity_verification:
+  run_root_exists: true
+  freeze_dir_exists: true
+  run_manifest_run_id_match: true
+  plan_sha256_match: true
+  gate0_review_status: "PASS"
+  gate0_required_condition:
+    id: "G0R-COND-001"
+    phase: "Phase 4"
+    condition: "Install or restore scipy/matplotlib, run the real optimizer path, and reconfirm the sign contract on real theta outputs before any confirmatory NSFC result is trusted."
+firewall:
+  rerun_policy: "outcome-clean structural freeze only"
+  prior_v1_quarantine:
+    worker_report: "worker_report__tainted_phase3_v001.json"
+    file_access_manifest: "file_access_manifest__tainted_phase3_v001.txt"
+    artifact_manifest: "artifact_manifest__tainted_phase3_v001.csv"
+  hard_denylist_read_count: 0
+  outcome_table_read_count: 0
+  predictor_outcome_result_read_count: 0
+  allowed_plan_prior_context: "Prior exploratory values in PLAN_PATH are treated only as non-confirmatory context and logged in tried.md."
+sources:
+  allowed:
+    - "reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md"
+    - "02_process/04_gate0_measurement/operational_parameters.yaml"
+    - "02_process/04_gate0_measurement/support_definition.md"
+    - "02_process/05_gate0_review/gate0_review_status.json"
+    - "02_process/01_inventory/gate0_sanitized_spec.md"
+    - "02_process/01_inventory/existing_locked_parameters.csv"
+    - "02_process/01_inventory/input_inventory.csv (rows/paths only)"
+    - "data/onsite_competition/00_manifest/session_manifest.csv"
+    - "data/onsite_competition/00_manifest/README.md"
+    - "data/onsite_competition/00_manifest/file_inventory.csv"
+    - "data/onsite_competition/top5_research_subset/tables/top5_session_manifest.csv"
+    - "data/onsite_competition/top5_research_subset directory names"
+  not_opened:
+    - "01_results/tables/**"
+    - "02_process/02_gate_minus1/**"
+    - "02_process/03_gate_minus1_review/**"
+    - "outcome-denylisted inventory paths"
+primary:
+  sample:
+    scope: "approved top-five cohort"
+    unit: "team x scenario cell"
+    inclusion:
+      - "mapped"
+      - "high_support"
+      - "non_A1"
+      - "collision_free"
+    exclusion:
+      - "A1 from continuous primary model"
+      - "collision cells from continuous primary model"
+      - "unmapped cells"
+      - "cells without valid high-support conflict-window IPV summaries"
+  outcome:
+    name: "official coordination residual"
+    residualization: "scenario + area fixed effects"
+    timing: "computed only in Phase 4"
+    leakage_rule: "fit residualization within training folds only"
+  predictor:
+    block_name: "directional_conditional_ipv_auc"
+    variables:
+      - "D_comp_auc_conflict_time_norm"
+      - "D_yield_auc_conflict_time_norm"
+    formulas:
+      D_comp: "max(0, (Q_low(theta_npc,s,tau)-theta_ego)/w)"
+      D_yield: "max(0, (theta_ego-Q_high(theta_npc,s,tau))/w)"
+    conflict_window: "non-abstained high-support frames with current-frame inter-agent distance <= 41.31042720375975 m"
+    aggregation: "trapezoidal AUC over valid conflict-window time divided by valid conflict-window duration"
+  single_confirmatory_comparison:
+    baseline: "state + causal kinematics + safety"
+    full: "state + causal kinematics + safety + D_comp_auc_conflict_time_norm + D_yield_auc_conflict_time_norm"
+    constraint: "baseline and full differ only by D_comp and D_yield"
+  generalization:
+    primary: "leave-one-team-out"
+    secondary: "leave-one-scenario-out"
+    boundary: "leave-one-family-out; no significance headline"
+gate0_parameters:
+  primary_history_window_frames: 10
+  min_observation_frames: 4
+  sensitivity_windows_frames:
+    short: 5
+    medium: 10
+    long: 20
+  sampling_contract: "10 Hz rolling prefix"
+  q_low_probability: 0.25
+  q_median_probability: 0.5
+  q_high_probability: 0.75
+  w_min_rad: 0.19634954084936207
+  theta_npc_bin_width_rad: 0.39269908169872414
+  state_condition: "role_rel|distance_bin|closing_bin"
+  tau_definition: "min(1,(frame_index-min_observation_frames)/primary_history_window_frames)"
+  high_support:
+    min_exact_cell_n: 30
+    min_monitor_only_n: 10
+    estimator_error_max: 0.6216308869824523
+    theta_npc_min_rad_q01: -1.178096549046999
+    theta_npc_max_rad_q99: 1.178097245096148
+    conflict_distance_max_m: 41.31042720375975
+  conformal:
+    alpha: 0.1
+    threshold: 2.0677436745727538
+    threshold_source: "InterHub calibration split high-support standardized one-sided deviation scores only"
+    nsfc_nominal_coverage_claim_allowed: false
+safe_subsets:
+  primary_conclusion_rule: "at least two outcome-independent safe subsets must agree in IPV direction"
+  S1:
+    definition: "collision == 0"
+    source: "PLAN_PATH Section 7"
+  S2:
+    definition: "safety_score == 100 AND collision == 0"
+    source: "PLAN_PATH Section 7 safety-score schema only"
+  S3:
+    definition: "collision == 0 AND takeover == 0 AND line_crossing == 0 AND TTC >= 1.5 AND lateral_gap >= 2.0"
+    thresholds:
+      TTC_seconds: 1.5
+      lateral_gap_m: 2.0
+    source: "Gate 0 operational_parameters.yaml safety_guard"
+sensitivity_and_exploratory:
+  sensitivity:
+    - "leave-one-scenario-out"
+    - "conditional vs scalar/marginal summaries"
+    - "directional tails vs absolute deviation"
+    - "S1/S2/S3 safe subsets"
+  exploratory_with_fdr:
+    - "p90"
+    - "max"
+    - "onset"
+    - "latency"
+    - "gain"
+    - "other windows"
+    - "phase"
+    - "all additional safe-subset combinations"
+    - "comprehensive score"
+    - "area rank"
+    - "overall rank"
+folds:
+  seed_source: "sha256('analysis_freeze_v2|RUN_ID|PLAN_SHA256') first 32 bits"
+  seed: 2266481337
+  primary_leave_one_team_out:
+    - "T17"
+    - "T14"
+    - "T16"
+    - "T15"
+    - "T20"
+    - "T11"
+    - "T6"
+    - "T5"
+    - "T7"
+    - "T8"
+  secondary_leave_one_scenario_out:
+    - "A1"
+    - "A2"
+    - "A3"
+    - "A4"
+    - "A5"
+    - "B1"
+    - "B2"
+    - "B3"
+    - "B4"
+    - "B5"
+    - "C1"
+    - "C2"
+    - "C3"
+    - "C4"
+    - "C5"
+  boundary_leave_one_family_out:
+    A:
+      - "A1"
+      - "A2"
+      - "A3"
+      - "A4"
+      - "A5"
+    B:
+      - "B1"
+      - "B2"
+      - "B3"
+      - "B4"
+      - "B5"
+    C:
+      - "C1"
+      - "C2"
+      - "C3"
+      - "C4"
+      - "C5"
+  phase4_cell_membership_gate: "derive scenario/family cell labels from outcome-free scenario/session metadata; block if labels exist only in score-joined tables"
+model_capacity:
+  preprocessing: "fit within training fold only"
+  tuning: "training data only; equal budget for baseline and full"
+  saved_folds_required: true
+  forbidden_features:
+    - "full-window IPV"
+    - "observed PET"
+    - "realized order"
+    - "post-hoc phase"
+    - "future frames"
+    - "official scores/ranks as predictors"
+    - "outcome-tuned thresholds"
+claims:
+  confirmatory:
+    - "H4-C1"
+  sensitivity:
+    - "H1a-S1"
+    - "H1b-S1"
+    - "H2-S1"
+    - "H4-SAFE"
+    - "H4-GEN-SCENE"
+  exploratory:
+    - "H4-GEN-FAMILY"
+    - "EXP-RANK"
+    - "EXP-WINDOW"
+    - "EXP-PRIOR"
+  blocked:
+    - "H3-B1"

@@ -1,0 +1,138 @@
+{
+  "schema_version": "rq003_phase11_worker_report_v1",
+  "worker_id": "RQ003_phase11_final_review_001",
+  "role": "Phase 11 final report reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_utc": "2026-06-20T16:35:00Z",
+  "status": "PASS",
+  "scope_completed": [
+    "identity verification",
+    "offline HTML open/parse",
+    "hash/diff identity",
+    "link check",
+    "figure completeness/integrity/provenance audit",
+    "HTML/evidence/tier/table consistency audit",
+    "Gate/Tier disclosure audit",
+    "forbidden wording scan",
+    "blind annotation/NPC boundary audit",
+    "legacy/cross-run contamination scan",
+    "evidence schema/reconciliation audit"
+  ],
+  "files_created": [
+    "02_process/20_final_review/final_report_review.md",
+    "02_process/20_final_review/link_check.csv",
+    "02_process/20_final_review/figure_audit.csv",
+    "02_process/20_final_review/claim_consistency_audit.csv",
+    "02_process/20_final_review/final_review_status.json",
+    "02_process/20_final_review/worker_report.json",
+    "02_process/20_final_review/file_access_manifest.txt",
+    "02_process/20_final_review/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "02_process/00_meta/artifact_index.csv"
+  ],
+  "commands_run": [
+    "sed -n 1,240p START_HERE.md",
+    "sed -n 1,260p /Users/xiaocong/.codex/plugins/cache/openai-curated/superpowers/202e9242/skills/using-superpowers/SKILL.md",
+    "sed -n 1,260p /Users/xiaocong/.codex/skills/nature-figure/SKILL.md",
+    "sed -n 1,260p /Users/xiaocong/.codex/plugins/cache/openai-curated/superpowers/202e9242/skills/verification-before-completion/SKILL.md",
+    "test -d RUN_ROOT && test -d FR; sed run_manifest.json; sed plan_sha256.txt; ls required inputs",
+    "find/rg/head/sed inventory reads for figure_manifest.csv, evidence.csv, tier_decision.json, nature_skill_manifest.json, report HTML, result tables",
+    "shasum -a 256 ENTRY/index.html REP90/index.html && cmp -s ENTRY/index.html REP90/index.html",
+    "data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python - <<PY (this final independent audit writer)"
+  ],
+  "tests_run": [
+    "offline-open via urllib.request.urlopen(file://...) for both HTML entries",
+    "HTMLParser parse/title/section/figure count for both entries",
+    "link check across href/src/poster/data and CSS url(...) references",
+    "SHA-256 and byte-identity check for 00_entry/index.html and 90_report/index.html",
+    "figure completeness/signature checks for SVG/PDF/PNG/source CSV/metadata JSON",
+    "Nature-skill provenance reconciliation between nature_skill_manifest.json and figure_manifest.csv",
+    "evidence.csv schema/claim/linked-artifact reconciliation",
+    "result table non-empty CSV parse check",
+    "HTML/Tier/table metric and disclosure anchor consistency check",
+    "forbidden wording, legacy path, fake blind annotation, and cross-run contamination scan"
+  ],
+  "key_evidence": {
+    "html_entries_offline_opened": true,
+    "html_entries_byte_identical": true,
+    "dead_link_count": 0,
+    "missing_figure_count": 0,
+    "html_evidence_consistency": true,
+    "forbidden_wording_count": 0,
+    "legacy_path_count": 0,
+    "final_review_status": "PASS"
+  },
+  "acceptance_criteria_results": [
+    {
+      "check": "Identity verified",
+      "result": "PASS",
+      "evidence": "RUN_ID, plan SHA, FR, and required inputs verified"
+    },
+    {
+      "check": "Both HTML entries open offline",
+      "result": "PASS",
+      "evidence": "{\"00_entry/index.html\": {\"opened_offline\": true, \"parsed\": true, \"title_seen\": true, \"sections\": 21, \"figures\": 9, \"link_count\": 75, \"errors\": []}, \"90_report/index.html\": {\"opened_offline\": true, \"parsed\": true, \"title_seen\": true, \"sections\": 21, \"figures\": 9, \"link_count\": 75, \"errors\": []}}"
+    },
+    {
+      "check": "HTML entries byte-identical or offline redirect",
+      "result": "PASS",
+      "evidence": "00_entry sha256=33cb731aa8647f1e931ba3c22ca2619c4ababd34117e65988b78c907bde716fa; 90_report sha256=33cb731aa8647f1e931ba3c22ca2619c4ababd34117e65988b78c907bde716fa; byte_identical=True"
+    },
+    {
+      "check": "No external/dead/absolute clickable links",
+      "result": "PASS",
+      "evidence": "checked=150 failures=0"
+    },
+    {
+      "check": "Figure exports/source/metadata complete and nonempty",
+      "result": "PASS",
+      "evidence": "figures=9 failures=0"
+    },
+    {
+      "check": "Nature-skill provenance present",
+      "result": "PASS",
+      "evidence": "manifest skill=nature-figure backend=python"
+    },
+    {
+      "check": "HTML/evidence/tier/table consistency",
+      "result": "PASS",
+      "evidence": "claim_failures=0 metric_issues=0 anchor_failures=0"
+    },
+    {
+      "check": "Gate/Tier consistency",
+      "result": "PASS",
+      "evidence": "tier_decision=B"
+    },
+    {
+      "check": "Honest disclosure",
+      "result": "PASS",
+      "evidence": "null/reverse/blocked/partial, H3 blocked, NPC boundary, non-preregistration, non-nominal NSFC conformal coverage, and scenario correction disclosed"
+    },
+    {
+      "check": "Forbidden wording absent",
+      "result": "PASS",
+      "evidence": "positive forbidden count=0; negated risk-control hits not counted=2"
+    },
+    {
+      "check": "No fabricated/implied two-person blind annotation results",
+      "result": "PASS",
+      "evidence": "HTML states no real two-human results and no computed tests"
+    },
+    {
+      "check": "No legacy/cross-run reader contamination",
+      "result": "PASS",
+      "evidence": "legacy_reader_count=0 cross_run_reader_count=0"
+    },
+    {
+      "check": "evidence.csv required columns/rows reconcile",
+      "result": "PASS",
+      "evidence": "rows=13 missing_columns=[] claim_failures=0"
+    }
+  ],
+  "spec_deviations": [
+    "Did not update START_HERE.md or main_workflow.log because this task explicitly limited writes to FR/ and append-only META/artifact_index.csv. START_HERE operating facts did not change."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Phase 12 registrar"
+}

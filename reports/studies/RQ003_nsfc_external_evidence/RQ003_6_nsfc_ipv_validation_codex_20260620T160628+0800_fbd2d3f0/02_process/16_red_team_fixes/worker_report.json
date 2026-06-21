@@ -1,0 +1,119 @@
+{
+  "artifacts": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/scenario_crosswalk_corrected.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/scenario_crosswalk_provenance.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/a1_safety_correction.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/scenario_fix_result_delta.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/fix_status.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/fold_assignments.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/red_team_fixes/phase7_confirmatory_analysis_frame.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/red_team_fixes/phase7_safe_primitive_summary.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/cv_predictions.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/confirmatory_results.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/scenario_wise_ipv_rank_association.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/confirmatory_analysis_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/negative_controls.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/red_team_fixes/phase7_negative_control_cv_predictions.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_control_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/ipv_time_shuffle_features.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/wrong_envelope_features.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/red_team_fixes/future_leaky_corrected_cache_health.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/state_dependence_results.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/state_dependence_counterexamples.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/state_dependence_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/confirmatory_results__before_scenario_fix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/cv_predictions__before_scenario_fix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/fold_assignments__before_scenario_fix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/negative_controls__before_scenario_fix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/state_dependence_results__before_scenario_fix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/state_dependence_counterexamples__before_scenario_fix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/confirmatory_analysis_report__before_scenario_fix.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/scenario_wise_ipv_rank_association__before_scenario_fix.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_control_report__before_scenario_fix.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/state_dependence_report__before_scenario_fix.md"
+  ],
+  "commands_run": [
+    "python identity/input inspection snippets",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python /Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/run_phase7_scenario_fix.py"
+  ],
+  "key_evidence": {
+    "cells_relabelled": 120,
+    "cells_total": 150,
+    "future_leaky_cache_health": {
+      "corrected_primary_cells": 53,
+      "covered_primary_cells": 48,
+      "feature_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_full_window_ipv_features.csv",
+      "handling": "Missing cached future-leaky features are left NaN and handled by the frozen fold-local median imputer.",
+      "missing_cell_ids": [
+        "T14_A1_task6922_case2344",
+        "T15_A1_task6924_case2344",
+        "T16_A1_task6926_case2344",
+        "T17_A1_task6931_case2344",
+        "T20_A1_task6941_case2344"
+      ],
+      "missing_primary_cells": 5,
+      "optimizer_recomputed": false
+    },
+    "official_source": "replay_score_mapping.csv scenario/scenario_family/scenario_name plus tjjhs_referee_scoring SQL line pointers",
+    "primary_before_after": {
+      "after": {
+        "base_cv_r2": -0.14102614230079968,
+        "base_mae": 7.416451263154505,
+        "base_spearman": -0.19093694565392677,
+        "delta_cv_r2": 0.08624895849533565,
+        "delta_mae_reduction": 0.47926406861273385,
+        "delta_spearman": 0.1368327689082406,
+        "full_cv_r2": -0.054777183805464036,
+        "full_mae": 6.937187194541771,
+        "full_spearman": -0.054104176745686176
+      },
+      "after_minus_before": {
+        "base_cv_r2": -0.16724916931017447,
+        "base_mae": 0.37231760478315135,
+        "base_spearman": -0.5450402891189723,
+        "delta_cv_r2": 0.13428331177052324,
+        "delta_mae_reduction": 1.2181715655581513,
+        "delta_spearman": 0.2471236937888311,
+        "full_cv_r2": -0.032965857539651235,
+        "full_mae": -0.845853960775,
+        "full_spearman": -0.29791659533014114
+      },
+      "before": {
+        "base_cv_r2": 0.0262230270093748,
+        "base_mae": 7.044133658371353,
+        "base_spearman": 0.3541033434650456,
+        "delta_cv_r2": -0.0480343532751876,
+        "delta_mae_reduction": -0.7389074969454175,
+        "delta_spearman": -0.1102909248805905,
+        "full_cv_r2": -0.0218113262658128,
+        "full_mae": 7.783041155316771,
+        "full_spearman": 0.243812418584455
+      }
+    }
+  },
+  "role": "Phase 7 blocking fixer (scenario crosswalk + A1)",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "scope_completed": [
+    "Built corrected official scenario crosswalk.",
+    "Quarantined before-fix outputs.",
+    "Reran confirmatory analysis, negative controls, future-leaky diagnostic, and state-dependence with corrected labels.",
+    "Corrected A1/safety identity."
+  ],
+  "spec_deviations": [
+    "LOSO fold contract was rebuilt in memory from corrected official scenario labels because the frozen fold_contract.csv contains the old erroneous A1-C5 grid; the freeze file itself was not edited.",
+    "Future-leaky diagnostic did not recompute optimizer features; existing cache covers 48/53 corrected primary cells and missing values are handled by fold-local median imputation.",
+    "Root main_workflow.log was not edited because the task write scope was restricted to FIX, corrected result/report paths, DERIVED_ROOT intermediates, and META append-only files.",
+    "Future-leaky cache is read-only evidence, not a generated Phase 7 artifact; generated manifests classify it under READ after correction."
+  ],
+  "status": "PASS",
+  "tests_run": [
+    "Pre-write identity verification passed.",
+    "Crosswalk row count == 150 and official scenario missing count == 0.",
+    "Scenario-label disagreement quantified: 120/150.",
+    "Confirmatory cross_validate rerun for corrected LOTO/LOSO/LOFO/safe subsets.",
+    "Negative-control battery rerun under corrected primary inclusion.",
+    "State-dependence rows rerun with BH-FDR over interpretable strata.",
+    "No edits to freeze files, core code, cell-level IPV features, or baseline feature table."
+  ],
+  "worker_id": "RQ003_phase7_scenario_fix_001"
+}

@@ -1,0 +1,67 @@
+run_id: "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0"
+worker_id: "RQ003_phase2_gate0_audit_001"
+frozen_at_utc: "2026-06-20T09:31:52.353397+00:00"
+source_policy: "OUTCOME_FREE_INTERHUB_CALIBRATION_ONLY_FOR_NORMS; NO_NSFC_OUTCOMES"
+plan_sha256: "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1"
+estimator:
+  function: "sociality_estimation.core.ipv_estimation.estimate_ipv_pair"
+  source: "src/sociality_estimation/core/ipv_estimation.py:158-335"
+  agent_source: "src/sociality_estimation/core/agent.py:672-721"
+  same_for_interhub_and_nsfc_required: true
+  primary_history_window_frames: 10
+  min_observation_frames: 4
+  short_window_frames: 5
+  medium_window_frames: 10
+  long_window_frames: 20
+  sampling_contract: "rolling prefix only; InterHub applies dataset downsampling before estimation; NSFC replay must be resampled to the same 10 Hz rolling contract before estimation"
+conditional_norm:
+  split_seed: "gate0_interhub_calibration_v1|98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1"
+  calibration_fraction: 0.8
+  calibration_split_rule: "sha256(seed|scene_unique_id) first 64 bits / 2^64 < 0.80"
+  calibration_scenes: 30638
+  audit_holdout_scenes_seen: 7590
+  rows_seen: 3695981
+  perspective_records_used: 5676048
+  q_low_probability: 0.25
+  q_median_probability: 0.5
+  q_high_probability: 0.75
+  w_min_rad: 0.19634954084936207
+  w_min_derivation: "max(pi/16 candidate-grid half-step=0.196349540849, p10 InterHub high-support half-IQR=0.00331852711905)"
+  theta_npc_bin_width_rad: 0.39269908169872414
+  state_condition: "role_rel|distance_bin|closing_bin computed from current-frame ego/counterpart positions, velocities, heading only"
+  tau_definition: "tau=min(1,(frame_index-min_observation_frames)/primary_history_window_frames); no full-window endpoint"
+  exact_cell_count: 453
+  fallback_order:
+    - "exact_cell"
+    - "theta_npc_tau"
+    - "tau_marginal"
+    - "global_marginal"
+support_and_ood:
+  min_exact_cell_n_for_high_support: 30
+  min_exact_cell_n_for_monitor_only: 10
+  estimator_error_max_for_high_support: 0.6216308869824523
+  estimator_error_source: "InterHub calibration q0.75"
+  theta_npc_ood_min_rad_q01: -1.178096549046999
+  theta_npc_ood_max_rad_q99: 1.178097245096148
+  conflict_distance_max_m: 41.31042720375975
+  conflict_distance_derivation: "min(50m engineering cap, InterHub calibration current-frame inter-agent distance p95)"
+  abstain_rule: "abstain unless high_support; low/OOD frames are monitor-only or abstained and excluded from primary scalar view"
+conformal:
+  alpha: 0.1
+  threshold: 2.0677436745727538
+  threshold_source: "InterHub calibration split high-support standardized one-sided deviation scores only"
+  nsfc_nominal_coverage_claim_allowed: false
+empirical_verifier:
+  D_comp_formula: "max(0, (Q_low(theta_npc,s,tau)-theta_ego)/w)"
+  D_yield_formula: "max(0, (theta_ego-Q_high(theta_npc,s,tau))/w)"
+  expectation: "human conditional norm median from InterHub calibration split, never ego self-anchor"
+  counterpart_conditioned: true
+safety_guard_separation:
+  empirical_verifier_includes_guard: false
+  safe_guard_ttc_seconds: 1.5
+  safe_guard_lateral_gap_m: 2.0
+  guard_source: "engineering guard only; not added to Gate 0 empirical D_comp/D_yield"
+three_views:
+  marginal_view: "aggregate D_comp/D_yield over non-abstained high-support frames"
+  conditional_view: "aggregate by theta_npc_bin,state_condition,tau_bin,perspective"
+  scalar_view: "AUC/mean over max(D_comp,D_yield), plus onset and persistence from trace sequence"

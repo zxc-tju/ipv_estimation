@@ -1,0 +1,42 @@
+{
+  "figure_id": "fig08_independent_replication",
+  "title": "Independent replication agreement",
+  "created_utc": "2026-06-20T16:21:47.932862Z",
+  "worker_id": "RQ003_phase10_report_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "nature_skill": {
+    "name": "nature-figure",
+    "version": "2.0.0",
+    "backend": "python",
+    "contract": "quantitative grid; SVG/PDF/PNG; editable SVG/PDF text; source CSV traceability"
+  },
+  "core_conclusion": "Replication2 reproduced corrected N=53 direction, verifying implementation soundness while leaving robustness and specificity unresolved.",
+  "figure_archetype": "quantitative grid",
+  "target_output": "offline reader report and publication-editable static figure exports",
+  "final_size_inches": [
+    7.2,
+    4.8
+  ],
+  "panel_map": {
+    "a": "Delta Spearman reproduction.",
+    "b": "Delta CV-R2 reproduction.",
+    "c": "Absolute delta-Spearman differences vs Phase 7."
+  },
+  "evidence_hierarchy": {
+    "hero_evidence": "Delta Spearman reproduction.",
+    "controls_or_boundary": "Implementation reproduction is not equivalent to predictive-utility validation."
+  },
+  "statistics_notes": "Bars show corrected Phase 7 and replication2 estimates; labels mark directional reproduction.",
+  "source_data": [
+    "implementation_comparison_v2.csv",
+    "replication2_status.json"
+  ],
+  "image_integrity_notes": "No raster scientific image manipulation; all charts are generated from corrected tabular sources.",
+  "reviewer_risk": "Implementation reproduction is not equivalent to predictive-utility validation.",
+  "exports": {
+    "svg": "01_results/figures/fig08_independent_replication.svg",
+    "pdf": "01_results/figures/fig08_independent_replication.pdf",
+    "png": "01_results/figures/fig08_independent_replication.png",
+    "source_csv": "01_results/figures/fig08_independent_replication_source.csv"
+  }
+}

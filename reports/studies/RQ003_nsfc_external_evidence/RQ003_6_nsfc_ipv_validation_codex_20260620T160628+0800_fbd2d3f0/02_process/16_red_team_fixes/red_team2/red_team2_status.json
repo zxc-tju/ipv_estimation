@@ -1,0 +1,37 @@
+{
+  "status": "BLOCKERS_FOUND",
+  "worker_id": "RQ003_phase7_red_team2_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "prewrite_identity": "PASS",
+  "blocking_findings_count": 4,
+  "nonblocking_findings_count": 9,
+  "verdicts": {
+    "rt_block_001_scenario_crosswalk": "RESOLVED_FOR_LABELS_WITH_NONBLOCKING_SQL_POINTER_DEFECT",
+    "rt_block_002_a1_safety": "RESOLVED",
+    "flip_legitimacy": "LEGITIMATE_LABEL_AND_INCLUSION_ERROR_FIX_FOR_PRIMARY_LOTO_BUT_NOT_INDEPENDENTLY_REPRODUCED",
+    "favorable_robustness": "NOT_ROBUST_BLOCKED",
+    "overclaim": "BLOCKING_WORDING_RISK",
+    "degradation_anomaly": "BLOCKING_FOR_ROBUSTNESS",
+    "safe_subset_agreement": "TECHNICALLY_TRUE_BUT_NOT_MEANINGFUL"
+  },
+  "key_metrics": {
+    "primary_delta_spearman": 0.1368327689082406,
+    "primary_p_delta_spearman_greater": 0.3,
+    "primary_delta_spearman_ci_low": -0.0387811,
+    "primary_delta_spearman_ci_high": 0.305797,
+    "secondary_loso_delta_spearman": 0.0167315,
+    "secondary_loso_delta_mae_reduction": -0.0600001,
+    "old_primary_n": 48,
+    "corrected_primary_n": 53,
+    "newly_included_cells": 5,
+    "safe_s1_n": 53,
+    "safe_s2_n": 53,
+    "safe_s3_n": 6,
+    "negative_controls_delta_ge_primary_count": 5,
+    "state_fdr_q_le_0p10_count": 0,
+    "sql_pointer_exact_session_matches": 30,
+    "sql_pointer_total": 150
+  }
+}
+

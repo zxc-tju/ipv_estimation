@@ -1,0 +1,7 @@
+panel,metric,value,denominator,status,source_table,note
+a,top_five_clean_mapping,150,150,covered_for_plan,gate_minus1_status.json,approved top-five cohort mapping
+a,full_universe_clean_mapping,267,300,not_reader_ready_for_full_universe_claim,gate_minus1_status.json,full universe remains outside analysis-ready scope
+b,scenario_labels_relabelled,120,150,scenario_fix_required,scenario_crosswalk_corrected.csv,official-label correction
+b,scenario_labels_unchanged,30,150,unchanged,scenario_crosswalk_corrected.csv,official-label correction
+c,top_five_missing_or_not_clean,0,150,zero_missing_for_plan,missingness_audit.csv,diagnostic only
+c,full_universe_missing_or_not_clean,33,300,selection_boundary,gate_minus1_status.json,not a full-universe validity basis

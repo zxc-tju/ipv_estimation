@@ -1,0 +1,18 @@
+{
+  "worker_id": "RQ003_phase4_prep_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "g0r_cond_001": "PASS",
+  "scenario_map": "PASS",
+  "identity_verified": {
+    "run_root_exists": true,
+    "p4_exists": true,
+    "tables_exists": true,
+    "derived_root_exists": true,
+    "run_id_match": true,
+    "plan_sha256_match": true,
+    "freeze_review_status": "PASS"
+  },
+  "denylisted_content_reads": 0,
+  "outcome_value_reads": 0,
+  "interpreter": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python"
+}

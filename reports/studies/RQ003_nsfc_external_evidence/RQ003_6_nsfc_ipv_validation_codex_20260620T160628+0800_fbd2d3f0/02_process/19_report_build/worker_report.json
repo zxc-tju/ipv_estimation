@@ -1,0 +1,125 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase10_report_001",
+  "role": "Phase 10 report build",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "scope_completed": [
+    "Identity verified",
+    "Nature skill manifest written",
+    "Nine reader-facing figures generated as SVG/PDF/PNG/source CSV/metadata JSON",
+    "Offline HTML entries written byte-identically",
+    "Evidence and traceability artifacts written",
+    "Artifact index appended"
+  ],
+  "files_created_or_modified": [
+    "00_entry/index.html",
+    "01_results/figures/fig01_provenance_coverage.pdf",
+    "01_results/figures/fig01_provenance_coverage.png",
+    "01_results/figures/fig01_provenance_coverage.svg",
+    "01_results/figures/fig01_provenance_coverage_metadata.json",
+    "01_results/figures/fig01_provenance_coverage_source.csv",
+    "01_results/figures/fig02_missingness_selection_bias.pdf",
+    "01_results/figures/fig02_missingness_selection_bias.png",
+    "01_results/figures/fig02_missingness_selection_bias.svg",
+    "01_results/figures/fig02_missingness_selection_bias_metadata.json",
+    "01_results/figures/fig02_missingness_selection_bias_source.csv",
+    "01_results/figures/fig03_support_ood_abstention.pdf",
+    "01_results/figures/fig03_support_ood_abstention.png",
+    "01_results/figures/fig03_support_ood_abstention.svg",
+    "01_results/figures/fig03_support_ood_abstention_metadata.json",
+    "01_results/figures/fig03_support_ood_abstention_source.csv",
+    "01_results/figures/fig04_directional_ipv_signature.pdf",
+    "01_results/figures/fig04_directional_ipv_signature.png",
+    "01_results/figures/fig04_directional_ipv_signature.svg",
+    "01_results/figures/fig04_directional_ipv_signature_metadata.json",
+    "01_results/figures/fig04_directional_ipv_signature_source.csv",
+    "01_results/figures/fig05_scenario_fix_before_after.pdf",
+    "01_results/figures/fig05_scenario_fix_before_after.png",
+    "01_results/figures/fig05_scenario_fix_before_after.svg",
+    "01_results/figures/fig05_scenario_fix_before_after_metadata.json",
+    "01_results/figures/fig05_scenario_fix_before_after_source.csv",
+    "01_results/figures/fig06_negative_controls.pdf",
+    "01_results/figures/fig06_negative_controls.png",
+    "01_results/figures/fig06_negative_controls.svg",
+    "01_results/figures/fig06_negative_controls_metadata.json",
+    "01_results/figures/fig06_negative_controls_source.csv",
+    "01_results/figures/fig07_state_dependence_boundary.pdf",
+    "01_results/figures/fig07_state_dependence_boundary.png",
+    "01_results/figures/fig07_state_dependence_boundary.svg",
+    "01_results/figures/fig07_state_dependence_boundary_metadata.json",
+    "01_results/figures/fig07_state_dependence_boundary_source.csv",
+    "01_results/figures/fig08_independent_replication.pdf",
+    "01_results/figures/fig08_independent_replication.png",
+    "01_results/figures/fig08_independent_replication.svg",
+    "01_results/figures/fig08_independent_replication_metadata.json",
+    "01_results/figures/fig08_independent_replication_source.csv",
+    "01_results/figures/fig09_tier_b_evidence_map.pdf",
+    "01_results/figures/fig09_tier_b_evidence_map.png",
+    "01_results/figures/fig09_tier_b_evidence_map.svg",
+    "01_results/figures/fig09_tier_b_evidence_map_metadata.json",
+    "01_results/figures/fig09_tier_b_evidence_map_source.csv",
+    "01_results/figures/figure_manifest.csv",
+    "02_process/00_meta/artifact_index.csv",
+    "02_process/19_report_build/artifact_manifest.csv",
+    "02_process/19_report_build/file_access_manifest.txt",
+    "02_process/19_report_build/nature_skill_manifest.json",
+    "02_process/19_report_build/report_build_status.json",
+    "02_process/19_report_build/worker_report.json",
+    "90_report/index.html",
+    "README.md",
+    "TRACEABILITY.md",
+    "evidence.csv",
+    "execution_status.json"
+  ],
+  "commands_run": [
+    "sed/read Nature skill router, manifest, core contract, stance, Python backend fragment, and relevant references",
+    "python identity/schema/status inventory over corrected RQ003 package",
+    "python reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/19_report_build/build_reader_package.py"
+  ],
+  "tests_run": {
+    "figure_manifest": {
+      "status": "PASS",
+      "figure_count": 9,
+      "errors": []
+    },
+    "entry_html": {
+      "path": "00_entry/index.html",
+      "sections": 22,
+      "links_checked": 75,
+      "errors": [],
+      "status": "PASS"
+    },
+    "rep90_html": {
+      "path": "90_report/index.html",
+      "sections": 22,
+      "links_checked": 75,
+      "errors": [],
+      "status": "PASS"
+    },
+    "file_uri_open": {
+      "path": "00_entry/index.html",
+      "uri_scheme": "file",
+      "checks": {
+        "bytes": 25503,
+        "has_title": true,
+        "sections": 22,
+        "figures": 9,
+        "has_tier_b": true,
+        "has_h3_blocked": true,
+        "has_no_nominal_coverage": true
+      },
+      "errors": [],
+      "status": "PASS"
+    },
+    "byte_identical": true,
+    "forbidden_scan": {
+      "status": "PASS",
+      "hits": []
+    }
+  },
+  "spec_deviations": [
+    "START_HERE.md and main_workflow.log were not modified because the task write scope was limited to the run package and append-only meta artifact index."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Phase 11 final independent report reviewer"
+}

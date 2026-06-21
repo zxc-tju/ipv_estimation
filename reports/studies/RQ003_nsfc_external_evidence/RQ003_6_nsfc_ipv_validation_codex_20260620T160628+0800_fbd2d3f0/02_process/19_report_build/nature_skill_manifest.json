@@ -1,0 +1,74 @@
+{
+  "skill_name": "nature-figure",
+  "skill_path": "/Users/xiaocong/.claude/skills/nature-figure",
+  "skill_version": "2.0.0",
+  "backend": "python",
+  "generation_time_utc": "2026-06-20T16:21:47.932862Z",
+  "worker_id": "RQ003_phase10_report_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "how_invoked": [
+    "Loaded SKILL router and manifest.",
+    "Loaded always-load core contract and stance.",
+    "Resolved backend as Python from the task-provided Python/matplotlib workflow.",
+    "Loaded Python backend fragment and relevant API, figure-contract, design, common-pattern, legend and QA references.",
+    "Generated all reader-facing figures with matplotlib using the Nature skill rules."
+  ],
+  "file_hashes": {
+    "SKILL.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/SKILL.md",
+      "sha256": "7cddee9337bc2bb6fe6b72e1cd89cf05eb00f26d947f4c1e37b52bdd566f3781",
+      "size_bytes": 5244
+    },
+    "manifest.yaml": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/manifest.yaml",
+      "sha256": "279d77c4a087aa96aacbad0d29ffb4d1258d79518d5943494f0a82799158a153",
+      "size_bytes": 3200
+    },
+    "static/core/contract.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/static/core/contract.md",
+      "sha256": "40b0408bb5a036ebc218ebdcfb1968127b80e12d6696f911c22fa7e9f48864ed",
+      "size_bytes": 3076
+    },
+    "static/core/stance.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/static/core/stance.md",
+      "sha256": "46d1a49608ccf240af4237b5fdb7925b67f4589d7f445d2bcb36506e88985b2f",
+      "size_bytes": 3371
+    },
+    "static/fragments/backend/python.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/static/fragments/backend/python.md",
+      "sha256": "62b631cee0ef7aaf8caea47eb4c4e9dfe4f59d41968dc553acc9baf1a81d92ae",
+      "size_bytes": 1936
+    },
+    "references/api.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/references/api.md",
+      "sha256": "4d4f47ab46d082c4d1f2065058dd4756302a7d0770929845a635fab1fdddb71d",
+      "size_bytes": 13552
+    },
+    "references/figure-contract.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/references/figure-contract.md",
+      "sha256": "d989b4ebdb3aeab14c09e261980756abe72a67bc5eb866e1b91cdaac9c5d5201",
+      "size_bytes": 3970
+    },
+    "references/qa-contract.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/references/qa-contract.md",
+      "sha256": "5323f234fa5319784ce4b06e4eba1d242ba39a72ce83198f9e2ba126eb500339",
+      "size_bytes": 4736
+    },
+    "references/design-theory.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/references/design-theory.md",
+      "sha256": "0a7b3a8a964635fa1c7a59d82640e0adb31a6e9845beae77bc6e87503f8597c1",
+      "size_bytes": 15620
+    },
+    "references/common-patterns.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/references/common-patterns.md",
+      "sha256": "c8f5cd326038c784c63dc7f96c59f07d3559de69d50225ecbb46d76e03baf416",
+      "size_bytes": 9950
+    },
+    "references/figure-legend-conventions.md": {
+      "path": "/Users/xiaocong/.claude/skills/nature-figure/references/figure-legend-conventions.md",
+      "sha256": "e9591ac3b21dfc26c75f9ab8ca2950e5c1e222e807b3645df7039c12e40c33c4",
+      "size_bytes": 3607
+    }
+  },
+  "loaded_reference_summary": "Python-only quantitative-grid workflow; editable SVG text; PDF TrueType text; source CSV and metadata JSON for each figure."
+}

@@ -1,0 +1,17 @@
+panel,scope,stratum_type,stratum_value,observed_cells,missing_or_not_clean_cells,observed_coordination_mean,missing_coordination_mean,coordination_diff_missing_minus_observed,diagnostic_only_not_criterion_validity
+all,full_scored_universe_clean_mapping,overall,all_full_cells,267,33,77.912,47.103,-30.809,True
+all,full_scored_universe_clean_mapping,area,beijing,89,31,80.436,50.142,-30.294,True
+all,full_scored_universe_clean_mapping,area,shanghai,178,2,76.650,0.000,-76.650,True
+all,full_scored_universe_clean_mapping,scenario_family,A,126,14,78.941,54.089,-24.852,True
+all,full_scored_universe_clean_mapping,scenario_family,B,72,8,78.873,50.596,-28.277,True
+all,full_scored_universe_clean_mapping,scenario_family,C,69,11,75.030,35.671,-39.359,True
+all,full_scored_universe_clean_mapping,mapping_status,candidate_wrong_folder_replay,0,15,,71.637,,True
+all,full_scored_universe_clean_mapping,mapping_status,unique_clean,224,1,80.298,0.000,-80.298,True
+all,full_scored_universe_clean_mapping,mapping_status,unique_sql_disambiguated_from_manifest_multi_session,43,2,65.484,0.000,-65.484,True
+all,full_scored_universe_clean_mapping,mapping_status,unmatched_no_sql_task_for_score_vector,0,15,,31.989,,True
+c,plan_top5_cohort,overall,all_plan_cells,150,0,82.096,,,True
+c,plan_top5_cohort,area,beijing,75,0,81.747,,,True
+c,plan_top5_cohort,area,shanghai,75,0,82.445,,,True
+c,plan_top5_cohort,scenario_family,A,70,0,81.112,,,True
+c,plan_top5_cohort,scenario_family,B,40,0,81.439,,,True
+c,plan_top5_cohort,scenario_family,C,40,0,84.475,,,True

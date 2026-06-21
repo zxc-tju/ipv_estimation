@@ -1,0 +1,43 @@
+{
+  "figure_id": "fig04_directional_ipv_signature",
+  "title": "D_comp and D_yield directional IPV signatures",
+  "created_utc": "2026-06-20T16:21:47.932862Z",
+  "worker_id": "RQ003_phase10_report_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "nature_skill": {
+    "name": "nature-figure",
+    "version": "2.0.0",
+    "backend": "python",
+    "contract": "quantitative grid; SVG/PDF/PNG; editable SVG/PDF text; source CSV traceability"
+  },
+  "core_conclusion": "D_comp and D_yield are directional diagnostic deviations relative to the InterHub human conditional norm, not standalone social ground-truth labels.",
+  "figure_archetype": "quantitative grid",
+  "target_output": "offline reader report and publication-editable static figure exports",
+  "final_size_inches": [
+    7.2,
+    4.8
+  ],
+  "panel_map": {
+    "a": "Cell-level D_comp and D_yield relationship.",
+    "b": "Mean high-support and fallback deviation summaries.",
+    "c": "Mean interaction diagnostics and nonzero counts."
+  },
+  "evidence_hierarchy": {
+    "hero_evidence": "Cell-level D_comp and D_yield relationship.",
+    "controls_or_boundary": "The sign convention is valid, but the diagnostic values are not external behavioral labels."
+  },
+  "statistics_notes": "Scatter points are cells; bars show means with nonzero counts annotated.",
+  "source_data": [
+    "cell_level_directional_ipv.csv",
+    "g0r_cond_001_status.json",
+    "ipv_sign_contract.md"
+  ],
+  "image_integrity_notes": "No raster scientific image manipulation; all charts are generated from corrected tabular sources.",
+  "reviewer_risk": "The sign convention is valid, but the diagnostic values are not external behavioral labels.",
+  "exports": {
+    "svg": "01_results/figures/fig04_directional_ipv_signature.svg",
+    "pdf": "01_results/figures/fig04_directional_ipv_signature.pdf",
+    "png": "01_results/figures/fig04_directional_ipv_signature.png",
+    "source_csv": "01_results/figures/fig04_directional_ipv_signature_source.csv"
+  }
+}

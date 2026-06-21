@@ -1,0 +1,43 @@
+{
+  "figure_id": "fig05_scenario_fix_before_after",
+  "title": "Capacity-matched comparison before and after scenario correction",
+  "created_utc": "2026-06-20T16:21:47.932862Z",
+  "worker_id": "RQ003_phase10_report_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "nature_skill": {
+    "name": "nature-figure",
+    "version": "2.0.0",
+    "backend": "python",
+    "contract": "quantitative grid; SVG/PDF/PNG; editable SVG/PDF text; source CSV traceability"
+  },
+  "core_conclusion": "The scenario-label fix changed the primary LOTO delta Spearman from -0.110 to +0.137; both intervals cross zero.",
+  "figure_archetype": "quantitative grid",
+  "target_output": "offline reader report and publication-editable static figure exports",
+  "final_size_inches": [
+    7.2,
+    4.8
+  ],
+  "panel_map": {
+    "a": "Before/after delta Spearman.",
+    "b": "Before/after delta MAE reduction.",
+    "c": "Before/after delta CV-R2."
+  },
+  "evidence_hierarchy": {
+    "hero_evidence": "Before/after delta Spearman.",
+    "controls_or_boundary": "The corrected favorable direction is nonsignificant and not a validation result."
+  },
+  "statistics_notes": "Bars are effect estimates; error bars are bootstrap 95% CIs from the source tables.",
+  "source_data": [
+    "confirmatory_results__before_scenario_fix.csv",
+    "confirmatory_results.csv",
+    "scenario_fix_result_delta.md"
+  ],
+  "image_integrity_notes": "No raster scientific image manipulation; all charts are generated from corrected tabular sources.",
+  "reviewer_risk": "The corrected favorable direction is nonsignificant and not a validation result.",
+  "exports": {
+    "svg": "01_results/figures/fig05_scenario_fix_before_after.svg",
+    "pdf": "01_results/figures/fig05_scenario_fix_before_after.pdf",
+    "png": "01_results/figures/fig05_scenario_fix_before_after.png",
+    "source_csv": "01_results/figures/fig05_scenario_fix_before_after_source.csv"
+  }
+}

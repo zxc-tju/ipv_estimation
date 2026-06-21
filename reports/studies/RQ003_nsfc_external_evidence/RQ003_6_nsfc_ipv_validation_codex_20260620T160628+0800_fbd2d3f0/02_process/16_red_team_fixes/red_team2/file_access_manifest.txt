@@ -1,0 +1,65 @@
+Worker: RQ003_phase7_red_team2_001
+Run: RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0
+
+Read scope highlights:
+- START_HERE.md
+- AGENTS.md
+- 02_process/00_meta/run_manifest.json
+- 02_process/00_meta/plan_sha256.txt
+- 02_process/00_meta/artifact_index.csv
+- 02_process/06_analysis_freeze/analysis_freeze.yaml
+- 02_process/06_analysis_freeze/primary_endpoints.md
+- 02_process/06_analysis_freeze/exclusion_and_safe_subset.md
+- 02_process/06_analysis_freeze/fold_contract.csv
+- 02_process/10_confirmatory_analysis/run_confirmatory_analysis.py
+- 02_process/10_confirmatory_analysis/confirmatory_analysis_report.md
+- 02_process/11_negative_controls/run_negative_controls.py
+- 02_process/11_negative_controls/negative_control_report.md
+- 02_process/13_state_dependence/state_dependence_report.md
+- 02_process/15_red_team/red_team_report.md
+- 02_process/16_red_team_fixes/run_phase7_scenario_fix.py
+- 02_process/16_red_team_fixes/fix_status.json
+- 02_process/16_red_team_fixes/scenario_crosswalk_provenance.md
+- 02_process/16_red_team_fixes/a1_safety_correction.md
+- 02_process/16_red_team_fixes/scenario_fix_result_delta.md
+- 02_process/16_red_team_fixes/stats_rereview2/stats_rereview2_report.md
+- 02_process/16_red_team_fixes/stats_rereview2/stats_rereview2_status.json
+- 02_process/16_red_team_fixes/stats_rereview2/review_findings.csv
+- 02_process/16_red_team_fixes/stats_rereview2/worker_report.json
+- 02_process/16_red_team_fixes/stats_rereview2/file_access_manifest.txt
+- 02_process/17_independent_replication/independent_replication_report.md
+- 02_process/17_independent_replication/replication_status.json
+- 01_results/tables/scenario_crosswalk_corrected.csv
+- 01_results/tables/replay_score_mapping.csv
+- 01_results/tables/confirmatory_results.csv
+- 01_results/tables/confirmatory_results__before_scenario_fix.csv
+- 01_results/tables/cv_predictions.csv
+- 01_results/tables/cv_predictions__before_scenario_fix.csv
+- 01_results/tables/fold_assignments.csv
+- 01_results/tables/fold_assignments__before_scenario_fix.csv
+- 01_results/tables/negative_controls.csv
+- 01_results/tables/state_dependence_results.csv
+- 01_results/tables/baseline_features_cells.csv
+- 01_results/tables/cell_level_directional_ipv.csv
+- 01_results/tables/support_coverage.csv
+- data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/red_team_fixes/phase7_confirmatory_analysis_frame.csv
+- data/onsite_competition/raw/beijing/tjjhs_db.sql
+- archived/onsite_competition_results_legacy/score_beijing_abilities.csv
+- archived/onsite_competition_results_legacy/score_shanghai_abilities.csv
+
+Commands run:
+- sed -n over START_HERE.md and AGENTS.md
+- find and rg over the run package, derived package, and onsite manifests
+- project Python pandas checks using data/derived/.../model_cache/venv/bin/python
+- raw SQL line spot checks with rg and sed
+- corrected metric recomputation from cv_predictions.csv
+- inclusion before/after comparison using fold_assignments*.csv
+- A1/safety membership recomputation using replay_score_mapping.csv
+- fold train/test overlap checks
+- negative-control anomaly ranking
+- state FDR check
+- crosswalk SQL pointer exact-session check
+
+Write scope:
+- Created files only under 02_process/16_red_team_fixes/red_team2/
+- Appended 02_process/00_meta/artifact_index.csv

@@ -1,0 +1,13 @@
+panel,control_name,expectation_kind,delta_spearman,delta_spearman_ci_low,delta_spearman_ci_high,p_delta_spearman_greater,pass_expected,matches_or_exceeds_primary,source_table
+a,primary_directional_ipv,primary,0.1368327689082406,-0.03878113684767078,0.3057968968993576,0.3,not_applicable,reference,confirmatory_results.csv
+a,state_shuffle,degradation,0.05015320109659731,-0.12472907260501855,0.21964810281984662,0.29,False,False,negative_controls.csv
+a,ipv_time_shuffle,no_gain,0.19682309304950812,0.027137747503181403,0.3812265436540289,0.29,True,True,negative_controls.csv
+a,counterpart_swap,no_gain,0.16844057410095145,-0.0015039850328039221,0.3479685326665113,0.1,True,True,negative_controls.csv
+a,role_flip,no_gain,0.1368327689082406,-0.0390842566080651,0.329709840869698,0.27,True,True,negative_controls.csv
+a,sign_flip,sign_flip,0.1368327689082406,-0.04706379935592375,0.3146136298529171,0.33,True,True,negative_controls.csv
+a,wrong_envelope_cell,no_gain,0.02572165779712951,-0.09568299342993446,0.15307059024409841,0.69,True,False,negative_controls.csv
+a,kinematics_only,baseline_reference,0.0,0.0,0.0,1.0,True,False,negative_controls.csv
+a,ipv_removed,baseline_reference,0.0,0.0,0.0,1.0,True,False,negative_controls.csv
+a,shuffled_ipv,no_gain,0.09095307208514755,-0.01784184300424917,0.24633247663657742,0.5,True,False,negative_controls.csv
+a,wrong_state,degradation,0.026124818577648763,-0.11138121617021825,0.09712970943711112,0.6,False,False,negative_controls.csv
+a,future_leaky_full_window_ipv,future_leaky,0.23181744879858085,0.0076958180647258645,0.4823172020020109,0.09,True,True,negative_controls.csv

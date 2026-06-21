@@ -1,0 +1,102 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase2_gate0_audit_001",
+  "role": "Gate 0 IPV measurement auditor",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "scope_completed": [
+    "1 sign contract theta>0 prosocial",
+    "2 D_comp orientation",
+    "3 D_yield orientation",
+    "4 human conditional norm",
+    "5 canonical unit tests",
+    "6 conditioned differences",
+    "7 mirror/role/time tests",
+    "8 same estimator/window/sampling",
+    "9 rolling-to-rolling only",
+    "10 only info before t",
+    "11 no PET/order/phase online",
+    "12 self-anchor/verifier/guard separated",
+    "13 expectation human norm",
+    "14 conformal threshold InterHub only",
+    "15 no nominal NSFC conformal coverage",
+    "16 no NSFC outcome tuning",
+    "17 counterpart-conditioned IPV",
+    "18 support/OOD/abstention computed",
+    "19 three views recomputable",
+    "20 event summaries computable",
+    "21 missing params frozen outcome-free",
+    "22 representative trace sample"
+  ],
+  "files_created": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/ipv_measurement_audit.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/traces/ipv_trace_sample.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/unit_test_results.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/ipv_sign_contract.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/gate0_access_manifest.txt",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/gate0_status.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/leakage_audit.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/support_definition.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/operational_parameters.yaml",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/worker_report.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/file_access_manifest.txt",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/04_gate0_measurement/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv"
+  ],
+  "commands_run": [
+    "python (failed: command not found)",
+    "python3 identity check for RUN_ROOT/G0/TRACES/run_manifest/plan_sha256",
+    "sed gate0_outcome_denylist.txt",
+    "sed gate0_sanitized_spec.md; sed existing_locked_parameters.csv; sed input_inventory.csv first 240 lines",
+    "python3 path_contract preview and filtered input inventory listing",
+    "rg/nl targeted estimator and InterHub pipeline source inspection",
+    "find/rg allowed InterHub/calibration/path discovery without opening denylisted files",
+    "python3 InterHub derived timeseries/header preview and top-five trajectory format preview",
+    "python3 Gate 0 generation pass (this command)",
+    "python3 Gate 0 unit-test/status remediation pass",
+    "rg final stale-status consistency check",
+    "python3 final artifact/access manifest refresh",
+    "python3 final worker-report command-label cleanup"
+  ],
+  "tests_run": {
+    "pass": 13,
+    "fail": 0,
+    "total": 13
+  },
+  "key_evidence": {
+    "sign_test_pass_rate": 1.0,
+    "leakage_verdict": "PASS",
+    "rolling_to_rolling": "PASS",
+    "three_view_recompute": "PASS",
+    "frozen_params_source": "InterHub calibration split plus engineering constraints; no NSFC outcomes",
+    "denylisted_read_count": 0,
+    "gate0_status": "PASS"
+  },
+  "acceptance_criteria_results": {
+    "identity_verification": "PASS",
+    "denylisted_reads": "PASS",
+    "sign_unit_tests_100pct": "PASS",
+    "competitive_shortfall_orientation": "PASS",
+    "yield_excess_orientation": "PASS",
+    "human_conditional_norm_frozen": "PASS",
+    "same_estimator_contract": "PASS",
+    "rolling_to_rolling": "PASS",
+    "no_future_leakage": "PASS",
+    "no_pet_order_phase_in_trace": "PASS",
+    "support_ood_abstention_computed": "PASS",
+    "three_views_recomputable": "PASS",
+    "conformal_interhub_only": "PASS",
+    "no_nsfc_outcome_tuning": "PASS",
+    "empirical_verifier_guard_separated": "PASS",
+    "no_competitor_distribution_renormalization": "PASS"
+  },
+  "spec_deviations": [
+    "Raw PLAN_PATH was not opened because gate0_outcome_denylist.txt explicitly forbids raw-plan use for Gate 0 when the sanitized spec is available.",
+    "Trace sample is InterHub-only; top-five logs were inspected only for schema because the task permits InterHub and/or top-five sample traces.",
+    "Existing input inventory was allowed, but some exploratory/denylisted path strings appeared during early filtered searches; no denylisted file content or outcome values were opened or used.",
+    "Unit-test import used local plotting/optimizer stubs because matplotlib/scipy are unavailable; real optimizer was not invoked in monkeypatch leakage tests."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Gate 0 independent reviewer"
+}

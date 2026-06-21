@@ -1,0 +1,44 @@
+{
+  "status": "BLOCKED",
+  "worker_id": "RQ003_phase3_freeze_review_001",
+  "role": "freeze reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "identity_verified": true,
+  "reviewer_outcome_clean": false,
+  "pass_unlocks_phase4": false,
+  "rationale": "Identity matched and preliminary checks did not find confirmatory-family expansion, outcome-read evidence by the clean freeze, unfrozen thresholds, capacity mismatch, or fold-leakage defects. However, this reviewer opened score/rank-bearing top-five metadata during the scenario-membership source check, so the session cannot provide the required outcome-clean PASS.",
+  "conditions": [
+    {
+      "id": "FRZR-COND-001",
+      "phase": "Phase 3 rerun",
+      "condition": "A fresh freeze reviewer must rerun from an outcome-clean session before Phase 4 formal result computation is unlocked."
+    },
+    {
+      "id": "FRZR-COND-002",
+      "phase": "Phase 3 rerun / Phase 4",
+      "condition": "Treat top-five README files, team README files, top5_selection_summary.csv, top5_scenario_scores.csv, validation_summary.csv, score_team_coverage.csv, and rank/score-bearing materialization metadata as denylisted unless a source inventory proves they are score/rank-free."
+    },
+    {
+      "id": "FRZR-COND-003",
+      "phase": "Phase 4",
+      "condition": "Derive scenario/family cell membership from outcome-free raw replay/session metadata or a newly generated outcome-free map; block if membership exists only in score-joined tables."
+    },
+    {
+      "id": "G0R-COND-001",
+      "phase": "Phase 4",
+      "condition": "Install or restore scipy/matplotlib, run the real optimizer path, and reconfirm the sign contract on real theta outputs before any confirmatory NSFC result is trusted."
+    }
+  ],
+  "preliminary_check_results": {
+    "identity": "PASS",
+    "confirmatory_family": "PASS_PRELIMINARY",
+    "freeze_outcome_post_selection": "PASS_PRELIMINARY_FOR_FREEZE",
+    "thresholds_frozen": "PASS_PRELIMINARY",
+    "capacity_match": "PASS_PRELIMINARY",
+    "fold_no_leakage": "PASS_PRELIMINARY_BY_RULE_CONSTRUCTION",
+    "plan_coverage": "PASS_PRELIMINARY",
+    "scenario_membership": "BLOCKED_REVIEWER_CONTAMINATED"
+  },
+  "blocked_reason": "Reviewer session outcome contamination from score/rank-bearing top-five metadata reads."
+}

@@ -1,0 +1,51 @@
+# File Access Manifest
+
+Worker: `RQ003_phase1_gate_minus1_review_001`  
+Generated: 2026-06-20T17:16:47+08:00
+
+## Read Files And Directories
+
+- `START_HERE.md`
+- `/Users/xiaocong/.codex/plugins/cache/openai-curated/superpowers/202e9242/skills/using-superpowers/SKILL.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/` inventory via `find`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/run_manifest.json`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/plan_sha256.txt`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/gate_minus1_status.json`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/provenance_audit.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/unresolved_source_questions.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/worker_report.json`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/02_gate_minus1/artifact_manifest.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/replay_score_mapping.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/coverage_matrix.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/missingness_audit.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/data_provenance_manifest.csv`
+- `data/onsite_competition/top5_research_subset/tables/top5_session_manifest.csv`
+- `data/onsite_competition/top5_research_subset/tables/top5_scenario_scores.csv`
+- `data/onsite_competition/top5_research_subset/tables/materialized_analysis_files.csv`
+- `data/onsite_competition/top5_research_subset/tables/top5_team_manifest.csv`
+- `data/onsite_competition/top5_research_subset/tables/validation_summary.csv`
+- `data/onsite_competition/top5_research_subset/tables/top5_selection_summary.csv`
+- `data/onsite_competition/00_manifest/score_team_coverage.csv`
+- `data/onsite_competition/00_manifest/team_manifest.csv`
+- `archived/onsite_competition_results_legacy/score_beijing_abilities.csv`
+- `archived/onsite_competition_results_legacy/score_shanghai_abilities.csv`
+- `archived/onsite_competition_results_legacy/SCHEMA.md`
+- `data/onsite_competition/raw/beijing/tjjhs_db.sql`
+- Sampled diagnosis PDFs via `pdftotext`: `data/onsite_competition/top5_research_subset/teams/beijing/01_T17_panda/support_materials/诊断报告.pdf`, `data/onsite_competition/top5_research_subset/teams/shanghai/01_T11_wsd/support_materials/武汉理工大学_WUT_FSD.pdf`, `data/onsite_competition/raw/beijing/5-BIT_Site/诊断报告.pdf`, `data/onsite_competition/raw/beijing/6-223/诊断报告.pdf`
+- Sampled replay logs under mapped top-five sessions for `beijing|T14|A7`, `beijing|T17|C3`, `beijing|T20|B2`, `shanghai|T6|A2`, `shanghai|T11|A1`, and `shanghai|T8|C1`
+
+## Written Files
+
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/review_report.md`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/review_findings.csv`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/gate_minus1_review_status.json`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/worker_report.json`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/file_access_manifest.txt`
+- `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/artifact_manifest.csv`
+- Appended rows only: `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv`
+
+## Denylist Compliance
+
+No audit deliverables, raw data, core code, paper repository files, git metadata, or other run directories were modified. No deletes or git mutations were performed. No predictor-outcome association, criterion-validity analysis, model fitting, or IPV computation was run.

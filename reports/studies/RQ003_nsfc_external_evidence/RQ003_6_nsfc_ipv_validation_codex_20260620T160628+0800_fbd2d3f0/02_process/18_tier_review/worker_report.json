@@ -1,0 +1,72 @@
+{
+  "worker_id": "RQ003_phase9_tier_001",
+  "role": "Phase 9 Tier reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_utc": "2026-06-20T15:45:00Z",
+  "status": "PASS",
+  "tier": "B",
+  "summary": "Tier B diagnostic external evidence. Gates, red-team closure, and implementation replication passed, but Tier A robustness criteria fail: safe subsets are not genuinely distinct, LOTO is nonsignificant, LOSO is approximately zero, negative controls match or exceed the primary direction, degradation controls failed, H3 is blocked, and NPC is boundary-only.",
+  "identity_verification": {
+    "run_root_exists": true,
+    "tier_dir_exists": true,
+    "run_manifest_run_id_matches": true,
+    "plan_sha256_matches": true,
+    "red_team3_pass_no_blockers": true
+  },
+  "files_created": [
+    "02_process/18_tier_review/tier_review.md",
+    "02_process/18_tier_review/tier_decision.json",
+    "02_process/18_tier_review/claim_boundary_matrix.csv",
+    "02_process/18_tier_review/paper_handoff.md",
+    "02_process/18_tier_review/file_access_manifest.txt",
+    "02_process/18_tier_review/worker_report.json",
+    "02_process/18_tier_review/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "02_process/00_meta/artifact_index.csv"
+  ],
+  "paper_repo_touched": false,
+  "analysis_artifacts_modified": false,
+  "tests_run": [],
+  "commands_run": [
+    "sed -n '1,220p' START_HERE.md",
+    "find RUN_ROOT -maxdepth 4 -type f -print",
+    "python3 read-only JSON status aggregation",
+    "python3 read-only CSV table summaries",
+    "sed -n reads for confirmatory, negative-control, state, NPC, replication, red-team, sign-contract, support, baseline, and freeze artifacts",
+    "head/tail 02_process/00_meta/artifact_index.csv",
+    "date -u and date local",
+    "apply_patch to create Tier review artifacts"
+  ],
+  "key_evidence": {
+    "tier": "B",
+    "one_line_rationale": "Interpretable diagnostic alignment but no robust independent held-out increment; primary direction is nonsignificant, non-generalizing, and not IPV-specific.",
+    "failed_tier_a_criteria": [
+      "directional IPV consistency in independent safe subsets",
+      "two genuinely distinct safe subsets agree",
+      "leave-team-out stable",
+      "leave-scene not contradicting",
+      "stable incremental utility over prespecified baseline",
+      "negative controls behave as expected"
+    ],
+    "scope": "approved top-five cohort only, N=53 primary cells; full 20-team universe not analysis-ready",
+    "h3": "BLOCKED; no real two-human labels and excluded from Tier basis",
+    "npc": "pre-onset matching not identifiable; boundary-only",
+    "allowed_framing": "no robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated (power-limited, top-five cohort, N=53; apparent favorable direction not IPV-specific)"
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": "PASS",
+    "each_tier_criterion_assessed_against_artifacts": "PASS",
+    "explicit_tier_with_rationale": "PASS",
+    "claim_boundary_matrix_complete": "PASS",
+    "paper_handoff_label_based": "PASS",
+    "forbidden_wording_checked": "PASS",
+    "paper_repo_untouched": "PASS"
+  },
+  "spec_deviations": [
+    "main_workflow.log was not updated because the worker write scope only allowed 02_process/18_tier_review plus append-only 02_process/00_meta/artifact_index.csv.",
+    "START_HERE.md was not updated because no current operating facts changed and the worker write scope did not include it."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Phase 10 Nature-skill figures + offline HTML report"
+}

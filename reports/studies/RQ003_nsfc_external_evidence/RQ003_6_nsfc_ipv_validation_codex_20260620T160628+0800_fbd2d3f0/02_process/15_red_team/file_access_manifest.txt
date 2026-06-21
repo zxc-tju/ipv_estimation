@@ -1,0 +1,101 @@
+# Phase 7 Red Team File Access Manifest
+
+Worker: `RQ003_phase7_red_team_001`
+Run: `RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0`
+
+## Identity Inputs
+
+- `START_HERE.md`
+- `02_process/00_meta/run_manifest.json`
+- `02_process/00_meta/plan_sha256.txt`
+- `02_process/00_meta/artifact_index.csv`
+
+## Run Package Inventory
+
+- `find RUN_ROOT -maxdepth 3 -type d`
+- `find 01_results/tables -maxdepth 2 -type f`
+- `find 02_process -maxdepth 3 -type f`
+- `find 00_entry 90_report -maxdepth 3 -type f`
+- `find 02_process/16_red_team_fixes 17_independent_replication 18_tier_review 19_report_build 20_final_review`
+
+## Key Process Artifacts Read
+
+- `02_process/00_meta/plan_snapshot.md`
+- `02_process/00_meta/exploratory_prior_manifest.md`
+- `02_process/00_meta/tried.md`
+- `02_process/02_gate_minus1/provenance_audit.md`
+- `02_process/03_gate_minus1_review/review_report.md`
+- `02_process/04_gate0_measurement/ipv_measurement_audit.md`
+- `02_process/04_gate0_measurement/leakage_audit.md`
+- `02_process/04_gate0_measurement/support_definition.md`
+- `02_process/04_gate0_measurement/ipv_sign_contract.md`
+- `02_process/05_gate0_review/gate0_review_status.json`
+- `02_process/06_analysis_freeze/analysis_freeze.yaml`
+- `02_process/06_analysis_freeze/primary_endpoints.md`
+- `02_process/06_analysis_freeze/pre_outcome_operationalization.md`
+- `02_process/06_analysis_freeze/claims_register.md`
+- `02_process/06_analysis_freeze/exclusion_and_safe_subset.md`
+- `02_process/07_freeze_review/review_report.md`
+- `02_process/08_directional_ipv/directional_ipv_report.md`
+- `02_process/08_directional_ipv/sign_reconfirmation_real_optimizer.md`
+- `02_process/08_directional_ipv/real_optimizer_unit_tests.csv`
+- `02_process/08_directional_ipv/scenario_map_provenance.md`
+- `02_process/09_baseline_models/baseline_report.md`
+- `02_process/10_confirmatory_analysis/run_confirmatory_analysis.py`
+- `02_process/10_confirmatory_analysis/confirmatory_analysis_report.md`
+- `02_process/10_confirmatory_analysis/statistical_independent_review/review_findings.csv`
+- `02_process/10_confirmatory_analysis/statistical_independent_review/stats_rereview_report.md`
+- `02_process/11_negative_controls/run_negative_controls.py`
+- `02_process/11_negative_controls/negative_control_report.md`
+- `02_process/11_negative_controls/leaky_control_fix_report.md`
+- `02_process/11_negative_controls/fix_future_leaky_control.py`
+- `02_process/12_blind_annotation/anonymization_audit.md`
+- `02_process/12_blind_annotation/annotation_status.json`
+- `02_process/12_blind_annotation/merge_annotations.py`
+- `02_process/12_blind_annotation/controlled_identity_map.csv`
+- `02_process/13_state_dependence/state_dependence_report.md`
+- `02_process/14_npc_analysis/npc_feasibility_and_boundary.md`
+
+## Result Tables Read
+
+- `01_results/tables/baseline_feature_manifest.csv`
+- `01_results/tables/baseline_features_cells.csv`
+- `01_results/tables/cell_level_directional_ipv.csv`
+- `01_results/tables/confirmatory_results.csv`
+- `01_results/tables/coverage_matrix.csv`
+- `01_results/tables/cv_predictions.csv`
+- `01_results/tables/data_provenance_manifest.csv`
+- `01_results/tables/fold_assignments.csv`
+- `01_results/tables/missingness_audit.csv`
+- `01_results/tables/negative_controls.csv`
+- `01_results/tables/replay_score_mapping.csv`
+- `01_results/tables/scenario_map_outcome_free.csv`
+- `01_results/tables/state_dependence_counterexamples.csv`
+- `01_results/tables/state_dependence_results.csv`
+- `01_results/tables/support_coverage.csv`
+
+## Code And Derived Inputs Read
+
+- `src/sociality_estimation/core/ipv_estimation.py`
+- `src/sociality_estimation/core/agent.py`
+- `data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/compute_phase4_features.py`
+- `data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python`
+- `data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/frame_level/frame_level_directional_ipv.csv`
+- `data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/intermediate/negative_controls/future_leaky_fix/future_leaky_feature_health.json`
+
+## Commands Run
+
+- `sed` reads for START_HERE and process reports.
+- `python3 -m json.tool` for JSON inspection.
+- `${PYTHON} --version`
+- `${PYTHON}` pandas/scipy spot-check scripts for table schemas and recomputations.
+- `rg` searches for leakage, narrative, A1, scenario, conformal, causal, and overclaim terms.
+- `perl` HTML text stripping for `00_entry/index.html` and `90_report/index.html`.
+- `nl -ba` for source-code line inspection.
+- `date '+%Y-%m-%dT%H:%M:%S%z'`
+
+## Writes
+
+- Created files only under `02_process/15_red_team/`.
+- Appended rows only to `02_process/00_meta/artifact_index.csv`.
+- Did not edit analysis scripts, result tables, freeze artifacts, or reader reports.

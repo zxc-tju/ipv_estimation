@@ -1,0 +1,166 @@
+{
+  "status": "PASS",
+  "scope": "approved_RQ003_plan_top5_cohort_only",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "worker_id": "RQ003_phase1_gate_minus1_review_001",
+  "generated_at": "2026-06-20T17:16:47+08:00",
+  "identity_verified": true,
+  "rationale": [
+    "Independently recomputed 150/150 top-five cells as unique_clean with 150 unique mapped session/case pairs.",
+    "Reconciled mapping, coverage, top-five score copy, and archived score exports with no duplicate score keys, no score-value mismatches, and no mapping/coverage key deltas.",
+    "Confirmed missingness analysis is diagnostic-only and discloses full-universe not-clean selection bias; full 20-team universe remains not analysis-ready.",
+    "Confirmed outcome-source evidence supports official/generated coordination wording and does not support expert-rated coordination claims.",
+    "Confirmed Beijing/Shanghai comparability is limited to same numeric scale and shared generated report schema surface; same judges/formal rubric are not established."
+  ],
+  "authorizes_next_step": "Phase 2 Gate 0 measurement auditor, fresh and outcome-denylisted, for the approved top-five cohort only.",
+  "does_not_authorize": [
+    "full 20-team criterion-validity analysis",
+    "predictor-outcome association",
+    "IPV computation or IPV-outcome analysis",
+    "expert-rated coordination wording"
+  ],
+  "full_scored_universe_status": "FAIL_NOT_ANALYSIS_READY_WITHOUT_CORRECTION_OR_EXCLUSION",
+  "key_evidence": {
+    "identity_verified": true,
+    "plan_sha256_verified": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+    "mapping_counts": {
+      "official_rows_from_archived_exports": 300,
+      "mapping_rows": 300,
+      "coverage_rows": 300,
+      "official_duplicate_area_team_scenario": 0,
+      "mapping_duplicate_area_team_scenario": 0,
+      "coverage_duplicate_area_team_scenario": 0,
+      "top5_score_rows": 150,
+      "top5_session_rows": 10,
+      "top5_mapping_status_counts": {
+        "unique_clean": 150
+      },
+      "top5_unique_session_case_pairs": 150,
+      "full_mapping_status_counts": {
+        "unique_clean": 225,
+        "candidate_wrong_folder_replay": 15,
+        "unmatched_no_sql_task_for_score_vector": 15,
+        "unique_sql_disambiguated_from_manifest_multi_session": 45
+      },
+      "full_clean_usable_cells": 267,
+      "full_candidate_usable_if_wrong_folder_accepted": 282,
+      "top5_score_copy_mismatches": 0,
+      "archived_score_mismatches_after_official_name_check": 0,
+      "mapping_vs_coverage_key_delta": {
+        "mapping_minus_coverage": 0,
+        "coverage_minus_mapping": 0
+      },
+      "top5_vs_plan_key_delta": {
+        "top5_minus_plan": 0,
+        "plan_minus_top5": 0
+      },
+      "coverage_mismatches": 0,
+      "top5_session_manifest_mismatches_for_plan": 0
+    },
+    "missingness_recomputed_overall": {
+      "full_observed": 267,
+      "full_missing_not_clean": 33,
+      "full_observed_coordination_mean": 77.912,
+      "full_missing_coordination_mean": 47.103,
+      "coordination_diff_missing_minus_observed": -30.809,
+      "full_observed_efficiency_mean": 70.288,
+      "full_missing_efficiency_mean": 37.322,
+      "efficiency_diff_missing_minus_observed": -32.966,
+      "all_missingness_rows_diagnostic_true": true
+    },
+    "coverage_full_status_counts": {
+      "covered_clean_or_sql_disambiguated": 267,
+      "wrong_folder_candidate_not_clean": 15,
+      "missing_replay_or_unmatched_score_source": 15,
+      "case_or_format_gap": 3
+    },
+    "raw_spot_checks": [
+      {
+        "sample_key": "beijing|T14|A7",
+        "session_manifest_match": true,
+        "required_logs_exist": true,
+        "sql_task_case_referee_rows": 2,
+        "score_point2": "97.41 == mapped comprehensive 97.41",
+        "case_frames": 251,
+        "roles": "av+mvSimulation with coordinates",
+        "task_ids": [
+          "6922"
+        ]
+      },
+      {
+        "sample_key": "beijing|T17|C3",
+        "session_manifest_match": true,
+        "required_logs_exist": true,
+        "sql_task_case_referee_rows": 2,
+        "score_point2": "64.20 == mapped comprehensive 64.20",
+        "case_frames": 565,
+        "roles": "av+mvSimulation with coordinates",
+        "task_ids": [
+          "6931"
+        ]
+      },
+      {
+        "sample_key": "beijing|T20|B2",
+        "session_manifest_match": true,
+        "required_logs_exist": true,
+        "sql_task_case_referee_rows": 2,
+        "score_point2": "91.51 == mapped comprehensive 91.51",
+        "case_frames": 872,
+        "roles": "av+mvSimulation with coordinates",
+        "task_ids": [
+          "6941"
+        ]
+      },
+      {
+        "sample_key": "shanghai|T6|A2",
+        "session_manifest_match": true,
+        "required_logs_exist": true,
+        "sql_task_case_referee_rows": 2,
+        "score_point2": "92.98 == mapped comprehensive 92.98",
+        "case_frames": 152,
+        "roles": "av+mvSimulation with coordinates",
+        "task_ids": [
+          "6921"
+        ]
+      },
+      {
+        "sample_key": "shanghai|T11|A1",
+        "session_manifest_match": true,
+        "required_logs_exist": true,
+        "sql_task_case_referee_rows": 2,
+        "score_point2": "86.44 == mapped comprehensive 86.44",
+        "case_frames": 245,
+        "roles": "av+mvSimulation with coordinates",
+        "task_ids": [
+          "6923"
+        ]
+      },
+      {
+        "sample_key": "shanghai|T8|C1",
+        "session_manifest_match": true,
+        "required_logs_exist": true,
+        "sql_task_case_referee_rows": 2,
+        "score_point2": "83.71 == mapped comprehensive 83.71",
+        "case_frames": 720,
+        "roles": "av+mvSimulation with coordinates",
+        "task_ids": [
+          "6932"
+        ]
+      }
+    ],
+    "coordination_source": {
+      "verdict": "official generated/report or rule-kinematic coordination score; expert-rated coordination not proven",
+      "pdf_evidence": "Beijing Panda and Shanghai WUT_FSD diagnosis PDFs show page-1 0-100 dimensions including traffic coordination, and later traffic-coordination sections decompose it into background-traffic safety/efficiency/comfort components with affected-background-traffic counts.",
+      "sql_evidence": "tjjhs_referee_scoring has user_id/user_name, score_point1 comfort, and score_point2 system score; it does not expose a rater-level coordination rubric or direct coordination rating field.",
+      "rubric_search": "No standalone rubric/judge instruction file found by local filename search for rubric, rating, score, rule, judge, manual, guideline, or standard terms under data/onsite_competition."
+    },
+    "beijing_shanghai_comparability": {
+      "same_numeric_scale": "supported: both area PDFs and score CSVs use six 0-100 dimensions including coordination",
+      "same_report_schema": "partially supported: shared diagnosis labels and coordination subsection structure were observed in Beijing and Shanghai PDFs",
+      "same_judges": "not supported: SQL examples show area-specific judge names, e.g. Tongji vs Tongzhou following-car judges",
+      "same_formal_rubric": "not established: no formal rubric/rules document found"
+    },
+    "gate_review_status": "PASS",
+    "gate_review_scope": "approved_RQ003_plan_top5_cohort_only"
+  }
+}

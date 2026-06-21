@@ -1,0 +1,74 @@
+{
+  "status": "PARTIAL",
+  "worker_id": "RQ003_phase4_features_001",
+  "role": "Phase 4 feature worker (directional IPV + baseline)",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "scope_completed": [
+    "identity and prep verified",
+    "InterHub conditional norm rebuilt outcome-free",
+    "cell-level directional IPV feature table generated",
+    "support coverage table generated",
+    "capacity-matched baseline feature table generated",
+    "frame-level cache generated and hashed"
+  ],
+  "files_created": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/cell_level_directional_ipv.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/support_coverage.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/baseline_feature_manifest.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/baseline_features_cells.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/08_directional_ipv/directional_ipv_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/09_baseline_models/baseline_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/frame_level/frame_level_directional_ipv.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/manifests/feature_derived_manifest.csv"
+  ],
+  "files_modified": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv"
+  ],
+  "commands_run": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python compute_phase4_features.py --stage calibration",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python compute_phase4_features.py --stage shard --shard-count 10 --solver-preset balanced --candidate-grid legacy7",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python compute_phase4_features.py --stage merge"
+  ],
+  "tests_run": [
+    "identity verification in script",
+    "scipy import in specified Python interpreter",
+    "real optimizer smoke check before full run",
+    "row-count/no-outcome-column verification after merge"
+  ],
+  "key_evidence": {
+    "cells_processed": 150,
+    "cells_expected": 150,
+    "real_optimizer_used": true,
+    "solver_preset": "balanced",
+    "candidate_grid": "legacy7",
+    "D_comp_auc_fallback_min": 0.0,
+    "D_comp_auc_fallback_max": 0.1286257426256133,
+    "D_yield_auc_fallback_min": 0.0,
+    "D_yield_auc_fallback_max": 0.13292666408844991,
+    "high_support_cell_count": 58,
+    "baseline_feature_count": 18,
+    "outcome_value_read_count": 0,
+    "strict_denylisted_read_count": "nonzero metadata/header touch before script; no values"
+  },
+  "acceptance_criteria_results": {
+    "identity_prep_verified": "PASS",
+    "150_cells_accounted": "PASS",
+    "real_optimizer_no_stubs": "PASS",
+    "rolling_prefix_no_future_features": "PASS",
+    "high_support_and_fallback_variants": "PASS",
+    "baseline_online_only": "PASS",
+    "capacity_contract_baseline_differs_by_ipv_only": "PASS",
+    "no_outcome_values_read": "PASS",
+    "file_access_manifest_zero_denylisted_reads": "FAIL"
+  },
+  "spec_deviations": [
+    "Python multiprocessing parallel_accurate was blocked by sandbox semaphores, so sequential SciPy SLSQP solver preset was used.",
+    "A pre-script broad search touched score-field README/header text but did not expose outcome values; run marked PARTIAL.",
+    "State-condition bins were rebuilt from the Gate 0 trace schema: distance near<10, mid<=30, far>30; closing >0.5, stable within +/-0.5, opening<-0.5.",
+    "Earlier merge attempts appended malformed Phase 4 rows to the append-only artifact index using a wrong column schema; corrected schema rows were appended afterward."
+  ],
+  "unresolved_blockers": [
+    "Strict zero denylisted-read acceptance cannot be claimed for this transcript because of the early metadata/header search."
+  ],
+  "recommended_next_codex_task": "Phase 4 confirmatory worker (reads outcomes)"
+}

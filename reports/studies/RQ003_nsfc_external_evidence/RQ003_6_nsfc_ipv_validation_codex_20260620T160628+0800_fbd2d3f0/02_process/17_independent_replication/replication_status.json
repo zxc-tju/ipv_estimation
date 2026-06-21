@@ -1,0 +1,38 @@
+{
+  "status": "DISCREPANT",
+  "worker_id": "RQ003_phase8_replication_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "model_spec": "independent_standardized_ridge_alpha_0.1",
+  "material_discrepancy_count": 88,
+  "minor_discrepancy_count": 0,
+  "metric_reproduction": {
+    "cell_level_material": 0,
+    "support_material": 0,
+    "fold_material": 0
+  },
+  "primary_stats": {
+    "analysis_id": "primary_loto_confirmatory",
+    "tier": "primary",
+    "confirmatory_status": "confirmatory",
+    "fold_family": "leave_one_team_out",
+    "subset_or_sample": "primary_inclusion",
+    "d_columns": "D_comp_auc;D_yield_auc",
+    "n_cells_in_sample": 48,
+    "n_predictions": 48,
+    "n_teams": 9,
+    "n_scenarios": 14,
+    "base_spearman": 0.34129396439426835,
+    "full_spearman": 0.32957012592270946,
+    "delta_spearman": -0.01172383847155889,
+    "base_mae": 6.920215991329486,
+    "full_mae": 7.180724665758951,
+    "delta_mae_reduction": -0.2605086744294649,
+    "base_cv_r2": 0.03014824548034034,
+    "full_cv_r2": 0.07989493875335296,
+    "delta_cv_r2": 0.04974669327301262,
+    "effect_direction_spearman": "null_or_reverse",
+    "effect_direction_mae": "null_or_reverse",
+    "effect_direction_cv_r2": "favorable",
+    "model_spec": "independent_standardized_ridge_alpha_0.1"
+  }
+}

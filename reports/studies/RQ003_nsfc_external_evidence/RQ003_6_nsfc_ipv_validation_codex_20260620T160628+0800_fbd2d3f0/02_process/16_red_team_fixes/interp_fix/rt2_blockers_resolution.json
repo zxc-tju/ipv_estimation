@@ -1,0 +1,27 @@
+{
+  "worker_id": "RQ003_phase7_interp_fix_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "settled_conclusion": "No robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated.",
+  "blockers": [
+    {
+      "finding_id": "RT2-BLOCK-001",
+      "resolved": true,
+      "how": "Negative-control and confirmatory reports now state that future_leaky_full_window_ipv, ipv_time_shuffle, counterpart_swap, role_flip, and sign_flip match or exceed the primary delta Spearman, and that state_shuffle/wrong_state degradation controls failed. The conclusion is no IPV-specific signal demonstrated."
+    },
+    {
+      "finding_id": "RT2-BLOCK-002",
+      "resolved": true,
+      "how": "Cited replication2_status.json. Replication2 used corrected N=53, exactly reproduced the reported-alpha refit direction (+0.136833), and independently reproduced the favorable direction under independent training-tuned analysis (+0.054669)."
+    },
+    {
+      "finding_id": "RT2-BLOCK-003",
+      "resolved": true,
+      "how": "Reports now state S1 and S2 are exactly the primary 53 cells, S3 has n=6 and null/reverse behavior, and safe_subset_agreement_count=2 is vacuous. Safe-subset robustness support was removed."
+    },
+    {
+      "finding_id": "RT2-BLOCK-004",
+      "resolved": true,
+      "how": "Reader-facing wording was downgraded to suggestive, nonsignificant (p=0.30, CI includes 0), non-generalizing (LOSO delta Spearman +0.017), non-IPV-specific favorable direction; robustness not established."
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase1_gate_minus1_review_001",
+  "role": "Gate -1 independent reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "scope_completed": [
+    "identity verification",
+    "independent mapping uniqueness recomputation",
+    "score/coverage/missingness reconciliation",
+    "raw manifest/SQL/replay spot verification",
+    "missingness diagnostic-scope verification",
+    "coordination-source evidence review",
+    "Beijing/Shanghai comparability review",
+    "Gate -1 review status decision"
+  ],
+  "files_created": [
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/review_report.md",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/review_findings.csv",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/gate_minus1_review_status.json",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/worker_report.json",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/file_access_manifest.txt",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/03_gate_minus1_review/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv"
+  ],
+  "commands_run": [
+    "sed START_HERE.md",
+    "sed superpowers using-superpowers SKILL.md for skill routing hygiene",
+    "python3 identity verification of run_manifest, plan_sha256, and required directories/files",
+    "find/rg inventory of run artifacts and raw evidence files",
+    "sed Gate -1 provenance_audit.md, gate_minus1_status.json, unresolved_source_questions.md, worker_report.json, plan file, data_provenance_manifest.csv",
+    "python3 CSV row/header inventory for four Gate -1 result tables and raw score/manifest files",
+    "python3 independent mapping/reconciliation recomputation from replay_score_mapping, coverage_matrix, top5_scenario_scores, archived score exports, and missingness_audit",
+    "python3 raw spot checks of six Beijing/Shanghai sample cells against top5_session_manifest, SQL task/case rows, and replay logs",
+    "pdftotext sampled Beijing and Shanghai diagnosis PDFs to inspect coordination labels/subcomponents",
+    "rg searches for expert-rated claims, criterion-validity leakage, comparability wording, and local rubric/rules files",
+    "python3 review artifact writer and artifact_index appender"
+  ],
+  "tests_run": "none expected; independent CSV reconciliation and raw spot checks performed",
+  "key_evidence": {
+    "independently_recomputed_mapping_counts": {
+      "official_rows_from_archived_exports": 300,
+      "mapping_rows": 300,
+      "coverage_rows": 300,
+      "official_duplicate_area_team_scenario": 0,
+      "mapping_duplicate_area_team_scenario": 0,
+      "coverage_duplicate_area_team_scenario": 0,
+      "top5_score_rows": 150,
+      "top5_session_rows": 10,
+      "top5_mapping_status_counts": {
+        "unique_clean": 150
+      },
+      "top5_unique_session_case_pairs": 150,
+      "full_mapping_status_counts": {
+        "unique_clean": 225,
+        "candidate_wrong_folder_replay": 15,
+        "unmatched_no_sql_task_for_score_vector": 15,
+        "unique_sql_disambiguated_from_manifest_multi_session": 45
+      },
+      "full_clean_usable_cells": 267,
+      "full_candidate_usable_if_wrong_folder_accepted": 282,
+      "top5_score_copy_mismatches": 0,
+      "archived_score_mismatches_after_official_name_check": 0,
+      "mapping_vs_coverage_key_delta": {
+        "mapping_minus_coverage": 0,
+        "coverage_minus_mapping": 0
+      },
+      "top5_vs_plan_key_delta": {
+        "top5_minus_plan": 0,
+        "plan_minus_top5": 0
+      },
+      "coverage_mismatches": 0,
+      "top5_session_manifest_mismatches_for_plan": 0
+    },
+    "reconciliation_result": "0 duplicate score keys; 0 top5 score-copy mismatches; 0 archived score numeric/name mismatches; 0 mapping/coverage key deltas; 0 coverage identity/status mismatches",
+    "missingness_diagnostic_confirmation": {
+      "full_observed": 267,
+      "full_missing_not_clean": 33,
+      "full_observed_coordination_mean": 77.912,
+      "full_missing_coordination_mean": 47.103,
+      "coordination_diff_missing_minus_observed": -30.809,
+      "full_observed_efficiency_mean": 70.288,
+      "full_missing_efficiency_mean": 37.322,
+      "efficiency_diff_missing_minus_observed": -32.966,
+      "all_missingness_rows_diagnostic_true": true
+    },
+    "outcome_source_agreement": {
+      "verdict": "official generated/report or rule-kinematic coordination score; expert-rated coordination not proven",
+      "pdf_evidence": "Beijing Panda and Shanghai WUT_FSD diagnosis PDFs show page-1 0-100 dimensions including traffic coordination, and later traffic-coordination sections decompose it into background-traffic safety/efficiency/comfort components with affected-background-traffic counts.",
+      "sql_evidence": "tjjhs_referee_scoring has user_id/user_name, score_point1 comfort, and score_point2 system score; it does not expose a rater-level coordination rubric or direct coordination rating field.",
+      "rubric_search": "No standalone rubric/judge instruction file found by local filename search for rubric, rating, score, rule, judge, manual, guideline, or standard terms under data/onsite_competition."
+    },
+    "beijing_shanghai_agreement": {
+      "same_numeric_scale": "supported: both area PDFs and score CSVs use six 0-100 dimensions including coordination",
+      "same_report_schema": "partially supported: shared diagnosis labels and coordination subsection structure were observed in Beijing and Shanghai PDFs",
+      "same_judges": "not supported: SQL examples show area-specific judge names, e.g. Tongji vs Tongzhou following-car judges",
+      "same_formal_rubric": "not established: no formal rubric/rules document found"
+    },
+    "gate_minus1_review_status": "PASS scoped to approved_RQ003_plan_top5_cohort_only"
+  },
+  "acceptance_criteria_results": {
+    "identity_verified": true,
+    "six_checks_independently_performed_with_evidence": true,
+    "review_findings_csv_enumerates_agreements_disagreements": true,
+    "gate_minus1_review_status_json_has_status_scope_rationale": true,
+    "no_out_of_scope_writes": true,
+    "no_predictor_outcome_or_ipv_run": true
+  },
+  "spec_deviations": [
+    "Did not update main_workflow.log or START_HERE.md because task WRITE_SCOPE allowed only files under G1R plus append-only META/artifact_index.csv.",
+    "One preliminary reconciliation print command failed due JSON serialization of tuple keys; it made no file changes and was rerun with stringified keys.",
+    "One preliminary artifact-writer command failed on relative path normalization before writing files; it made no file changes and was rerun with normalized paths."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Phase 2 Gate 0 measurement auditor (fresh, outcome-denylisted)"
+}

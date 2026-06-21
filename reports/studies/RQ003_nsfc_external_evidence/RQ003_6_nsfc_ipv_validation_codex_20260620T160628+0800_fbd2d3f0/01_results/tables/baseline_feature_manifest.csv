@@ -1,0 +1,19 @@
+feature,definition,source,first_available_time,online_ok
+distance_auc_time_norm,Time-normalized AUC/mean of current AV-NPC Euclidean distance over the same conflict-window frames.,vehicle_perception_simulation_trajectory.log current positions,per-frame current timestamp; aggregate after conflict-window trace,True
+inverse_distance_auc_time_norm,"Time-normalized AUC/mean of inverse current distance, clipped at 0.1 m.",current positions,per-frame current timestamp,True
+closing_speed_auc_time_norm,"Time-normalized AUC/mean of signed current closing speed -dot(relative_position, relative_velocity)/distance.",current and backward-difference velocities,per-frame current timestamp,True
+positive_closing_auc_time_norm,"Time-normalized AUC/mean of max(closing speed, 0).",current and backward-difference velocities,per-frame current timestamp,True
+relative_speed_auc_time_norm,Time-normalized AUC/mean of current relative speed magnitude.,current and backward-difference velocities,per-frame current timestamp,True
+ego_speed_auc_time_norm,Time-normalized AUC/mean of AV speed from backward-difference velocity.,current and past AV positions,after second observed AV frame,True
+npc_speed_auc_time_norm,Time-normalized AUC/mean of NPC speed from backward-difference velocity.,current and past NPC positions,after second observed NPC frame,True
+ego_accel_auc_time_norm,Time-normalized AUC/mean of AV acceleration magnitude from backward velocity differences.,current and past AV states,after third observed AV frame,True
+npc_accel_auc_time_norm,Time-normalized AUC/mean of NPC acceleration magnitude from backward velocity differences.,current and past NPC states,after third observed NPC frame,True
+heading_diff_abs_auc_time_norm,Time-normalized AUC/mean of absolute wrapped heading difference.,current headings,per-frame current timestamp,True
+abs_longitudinal_gap_auc_time_norm,Time-normalized AUC/mean of absolute AV-heading longitudinal gap.,current positions and heading,per-frame current timestamp,True
+lateral_gap_auc_time_norm,Time-normalized AUC/mean of AV-heading lateral gap.,current positions and heading,per-frame current timestamp,True
+ttc_risk_auc_time_norm,"Time-normalized AUC/mean of current TTC risk max(0,(1.5-current_TTC)/1.5).",current distance and closing speed,per-frame current timestamp,True
+lateral_gap_risk_auc_time_norm,"Time-normalized AUC/mean of current lateral-gap risk max(0,(2-current_gap)/2).",current positions and heading,per-frame current timestamp,True
+near_conflict_fraction_time_norm,Time-normalized fraction of frames with current distance < 10 m.,current positions,per-frame current timestamp,True
+closing_fraction_time_norm,Time-normalized fraction of frames with current closing speed > 0.5 m/s.,current and past states,per-frame current timestamp,True
+conflict_duration_s,Duration of the same measured conflict-window support trace; not a future event label.,current-frame conflict-window membership,after conflict-window aggregation,True
+estimated_conflict_frames,Number of estimated conflict-window frames contributing to the baseline matrix.,feature trace support accounting,after conflict-window aggregation,True

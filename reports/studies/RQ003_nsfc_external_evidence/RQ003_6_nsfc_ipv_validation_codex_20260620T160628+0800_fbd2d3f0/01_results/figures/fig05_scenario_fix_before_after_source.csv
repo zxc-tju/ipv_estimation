@@ -1,0 +1,7 @@
+panel,scenario_fix_state,metric,metric_label,estimate,ci_low,ci_high,p_greater,n_cells,effect_direction,source_table
+all,before_scenario_fix,delta_spearman,Delta Spearman,-0.11029092488059053,-0.2623662252128965,0.07474221955830126,0.58,48,null_or_reverse,confirmatory_results__before_scenario_fix.csv
+all,before_scenario_fix,delta_mae_reduction,Delta MAE reduction,-0.7389074969454175,-1.6200062589197104,0.11836949835129804,0.82,48,null_or_reverse,confirmatory_results__before_scenario_fix.csv
+all,before_scenario_fix,delta_cv_r2,Delta CV-R2,-0.04803435327518768,-0.3315606782466269,0.17422261172924094,0.48,48,null_or_reverse,confirmatory_results__before_scenario_fix.csv
+all,after_scenario_fix,delta_spearman,Delta Spearman,0.1368327689082406,-0.03878113684767078,0.3057968968993576,0.3,53,favorable,confirmatory_results.csv
+all,after_scenario_fix,delta_mae_reduction,Delta MAE reduction,0.47926406861273385,0.06354620842234833,0.881876548772183,0.07,53,favorable,confirmatory_results.csv
+all,after_scenario_fix,delta_cv_r2,Delta CV-R2,0.08624895849533565,-0.004656066330955793,0.24625786092102758,0.13,53,favorable,confirmatory_results.csv

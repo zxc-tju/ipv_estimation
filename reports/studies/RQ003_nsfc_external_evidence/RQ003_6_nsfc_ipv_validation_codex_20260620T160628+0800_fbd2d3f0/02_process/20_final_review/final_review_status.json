@@ -1,0 +1,151 @@
+{
+  "schema_version": "rq003_phase11_final_review_status_v1",
+  "worker_id": "RQ003_phase11_final_review_001",
+  "role": "Phase 11 final report reviewer",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_utc": "2026-06-20T16:35:00Z",
+  "status": "PASS",
+  "required_fixes": [],
+  "identity": {
+    "run_root_exists": true,
+    "fr_exists": true,
+    "run_manifest_RUN_ID": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+    "run_manifest_RUN_ID_matches": true,
+    "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+    "plan_sha256_matches": true,
+    "required_inputs_exist": true,
+    "failures": []
+  },
+  "html": {
+    "entry_sha256": "33cb731aa8647f1e931ba3c22ca2619c4ababd34117e65988b78c907bde716fa",
+    "rep90_sha256": "33cb731aa8647f1e931ba3c22ca2619c4ababd34117e65988b78c907bde716fa",
+    "byte_identical": true,
+    "entries": {
+      "00_entry/index.html": {
+        "opened_offline": true,
+        "parsed": true,
+        "title_seen": true,
+        "sections": 21,
+        "figures": 9,
+        "link_count": 75,
+        "errors": []
+      },
+      "90_report/index.html": {
+        "opened_offline": true,
+        "parsed": true,
+        "title_seen": true,
+        "sections": 21,
+        "figures": 9,
+        "link_count": 75,
+        "errors": []
+      }
+    },
+    "link_count": 150,
+    "link_failures": 0,
+    "external_or_absolute_failures": 0,
+    "disclosure_anchor_failures": []
+  },
+  "figures": {
+    "manifest_rows": 9,
+    "figure_failures": 0,
+    "nature_skill_manifest_present": true,
+    "nature_skill_manifest_run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+    "nature_skill_manifest_skill": "nature-figure",
+    "nature_skill_manifest_backend": "python",
+    "nature_issues": []
+  },
+  "evidence": {
+    "columns": [
+      "claim_id",
+      "claim_text",
+      "claim_status",
+      "confirmatory_status",
+      "evidence_type",
+      "artifact_path",
+      "table_id",
+      "figure_id",
+      "reviewer_status",
+      "limitation",
+      "allowed_paper_wording",
+      "forbidden_wording"
+    ],
+    "missing_required_columns": [],
+    "rows": 13,
+    "expected_claims_missing": [],
+    "unexpected_claims": [],
+    "claim_failures": 0
+  },
+  "tables": {
+    "result_table_count": 25,
+    "result_table_failures": 0
+  },
+  "consistency": {
+    "tier_decision_tier": "B",
+    "settled_conclusion": "No robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated.",
+    "primary_delta_spearman": "0.1368327689082406",
+    "primary_p_delta_spearman_greater": "0.3",
+    "loso_delta_spearman": "0.01673150966937409",
+    "controls_matching_or_exceeding_primary": [
+      "ipv_time_shuffle",
+      "counterpart_swap",
+      "role_flip",
+      "sign_flip",
+      "future_leaky_full_window_ipv"
+    ],
+    "metric_issues": [],
+    "html_disclosure_anchors": {
+      "settled_tier_b_conclusion": true,
+      "primary_delta_p_disclosed": true,
+      "loso_approximately_zero": true,
+      "controls_match_or_exceed": true,
+      "h3_blocked_no_two_human": true,
+      "npc_boundary_only": true,
+      "plan_not_strict_preregistration": true,
+      "nsfc_not_nominal_conformal_coverage": true,
+      "scenario_label_bug_correction_disclosed": true,
+      "null_reverse_blocked_partial_retained": true,
+      "no_paper_edit_claim": true
+    }
+  },
+  "wording_and_paths": {
+    "forbidden_wording_hits": [],
+    "forbidden_wording_count": 0,
+    "reader_legacy_path_hits": [],
+    "reader_legacy_path_count": 0,
+    "cross_run_reader_hits": [],
+    "cross_run_reader_count": 0,
+    "process_legacy_path_hits_note_count": 564,
+    "process_legacy_path_note": "Legacy paths appear only in internal inventory/denylist process files, not in reader-facing HTML/evidence/manifests.",
+    "negated_nominal_coverage_risk_control_hits": [
+      {
+        "file": "01_results/figures/fig03_support_ood_abstention_metadata.json",
+        "line": 28,
+        "pattern": "NSFC nominal conformal coverage positive claim",
+        "match": "NSFC support boundaries as nominal conformal coverage",
+        "excerpt": "\"controls_or_boundary\": \"Do not present NSFC support boundaries as nominal conformal coverage.\""
+      },
+      {
+        "file": "01_results/figures/fig03_support_ood_abstention_metadata.json",
+        "line": 36,
+        "pattern": "NSFC nominal conformal coverage positive claim",
+        "match": "NSFC support boundaries as nominal conformal coverage",
+        "excerpt": "\"reviewer_risk\": \"Do not present NSFC support boundaries as nominal conformal coverage.\","
+      }
+    ],
+    "negated_nominal_coverage_risk_control_count": 2,
+    "forbidden_scan_note": "Negated risk-control wording such as \"Do not present NSFC support boundaries as nominal conformal coverage\" is required disclosure and is not counted as a forbidden positive NSFC nominal-coverage claim."
+  },
+  "reader_status_reasons": [],
+  "tests_run": [
+    "offline-open via urllib.request.urlopen(file://...) for both HTML entries",
+    "HTMLParser parse/title/section/figure count for both entries",
+    "link check across href/src/poster/data and CSS url(...) references",
+    "SHA-256 and byte-identity check for 00_entry/index.html and 90_report/index.html",
+    "figure completeness/signature checks for SVG/PDF/PNG/source CSV/metadata JSON",
+    "Nature-skill provenance reconciliation between nature_skill_manifest.json and figure_manifest.csv",
+    "evidence.csv schema/claim/linked-artifact reconciliation",
+    "result table non-empty CSV parse check",
+    "HTML/Tier/table metric and disclosure anchor consistency check",
+    "forbidden wording, legacy path, fake blind annotation, and cross-run contamination scan"
+  ]
+}

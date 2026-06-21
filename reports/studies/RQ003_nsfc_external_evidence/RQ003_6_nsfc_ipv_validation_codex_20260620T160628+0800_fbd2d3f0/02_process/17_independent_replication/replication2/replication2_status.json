@@ -1,0 +1,87 @@
+{
+  "agreement": {
+    "independent_training_tuned": {
+      "max_fixed_effect_abs_diff": 7.247535904753022e-13,
+      "max_pred_base_abs_diff": 3.5340878433394374,
+      "max_pred_full_abs_diff": 3.851160222560273,
+      "max_residual_abs_diff": 7.247535904753022e-13,
+      "mean_pred_base_abs_diff": 0.3966537907605457,
+      "mean_pred_full_abs_diff": 0.24420650345552564
+    },
+    "reported_alpha_refit": {
+      "max_fixed_effect_abs_diff": 7.247535904753022e-13,
+      "max_pred_base_abs_diff": 5.61717339309098e-13,
+      "max_pred_full_abs_diff": 5.63882274207117e-13,
+      "max_residual_abs_diff": 7.247535904753022e-13,
+      "mean_pred_base_abs_diff": 2.1837517381386603e-13,
+      "mean_pred_full_abs_diff": 2.1540990132876294e-13
+    }
+  },
+  "corrected_phase7_expected": {
+    "delta_cv_r2": 0.08624895849533565,
+    "delta_spearman": 0.1368327689082406,
+    "n_cells_in_sample": 53
+  },
+  "created_utc": "2026-06-20T15:17:10.761491+00:00",
+  "direction_reproduced_independent_training_tuned": true,
+  "direction_reproduced_reported_alpha_refit": true,
+  "expected_n_primary_cells": 53,
+  "independent_training_tuned": {
+    "analysis_id": "replication2_independent_training_tuned",
+    "base_cv_r2": -0.11405114651156101,
+    "base_mae": 7.355172827123149,
+    "base_spearman": -0.03967102080309627,
+    "delta_cv_r2": 0.06809741009172354,
+    "delta_mae_reduction": 0.40139066235305343,
+    "delta_spearman": 0.054668601838413156,
+    "effect_direction_cv_r2": "favorable",
+    "effect_direction_mae": "favorable",
+    "effect_direction_spearman": "favorable",
+    "full_cv_r2": -0.045953736419837465,
+    "full_mae": 6.953782164770096,
+    "full_spearman": 0.014997581035316884,
+    "mode": "independent_training_tuned",
+    "n_cells_in_sample": 53,
+    "n_predictions": 53,
+    "n_scenarios": 14,
+    "n_teams": 9
+  },
+  "metric_tolerance": 1e-10,
+  "n_primary_cells": 53,
+  "prediction_tolerance": 1e-10,
+  "prewrite_identity": {
+    "plan_sha256_matches": true,
+    "rep_dir_exists": true,
+    "repdata_dir_exists": true,
+    "required_inputs_exist": true,
+    "run_manifest_run_id_match": true,
+    "run_root_exists": true
+  },
+  "reported_alpha_refit": {
+    "analysis_id": "replication2_reported_alpha_refit",
+    "base_cv_r2": -0.14102614230078725,
+    "base_mae": 7.416451263154529,
+    "base_spearman": -0.19093694565392677,
+    "delta_cv_r2": 0.08624895849533454,
+    "delta_mae_reduction": 0.47926406861273296,
+    "delta_spearman": 0.1368327689082406,
+    "effect_direction_cv_r2": "favorable",
+    "effect_direction_mae": "favorable",
+    "effect_direction_spearman": "favorable",
+    "full_cv_r2": -0.05477718380545271,
+    "full_mae": 6.937187194541796,
+    "full_spearman": -0.054104176745686176,
+    "mode": "reported_alpha_refit",
+    "n_cells_in_sample": 53,
+    "n_predictions": 53,
+    "n_scenarios": 14,
+    "n_teams": 9
+  },
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "spec_deviations": [
+    "The frozen model-capacity contract specifies training-only equal-budget tuning but does not freeze the exact inner-CV splitter/alpha-selection rule. The independent LOOCV selector is therefore reported separately from the reported-alpha refit check.",
+    "Exact per-cell agreement is evaluated only in the reported-alpha refit mode, using alpha values read from corrected cv_predictions.csv as result-only comparators."
+  ],
+  "status": "REPRODUCED_WITH_MINOR_DIFFS",
+  "worker_id": "RQ003_phase8_replication2_001"
+}

@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase4_stats_rereview_001",
+  "role": "Phase 4 statistical re-review",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_utc": "2026-06-20T13:34:37Z",
+  "component_status": {
+    "identity_verification": "PASS",
+    "leaky_genuineness": "PASS",
+    "language_scope": "PASS",
+    "primary_confirmatory_unchanged": "PASS",
+    "other_10_controls_unchanged": "PASS",
+    "phase4_overall": "PASS"
+  },
+  "final_phase4_status": "PASS",
+  "summary": "The future-leaky negative-control fix resolves the prior sole FAIL. The repaired leaky row is nonconstant, differs materially from rolling features, and has a real LOTO result. The report language excludes it from NULL-robustness claims. Primary confirmatory results and the other 10 controls are unchanged.",
+  "key_evidence": {
+    "feature_health": {
+      "status": "PASS",
+      "D_comp_unique_rounded_1e12": 44,
+      "D_yield_unique_rounded_1e12": 44,
+      "theta_unique_rounded_1e12": 48,
+      "changed_cells_D_comp": 47,
+      "changed_cells_D_yield": 46,
+      "mean_abs_delta_D_comp": 0.1414955408465355,
+      "mean_abs_delta_D_yield": 0.20927295683384806
+    },
+    "fixed_leaky_result": {
+      "delta_spearman": -0.08206686930091184,
+      "delta_spearman_ci_low": -0.1886515914278722,
+      "delta_spearman_ci_high": 0.05248347449132109,
+      "p_delta_spearman_greater": 0.2,
+      "delta_mae_reduction": -0.4094253239715062,
+      "delta_cv_r2": -0.056862625685136337
+    },
+    "primary_confirmatory_reference": {
+      "base_spearman": 0.3541033434650456,
+      "delta_spearman": -0.11029092488059053,
+      "confirmatory_results_sha256": "9b3b79f0704a09e5509780d9b096570b18d9275fd3a52d1381b2f74ea3be90d8"
+    },
+    "other_controls_unchanged_vs_before_fix": true
+  },
+  "required_fixes": [],
+  "non_blocking_observations": [
+    "The leaky diagnostic is non-deployable and remains excluded from NULL-robustness claims.",
+    "The primary result remains a power-limited null/reverse result, consistent with the prior statistical review caveat."
+  ]
+}

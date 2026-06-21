@@ -1,0 +1,14 @@
+test_name,category,status,expected,observed,evidence
+sign_ipv_values_theta_positive_prosocial,sign,PASS,"[-1,0,1]","[-1, 0, 1]",src/sociality_estimation/core/ipv_estimation.py:391-399 (imported with plotting/optimizer stubs; optimizer not invoked)
+obvious_cut_in_high_competitive_shortfall,formula,PASS,"D_comp high, D_yield 0","D_comp=4.0,D_yield=0.0","D_comp=max(0,(Q_low-theta_ego)/w)"
+obvious_over_yield_high_yield_excess,formula,PASS,"D_yield high, D_comp 0","D_comp=0.0,D_yield=4.0","D_yield=max(0,(theta_ego-Q_high)/w)"
+competitive_shortfall_one_sided_orientation_guard,formula,PASS,positive then zero,"below=0.9999999999999999,above=0.0",low theta below Q_low is competitive shortfall only
+yield_excess_one_sided_orientation_guard,formula,PASS,zero then positive,"below=0.0,above=0.9999999999999999",high theta above Q_high is yield excess only
+same_theta_different_conditioned_norms_differ,conditional_norm,PASS,different D values,"low_risk=(0.0, 0.0),high_risk=(0.5, 0.0)",same theta can differ under s/theta_npc/tau
+mirror_transform_does_not_flip_sign_or_D,invariance,PASS,same state and D,"state_a=npc_ahead|near|closing,state_b=npc_ahead|near|closing",mirror x transform preserves role/distance bins and D formulas
+role_swap_conditions_counterpart_direction,invariance,PASS,different npc bins,moderate_prosocial vs moderate_competitive,role swap swaps theta_ego/theta_npc conditioning
+estimate_ipv_pair_rolling_window_prefix_only,leakage,PASS,12 calls all prefix-only,calls=12,t slices start:t+1 with history_window=3 for both agents
+estimate_ipv_current_matches_last_prefix_batch,leakage,PASS,"[7,107]","[7.0, 107.0]",current uses min_observation=steps-1
+counterpart_role_swap_estimated_symmetrically,counterpart,PASS,"[107,7]","[107.0, 7.0]",both perspectives estimated by same wrapper
+three_views_recomputable_from_trace_sample,views,PASS,all recomputable,"n=80,conditional_cells=37,scalar_auc=0.6856",marginal/conditional/scalar computed from trace sample only
+trace_sample_has_no_online_forbidden_columns,leakage,PASS,empty intersection,[],no PET/order/phase/outcome columns in ipv_trace_sample.csv

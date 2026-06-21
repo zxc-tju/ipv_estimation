@@ -1,0 +1,85 @@
+{
+  "status": "PASS_NO_BLOCKERS",
+  "worker_id": "RQ003_phase7_red_team3_001",
+  "role": "RED TEAM v3 closure re-check",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "created_utc": "2026-06-20T15:38:18.843509+00:00",
+  "prewrite_identity": {
+    "run_root_exists": true,
+    "run_manifest_run_id_matches": true,
+    "run_manifest_plan_sha256_matches": true,
+    "plan_sha256_txt_matches": true,
+    "interp_rt2_blockers_resolution_exists": true,
+    "interp_resolution_all_true": true
+  },
+  "rt2_blockers": {
+    "RT2-BLOCK-001": {
+      "closed": true,
+      "evidence": "Confirmatory and negative-control reports state controls match/exceed primary and failed degradation controls block IPV-specific interpretation.",
+      "files": [
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/confirmatory_analysis_report.md",
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_control_report.md"
+      ]
+    },
+    "RT2-BLOCK-002": {
+      "closed": true,
+      "evidence": "replication2_status reports corrected N=53, exact reported-alpha refit delta Spearman +0.136833, and independent training-tuned favorable direction +0.054669.",
+      "files": [
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/17_independent_replication/replication2/replication2_status.json",
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/17_independent_replication/replication2/independent_replication2_report.md",
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/confirmatory_analysis_report.md"
+      ]
+    },
+    "RT2-BLOCK-003": {
+      "closed": true,
+      "evidence": "S1 and S2 are disclosed as exact primary-53 duplicates; S3 is disclosed as n=6 with null/reverse behavior; safe-subset robustness support is removed.",
+      "files": [
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/confirmatory_analysis_report.md",
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/confirmatory_results_interpretation.csv"
+      ]
+    },
+    "RT2-BLOCK-004": {
+      "closed": true,
+      "evidence": "Active reports use suggestive/nonsignificant/non-generalizing/non-IPV-specific wording and the settled no-robust-incremental-utility conclusion, without claiming a proven null.",
+      "files": [
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/confirmatory_analysis_report.md",
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_control_report.md",
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/state_dependence_report.md",
+        "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/interp_fix/interpretation_correction.md"
+      ]
+    }
+  },
+  "new_blockers": [],
+  "new_blockers_count": 0,
+  "numeric_tables_unchanged_by_interp_fix": true,
+  "numeric_table_hashes": {
+    "confirmatory_results.csv": "a11b4d4ecc242346ede3d2236ea9aaa25fc2b7714d307f84dbf32f6ffce71144",
+    "negative_controls.csv": "32b5c5cc57ea7befd2181c9cdd1273ce72c95a5e614d916b4e103e21177568f7",
+    "state_dependence_results.csv": "6689d58f86277e2fa547c03059ccf9e9047b301b24d314f89402c13669c72f19"
+  },
+  "cleared_for_tier_review": true,
+  "clearance_verdict": "CLEARED_FOR_TIER_REVIEW_NOT_A_TIER_DECISION",
+  "settled_conclusion_supported": true,
+  "settled_conclusion": "No robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated.",
+  "not_proven_null_claim": true,
+  "key_metrics": {
+    "primary_n": 53,
+    "primary_delta_spearman": 0.1368327689082406,
+    "primary_p_delta_spearman_greater": 0.3,
+    "primary_delta_spearman_ci_low": -0.03878113684767078,
+    "primary_delta_spearman_ci_high": 0.3057968968993576,
+    "loso_delta_spearman": 0.01673150966937409,
+    "controls_matching_or_exceeding_primary": [
+      "future_leaky_full_window_ipv",
+      "ipv_time_shuffle",
+      "counterpart_swap",
+      "role_flip",
+      "sign_flip"
+    ],
+    "safe_s1_n": 53,
+    "safe_s2_n": 53,
+    "safe_s3_n": 6,
+    "state_interpretable_q_le_0p10_count": 0
+  }
+}

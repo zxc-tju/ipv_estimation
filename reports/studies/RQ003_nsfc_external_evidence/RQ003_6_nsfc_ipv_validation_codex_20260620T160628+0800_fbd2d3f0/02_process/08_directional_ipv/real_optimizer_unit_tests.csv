@@ -1,0 +1,9 @@
+test_id,status,evidence
+deps_import_scipy_matplotlib,PASS,scipy=1.18.0; matplotlib=3.11.0; python=/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/model_cache/venv/bin/python
+real_optimizer_path_slsqp,PASS,"estimate_ipv_pair called Agent.solve_optimization, which calls scipy.optimize.minimize(method=SLSQP); no stubs used."
+real_theta_non_neutral,PASS,max_real_theta=1.178096277009; min_real_theta=-1.138023752490
+positive_theta_prosocial,PASS,theta_ego=1.178096277009; sign=+1
+negative_theta_competitive,PASS,theta_npc=-1.138023752490; sign=-1
+canonical_cut_in_high_D_comp,PASS,theta=-1.138023752490; Q_low=0; Q_high=0; w_min=0.196349540849; D_comp=5.795907; D_yield=0.000000
+canonical_over_yield_high_D_yield,PASS,theta=1.178096277009; Q_low=0; Q_high=0; w_min=0.196349540849; D_comp=0.000000; D_yield=5.999995
+directional_deviations_not_collapsed,PASS,D_comp and D_yield computed as separate one-sided deviations on real theta extrema.

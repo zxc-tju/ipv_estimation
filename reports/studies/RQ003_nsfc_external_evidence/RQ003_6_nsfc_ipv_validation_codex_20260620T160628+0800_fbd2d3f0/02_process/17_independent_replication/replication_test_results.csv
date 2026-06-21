@@ -1,0 +1,13 @@
+test_id,status,details
+identity,PASS,"RUN_ID, plan SHA, required directories, and required inputs verified"
+frame_formula_D_comp_ego,PASS,max_abs_diff=8.881784197001252e-16
+frame_formula_D_yield_ego,PASS,max_abs_diff=1.3322676295501878e-15
+frame_formula_D_comp_npc,PASS,max_abs_diff=8.881784197001252e-16
+frame_formula_D_yield_npc,PASS,max_abs_diff=8.881784197001252e-16
+cell_aggregation,PASS,nonreproduced_rows=0
+support_coverage,PASS,nonreproduced_rows=0
+baseline_features,PASS,nonreproduced_rows=0
+fold_assignment,PASS,nonreproduced_rows=0
+cv_predictions,FAIL,nonreproduced_rows=78
+primary_stats,FAIL,nonreproduced_rows=9
+primary_effect_direction,FAIL,direction_mismatches=1

@@ -1,0 +1,103 @@
+{
+  "worker_id": "RQ003_phase0A_sync_001",
+  "role": "repository sync worker (Phase 0A sync completion)",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "recorded_at": "2026-06-20T16:16:59+08:00",
+  "identity_verification": {
+    "run_root_exists": true,
+    "run_manifest_run_id_matches": true,
+    "plan_sha256_txt_matches_phase0a": true,
+    "local_plan_sha256_matches_phase0a_before_sync": true,
+    "expected_phase0a_plan_sha256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+    "expected_phase0a_git_head": "c23074a091f9ff57b1034144571f68f771db9d8d"
+  },
+  "branch": "main",
+  "remote": {
+    "origin_fetch": "https://github.com/zxc-tju/ipv_estimation.git",
+    "origin_push": "https://github.com/zxc-tju/ipv_estimation.git"
+  },
+  "git_head_before": "c23074a091f9ff57b1034144571f68f771db9d8d",
+  "git_head_after": "c23074a091f9ff57b1034144571f68f771db9d8d",
+  "origin_main_before": "c23074a091f9ff57b1034144571f68f771db9d8d",
+  "origin_main_after": "c23074a091f9ff57b1034144571f68f771db9d8d",
+  "git_status_before": [
+    " M START_HERE.md",
+    " M main_workflow.log",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/",
+    "?? scripts/",
+    "?? tests/"
+  ],
+  "git_status_before_uall": [
+    " M START_HERE.md",
+    " M main_workflow.log",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/README.md",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/TRACEABILITY.md",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/evidence.csv",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/execution_status.json",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/README.md",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/TRACEABILITY.md",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/evidence.csv",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/execution_status.json",
+    "?? scripts/launch_claude.command",
+    "?? scripts/launch_codex.command",
+    "?? tests/test_shortcut_scripts.py"
+  ],
+  "git_status_after": [
+    " M START_HERE.md",
+    " M main_workflow.log",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/",
+    "?? scripts/",
+    "?? tests/"
+  ],
+  "git_status_after_uall_before_record_writes": [
+    " M START_HERE.md",
+    " M main_workflow.log",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/README.md",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/TRACEABILITY.md",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/evidence.csv",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/execution_status.json",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/README.md",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/TRACEABILITY.md",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/evidence.csv",
+    "?? reports/studies/RQ003_nsfc_external_evidence/RQ003_7_nsfc_ipv_validation_codex_20260620T161246+0800_06bbd516/execution_status.json",
+    "?? scripts/launch_claude.command",
+    "?? scripts/launch_codex.command",
+    "?? tests/test_shortcut_scripts.py"
+  ],
+  "fetch": {
+    "command": "git fetch origin main",
+    "completed": true,
+    "exit_code": 0,
+    "output": "From https://github.com/zxc-tju/ipv_estimation\n * branch              main       -> FETCH_HEAD"
+  },
+  "origin_main_log_oneline_5_after_fetch": [
+    "c23074a0 Put the NSFC validation plan under RQ003 ownership",
+    "b93d2ef9 Centralize research evidence around RQ roots",
+    "0827f504 Make the repository navigable around canonical roots",
+    "9326d73a Organize project docs and archives",
+    "45ba8447 Archive HPC process files"
+  ],
+  "remote_ahead": false,
+  "local_head_is_ancestor_of_origin_main": true,
+  "diverged": false,
+  "changed_files_head_to_origin_main": [],
+  "locally_modified_tracked_files": [
+    "START_HERE.md",
+    "main_workflow.log"
+  ],
+  "locally_modified_tracked_files_changed_between_head_and_origin_main": [],
+  "sync_result": "ALREADY_IN_SYNC",
+  "pull_ff_only_run": false,
+  "pull_skipped_reason": "Fetched origin/main equals local HEAD; no pull was needed.",
+  "unsafe_conditions": [],
+  "plan_exists_on_remote": true,
+  "plan_blob_on_remote": "7516dee8317c0870348a09a4fcf03171ba636500",
+  "plan_blob_on_remote_command": "git rev-parse origin/main:reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md",
+  "plan_sha256_before": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "plan_sha256_after": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "plan_changed": false,
+  "unresolved_blockers": [],
+  "disallowed_git_operations_run": []
+}

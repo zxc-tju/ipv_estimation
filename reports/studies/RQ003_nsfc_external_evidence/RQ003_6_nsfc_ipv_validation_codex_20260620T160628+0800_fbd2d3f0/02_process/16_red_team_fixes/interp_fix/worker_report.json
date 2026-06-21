@@ -1,0 +1,92 @@
+{
+  "STATUS": "COMPLETED",
+  "WORKER_ID": "RQ003_phase7_interp_fix_001",
+  "ROLE": "Phase 7 INTERPRETATION FIXER",
+  "RUN_ID": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "PLAN_SHA256": "98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1",
+  "created_utc": "2026-06-20T15:28:50.011185+00:00",
+  "created_local": "2026-06-20T23:28:50.011907+08:00",
+  "prewrite_identity": {
+    "run_root_exists": true,
+    "interp_dir_exists": true,
+    "run_manifest_run_id_matches": true,
+    "run_manifest_plan_sha256_matches": true,
+    "plan_sha256_txt_matches": true,
+    "rt2_blocking_findings2_exists": true,
+    "replication2_status_exists": true
+  },
+  "scope_completed": [
+    "RT2-BLOCK-001 wording fixed in confirmatory and negative-control reports; controls matching/exceeding primary and failed degradation controls listed.",
+    "RT2-BLOCK-002 closed by citing replication2 corrected N=53 direction reproduction and exact reported-alpha refit.",
+    "RT2-BLOCK-003 wording fixed; S1/S2 duplicate primary 53 cells, S3 n=6 null/reverse, safe-subset count vacuous.",
+    "RT2-BLOCK-004 wording downgraded to suggestive, nonsignificant, non-generalizing, non-IPV-specific; plan-approved conclusion used."
+  ],
+  "files_created": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/confirmatory_analysis_report__before_interp_fix.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_control_report__before_interp_fix.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/state_dependence_report__before_interp_fix.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/confirmatory_results_interpretation.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/interp_fix/interpretation_correction.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/interp_fix/rt2_blockers_resolution.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/interp_fix/worker_report.json",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/interp_fix/file_access_manifest.txt",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/16_red_team_fixes/interp_fix/artifact_manifest.csv"
+  ],
+  "files_modified": [
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/10_confirmatory_analysis/confirmatory_analysis_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/11_negative_controls/negative_control_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/13_state_dependence/state_dependence_report.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/spec_deviation_log.md",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/main_workflow.log"
+  ],
+  "commands_run": [
+    "sed -n on START_HERE.md and PROJECT_STRUCTURE.md",
+    "sed -n on AGENTS.md",
+    "test -d RUN_ROOT",
+    "rg -n identity fields in 02_process/00_meta",
+    "rg --files over RT2, replication2, tables, confirmatory, negative-control, state-dependence, and fix directories",
+    "sed -n on RT2 blocking findings, required fixes, replication2 status/report, confirmatory results, negative controls, state-dependence results, and active reports",
+    "shasum -a 256 on confirmatory_results.csv, negative_controls.csv, state_dependence_results.csv before and after edits",
+    "mkdir -p interp_fix",
+    "cp active reports to *__before_interp_fix.md quarantines",
+    "apply_patch for report wording, interpretation CSV, interpretation correction, and RT2 resolution JSON",
+    "python3 structural check for interpretation table coverage and RT2 blocker resolution",
+    "rg forbidden/overclaim wording scan on active corrected reports and interpretation correction",
+    "python3 manifest/report writer for worker artifacts and append-only logs"
+  ],
+  "tests_run": [
+    "Identity gate checked RUN_ROOT, run_manifest RUN_ID, plan SHA-256, RT2 blockers, and replication2 status.",
+    "SHA-256 checked original numeric tables before and after wording edits.",
+    "Python checked confirmatory_results_interpretation.csv covers all 7 confirmatory rows and all 4 RT2 blockers resolved=true.",
+    "rg wording scan found no forbidden exact phrases after final cleanup.",
+    "Quarantine existence check passed for all three before_interp_fix reports."
+  ],
+  "key_evidence": {
+    "RT2-BLOCK-001": "Primary delta Spearman +0.136833 is matched/exceeded by future_leaky +0.231817, ipv_time_shuffle +0.196823, counterpart_swap +0.168441, role_flip +0.136833, sign_flip +0.136833; state_shuffle/wrong_state degradation failed.",
+    "RT2-BLOCK-002": "replication2 status REPRODUCED_WITH_MINOR_DIFFS; corrected N=53; independent tuned delta Spearman 0.054669; reported-alpha refit delta Spearman 0.136833.",
+    "RT2-BLOCK-003": "S1 and S2 duplicate the primary 53 cells; S3 has n=6 with null/reverse behavior; safe_subset_agreement_count=2 is vacuous.",
+    "RT2-BLOCK-004": "Reports now state suggestive, nonsignificant (p=0.30, CI includes 0), non-generalizing (LOSO +0.017), non-IPV-specific favorable direction; robustness not established.",
+    "settled_conclusion": "No robust incremental predictive utility relative to the prespecified kinematic+safety baseline was demonstrated."
+  },
+  "acceptance_criteria_results": {
+    "identity_gate": "pass",
+    "numeric_tables_unchanged": true,
+    "confirmatory_results_interpretation_rows": 7,
+    "rt2_blockers_resolved": true,
+    "wording_scan": "pass after removing literal overclaim-prone phrases",
+    "quarantine_files_created": true
+  },
+  "spec_deviations": [
+    "No heavy recompute was performed.",
+    "No numeric result tables, freeze files, or feature tables were changed.",
+    "START_HERE.md was not changed because this run-local interpretation correction did not change canonical code entrypoints, data paths, test commands, or protected path guidance."
+  ],
+  "unresolved_blockers": [],
+  "recommended_next_codex_task": "Run a final reader-facing entry/status cleanup only if the study owner wants 00_entry pages or tier/status metadata aligned to this settled no-robust-utility conclusion.",
+  "numeric_table_hashes_after": {
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/confirmatory_results.csv": "a11b4d4ecc242346ede3d2236ea9aaa25fc2b7714d307f84dbf32f6ffce71144",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/negative_controls.csv": "32b5c5cc57ea7befd2181c9cdd1273ce72c95a5e614d916b4e103e21177568f7",
+    "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/01_results/tables/state_dependence_results.csv": "6689d58f86277e2fa547c03059ccf9e9047b301b24d314f89402c13669c72f19"
+  }
+}

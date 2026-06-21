@@ -1,0 +1,42 @@
+{
+  "figure_id": "fig07_state_dependence_boundary",
+  "title": "State-dependence boundary map",
+  "created_utc": "2026-06-20T16:21:47.932862Z",
+  "worker_id": "RQ003_phase10_report_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "nature_skill": {
+    "name": "nature-figure",
+    "version": "2.0.0",
+    "backend": "python",
+    "contract": "quantitative grid; SVG/PDF/PNG; editable SVG/PDF text; source CSV traceability"
+  },
+  "core_conclusion": "No interpretable exploratory state-dependence row reached q<=0.10, so state dependence does not rescue the primary result.",
+  "figure_archetype": "quantitative grid",
+  "target_output": "offline reader report and publication-editable static figure exports",
+  "final_size_inches": [
+    7.2,
+    4.8
+  ],
+  "panel_map": {
+    "a": "Strongest favorable and reverse exploratory rows.",
+    "b": "Minimum FDR q against the reporting threshold.",
+    "c": "Interpretable-row usage classes."
+  },
+  "evidence_hierarchy": {
+    "hero_evidence": "Strongest favorable and reverse exploratory rows.",
+    "controls_or_boundary": "Local strata are exploratory and cannot be presented as robustness or mechanism proof."
+  },
+  "statistics_notes": "Panel a shows Spearman rho with bootstrap 95% CIs; panel b compares minimum FDR q with the q<=0.10 threshold.",
+  "source_data": [
+    "state_dependence_results.csv",
+    "state_dependence_report.md"
+  ],
+  "image_integrity_notes": "No raster scientific image manipulation; all charts are generated from corrected tabular sources.",
+  "reviewer_risk": "Local strata are exploratory and cannot be presented as robustness or mechanism proof.",
+  "exports": {
+    "svg": "01_results/figures/fig07_state_dependence_boundary.svg",
+    "pdf": "01_results/figures/fig07_state_dependence_boundary.pdf",
+    "png": "01_results/figures/fig07_state_dependence_boundary.png",
+    "source_csv": "01_results/figures/fig07_state_dependence_boundary_source.csv"
+  }
+}

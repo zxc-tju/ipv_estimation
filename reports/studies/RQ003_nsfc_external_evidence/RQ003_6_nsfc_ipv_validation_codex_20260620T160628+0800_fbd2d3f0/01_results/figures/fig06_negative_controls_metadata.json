@@ -1,0 +1,42 @@
+{
+  "figure_id": "fig06_negative_controls",
+  "title": "Negative-control specificity diagnostic",
+  "created_utc": "2026-06-20T16:21:47.932862Z",
+  "worker_id": "RQ003_phase10_report_001",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "nature_skill": {
+    "name": "nature-figure",
+    "version": "2.0.0",
+    "backend": "python",
+    "contract": "quantitative grid; SVG/PDF/PNG; editable SVG/PDF text; source CSV traceability"
+  },
+  "core_conclusion": "Multiple controls match or exceed the primary delta Spearman, so the apparent favorable direction is not IPV-specific.",
+  "figure_archetype": "quantitative grid",
+  "target_output": "offline reader report and publication-editable static figure exports",
+  "final_size_inches": [
+    7.2,
+    4.8
+  ],
+  "panel_map": {
+    "a": "Primary and control deltas with uncertainty intervals.",
+    "b": "Count of controls matching or exceeding the primary estimate.",
+    "c": "Degradation controls that did not degrade as expected."
+  },
+  "evidence_hierarchy": {
+    "hero_evidence": "Primary and control deltas with uncertainty intervals.",
+    "controls_or_boundary": "Controls prevent an IPV-specific robustness claim."
+  },
+  "statistics_notes": "Panel a shows delta Spearman with bootstrap 95% CIs; hatched red markers match or exceed the primary estimate.",
+  "source_data": [
+    "negative_controls.csv",
+    "confirmatory_results.csv"
+  ],
+  "image_integrity_notes": "No raster scientific image manipulation; all charts are generated from corrected tabular sources.",
+  "reviewer_risk": "Controls prevent an IPV-specific robustness claim.",
+  "exports": {
+    "svg": "01_results/figures/fig06_negative_controls.svg",
+    "pdf": "01_results/figures/fig06_negative_controls.pdf",
+    "png": "01_results/figures/fig06_negative_controls.png",
+    "source_csv": "01_results/figures/fig06_negative_controls_source.csv"
+  }
+}

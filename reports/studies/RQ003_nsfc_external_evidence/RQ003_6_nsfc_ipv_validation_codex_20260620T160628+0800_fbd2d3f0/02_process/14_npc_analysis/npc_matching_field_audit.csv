@@ -1,0 +1,8 @@
+field,available,evidence,verdict
+initial_position,partial_yes,vehicle_perception_simulation_trajectory.log value fields include latitude/longitude; frame cache includes derived gaps but not raw x/y pose columns,usable only as pre-onset descriptive matching input
+initial_speed,yes,vehicle_perception_simulation_trajectory.log value field `speed`; frame cache has ego_speed_mps/npc_speed_mps after feature extraction,usable only as pre-onset descriptive matching input
+initial_pose_heading,partial_yes,vehicle_perception_simulation_trajectory.log value field `courseAngle`; pose frame convention not independently documented in Phase 6 inputs,partial descriptive input
+script_version,no,top-five manifests/log schema and rg search expose no script/version field,required field missing
+seed,no,top-five manifests/log schema and rg search expose no seed/random field,required field missing
+actor_identity,partial_yes,"cell-level counterpart_id/counterpart_name and log value `id` exist, but cross-session canonical identity stability is not proven",not enough for strict matching
+ego_not_yet_influencing_npc_state,no,"no open-loop marker, pre-influence flag, or independent NPC baseline trace found in allowed metadata",required state missing

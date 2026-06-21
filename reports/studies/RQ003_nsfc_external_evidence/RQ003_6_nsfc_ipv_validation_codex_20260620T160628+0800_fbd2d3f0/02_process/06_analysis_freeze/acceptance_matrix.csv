@@ -1,0 +1,12 @@
+claim_id,classification,required_evidence,pass_condition,reviewer_gate,confirmatory_status
+H4-C1,confirmatory,"Leave-one-team-out comparison of state+causal kinematics+safety versus same baseline plus D_comp/D_yield; within-fold scenario+area residualization; safe-subset agreement","Full model improves prespecified held-out metric over baseline and at least two safe subsets agree in IPV direction","G0R-COND-001; freeze reviewer; red-team review; independent reproduction","single confirmatory comparison"
+H1a-S1,sensitivity,"Outcome-free support/OOD/abstention map using Gate 0 thresholds","Primary sample remains mapped, high-support, non-A1, and collision-free; low-support frames abstain","measurement reviewer","not confirmatory"
+H1b-S1,sensitivity,"Conditional versus scalar/marginal summaries using training-fold-only preprocessing","State-conditioned summaries directionally align with primary comparison","freeze reviewer; red-team review","not confirmatory"
+H2-S1,sensitivity,"Directional tails versus absolute, p90, max, onset, persistence, and alternative windows","Sensitivity/discovery results align after FDR control; failures logged in tried.md","red-team review","not confirmatory"
+H4-SAFE,sensitivity,"S1, S2, and S3 outcome-independent safe subsets","At least two safe subsets agree in IPV direction before primary conclusion","freeze reviewer","required qualifier for confirmatory claim"
+H4-GEN-SCENE,sensitivity,"Leave-one-scenario-out fold results","Directionally compatible with leave-one-team-out; no significance headline replacement","red-team review","not confirmatory"
+H4-GEN-FAMILY,exploratory,"Leave-one-family-out A/B/C folds","Boundary evidence only; no significance headline","freeze reviewer","not confirmatory"
+H3-B1,blocked,"New blind behavior labels with at least two annotators and no team names, official scores, or IPV outputs","Blocked until blind labels exist","blind-annotation protocol review","blocked"
+EXP-RANK,exploratory,"Comprehensive score, area rank, and overall rank discovery analyses","FDR-controlled and labelled exploratory","red-team review","not confirmatory"
+EXP-WINDOW,exploratory,"p90, max, onset, latency, gain, phase, other windows, and all extra safe-subset combinations","FDR-controlled and labelled exploratory","red-team review","not confirmatory"
+EXP-PRIOR,exploratory,"Prior exploratory context recorded in tried.md","Never used to select Phase 4 thresholds, models, folds, or conclusions","freeze reviewer","not confirmatory"

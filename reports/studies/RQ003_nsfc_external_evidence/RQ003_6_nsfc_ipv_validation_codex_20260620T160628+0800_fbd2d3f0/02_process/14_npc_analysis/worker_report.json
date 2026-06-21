@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "worker_id": "RQ003_phase6_state_npc_001",
+  "role": "Phase 6 NPC boundary component",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated": "2026-06-20T21:51:52+08:00",
+  "feasibility_verdict": "not_identifiable_no_effect_analysis_run",
+  "missing_required_pre_onset_fields": [
+    "script_version",
+    "seed",
+    "ego_not_yet_influencing_npc_state"
+  ],
+  "available_partial_fields": [
+    "initial_position",
+    "initial_speed",
+    "initial_pose_heading",
+    "actor_identity"
+  ],
+  "framing_used": "matched opportunity structure only for hypothetical future use; no effect analysis run here",
+  "forbidden_matching_avoided": [
+    "post-interaction NPC trajectory",
+    "ego-influenced responses",
+    "post-treatment variables"
+  ],
+  "report_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/14_npc_analysis/npc_feasibility_and_boundary.md",
+  "field_audit_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/14_npc_analysis/npc_matching_field_audit.csv",
+  "acceptance_criteria_results": {
+    "explicit_feasibility_verdict": "PASS",
+    "pre_onset_only_matching_audit": "PASS",
+    "no_forbidden_matching_run": "PASS",
+    "non_identifiability_boundary_only": "PASS"
+  }
+}
