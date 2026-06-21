@@ -1,0 +1,84 @@
+{
+  "schema_version": "rq003_phase12_registrar_status_v1",
+  "worker_id": "RQ003_phase12_registrar_001",
+  "role": "Phase 12 registrar",
+  "run_id": "RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0",
+  "generated_local": "2026-06-21T00:41:45+0800",
+  "status": "PASS",
+  "identity_gate": {
+    "run_root_exists": true,
+    "run_manifest_run_id_matches": true,
+    "plan_sha256_matches": true,
+    "tier": "B",
+    "final_review_status": "PASS",
+    "result": "PASS"
+  },
+  "shared_edits": {
+    "reports/studies/RQ003_nsfc_external_evidence/README.md": "appended one RQ003_6 execution row",
+    "main_workflow.log": "appended one registrar task summary block",
+    "START_HERE.md": "added one latest RQ003 Tier B reader-entry pointer"
+  },
+  "proposals_created": [
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/proposed_knowledge_update.md",
+    "reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/proposed_decision_patch.diff"
+  ],
+  "not_modified": [
+    "STUDIES.md",
+    "reports/knowledge/RQ003_nsfc_external_evidence/decision.md",
+    "../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle"
+  ],
+  "start_here_update": {
+    "changed": true,
+    "reason": "The RQ003 latest stable Tier B reader-entry pointer changed after final review PASS."
+  },
+  "conflict_check": {
+    "result": "PASS",
+    "method": "Shared files were hashed during initial read and re-hashed immediately before editing.",
+    "second_pre_edit_hashes_matched_first": true,
+    "shared_file_hashes": {
+      "reports/studies/RQ003_nsfc_external_evidence/README.md": {
+        "pre_sha256": "9992b70cb4da810c8ca5c65a9e0d9c9e4881af3f6f6912f71bfa5e6eb79283a8",
+        "post_sha256": "64e9be469f133d0aae483968e94b16344fbfd2bcd69d2b1385851043e502e69f",
+        "edited": true
+      },
+      "STUDIES.md": {
+        "pre_sha256": "209295a4790739b4a2755db9ca853432af5df9820ff387e7e2fd8589e47d5e46",
+        "post_sha256": "209295a4790739b4a2755db9ca853432af5df9820ff387e7e2fd8589e47d5e46",
+        "edited": false
+      },
+      "START_HERE.md": {
+        "pre_sha256": "95b05439f0be8933aecb559b38a94734a101aad369a03c90e5409c0809a21dd4",
+        "post_sha256": "5f3583a7325f137e351d838dfde6bed899c9bbedf9aabae8eadb9ce6b7794f5e",
+        "edited": true
+      },
+      "main_workflow.log": {
+        "pre_sha256": "f7dd7a582085121ea5c018843bd12e9df8b4f6c18b04416fd296878a24d2e0d0",
+        "post_sha256": "8a23eb967e0c6153bcd128eba21480d9425de3fc9ad375dc2cd6e9946c6c21ad",
+        "edited": true
+      },
+      "reports/knowledge/RQ003_nsfc_external_evidence/decision.md": {
+        "pre_sha256": "337b3f54211675fb8763d40c20bea7f89503a34dfc1d5ded2961c0005c242344",
+        "post_sha256": "337b3f54211675fb8763d40c20bea7f89503a34dfc1d5ded2961c0005c242344",
+        "edited": false
+      }
+    }
+  },
+  "paper_repo": {
+    "touched": false,
+    "verification": "git -C ../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle status --short --branch returned only ## main...origin/main"
+  },
+  "git_context": {
+    "brief_git_head": "c23074a091f9ff57b1034144571f68f771db9d8d",
+    "observed_git_head_final": "394bb61a41cd224fc5c5366566039a5828b7ad70",
+    "branch_status": "## main...origin/main",
+    "note": "Brief GIT_HEAD did not match the observed repository HEAD. This was not one of the explicit blocked pre-write identity gates; no commit or push was performed."
+  },
+  "commit_push": {
+    "commit": "NOT_DONE",
+    "push": "NOT_DONE"
+  },
+  "spec_deviations": [
+    "main_workflow.log was appended with a binary-safe Python append because apply_patch could not decode the existing invalid UTF-8 bytes; the edit remained append-only."
+  ],
+  "unresolved_blockers": []
+}

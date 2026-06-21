@@ -19,3 +19,4 @@ Knowledge layer: `reports/knowledge/RQ003_nsfc_external_evidence/`
 | RQ003_3 | `RQ003_3_nsfc_open_explore_fleet_20260619/` | Isolated multi-agent open exploration. |
 | RQ003_4 | `RQ003_4_nsfc_open_explore_stdlib_20260619/` | Stdlib-only open exploration rerun. |
 | RQ003_5 | `RQ003_5_nsfc_open_explore_codex_20260619/` | Parallel Codex open exploration. |
+| RQ003_6 | `RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/` | Phase 12 registered Tier B final review PASS-with-PARTIAL (H3 blocked); run date 2026-06-20; reader entry `RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/00_entry/index.html`. |

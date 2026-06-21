@@ -1,0 +1,43 @@
+# RQ003 Phase 12 File Access Manifest
+
+Worker: RQ003_phase12_registrar_001
+Run: RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0
+Generated local time: 2026-06-21T00:41:45+0800
+
+## Identity Inputs Read
+
+path | sha256 | size_bytes | purpose
+--- | --- | ---: | ---
+reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/run_manifest.json | e6e6664f500a2ca30873b4091bdf2d98812e3f53d7b368e0ab33b841e6cfcc45 | 1312 | identity run ID gate
+reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/plan_sha256.txt | af665170903538eb0c36f0586f1a18062b4fdec89dd423f195f4919d039e51e3 | 65 | plan hash gate
+reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/18_tier_review/tier_decision.json | df5ee894b89c5e0692ff3d8e7f83d678f4859c0e2dbf4dbbcf4b1fe8d443b24e | 6434 | Tier B gate
+reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/20_final_review/final_review_status.json | cdb54159f555291867090ceb26ed7a0e05177be7edd966f9def52f0f67ce47cf | 5817 | final review PASS gate
+reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/README.md | e71a733a7054d310e686b911a4df9a8aa5ac5052b41802bdd3b196e99f6eab0c | 799 | run summary context
+reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/TRACEABILITY.md | 4469516d904a7cbd8e7d5fff5396198100e9a57a2c485d771e982e4c1c341ef9 | 2722 | traceability context
+
+## Shared Files Re-Read Before Edit
+
+path | first_pre_sha256 | second_pre_sha256 | post_sha256 | action
+--- | --- | --- | --- | ---
+reports/studies/RQ003_nsfc_external_evidence/README.md | 9992b70cb4da810c8ca5c65a9e0d9c9e4881af3f6f6912f71bfa5e6eb79283a8 | 9992b70cb4da810c8ca5c65a9e0d9c9e4881af3f6f6912f71bfa5e6eb79283a8 | 64e9be469f133d0aae483968e94b16344fbfd2bcd69d2b1385851043e502e69f | appended RQ003_6 execution row
+STUDIES.md | 209295a4790739b4a2755db9ca853432af5df9820ff387e7e2fd8589e47d5e46 | 209295a4790739b4a2755db9ca853432af5df9820ff387e7e2fd8589e47d5e46 | 209295a4790739b4a2755db9ca853432af5df9820ff387e7e2fd8589e47d5e46 | read only; proposal only
+START_HERE.md | 95b05439f0be8933aecb559b38a94734a101aad369a03c90e5409c0809a21dd4 | 95b05439f0be8933aecb559b38a94734a101aad369a03c90e5409c0809a21dd4 | 5f3583a7325f137e351d838dfde6bed899c9bbedf9aabae8eadb9ce6b7794f5e | added RQ003_6 reader-entry pointer
+main_workflow.log | f7dd7a582085121ea5c018843bd12e9df8b4f6c18b04416fd296878a24d2e0d0 | f7dd7a582085121ea5c018843bd12e9df8b4f6c18b04416fd296878a24d2e0d0 | 8a23eb967e0c6153bcd128eba21480d9425de3fc9ad375dc2cd6e9946c6c21ad | appended registrar summary block
+reports/knowledge/RQ003_nsfc_external_evidence/decision.md | 337b3f54211675fb8763d40c20bea7f89503a34dfc1d5ded2961c0005c242344 | 337b3f54211675fb8763d40c20bea7f89503a34dfc1d5ded2961c0005c242344 | 337b3f54211675fb8763d40c20bea7f89503a34dfc1d5ded2961c0005c242344 | read only; proposed patch only
+
+Conflict check result: PASS. All second pre-edit hashes matched the first
+pre-edit hashes.
+
+## Write Scope Used
+
+- reports/studies/RQ003_nsfc_external_evidence/README.md
+- main_workflow.log
+- START_HERE.md
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/proposed_knowledge_update.md
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/proposed_decision_patch.diff
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/registrar_report.md
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/registrar_status.json
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/worker_report.json
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/file_access_manifest.txt
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/artifact_manifest.csv
+- reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/02_process/00_meta/artifact_index.csv

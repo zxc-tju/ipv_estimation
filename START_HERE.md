@@ -27,6 +27,14 @@ question index in `STUDIES.md`.
 - InterHub helper/report scripts: `pipelines/interhub/tools/`.
 - Old root wrappers are archived under `archived/compat_wrappers_20260619/`.
 
+## Convenience Launchers
+
+- macOS double-click Terminal launchers live at
+  `scripts/launch_claude.command` and `scripts/launch_codex.command`.
+- Each launcher enters this project root, then starts the corresponding CLI.
+  If the CLI command is missing, the Terminal window stays open with the
+  current directory and PATH for diagnosis.
+
 ## Canonical Knowledge And Report Paths
 
 - Study index and status board: `STUDIES.md`.
@@ -84,11 +92,14 @@ the execution version.
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_2_nsfc_detailed_synthesis_20260619/00_entry/index.html`
 - RQ003 parallel Codex open exploration:
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_5_nsfc_open_explore_codex_20260619/00_entry/index.html`
+- RQ003 Tier B NSFC IPV validation final reader:
+  `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/00_entry/index.html`
 
 ## How To Run Tests
 
-- Current working tree has no active `tests/` suite. If tests are restored,
-  run: `python -m pytest tests -q`.
+- Lightweight shortcut-script checks:
+  `python3 -m unittest tests.test_shortcut_scripts -q`.
+- If a broader pytest suite is restored, run: `python -m pytest tests -q`.
 - Baseline syntax check for active code:
   `python -m py_compile src/sociality_estimation/core/agent.py src/sociality_estimation/core/ipv_estimation.py src/sociality_estimation/planning/Lattice.py src/sociality_estimation/planning/lattice_planner.py src/sociality_estimation/planning/utility.py pipelines/interhub/process_interhub.py pipelines/simulation/simulator.py`.
 - One-case InterHub smoke check:
