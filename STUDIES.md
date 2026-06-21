@@ -40,7 +40,7 @@ execution folder is the execution version number, not a new research question.
 |---|---|---|---|---|---|
 | RQ001 | Online IPV interval deployability | review | `reports/studies/RQ001_online_ipv_interval/` | `reports/knowledge/RQ001_online_ipv_interval/` | verifier method/results |
 | RQ002 | Self-anchor as group norm | review | `reports/studies/RQ002_self_anchor_group_norm/` | `reports/knowledge/RQ002_self_anchor_group_norm/` | verifier validity/limitations |
-| RQ003 | NSFC external evidence | review | `reports/studies/RQ003_nsfc_external_evidence/` | `reports/knowledge/RQ003_nsfc_external_evidence/` | external validation |
+| RQ003 | NSFC external evidence | accepted | `reports/studies/RQ003_nsfc_external_evidence/` | `reports/knowledge/RQ003_nsfc_external_evidence/` | external validation -- Tier B; top-five; no robust increment |
 | RQ004 | IPV state-space conclusions | review | `reports/studies/RQ004_ipv_state_space/` | `reports/knowledge/RQ004_ipv_state_space/` | state-space / norm framing |
 | RQ005 | NMI draft evidence gap | review | `reports/studies/RQ005_nmi_evidence_gap/` | `reports/knowledge/RQ005_nmi_evidence_gap/` | narrative risk review |
 | RQ006 | Sigma sensitivity | archived-review | `reports/studies/RQ006_sigma_sensitivity/` | `reports/knowledge/RQ006_sigma_sensitivity/` | robustness appendix |
