@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-06-20.
+Last reviewed: 2026-06-21.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the research
@@ -95,6 +95,22 @@ the execution version.
 - RQ003 Tier B NSFC IPV validation final reader:
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/00_entry/index.html`
 
+## Latest Review Packets
+
+- RQ001 Codex review:
+  `reports/knowledge/RQ001_online_ipv_interval/reviews/codex_review.md`
+- RQ002 Codex review:
+  `reports/knowledge/RQ002_self_anchor_group_norm/reviews/codex_review.md`
+- RQ004 Codex review:
+  `reports/knowledge/RQ004_ipv_state_space/reviews/codex_review.md`
+- RQ005 Codex review:
+  `reports/knowledge/RQ005_nmi_evidence_gap/reviews/codex_review.md`
+- RQ006 Codex review:
+  `reports/knowledge/RQ006_sigma_sensitivity/reviews/codex_review.md`
+
+These review packets are evidence-boundary reviews, not accepted
+`decision.md` freezes.
+
 ## How To Run Tests
 
 - Lightweight shortcut-script checks:
@@ -130,3 +146,7 @@ the execution version.
   group-norm verifier; use situation floor plus out-of-support abstention.
 - NSFC evidence is useful for external design and hypothesis mining, but current
   reports do not freeze formal verifier-validation claims.
+- RQ004 supports a state-conditioned IPV response surface, not a universal
+  state-space law; RQ005 supports a verifier framework/gap record, not deployed
+  early warning or planner performance; RQ006 supports sigma=0.1 as the healthier
+  current source, while sigma remains a numeric sensitivity boundary.
