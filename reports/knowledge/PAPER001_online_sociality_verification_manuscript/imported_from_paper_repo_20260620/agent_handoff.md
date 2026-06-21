@@ -33,3 +33,104 @@ handoff notes.
 Evidence/checks: Verified the paper repository no longer has a local
 `knowledge/` directory after the move. The research repository now uses only
 `reports/studies/` and `reports/knowledge/` at the first level under `reports/`.
+
+## 2026-06-21 - Claude (Cowork)
+
+Files changed: prepared a patch against the paper repo `main.tex` (Methods
+section only); not yet pushed/merged.
+
+Summary: Rewrote `\section{Methods}` into the three-part verifier spine (one
+signal, one calibration, one guard) per
+`analysis_reports/methods_revision_memo_online_verifier.md`. Added an Overview
+subsection and a new Guard subsection (situational floor + out-of-support
+abstention, framed as a validity envelope, not a second model); added the
+"deliberately standard tools" rationale; applied the E1 fix (calibration target
+moved to a post-anchor, non-overlapping window) in prose and Algorithm 1;
+produced guarded Algorithm 1/2; made the signed-deviation convention explicit
+(competitive side drives the soft cost). NSFC kept in `\planned{}`. Diff: 1 file,
++104/-36.
+
+Claim discipline: guard presented as a method component only; its anti-laundering
+effect described as assessed by the planned consistent-deviator stress test, to
+stay consistent with the current Discussion and with RQ002 (`pending-review`, no
+frozen claim). No Results/Discussion numbers were changed.
+
+Open items flagged for author review (in the PR notes): (1) R2/R3 coverage/width
+must be recomputed against the new post-anchor target before any strict
+no-leakage wording — left as a `% TODO(review)`; (2) confirm the deviation sign
+convention vs the R4 one-sided soft-cost wording; (3) upgrade norm-laundering in
+R3/Discussion from "planned" to "tested" only after RQ002 is frozen (separate
+PR).
+
+Evidence/checks: Patch applies cleanly (`git apply --check`) and reproduces the
+target file; compiles under `pdflatex` (2 passes, 17-page PDF, no LaTeX errors)
+with `algorithm`/`algorithmic` stubbed because the build sandbox lacks them — the
+unedited `main.tex` fails on the same missing package, so the edits themselves
+are clean. Could not push from the sandbox (no GitHub credentials; `gh` absent);
+delivered as `methods_three_part_verifier.patch` + PR instructions for the author
+to push as branch `methods/three-part-verifier`.
+
+## 2026-06-21 - Claude (Cowork) - PR#2 v2 reframe
+
+Files changed: paper repo `main.tex` rewritten on branch `methods/three-part-verifier`
+(written to disk; author to commit+push). Supersedes the v1 three-part self-anchor draft.
+
+Summary: Per the author's PR#2 revision plan, re-architected the manuscript away from the
+ego self-anchor narrative. Verification is now the membership test
+theta_i(t) in I_human(x_t, theta_j(t)): ego current rolling IPV against a conformally
+calibrated human interval conditioned on current state and the COUNTERPART's current IPV.
+Ego self-anchor / early-window IPV withdrawn as the norm variable and demoted to a sharpness
+ablation (M4), citing the MUST REVISE boundary (E1 early/late time-separation and E5
+external-outcome adjudication not passed). Post-anchor future IPV dropped as target; target is
+the same-window current rolling IPV used at deployment. Edits span Abstract, Introduction
+(contribution 3 rewritten), Results (restructured to: state-dependence; causal online
+estimability; counterpart-conditioned interval; conformal+abstention; planner channel;
+[PLANNED] external), Discussion, Methods (current-IPV signal / counterpart-conditioned
+conditional-quantile norm / split-conformal on final interval with case+scenario 4-way split /
+support-OOD ABSTAIN / two one-sided deviations / four verdicts / PET-as-offline-only), both
+algorithms, figure captions (1,3,4,5,6), and complexity (dropped O(1) claim -> measured
+latency).
+
+Claim discipline: all un-recomputed performance numbers removed from Abstract/Results/figures
+(42%, 0.902, 0.485, A/B, injection 3.0->12.9/0.252 etc.) and marked [PLANNED]; kept only
+state-dependence (+0.058..-0.034, LODO MAE 0.142) and causal reconstruction (0.281 vs 0.993,
+MAE 0.027). No numbers invented.
+
+Verification: compiles under pdflatex (2 passes, 17-page PDF, no errors; algorithm/algorithmic
+stubbed in sandbox). Grep-confirmed: withdrawn numbers count 0; four verdict names consistent
+across prose/algorithms/figures; no em-dashes in prose.
+
+Outstanding (acceptance criterion 15): an INDEPENDENT review of leakage / split integrity /
+score-direction / claim-evidence consistency is still required and was not performed by the
+author of the edit. Also: M3 and all [PLANNED] quantitative results require the code/data
+pipeline (separate from this manuscript edit). Relevant RQ decisions remain RQ002
+pending-review (self-anchor-only flagged unsafe) and RQ003 accepted Tier-B-only.
+
+## 2026-06-21 - Claude (Cowork) - PR#2 v3 review-hardening
+
+Files changed on branch methods/three-part-verifier: main.tex and new
+.github/workflows/ci.yml (written to disk; author to commit+push).
+
+Summary: Applied the author's v3 plan A1-A8 + B on top of v2. A1 removed the misleading
+"risk-excluding" wording (the verifier excludes observed PET and post-hoc labels but uses
+causal risk proxies as context); A2 added a feature contract that excludes target-proximal
+concurrent ego accel/braking and the estimator's ego reward components (anti-tautology),
+limiting M3 to position/velocity at-or-before the scoring instant and moving concurrent ego
+kinematics to a sensitivity model; A3 stated the finite-sample conformal radius, gate
+discipline, and that coverage is marginal (conditional/post-abstention/source-shift coverage
+empirical, not assumed); A4 softened "IPV recovered" to estimator agreement and added an
+Implementation-details paragraph (window ~1-2 s; counterpart selection; IPV uncertainty;
+lane/route-unreliable -> ABSTAIN); A5 added scene/case partition integrity, per-case weight
+normalisation, LOSO source isolation, clustered CIs; A6 separated ABSTAIN (verification state)
+from planner fallback (control action); A7 enforced non-crossing quantiles; A8 defined
+interaction progress causally. B2 fixed the Fig 1 placeholder; B4 added a CI workflow (LaTeX
+compile, undefined-ref/citation check, package check, lint).
+
+Verification: compiles under pdflatex (2 passes, 18-page PDF, no errors; algorithm/algorithmic
+stubbed in sandbox). Grep-confirmed: risk-excluding count 0; target-proximal contract present;
+finite-sample radius/marginal-coverage/non-crossing/causal-progress all present; verdict names
+consistent. Full patch methods_v3_conditional_norm.patch (+304/-203) reproduces v3.
+
+Still open: [PLANNED] quantitative results need the code/data pipeline; acceptance criterion 15
+(independent leakage/split/score-direction/claim-evidence review) not yet performed; exact
+window length and estimator hyper-parameters deferred to Code Availability.
