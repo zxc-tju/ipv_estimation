@@ -1362,3 +1362,9 @@ Outcome: Rechecked the existing RQ001/RQ002 review files and found they were pen
 Artifacts: reports/knowledge/RQ001_online_ipv_interval/reviews/codex_review.md; reports/knowledge/RQ002_self_anchor_group_norm/reviews/codex_review.md.
 Verification: Added START_HERE.md links for the two additional review packets; reran file-existence/status checks and git diff --check for modified docs/log.
 Maintenance: START_HERE.md now lists RQ001, RQ002, RQ004, RQ005, and RQ006 Codex review packets; RQ003 remains governed by its existing filed Claude review and accepted decision.
+
+[2026-06-21T21:54:28+0800] Task: Inspect, organize, and push current project changes.
+Status: completed locally; remote push performed after verification.
+Outcome: Fast-forwarded from origin/main before organizing local work; grouped current changes into focused commits for Codex review packets, PAPER001 handoff notes, and RQ003_8/scaffolded launcher assets. Kept ignored RQ003_8 result tables and caches out of git.
+Verification: Ran launcher unittest, shell syntax checks for macOS launchers, py_compile for RQ003_8 reusable scripts, git diff --check, and git check-ignore for ignored result/cache paths.
+Maintenance: Logged this organization workflow in main_workflow.log; START_HERE.md already reflected the durable review-packet operating facts from the preceding review task.

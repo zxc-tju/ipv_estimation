@@ -1,0 +1,32 @@
+{
+  "later_phases": {
+    "0B_inventory": "pending",
+    "analysis_freeze": "pending",
+    "baseline_models": "pending",
+    "blind_annotation": "pending",
+    "confirmatory_analysis": "pending",
+    "directional_ipv": "PASS",
+    "final_review": "pending",
+    "gate0_measurement": "pending",
+    "gate_minus1": "pending",
+    "independent_replication": "pending",
+    "negative_controls": "pending",
+    "npc_analysis": "pending",
+    "red_team": "pending",
+    "report_build": "pending",
+    "state_dependence": "pending",
+    "tier_review": "pending"
+  },
+  "notes": "Phase 0A created metadata and path skeletons only.",
+  "phase_0A": {
+    "completed_at": "2026-06-20T22:16:46.313087+08:00",
+    "status": "complete",
+    "worker_id": "rq003_p0a_bootstrap"
+  },
+  "phase_4A_directional_ipv": {
+    "completed_at": "2026-06-21T04:33:27+08:00",
+    "status": "PASS",
+    "worker_id": "rq003_p4a_directional_ipv"
+  },
+  "run_id": "RQ003_8_nsfc_ipv_validation_codex_20260620T221646+0800_37bb9424"
+}
