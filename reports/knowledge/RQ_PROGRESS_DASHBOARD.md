@@ -2,7 +2,8 @@
 
 Last synchronized: **2026-06-22**  
 Scope: `PAPER001/PAPER002` and `RQ001–RQ013`  
-Machine-readable registry: [`rq_progress_registry.csv`](rq_progress_registry.csv)
+Machine-readable registry: [`rq_progress_registry.csv`](rq_progress_registry.csv)  
+Central plan index: [`../plans/README.md`](../plans/README.md)
 
 ## Purpose
 
@@ -44,7 +45,7 @@ accepted decision or a reviewed execution artifact.
 | `planning` | Scope or plan is being drafted. |
 | `approved` | Plan is approved and ready for execution. |
 | `running` | Execution is active. |
-| `review` | Results exist and require synthesis or independent review. |
+| `review` | Results or a claimed implementation exist and require independent verification. |
 | `accepted` | Paper-safe claims are frozen in `decision.md`. |
 | `writing` | Accepted claims are being applied in the manuscript repository. |
 | `done` | Research and paper handoff are complete. |
@@ -68,31 +69,41 @@ accepted decision or a reviewed execution artifact.
 | ID | Work group / topic | Status | Stage | Priority | Current evidence position | Hard blocker or boundary | Next gate |
 |---|---|---:|---:|---:|---|---|---|
 | **PAPER001** | Existing manuscript context | `reference` | S8 | P1 | Historical manuscript context and prior drafts retained | Not a claim-decision source; RQ decisions govern paper wording | Continue as archive/reference |
-| **PAPER002** | Group 0 — dynamic-IPV v4 evidence architecture | `planning` | S0 | **P0** | New evidence chain agreed in discussion | `structure.md v4` and claims register do not yet exist | Approve v0 paper-governance plan |
+| **PAPER002** | Group 0 — dynamic-IPV v4 evidence architecture | `review` | S4 | **P0** | Human lead reports that the paper project was modified directly | The modified artifact has not yet been verified in the research dashboard; current visible paper-repository `main` still needs commit/branch reconciliation | Register the exact paper commit or branch and perform independent structure/claim review |
 | **RQ001** | Legacy online interval deployability | `review` | S7 | P1 | Strong engineering prior for route-conditioned self-anchor interval; usable only as legacy evidence / M4 ablation under the new paper logic | Decision still pending; old target/model do not establish the new M3 dynamic norm | Freeze bounded decision and protocol crosswalk |
 | **RQ002** | Self-anchor group-norm validity | `review` | S7 | P1 | Two reviews reject self-anchor-only normative authority and identify norm-laundering risk | Formal `decision.md` still pending | Freeze rejection/ablation boundary |
 | **RQ003** | NSFC external evidence | `accepted` | S7 | P1 | Tier B feasibility, diagnostic-alignment, abstention, replication, and transfer-boundary evidence | No robust IPV-specific increment; H3 blind labels blocked; full universe not analysis-ready | Reuse only as pilot/boundary evidence |
 | **RQ004** | Episode-level IPV state organization | `review` | S7 | P1 | Supports state-conditioned response-surface framing, not a universal law | Exact paper-safe decision not frozen | Freeze R1 episode-level claim boundary |
 | **RQ005** | Manuscript evidence-gap and leakage governance | `review` | S7 | P1 | Supports framework, leakage contract, and claim downgrades | Decision not frozen | Freeze governance decision |
 | **RQ006** | Sigma sensitivity | `archived-review` | S7 | P3 | Sigma=0.1 is healthier; IPV magnitude remains parameter-sensitive | Not a substantive verifier-validity result | Retain as robustness appendix evidence |
-| **RQ007** | Group 1 — interaction-conditioned IPV estimability | `planning` | S1 | **P0** | Existing `sigma01_ipv_timeseries.csv` provides the primary online IPV time-series input | Data dictionary, uncertainty meaning, interaction-opportunity definition, and estimability gate are not frozen | Approve v0 plan; begin provenance and field audit |
-| **RQ008** | Group 2A/2B — InterHub temporal IPV discovery and confirmation | `planning` | S1 | **P0** | Existing time-series enables open temporal discovery | Discovery/confirmation split and valid-window contract not frozen; formal confirmation depends on RQ007 | Approve discovery plan and reserve untouched confirmation set |
+| **RQ007** | Group 1 — interaction-conditioned IPV estimability | `planning` | S1 | **P0** | v0 plan drafted; existing `sigma01_ipv_timeseries.csv` is the primary online IPV time-series input | Data dictionary, uncertainty meaning, interaction-opportunity definition, and estimability gate are not frozen | Independent plan review, then provenance and field audit |
+| **RQ008** | Group 2A/2B — InterHub temporal IPV discovery and confirmation | `planning` | S1 | **P0** | v0 discovery plan drafted with discovery/confirmation separation | Protected split and valid-window contract are not frozen; formal confirmation depends on RQ007 | Independent plan review and protected confirmation-set reservation |
 | **RQ009** | Dynamic counterpart-conditioned human envelope | `planning` | S0 | P1 | New primary model is intended to be M3: context + counterpart current IPV; M4 self-history is ablation only | Depends on RQ007 estimability contract and selected RQ008 temporal variables | Draft after RQ007 inventory and RQ008 discovery protocol |
-| **RQ010** | Group 4A/4B — WOD-E2E feasibility, tracking, and human preference validity | `planning` | S1 | **P0** | No local dataset execution exists yet | Dataset not downloaded; actor-track availability, access, licence, tracking need, and compute/HPC requirements unknown | Complete official-data and tracking-feasibility audit |
-| **RQ011** | Group 5A — OnSite full-universe and run-level readiness | `planning` | S1 | **P0** | RQ003 top-five package is a useful pilot | Full-universe mapping, run identity, repeated-run status, and selection bias are unresolved | Approve audit plan; build canonical run crosswalk |
-| **RQ012** | Group 6A — OnSite event ontology and blind-annotation readiness | `planning` | S1 | **P0** | Existing anonymized 30-case validation sample and templates can be reused | No real two-human annotations; event thresholds and log-field support not frozen | Approve event/annotation plan and coordinate real annotators |
+| **RQ010** | Group 4A/4B — WOD-E2E feasibility, tracking, and human preference validity | `planning` | S1 | **P0** | v0 access/schema/tracking/HPC feasibility plan drafted | Dataset not downloaded; actor-track availability, access, licence, tracking need, and compute requirements unknown | Independent plan review, then official-source feasibility audit |
+| **RQ011** | Group 5A — OnSite full-universe and run-level readiness | `planning` | S1 | **P0** | v0 full-universe readiness plan drafted; RQ003 top-five package remains the pilot | Full-universe mapping, run identity, repeated-run status, and selection bias are unresolved | Independent plan review, then canonical run crosswalk |
+| **RQ012** | Group 6A — OnSite event ontology and blind-annotation readiness | `planning` | S1 | **P0** | v0 event/annotation readiness plan drafted; existing anonymized 30-case sample and templates can be reused after audit | No real two-human annotations; event thresholds and log-field support not frozen | Independent plan review, event-field audit, and real annotator coordination |
 | **RQ013** | Beyond-safety incremental validity | `planning` | S0 | P2 | RQ003 provides a negative/boundary prior | Must wait for frozen RQ009 predictions and independent WOD/OnSite outcomes from RQ010–RQ012 | Draft only after upstream gates pass |
 
 ## Active execution waves
 
 ### Wave A — start now
 
-- **PAPER002:** create `structure.md v4`, claims register, v3→v4 crosswalk, and version-protection protocol.
-- **RQ007:** audit `sigma01_ipv_timeseries.csv` and define interaction opportunity, uncertainty, and provisional estimability.
-- **RQ008A:** perform open temporal discovery while preserving an untouched confirmation split.
-- **RQ010A:** audit WOD-E2E release/access/schema; decide whether tracking is needed and whether HPC is required.
-- **RQ011A:** audit OnSite full-universe mappings, run identities, available fields, and repeated-run feasibility.
-- **RQ012A:** freeze automatic event ontology and organize real two-human blinded annotation.
+- **PAPER002:** verify the direct paper-project modification, register its exact commit/branch, and review the v4 structure and claim boundaries.
+- **RQ007:** review the v0 plan, then audit `sigma01_ipv_timeseries.csv` and define interaction opportunity, uncertainty, and provisional estimability.
+- **RQ008A:** review the v0 plan, reserve an untouched confirmation set, then perform open temporal discovery.
+- **RQ010A:** review the v0 plan, then audit WOD-E2E release/access/schema and decide whether tracking and HPC are required.
+- **RQ011A:** review the v0 plan, then audit OnSite full-universe mappings, run identities, available fields, and repeated-run feasibility.
+- **RQ012A:** review the v0 plan, then freeze automatic event ontology and organize real two-human blinded annotation.
+
+### Wave A plan documents
+
+| RQ | Plan |
+|---|---|
+| RQ007 | `reports/plans/RQ007_plan_v0_interaction_conditioned_ipv_estimability_20260622.md` |
+| RQ008 | `reports/plans/RQ008_plan_v0_interhub_temporal_ipv_discovery_20260622.md` |
+| RQ010 | `reports/plans/RQ010_plan_v0_wod_e2e_tracking_feasibility_20260622.md` |
+| RQ011 | `reports/plans/RQ011_plan_v0_onsite_full_universe_readiness_20260622.md` |
+| RQ012 | `reports/plans/RQ012_plan_v0_onsite_event_annotation_readiness_20260622.md` |
 
 ### Wave B — start only after upstream gates
 
@@ -106,7 +117,7 @@ accepted decision or a reviewed execution artifact.
 
 - **RQ013:** beyond-safety incremental validity using frozen predictions and independent outcomes.
 - Independent red team, replication, and cross-RQ claim review.
-- PAPER002 manuscript handoff using accepted `decision.md` files only.
+- PAPER002 final manuscript update using accepted `decision.md` files only.
 
 ## Dependency map
 
@@ -183,7 +194,7 @@ Rules:
 
 ## Current program-level blockers
 
-- The manuscript is still governed by a self-anchor v3 structure rather than the new dynamic-IPV v4 evidence architecture.
+- PAPER002 was reportedly modified directly in the paper project, but the exact commit/branch and independent review are not yet registered here.
 - RQ001, RQ002, RQ004, and RQ005 have review material but no accepted `decision.md` claim slate.
 - RQ007 has not yet frozen how interaction opportunity and IPV estimability are defined.
 - RQ008 lacks a committed discovery/confirmation split.
@@ -197,3 +208,4 @@ Rules:
 | Date | Change |
 |---|---|
 | 2026-06-22 | Initialized program dashboard for PAPER001/PAPER002 and RQ001–RQ013; defined active waves, dependencies, synchronization rules, and current blockers. |
+| 2026-06-22 | Created centralized `reports/plans/` and drafted Wave A plans for RQ007, RQ008, RQ010, RQ011, and RQ012; recorded PAPER002 as directly modified but pending artifact verification. |
