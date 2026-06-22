@@ -3,6 +3,18 @@
 This is the interpretation layer of the research knowledge base. It is now the
 shared home for ChatGPT, Claude Code, Codex, and human review records.
 
+## Program Dashboard
+
+The program-level status, dependencies, blockers, and next gates for all active
+and planned research questions are tracked here:
+
+- [`RQ_PROGRESS_DASHBOARD.md`](RQ_PROGRESS_DASHBOARD.md) — human-readable board.
+- [`rq_progress_registry.csv`](rq_progress_registry.csv) — machine-readable status registry.
+
+Update both files whenever an RQ changes program status, stage, blocker, latest
+artifact, or next action. An RQ may be marked `accepted` only when its
+`decision.md` freezes the accepted/rejected/deferred claim slate.
+
 Each RQ has exactly one knowledge folder, and the folder stem matches the
 corresponding execution folder in `reports/studies/`.
 
