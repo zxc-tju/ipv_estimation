@@ -1,0 +1,44 @@
+{
+  "run_id": "RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e",
+  "rq": "RQ010A",
+  "study_type": "feasibility-only",
+  "overall_status": "complete",
+  "git_head_at_start": "38063a2ff9cdc717098cf3f821c2bb162a0ac1d9",
+  "plan_sha256": "d9988309a803dc443cfd2c9bcde2f75e078c8cd87e57a036828f0a13e1778d87",
+  "completed": "2026-06-23 (+0800)",
+  "note": "Run-root metadata files (this file, README.md, TRACEABILITY.md) were lost mid-run (OneDrive sync + concurrent RQ008 fleet) and recreated by the orchestrator at finalization to reflect the actual final state. All 28 substantive deliverables verified intact.",
+  "phases": {
+    "0_bootstrap": "complete",
+    "1_plan_review": "complete (BLOCKED -> 3 blocking closed via PLAN_REVIEW_ADDENDUM B1/B2/B3)",
+    "2_official_sources": "complete",
+    "3_access_license": "complete (GATE_010_0_PASS)",
+    "4_field_crosswalk": "complete (GATE_010_1: T2_FULL_TRACKING_REQUIRED)",
+    "5_tracking_options": "complete (preferred Route 4, fallback Route 5)",
+    "6_quality_gate": "complete (outcome-blind)",
+    "7_compute_budget": "complete (HPC=BLOCKED_PENDING_ACCESS)",
+    "8_pilot_plan": "complete (N=80, plan-only)",
+    "9_actor_protocol": "complete",
+    "10_independent_review": "complete (GATE_010_3_INTERMEDIATE=PASS_WITH_FIXES)",
+    "11_red_team": "complete (FIX_REQUIRED)",
+    "11b_fixer": "complete (RT-01/RT-02/P10-P4 closed)",
+    "11c_red_team_reverify": "complete (RED_TEAM_REVERIFY_STATUS=CLEAR)",
+    "12_figures_html": "complete (3 Nature figures + offline HTML, verified no external refs)",
+    "13a_final_review": "complete (FINAL_REVIEW_STATUS=PASS)",
+    "13b_registration": "complete"
+  },
+  "headline_verdict": {
+    "tracking_need": "T2_FULL_TRACKING_REQUIRED",
+    "preferred_route": "Route 4 (adapt existing multi-camera 3D/BEV tracker)",
+    "fallback_route": "Route 5 (custom detection->association->BEV->tracking pipeline)",
+    "gate_010_0_access_license": "PASS (Waymo non-commercial research permitted)",
+    "hpc_decision": "BLOCKED_PENDING_ACCESS",
+    "rq009_interface_status": "provisional_contract",
+    "red_team": "CLEAR (after fix + re-verify)",
+    "full_m3_preference_validation": "NOT yet feasible directly; requires tracking + map/critical-frame resolution; this round is feasibility-only (no download, no tracker, no IPV, no rating analysis)"
+  },
+  "entry_points": {
+    "report": "90_report/index.html",
+    "entry": "00_entry/index.html",
+    "report_alias": "01_results/exports/wod_feasibility_report.html"
+  }
+}

@@ -1423,3 +1423,13 @@ Status: completed.
 Outcome: Verified current branch was already pushed and clean, updated GitHub PR #1 body to reflect the final RQ012A/on-site all-team handoff state, merged PR #1 into main with merge commit 3a917839, cleared a stale zero-byte origin/main lock after confirming no active Git process, fetched origin, and fast-forwarded local main to origin/main.
 Verification: PR #1 state is MERGED; GitHub reported merge commit 3a917839; local main fast-forwarded to origin/main; working tree was clean before this workflow-log entry.
 Maintenance: Logged this PR-handling workflow in main_workflow.log; START_HERE.md already reflected all-team dataset ignore policy and RQ012A operating facts.
+
+=== 2026-06-23 20:39 +0800 RQ010A WOD-E2E tracking feasibility — COMPLETE ===
+Orchestrated (Claude=controller, Codex CLI gpt-5.5 xhigh execution; figures by Nature-figure skill, user-approved).
+RUN_ID: RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e
+Verdict: T2_FULL_TRACKING_REQUIRED (WOD-E2E public schema lacks surrounding-actor tracks, map geometry, and a verified WOMD/WOD crosswalk; M3 not directly runnable).
+Routes: preferred Route 4 (adapt existing multi-camera 3D/BEV tracker), fallback Route 5 (custom pipeline).
+Gate 010-0 access/licence: PASS (Waymo non-commercial research). Gate 010-1: T2. Gate 010-2 HPC: BLOCKED_PENDING_ACCESS (official size/throughput sign-in-gated). Gate 010-3 review: PASS_WITH_FIXES. Red team: FIX_REQUIRED -> fixed -> CLEAR.
+Pilot N=80 rating-blind plan-only (needs user authorization). rq009_interface_status=provisional_contract.
+Report: reports/studies/RQ010_wod_e2e_tracking_feasibility/RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e/90_report/index.html (offline, 3 Nature figures). Feasibility-only: no download/tracker/IPV/rating analysis. RQ010B not yet feasible directly.
+Note: run-root README/TRACEABILITY/execution_status were lost to OneDrive/concurrent-fleet churn mid-run and recreated at finalization; all 28 substantive deliverables verified intact.
