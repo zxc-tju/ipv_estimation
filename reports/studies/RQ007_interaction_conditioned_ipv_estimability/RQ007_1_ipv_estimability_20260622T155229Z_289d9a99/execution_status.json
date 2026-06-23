@@ -1,0 +1,77 @@
+{
+  "run_id": "RQ007_1_ipv_estimability_20260622T155229Z_289d9a99",
+  "run_root": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99",
+  "derived_root": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/interhub/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99",
+  "git_head": "38063a2ff9cdc717098cf3f821c2bb162a0ac1d9",
+  "plan_sha256": "7c33f7be76cce64fe2e5d17e4cd6be72435c51216c7a779c2e29f7626912f3b8",
+  "created_utc": "2026-06-22T15:52:29Z",
+  "phase_states": {
+    "00_meta": "post_provenance_contract_revised_split_frozen",
+    "01_plan_review": "passed_with_amendment",
+    "02_inventory": "passed",
+    "03_opportunity": "PASS",
+    "04_estimability": "PASS",
+    "05_controls": "PASS",
+    "06_perturbation": "PASS",
+    "07_summary_sensitivity": "PASS",
+    "08_review": "PASS",
+    "09_red_team": "PASS",
+    "10_replication": "PASS",
+    "11_final_review": "PASS",
+    "plan_review": "passed_with_amendment",
+    "provenance": "passed",
+    "gate_007_0": "PASS"
+  },
+  "overall_status": "COMPLETE",
+  "gate_statuses": {
+    "provenance": "PASS",
+    "estimability": "PASS",
+    "controls": "PASS",
+    "review": "PASS",
+    "red_team": "PASS",
+    "replication": "PASS",
+    "final": "PASS"
+  },
+  "registered_utc": "2026-06-23T03:57:07Z",
+  "registered_by_worker_id": "RQ007-P12b-registrar",
+  "registered_artifacts": {
+    "decision": "reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md",
+    "report": "reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/90_report/index.html",
+    "evidence_matrix": "reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/11_final_review/claim_evidence_matrix.csv"
+  },
+  "binding_contract_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/binding_execution_contract.md",
+  "binding_constraints_ledger_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/binding_constraints_ledger.csv",
+  "phase2_binding_questions_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/phase2_binding_questions.md",
+  "open_routed_findings": [],
+  "plan_review": "passed_with_amendment",
+  "status_reconciliation": {
+    "canonical_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/execution_status.json",
+    "redirected_duplicate_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/execution_status.json",
+    "merged_from_duplicate": [
+      "plan_review",
+      "binding_contract_path",
+      "open_routed_findings"
+    ],
+    "reconciled_by": "RQ007-P2-provenance"
+  },
+  "provenance_gate": {
+    "worker_id": "RQ007-P2-provenance",
+    "gate": "007-0",
+    "status": "PASS",
+    "status_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/02_inventory/gate_007_0_status.json",
+    "completed_at_utc": "2026-06-22T17:00:16Z"
+  },
+  "gate_007_0": "PASS",
+  "construct_revision": true,
+  "construct_revision_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/estimability_construct.md",
+  "split_freeze_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/split_freeze.json",
+  "last_updated_utc": "2026-06-23T03:57:07Z",
+  "last_updated_by_worker_id": "RQ007-P12b-registrar",
+  "post_provenance_contract_revision": {
+    "status": "complete",
+    "contract_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/binding_execution_contract.md",
+    "ledger_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/binding_constraints_ledger.csv",
+    "split_freeze_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/00_meta/split_freeze.json",
+    "case_split_assignment_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/interhub/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_outputs/splits/case_split_assignment.csv"
+  }
+}

@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-06-21.
+Last reviewed: 2026-06-23.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the research
@@ -59,6 +59,7 @@ question index in `STUDIES.md`.
 | RQ004 IPV state space | `reports/studies/RQ004_ipv_state_space/` | `reports/knowledge/RQ004_ipv_state_space/` |
 | RQ005 NMI evidence gap | `reports/studies/RQ005_nmi_evidence_gap/` | `reports/knowledge/RQ005_nmi_evidence_gap/` |
 | RQ006 sigma sensitivity | `reports/studies/RQ006_sigma_sensitivity/` | `reports/knowledge/RQ006_sigma_sensitivity/` |
+| RQ007 interaction-conditioned IPV estimability | `reports/studies/RQ007_interaction_conditioned_ipv_estimability/` | `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/` |
 
 For parallel agent runs under one RQ, use execution names like
 `RQ003_5_nsfc_open_explore_codex_20260619`; the number after the underscore is
@@ -94,6 +95,14 @@ the execution version.
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_5_nsfc_open_explore_codex_20260619/00_entry/index.html`
 - RQ003 Tier B NSFC IPV validation final reader:
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/00_entry/index.html`
+- Latest stable RQ007 interaction-conditioned IPV estimability report
+  (accepted calibrated C1-C3; `ipv_*_error` is a concentration index, not a
+  std; development/guard only, held_out sealed):
+  `reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/90_report/index.html`
+- RQ008A exploratory temporal IPV discovery/freeze result (NEGATIVE 0/24;
+  protocol `FROZEN_RQ008A`; Wave-B confirmation not yet executed and pending
+  explicit authorization):
+  `reports/studies/RQ008_interhub_temporal_ipv_discovery/RQ008_1_temporal_ipv_discovery_20260622T234914+0800_3e3e776a/90_report/index.html`
 
 ## Latest Review Packets
 
@@ -150,3 +159,6 @@ These review packets are evidence-boundary reviews, not accepted
   state-space law; RQ005 supports a verifier framework/gap record, not deployed
   early warning or planner performance; RQ006 supports sigma=0.1 as the healthier
   current source, while sigma remains a numeric sensitivity boundary.
+- RQ007 freezes `ipv_*_error` as a concentration index, not a standard deviation
+  or estimator uncertainty; use only development/guard accepted claims from
+  `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md`.

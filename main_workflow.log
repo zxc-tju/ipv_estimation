@@ -1368,3 +1368,37 @@ Status: completed locally; remote push performed after verification.
 Outcome: Fast-forwarded from origin/main before organizing local work; grouped current changes into focused commits for Codex review packets, PAPER001 handoff notes, and RQ003_8/scaffolded launcher assets. Kept ignored RQ003_8 result tables and caches out of git.
 Verification: Ran launcher unittest, shell syntax checks for macOS launchers, py_compile for RQ003_8 reusable scripts, git diff --check, and git check-ignore for ignored result/cache paths.
 Maintenance: Logged this organization workflow in main_workflow.log; START_HERE.md already reflected the durable review-packet operating facts from the preceding review task.
+
+[2026-06-22T23:43:03+0800] Task: Synchronize local main with origin/main.
+Status: completed.
+Outcome: Removed a stale zero-byte origin HEAD lock after confirming no active Git process, fetched origin, verified local untracked Wave A dashboard/plan files were byte-identical to origin/main, removed the duplicate untracked copies, and fast-forwarded main from 08b06bb4 to 38063a2f. Existing local tracked modifications were preserved.
+Verification: git rev-list --left-right --count main...origin/main returned 0 0; git status shows main aligned with origin/main and only pre-existing local modified files plus this workflow-log entry.
+Maintenance: START_HERE.md unchanged because no current operating brief facts changed.
+
+[2026-06-23T02:50:00+0800] Task: RQ008 Phase-10 discovery red-team review.
+Status: completed with nonblocking fixes recommended.
+Outcome: Ran an adversarial red-team pass on the RQ008A discovery package using only discovery-side artifacts. Addressed all 10 requested attacks, wrote red_team_report.md, red_team_findings.csv, red_team_attack_summary.csv, recomputation source CSVs, and quick-look SVGs under the Phase-10/result scopes. Found 0 blocking findings and set red_team=PASS_WITH_FIXES. Main nonblocking issue: reversed-time hard gate can over-kill reverse-invariant motif structure because the current motif separation SNR is direction-insensitive; a direction-sensitive companion statistic or explicit null-scope wording should be fixed before confirmation opening.
+Verification: Reverified discovery extract SHA-256 84033e05d8e28896b3e0672c058be65bfdf292ef87305dfbc406b6567e7ff7d5 and atlas SHA-256 c229798295f974da0a704cf1b6fcfe85b05390b7514a46f9497b4724cfa74765; reran run_red_team_checks.py after matching Phase-6 motif description logic; confirmed red_team_findings.csv has zero blocking rows, red_team_attack_summary.csv covers all 10 attacks, and confirmation_leakage_scan.csv reports zero possible code-access references.
+Maintenance: START_HERE.md unchanged because no current operating brief facts changed; PAPER_REPO, WOD, OnSite, RQ009, and confirmation contents were not touched.
+
+[2026-06-23T08:00:30+0800] Task: RQ007 Phase-10 independent replication.
+Status: completed; gate 007-5 PASS with MIXED overall verdict.
+Outcome: Independently reimplemented CV-CPA opportunity, sustained low-concentration onset, onset-window history/distance controls, headline residual gap, and episode summary sensitivity under `02_process/10_replication/`; opportunity mask matched exactly, summary sensitivity matched to numerical tolerance, onset agreed strongly, and distance-control differences were minor.
+Verification: Verified run root and plan hash `7c33f7be76cce64fe2e5d17e4cd6be72435c51216c7a779c2e29f7626912f3b8`; ran unittest/py_compile for replication code; streamed dev+guard primary rows with `frame_index>=4`; ran `compare_replication.py` and wrote `replication_status.json` with `status=PASS`.
+Maintenance: START_HERE.md unchanged because no durable current-operating facts changed; appended RQ007 execution log line as requested.
+
+[2026-06-23T08:19:14+0800] Task: RQ008 Phase-13 final independent report review and registrar.
+Status: completed; final_review=PASS; overall=RQ008A_COMPLETE.
+Outcome: Verified the RQ008A HTML/report package as offline/local, Nature-skill figure-provenance-backed, exploratory, claim-bounded, and negative: 0/24 candidate temporal structures survived controls. Confirmed `FROZEN_RQ008A`, confirmation unopened, Wave B pending explicit user authorization, and pre-Wave-B amendments for Attack-10 reversed-time/SNR scoping plus change-point divergence. Registered the run minimally in STUDIES.md, reports/knowledge/rq_progress_registry.csv, reports/knowledge/RQ_PROGRESS_DASHBOARD.md, START_HERE.md, and execution_status.json.
+Verification: Checked relative HTML links and all four embedded publication figures; verified figure_manifest.csv source hashes; checked survival_summary.csv has 24 exploratory rows and zero survivors; verified TRACEABILITY.md, 02_process/00_meta/artifact_manifest.csv, and 02_process/00_meta/execution_log.md cover phases 0-12 with key hashes PRIMARY a60404fb, discovery 84033e05, atlas c2297982, and plan 3a949865.
+Maintenance: START_HERE.md updated with the latest stable RQ008A report/result pointer; confirmation_PROTECTED, figures, frozen protocol core, and PAPER_REPO were not touched.
+
+[2026-06-23T11:57:08+0800] Task: RQ007 registrar decision freeze and index update.
+Status: completed; overall=RQ007_COMPLETE.
+Outcome: Registered RUN_ID=RQ007_1_ipv_estimability_20260622T155229Z_289d9a99 as COMPLETE in STUDIES.md, reports/knowledge/rq_progress_registry.csv, reports/knowledge/RQ_PROGRESS_DASHBOARD.md, START_HERE.md, and execution_status.json; created reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md.
+Accepted claims: C1 ACCEPTED MODERATE: interaction-conditioned IPV estimability concentration gap is about -0.13 total with proximity explaining about -0.096 and a small conflict-specific increment about -0.032 to -0.036.
+Accepted claims: C2 ACCEPTED SUPPORTED: estimability is not behavioural settling.
+Accepted claims: C3 ACCEPTED SUPPORTED: episode IPV summary is materially definition-dependent.
+Gate summary: provenance PASS; estimability PASS; controls PASS; review PASS; red-team PASS; replication PASS; final no-blocker review PASS.
+Artifacts: decision=reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md; report=reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/90_report/index.html; evidence_matrix=reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/11_final_review/claim_evidence_matrix.csv.
+Maintenance: START_HERE.md updated with latest stable RQ007 report pointer and the `ipv_*_error` concentration-index-not-std caveat; PAPER_REPO untouched; no commit or push performed.

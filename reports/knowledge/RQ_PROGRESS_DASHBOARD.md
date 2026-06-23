@@ -1,6 +1,7 @@
 # RQ Research Program Progress Dashboard
 
-Last synchronized: **2026-06-22**  
+Last synchronized: **2026-06-23**
+
 Scope: `PAPER001/PAPER002` and `RQ001–RQ013`  
 Machine-readable registry: [`rq_progress_registry.csv`](rq_progress_registry.csv)  
 Central plan index: [`../plans/README.md`](../plans/README.md)
@@ -76,8 +77,8 @@ accepted decision or a reviewed execution artifact.
 | **RQ004** | Episode-level IPV state organization | `review` | S7 | P1 | Supports state-conditioned response-surface framing, not a universal law | Exact paper-safe decision not frozen | Freeze R1 episode-level claim boundary |
 | **RQ005** | Manuscript evidence-gap and leakage governance | `review` | S7 | P1 | Supports framework, leakage contract, and claim downgrades | Decision not frozen | Freeze governance decision |
 | **RQ006** | Sigma sensitivity | `archived-review` | S7 | P3 | Sigma=0.1 is healthier; IPV magnitude remains parameter-sensitive | Not a substantive verifier-validity result | Retain as robustness appendix evidence |
-| **RQ007** | Group 1 — interaction-conditioned IPV estimability | `planning` | S1 | **P0** | v0 plan drafted; existing `sigma01_ipv_timeseries.csv` is the primary online IPV time-series input | Data dictionary, uncertainty meaning, interaction-opportunity definition, and estimability gate are not frozen | Independent plan review, then provenance and field audit |
-| **RQ008** | Group 2A/2B — InterHub temporal IPV discovery and confirmation | `planning` | S1 | **P0** | v0 discovery plan drafted with discovery/confirmation separation | Protected split and valid-window contract are not frozen; formal confirmation depends on RQ007 | Independent plan review and protected confirmation-set reservation |
+| **RQ007** | Group 1 — interaction-conditioned IPV estimability | `COMPLETE` | S7 | **P0** | Accepted calibrated C1-C3 frozen in `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md`; report `reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/90_report/index.html` | Boundaries: development/guard only; held_out sealed; no map/lane fields; `ipv_*_error` is a concentration index not a std | Paper edits may use only accepted decision claims; downstream RQs may consume the valid-window and estimability contract |
+| **RQ008** | Group 2A/2B — InterHub temporal IPV discovery and confirmation | `review` | S7 | **P0** | RQ008A final PASS: exploratory NEGATIVE 0/24 discovery; protocol `FROZEN_RQ008A`; confirmation unopened | Wave B requires explicit user authorization, fixed-code review, pre-Wave-B amendments, and upstream RQ007 valid-window/estimability contract | Synthesize the negative discovery boundary in knowledge, or run Wave B only after authorization |
 | **RQ009** | Dynamic counterpart-conditioned human envelope | `planning` | S0 | P1 | New primary model is intended to be M3: context + counterpart current IPV; M4 self-history is ablation only | Depends on RQ007 estimability contract and selected RQ008 temporal variables | Draft after RQ007 inventory and RQ008 discovery protocol |
 | **RQ010** | Group 4A/4B — WOD-E2E feasibility, tracking, and human preference validity | `planning` | S1 | **P0** | v0 access/schema/tracking/HPC feasibility plan drafted | Dataset not downloaded; actor-track availability, access, licence, tracking need, and compute requirements unknown | Independent plan review, then official-source feasibility audit |
 | **RQ011** | Group 5A — OnSite full-universe and run-level readiness | `planning` | S1 | **P0** | v0 full-universe readiness plan drafted; RQ003 top-five package remains the pilot | Full-universe mapping, run identity, repeated-run status, and selection bias are unresolved | Independent plan review, then canonical run crosswalk |
@@ -89,8 +90,8 @@ accepted decision or a reviewed execution artifact.
 ### Wave A — start now
 
 - **PAPER002:** verify the direct paper-project modification, register its exact commit/branch, and review the v4 structure and claim boundaries.
-- **RQ007:** review the v0 plan, then audit `sigma01_ipv_timeseries.csv` and define interaction opportunity, uncertainty, and provisional estimability.
-- **RQ008A:** review the v0 plan, reserve an untouched confirmation set, then perform open temporal discovery.
+- **RQ007:** final PASS and decision freeze complete; paper use is limited to accepted claims in `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md`.
+- **RQ008A:** final reviewed discovery/freeze package is complete: NEGATIVE 0/24 exploratory result, `FROZEN_RQ008A`, confirmation unopened.
 - **RQ010A:** review the v0 plan, then audit WOD-E2E release/access/schema and decide whether tracking and HPC are required.
 - **RQ011A:** review the v0 plan, then audit OnSite full-universe mappings, run identities, available fields, and repeated-run feasibility.
 - **RQ012A:** review the v0 plan, then freeze automatic event ontology and organize real two-human blinded annotation.
@@ -196,8 +197,8 @@ Rules:
 
 - PAPER002 was reportedly modified directly in the paper project, but the exact commit/branch and independent review are not yet registered here.
 - RQ001, RQ002, RQ004, and RQ005 have review material but no accepted `decision.md` claim slate.
-- RQ007 has not yet frozen how interaction opportunity and IPV estimability are defined.
-- RQ008 lacks a committed discovery/confirmation split.
+- RQ007 has frozen the interaction-opportunity and IPV-estimability decision boundary; downstream use must preserve the proximity-bounded concentration-index caveat.
+- RQ008B confirmation is not authorized and waits on fixed-code review, pre-Wave-B amendments, and the upstream RQ007 valid-window/estimability contract.
 - RQ009 cannot start formal modelling before RQ007/RQ008 gates.
 - WOD-E2E access, actor tracks, tracking need, and HPC requirements are unknown.
 - OnSite full-universe/run-level analysis readiness is unresolved.
@@ -209,3 +210,5 @@ Rules:
 |---|---|
 | 2026-06-22 | Initialized program dashboard for PAPER001/PAPER002 and RQ001–RQ013; defined active waves, dependencies, synchronization rules, and current blockers. |
 | 2026-06-22 | Created centralized `reports/plans/` and drafted Wave A plans for RQ007, RQ008, RQ010, RQ011, and RQ012; recorded PAPER002 as directly modified but pending artifact verification. |
+| 2026-06-23 | Registered RQ008A final PASS: exploratory NEGATIVE 0/24 discovery, `FROZEN_RQ008A` protocol, confirmation unopened and Wave B pending explicit authorization. |
+| 2026-06-23 | Registered RQ007 COMPLETE: accepted calibrated C1-C3 in `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md`; report `reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/90_report/index.html`. |
