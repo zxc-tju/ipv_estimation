@@ -1417,3 +1417,9 @@ Status: completed after push verification.
 Outcome: Changed Git ignore policy so the entire data/onsite_competition/all_teams_dataset/ package is local/generated data, removed the already-tracked all-team package README and CSV tables from Git tracking without deleting local files, and updated START_HERE plus onsite data docs to document rebuild/use expectations.
 Verification: Confirmed git check-ignore matches all_teams_dataset files, git status is clean after push, and the local all_teams_dataset directory remains present.
 Maintenance: START_HERE.md updated to mark all_teams_dataset as generated locally and ignored.
+
+[2026-06-23T20:34:25+0800] Task: Push local changes and handle remote PR.
+Status: completed.
+Outcome: Verified current branch was already pushed and clean, updated GitHub PR #1 body to reflect the final RQ012A/on-site all-team handoff state, merged PR #1 into main with merge commit 3a917839, cleared a stale zero-byte origin/main lock after confirming no active Git process, fetched origin, and fast-forwarded local main to origin/main.
+Verification: PR #1 state is MERGED; GitHub reported merge commit 3a917839; local main fast-forwarded to origin/main; working tree was clean before this workflow-log entry.
+Maintenance: Logged this PR-handling workflow in main_workflow.log; START_HERE.md already reflected all-team dataset ignore policy and RQ012A operating facts.
