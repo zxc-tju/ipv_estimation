@@ -1439,3 +1439,9 @@ Status: completed.
 Outcome: Verified rq010a-wod-e2e-feasibility was clean and based on current main, pushed it to origin, opened draft PR #2 for RQ010A WOD-E2E tracking feasibility, and deleted the already-merged rq012-event-annotation-readiness branch locally and remotely. Left unmerged and backup branches intact.
 Verification: git diff --check main...HEAD passed; PR #2 is open, draft, and mergeable; remote merged-branch list contains only origin/main after cleanup; RQ010 branch tracks origin/rq010a-wod-e2e-feasibility.
 Maintenance: Logged this publish/cleanup workflow in main_workflow.log.
+
+[2026-06-23T22:51:43+0800] Task: Merge RQ010A PR and clean merged branches.
+Status: completed.
+Outcome: Marked PR #2 ready for review, merged rq010a-wod-e2e-feasibility into main with merge commit c6645278439f8759aa2f605df32b11e37f1668e5, checked out/synchronized local main, and pruned the deleted remote RQ010 branch.
+Verification: PR #2 is MERGED and no longer draft; local main tracks origin/main; git fetch --prune removed origin/rq010a-wod-e2e-feasibility; remote merged-branch list contains only origin/main.
+Maintenance: Logged this merge/cleanup workflow in main_workflow.log.
