@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-06-21.
+Last reviewed: 2026-06-23.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the research
@@ -73,8 +73,9 @@ the execution version.
 - InterHub full-dataset raw data: `data/interhub/raw/full_datasets/`
 - InterHub sigma 0.1 derived full-rerun outputs:
   `data/derived/interhub/20260612_sigma_0_1_full_rerun/00_hpc_outputs/`
-- Onsite competition current all-team package:
-  `data/onsite_competition/all_teams_dataset/`
+- Onsite competition current all-team package, generated locally and ignored:
+  `data/onsite_competition/all_teams_dataset/` (rebuild with
+  `scripts/build_onsite_all_teams_dataset.py`)
 - Onsite competition lightweight manifests: `data/onsite_competition/00_manifest/`
 - Onsite competition archived raw/top-five subset payload:
   `archived/onsite_competition_raw_and_top5_subset_20260623/`
@@ -134,7 +135,7 @@ These review packets are evidence-boundary reviews, not accepted
 ## What Not To Delete
 
 - Raw/local data under `data/interhub/raw/`,
-  `data/onsite_competition/all_teams_dataset/teams/`,
+  `data/onsite_competition/all_teams_dataset/`,
   `archived/onsite_competition_raw_and_top5_subset_20260623/`, and
   `archived/argoverse/0_souce_data/`.
 - Derived InterHub full-rerun outputs under `data/derived/interhub/`.

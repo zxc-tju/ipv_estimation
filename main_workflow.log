@@ -1411,3 +1411,9 @@ Status: completed after branch reconciliation and push verification.
 Outcome: Packaged local OnSite all-team dataset handoff metadata, RQ012/RQ011/RQ010 status updates, deleted obsolete tracked top-five subset manifests, and added the all-team package builder script. Preserved the diverged local branch as a backup before replaying the local increment onto origin/rq012-event-annotation-readiness to avoid carrying unrelated RQ007 branch history into the RQ012 branch.
 Verification: Checked branch divergence, inspected local and remote RQ012 commit relationship, confirmed large all-team logs remain ignored under teams/, ran git diff --cached --check, py_compile for scripts/build_onsite_all_teams_dataset.py, and final push/status checks.
 Maintenance: START_HERE.md updated by the local change set with the current OnSite all-team package and RQ012A operating facts.
+
+[2026-06-23T20:29:17+0800] Task: Ignore generated all-team onsite dataset.
+Status: completed after push verification.
+Outcome: Changed Git ignore policy so the entire data/onsite_competition/all_teams_dataset/ package is local/generated data, removed the already-tracked all-team package README and CSV tables from Git tracking without deleting local files, and updated START_HERE plus onsite data docs to document rebuild/use expectations.
+Verification: Confirmed git check-ignore matches all_teams_dataset files, git status is clean after push, and the local all_teams_dataset directory remains present.
+Maintenance: START_HERE.md updated to mark all_teams_dataset as generated locally and ignored.

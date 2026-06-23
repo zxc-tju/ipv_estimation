@@ -28,7 +28,7 @@ data/interhub/raw/
 data/derived/
 data/onsite_competition/raw/
 data/onsite_competition/top5_research_subset/teams/
-data/onsite_competition/all_teams_dataset/teams/
+data/onsite_competition/all_teams_dataset/
 archived/onsite_competition_raw_and_top5_subset_20260623/
 archived/argoverse/
 archived/20260610_sigma_0_0_2_full/

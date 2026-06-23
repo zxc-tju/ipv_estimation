@@ -39,8 +39,9 @@ Shanghai replay zip files were extracted into direct session folders under their
 
 ## Recommended Downstream Use
 
-1. Use `data/onsite_competition/all_teams_dataset/` as the current all-team
-   analysis package.
+1. Use `data/onsite_competition/all_teams_dataset/` as the current local
+   all-team analysis package when present; it is generated data, ignored by Git,
+   and can be rebuilt with `scripts/build_onsite_all_teams_dataset.py`.
 2. Filter `score_team_coverage.csv` to `has_materialized_replay = True` for replay-based analysis.
 3. Join scores by `team_code` from `team_manifest.csv` or `session_manifest.csv`.
 4. For multi-run teams, keep `session_id` as part of the key instead of assuming one run per team.
