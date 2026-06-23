@@ -1433,3 +1433,9 @@ Gate 010-0 access/licence: PASS (Waymo non-commercial research). Gate 010-1: T2.
 Pilot N=80 rating-blind plan-only (needs user authorization). rq009_interface_status=provisional_contract.
 Report: reports/studies/RQ010_wod_e2e_tracking_feasibility/RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e/90_report/index.html (offline, 3 Nature figures). Feasibility-only: no download/tracker/IPV/rating analysis. RQ010B not yet feasible directly.
 Note: run-root README/TRACEABILITY/execution_status were lost to OneDrive/concurrent-fleet churn mid-run and recreated at finalization; all 28 substantive deliverables verified intact.
+
+[2026-06-23T21:04:43+0800] Task: Publish RQ010A PR and clean merged branches.
+Status: completed.
+Outcome: Verified rq010a-wod-e2e-feasibility was clean and based on current main, pushed it to origin, opened draft PR #2 for RQ010A WOD-E2E tracking feasibility, and deleted the already-merged rq012-event-annotation-readiness branch locally and remotely. Left unmerged and backup branches intact.
+Verification: git diff --check main...HEAD passed; PR #2 is open, draft, and mergeable; remote merged-branch list contains only origin/main after cleanup; RQ010 branch tracks origin/rq010a-wod-e2e-feasibility.
+Maintenance: Logged this publish/cleanup workflow in main_workflow.log.
