@@ -1,0 +1,6 @@
+gate_id,gate_label,status,status_order,blocker_dependency_note,evidence_relpath
+012-0,signal feasibility,pass,1,No current blocker; unsupported planner/system candidates were removed and human-only constructs were demoted.,../../01_results/tables/event_signal_availability.csv
+012-1,outcome-blind ontology and thresholds,pass,1,"No current blocker; thresholds use outcome-blind standards, literature, platform references, measurement resolution, schema precedence, and engineering geometry.",../../01_results/event_threshold_rationale.md
+012-2,blind package integrity,text_issuance_surfaces_cleared,2,Corrected text/CSV issuance surfaces are cleared; final neutral media/card issuance and signed auditor record remain BLOCKED_FOR_HUMAN_LABELS dependencies.,../../02_process/06_blind_package/blind_package_reaudit.md
+012-3,human coordination readiness,ready_pending_humans,3,"Two independent real human labels, raw label preservation, and frozen-protocol agreement computation remain pending.",../../01_results/human_coordination_checklist.md
+012B,later event-IPV analysis authorization,blocked,4,"Blocked until RQ011 frozen universe, final media/card issuance, auditor sign-off, two accepted labels, kappa+AC1 agreement, required freezes, and explicit recorded authorization.",../../02_process/01_plan_review/plan_resolution_v0_1.md

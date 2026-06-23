@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-06-21.
+Last reviewed: 2026-06-23.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the research
@@ -59,6 +59,7 @@ question index in `STUDIES.md`.
 | RQ004 IPV state space | `reports/studies/RQ004_ipv_state_space/` | `reports/knowledge/RQ004_ipv_state_space/` |
 | RQ005 NMI evidence gap | `reports/studies/RQ005_nmi_evidence_gap/` | `reports/knowledge/RQ005_nmi_evidence_gap/` |
 | RQ006 sigma sensitivity | `reports/studies/RQ006_sigma_sensitivity/` | `reports/knowledge/RQ006_sigma_sensitivity/` |
+| RQ012 onsite event annotation readiness | `reports/studies/RQ012_onsite_event_annotation_readiness/` | `reports/knowledge/RQ012_onsite_event_annotation_readiness/` |
 
 For parallel agent runs under one RQ, use execution names like
 `RQ003_5_nsfc_open_explore_codex_20260619`; the number after the underscore is
@@ -72,9 +73,12 @@ the execution version.
 - InterHub full-dataset raw data: `data/interhub/raw/full_datasets/`
 - InterHub sigma 0.1 derived full-rerun outputs:
   `data/derived/interhub/20260612_sigma_0_1_full_rerun/00_hpc_outputs/`
-- Onsite competition local payload: `data/onsite_competition/raw/`
-- Onsite competition manifests: `data/onsite_competition/00_manifest/` and
-  `data/onsite_competition/top5_research_subset/`
+- Onsite competition current all-team package, generated locally and ignored:
+  `data/onsite_competition/all_teams_dataset/` (rebuild with
+  `scripts/build_onsite_all_teams_dataset.py`)
+- Onsite competition lightweight manifests: `data/onsite_competition/00_manifest/`
+- Onsite competition archived raw/top-five subset payload:
+  `archived/onsite_competition_raw_and_top5_subset_20260623/`
 - Legacy Argoverse source data:
   `archived/argoverse/0_souce_data/` (typo is historical).
 
@@ -94,6 +98,10 @@ the execution version.
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_5_nsfc_open_explore_codex_20260619/00_entry/index.html`
 - RQ003 Tier B NSFC IPV validation final reader:
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/00_entry/index.html`
+- RQ012A OnSite event annotation readiness Wave-A package (9 automatic events;
+  gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans,
+  012B blocked; `BLOCKED_FOR_HUMAN_LABELS`, not full PASS):
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`
 
 ## Latest Review Packets
 
@@ -126,8 +134,9 @@ These review packets are evidence-boundary reviews, not accepted
 
 ## What Not To Delete
 
-- Raw data under `data/interhub/raw/`, `data/onsite_competition/raw/`,
-  `data/onsite_competition/top5_research_subset/teams/`, and
+- Raw/local data under `data/interhub/raw/`,
+  `data/onsite_competition/all_teams_dataset/`,
+  `archived/onsite_competition_raw_and_top5_subset_20260623/`, and
   `archived/argoverse/0_souce_data/`.
 - Derived InterHub full-rerun outputs under `data/derived/interhub/`.
 - Reader-facing study report packages under `reports/studies/`.

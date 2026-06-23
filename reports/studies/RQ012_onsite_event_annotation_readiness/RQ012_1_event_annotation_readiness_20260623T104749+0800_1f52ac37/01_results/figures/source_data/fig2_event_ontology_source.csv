@@ -1,0 +1,21 @@
+event_id,event_name,event_class,endpoint_eligibility,primary_endpoint_eligible,extraction_mode,online_offline_status,b01_tier_note
+E01,counterpart hard braking,physical_safety,independent_consequence_endpoint,true,automatic,online,Eligible as primary endpoint only after later gates and authorization.
+E02,high deceleration,physical_safety,independent_consequence_endpoint,true,automatic,online,Eligible as primary endpoint only after later gates and authorization.
+E03,high jerk,physical_safety,independent_consequence_endpoint,true,automatic,online,Eligible as primary endpoint only after later gates and authorization.
+E04,forced yielding,human_motif,construct_proximal_descriptor,false,human_only,offline,Secondary descriptive context only; forbidden as primary validation endpoint.
+E05,yield-role reversal,human_motif,construct_proximal_descriptor,false,human_only,offline,Secondary descriptive context only; forbidden as primary validation endpoint.
+E06,repeated stop-go,interaction_quality,independent_consequence_endpoint,true,automatic,online,Eligible as primary endpoint only after later gates and authorization.
+E07,unnecessary stop,human_motif,construct_proximal_descriptor,false,human_only,offline,Secondary descriptive context only; forbidden as primary validation endpoint.
+E08,conflict escalation,interaction_quality,independent_consequence_endpoint,true,human_only,offline,Independent tier but human-only extraction in Wave A.
+E09,near miss,physical_safety,independent_consequence_endpoint,true,automatic,online,Eligible as primary endpoint only after later gates and authorization.
+E15,collision/contact,physical_safety,independent_consequence_endpoint,true,automatic,online,"Geometric contact candidate only, not sensor-confirmed collision."
+E16,off-route or no-progress timeout,interaction_quality,independent_consequence_endpoint,true,automatic,online,No-progress only; off-route subcase unavailable.
+E18,emergency stop,physical_safety,independent_consequence_endpoint,true,automatic,online,Kinematic emergency-stop candidate only.
+E19,abrupt lateral comfort events,physical_safety,independent_consequence_endpoint,true,automatic,online,Eligible as primary endpoint only after later gates and authorization.
+E20,yielding to a non-counterpart actor,human_motif,construct_proximal_descriptor,false,human_only,offline,Secondary descriptive context only; forbidden as primary validation endpoint.
+E10,safety-controller intervention,planner_system,planner_system_event,false,removed,not_applicable_removed,Removed until explicit flag or status-code dictionary exists.
+E11,planner fallback,planner_system,planner_system_event,false,removed,not_applicable_removed,Removed until explicit planner fallback signal exists.
+E12,repeated replanning,planner_system,planner_system_event,false,removed,not_applicable_removed,Removed because planner update stream is unavailable.
+E13,trajectory rejection,planner_system,planner_system_event,false,removed,not_applicable_removed,Removed because rejection/candidate trajectory channel is unavailable.
+E14,mission failure,planner_system,planner_system_event,false,removed,not_applicable_removed,Removed because mission status/route-goal evidence is unavailable.
+E17,human/operator takeover,planner_system,planner_system_event,false,removed,not_applicable_removed,Removed because takeover/manual-control status semantics are unavailable.

@@ -1368,3 +1368,52 @@ Status: completed locally; remote push performed after verification.
 Outcome: Fast-forwarded from origin/main before organizing local work; grouped current changes into focused commits for Codex review packets, PAPER001 handoff notes, and RQ003_8/scaffolded launcher assets. Kept ignored RQ003_8 result tables and caches out of git.
 Verification: Ran launcher unittest, shell syntax checks for macOS launchers, py_compile for RQ003_8 reusable scripts, git diff --check, and git check-ignore for ignored result/cache paths.
 Maintenance: Logged this organization workflow in main_workflow.log; START_HERE.md already reflected the durable review-packet operating facts from the preceding review task.
+[2026-06-23] RQ011A OnSite full-universe & run-level readiness — SUSPENDED (provisional)
+- Role: Claude orchestration-only PI; all execution via Codex CLI (gpt-5.5/xhigh) under .codex-fleet/rq011-onsite-readiness/.
+- RUN_ID: RQ011_1_onsite_readiness_20260623T104838+0800_20aaee57 (reports/studies/RQ011_onsite_full_universe_readiness/). GIT_HEAD 38063a2f, PLAN_SHA256 13142fc4.
+- Progress: Phase 0 init PASS; Phase 1 plan review BLOCKED(4)→fixer addendum→independent re-verify GATE CLOSED; Phase 2 inventory PASS (221 artifacts); Phase 3 identity PASS (Gate 011-1 separable-with-documented-unresolved, run_level_claims_allowed=false); Phase 4 mapping PASS (13/13 conflicts resolved, clean 105 full + 150 top5, run-level not attainable; needed session resume to persist); Phase 5 fields PASS (sufficiency FAILED both sets); Phase 6 repeated-run PASS (not identifiable → matched-scenario, unit algorithm×scenario); Phase 7 interface PASS (partial; ego derivable, counterpart blocked); Phase 8 missingness PASS (mnar_risk high, clean biased); Phase 9 analysis-unit PASS (algorithm×scenario, frozen_exclusions); Phase 10 review PASS (computed leaf BLOCKED_MAPPING/field_insufficiency); Phase 11 red team PASS_NO_BLOCKER (2 nonblocking: RT01 wrong-folder visibility, RT10 final-status label). User chose Option 1 relabel → RUN_LEVEL_NOT_IDENTIFIABLE; relabel fixer launched then KILLED on pause (not finalized).
+- SUSPEND REASON: OnSite data lives in OneDrive; cloud sync INCOMPLETE → local data missing files. Negative readiness findings (run-level not identifiable; 4 missing outcome/repro fields; high MNAR) are likely CONFOUNDED by incomplete local data (corroborated by Phase 2: 127 local-only, 16 unextracted archives, 10 empty raw sessions), NOT confirmed dataset properties. Nothing frozen.
+- Phases NOT run: 12 replication, 13 figures+HTML, 14 final review+registry.
+- RESUME PLAN: after OneDrive sync verified complete, verify data completeness first (no empty raw sessions, archives extracted, counts reconcile with 00_manifest/score_team_coverage.csv), then start a NEW run from Phase 2; reuse Phase-1 plan+addendum in 02_process/01_plan_review/ (data-independent, already verified).
+- Markers: run-level SUSPENDED_PROVISIONAL.md written in RUN_ROOT; memory note rq011-paused-onedrive-sync.md saved.
+
+[2026-06-23] RQ011A — added user-supplied OnSite data semantics for re-run (saved to memory onsite-data-source-semantics.md + run SUSPENDED_PROVISIONAL.md):
+- onsite_*.log records per-run avalgorithm flag (1=autonomous; competition autonomous-only → default autonomous) ⇒ intervention_fallback_replanning derivable.
+- One run per team; all teams run the SAME 15 scenarios ⇒ no repeated runs; identical scenarios make algorithm×scenario matched comparison strong.
+- Per-team 诊断报告.pdf has per-scenario subscores + deduction reasons; scenario score 0 = collision ⇒ success_failure & collision_rule_violations derivable (PDFs were cloud-only/unparsed this run).
+- Implication: 3 of 4 P5 "missing" fields recoverable once sync completes; only script_version_seed still open. Re-run MUST parse the PDFs and onsite_*.log.
+
+[2026-06-23T16:10:00+0800] Task: Register RQ012A Wave-A event annotation readiness package in shared indices.
+Status: PARTIAL/BLOCKED_FOR_HUMAN_LABELS.
+Outcome: Reconciled RUN_ID=RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37 central status to BLOCKED_FOR_HUMAN_LABELS after W19 final review PASS_READY_FOR_REGISTRATION. Registered Wave-A readiness in STUDIES.md, reports/knowledge/rq_progress_registry.csv, reports/knowledge/RQ_PROGRESS_DASHBOARD.md, START_HERE.md, and execution_status.json without opening RQ012B.
+Key outcomes: 9 automatic events retained; gates 012-0 and 012-1 pass, 012-2 text_issuance_surfaces_cleared, 012-3 ready_pending_humans, and 012B blocked. Red-team fixes V01/V03/V04/V05/V08 are recorded in later robustness and merge-hardening artifacts. Figures FIG1-FIG5 are rendered through the nature-figure skill with PNG/SVG/PDF outputs.
+Artifacts: reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/; report=reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html; registration_record=reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/00_meta/registration_record.md.
+Maintenance: START_HERE.md updated with the current RQ012A readiness line. PAPER_REPO was not read or written; no git commit or push performed.
+
+
+[2026-06-23T19:39:15+0800] Task: Build all-team onsite competition analysis package.
+Status: completed.
+Outcome: Created `data/onsite_competition/all_teams_dataset/` with the same team/session/support-material layout as the top-five subset, but covering all 20 official scored teams. Materialized 22 replay sessions, 300 scenario-score rows, and 146 analysis files by hardlinking replay logs plus diagnosis/team/runtime/appeal materials from `data/onsite_competition/raw/`. Videos, replay ZIP archives, SQL/app platform artifacts, and non-scored folders were intentionally excluded per user instruction. T18/bitsite is retained in the all-team tables and support materials, with validation marking that no materialized replay session is present.
+Artifacts: `scripts/build_onsite_all_teams_dataset.py`; `data/onsite_competition/all_teams_dataset/README.md`; `data/onsite_competition/all_teams_dataset/tables/all_team_summary.csv`; `data/onsite_competition/all_teams_dataset/tables/all_session_manifest.csv`; `data/onsite_competition/all_teams_dataset/tables/all_scenario_scores.csv`; `data/onsite_competition/all_teams_dataset/tables/materialized_analysis_files.csv`; `data/onsite_competition/all_teams_dataset/tables/validation_summary.csv`.
+Verification: `python3 scripts/build_onsite_all_teams_dataset.py --replace` generated 20 teams, 22 sessions, 300 score rows, and 146 materialized files; no `.mp4`, `.zip`, or `.sql` files exist under the all-team package; all materialized rows have existing source/destination files, matching byte sizes, and hardlink inode matches; `python3 -m py_compile scripts/build_onsite_all_teams_dataset.py` passed.
+Maintenance: START_HERE.md and data/onsite_competition/README.md updated to record `data/onsite_competition/all_teams_dataset/` as the current all-team onsite analysis package; `.gitignore` updated so the generated hardlinked `teams/` payload stays local.
+
+
+[2026-06-23T19:54:28+0800] Task: Archive onsite raw payload and former top-five subset.
+Status: completed.
+Outcome: Moved `data/onsite_competition/raw/` and `data/onsite_competition/top5_research_subset/` into `archived/onsite_competition_raw_and_top5_subset_20260623/`. Kept `data/onsite_competition/all_teams_dataset/` as the current all-team analysis package, rebuilt it from the archived raw root, and refreshed source paths in its file map. Added the archive payload to `.gitignore` so large archived local data remains out of version control.
+Artifacts: `archived/onsite_competition_raw_and_top5_subset_20260623/raw/`; `archived/onsite_competition_raw_and_top5_subset_20260623/top5_research_subset/`; updated `scripts/build_onsite_all_teams_dataset.py`; updated `data/onsite_competition/all_teams_dataset/README.md` and tables.
+Verification: confirmed only `00_manifest/` and `all_teams_dataset/` remain under `data/onsite_competition/`; archived raw is 5.2G and archived top-five subset is 1.7G; rebuilt all-team dataset with 20 teams, 22 sessions, 300 scenario rows, and 146 materialized files; all source paths now point to the archived raw root; source/destination files exist, byte sizes match, and hardlink inodes match; no `.mp4`, `.zip`, or `.sql` files are in the all-team package; `python3 -m py_compile scripts/build_onsite_all_teams_dataset.py` and `git diff --check` passed.
+Maintenance: START_HERE.md, data/onsite_competition/README.md, and data/onsite_competition/00_manifest/README.md updated to point readers to the archived raw/top-five payload and the current all-team package.
+
+[2026-06-23T20:12:26+0800] Task: Handle current local changes on rq012-event-annotation-readiness.
+Status: completed after branch reconciliation and push verification.
+Outcome: Packaged local OnSite all-team dataset handoff metadata, RQ012/RQ011/RQ010 status updates, deleted obsolete tracked top-five subset manifests, and added the all-team package builder script. Preserved the diverged local branch as a backup before replaying the local increment onto origin/rq012-event-annotation-readiness to avoid carrying unrelated RQ007 branch history into the RQ012 branch.
+Verification: Checked branch divergence, inspected local and remote RQ012 commit relationship, confirmed large all-team logs remain ignored under teams/, ran git diff --cached --check, py_compile for scripts/build_onsite_all_teams_dataset.py, and final push/status checks.
+Maintenance: START_HERE.md updated by the local change set with the current OnSite all-team package and RQ012A operating facts.
+
+[2026-06-23T20:29:17+0800] Task: Ignore generated all-team onsite dataset.
+Status: completed after push verification.
+Outcome: Changed Git ignore policy so the entire data/onsite_competition/all_teams_dataset/ package is local/generated data, removed the already-tracked all-team package README and CSV tables from Git tracking without deleting local files, and updated START_HERE plus onsite data docs to document rebuild/use expectations.
+Verification: Confirmed git check-ignore matches all_teams_dataset files, git status is clean after push, and the local all_teams_dataset directory remains present.
+Maintenance: START_HERE.md updated to mark all_teams_dataset as generated locally and ignored.

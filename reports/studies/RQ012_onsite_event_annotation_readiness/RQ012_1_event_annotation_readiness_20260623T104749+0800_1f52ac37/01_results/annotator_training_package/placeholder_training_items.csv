@@ -1,0 +1,8 @@
+training_item_id,training_material_status,fictional_prompt,expected_use
+TRN-FICTION-001,fictional_stub,"Constructed practice item: ego proceeds through a visible safe gap while another actor maintains stable motion.",Practice distinguishing appropriate assertiveness from aggressive intrusion.
+TRN-FICTION-002,fictional_stub,"Constructed practice item: ego enters a narrow shared space and another actor brakes abruptly.",Practice identifying aggressive intrusion.
+TRN-FICTION-003,fictional_stub,"Constructed practice item: ego remains stopped after nearby actors have cleared and the way is visibly open.",Practice identifying over-yielding or freeze.
+TRN-FICTION-004,fictional_stub,"Constructed practice item: ego and another actor repeatedly start and stop before either clears the shared space.",Practice identifying oscillation and possible deadlock.
+TRN-FICTION-005,fictional_stub,"Constructed practice item: the visual layer freezes and traces jump, making behavior uninterpretable.",Practice separating unrelated failure from insufficient evidence.
+TRN-FICTION-006,fictional_stub,"Constructed practice item: the relevant interaction starts before the visible material begins, so the decisive behavior is not shown.",Practice using the insufficient-evidence protocol.
+

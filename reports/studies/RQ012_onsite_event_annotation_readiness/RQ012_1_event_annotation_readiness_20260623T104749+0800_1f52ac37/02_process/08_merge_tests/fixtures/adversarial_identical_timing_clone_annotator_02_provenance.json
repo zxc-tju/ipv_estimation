@@ -1,0 +1,13 @@
+{
+  "annotator_role": "annotator_02",
+  "coordinator_verified_submitter_id": "test-fixture-adversarial_identical_timing_clone-annotator_02",
+  "adversarial_test_fixture": true,
+  "not_real_human_labels": true,
+  "structural_gate_only": true,
+  "human_attestation": false,
+  "provenance_purpose": "RQ012 W8 merge-validation fixture only; not a human label file.",
+  "anti_fabrication_notice": "This sidecar supports structural guardrail testing only. It does not claim a real human attestation and must not be used for agreement.",
+  "annotation_started_at_utc": "2026-06-23T02:00:00Z",
+  "annotation_completed_at_utc": "2026-06-23T02:00:45Z",
+  "completion_duration_seconds": 45
+}

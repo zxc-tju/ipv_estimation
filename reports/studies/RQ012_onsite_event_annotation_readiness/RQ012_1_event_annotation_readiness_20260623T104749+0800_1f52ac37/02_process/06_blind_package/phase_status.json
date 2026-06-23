@@ -1,0 +1,16 @@
+{
+  "phase": "phase6_fix",
+  "gate": "012-2",
+  "verdict": "ready_for_reaudit",
+  "remaining": [
+    "BLOCKED_FOR_HUMAN_LABELS: final neutral media/card issuance awaits the frozen RQ011 analysis universe and an authorized material-preparation worker; no raw media were read and no cards were fabricated in this fix.",
+    "AUDITOR_SIGNOFF_UNSIGNED: independent re-audit must sign the issuance manifest before annotator release."
+  ],
+  "residual_notes": [
+    "A03_OS_XATTR_RESOLUTION: xattr -c and xattr -d com.apple.provenance returned status 0 but com.apple.provenance persisted on all four facing files and on a /tmp copy. This is treated as an OS-managed, content-free host marker, not embedded file metadata and not source-host content payload.",
+    "A03_RELEASE_TRANSPORT: annotators should receive the verified zip-content export at 02_process/06_blind_package/release/RQ012A_facing_content_release.zip. It was built with COPYFILE_DISABLE=1 zip -X -j; zipinfo showed only facing-file entries, no __MACOSX entries, and zero-byte extra fields. Source and extracted content sha256 values matched for all four facing files.",
+    "A03_AUDIT_STANCE: A03 metadata-leakage intent is satisfied without claiming literal host xattr removal; host xattrs are excluded from issued content payload and auditor sign-off remains unsigned pending independent re-audit."
+  ],
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "git_head": "f38c402853d3fcb74c3863487a489750a8f36d28"
+}

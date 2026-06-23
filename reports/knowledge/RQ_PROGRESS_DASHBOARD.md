@@ -81,7 +81,7 @@ accepted decision or a reviewed execution artifact.
 | **RQ009** | Dynamic counterpart-conditioned human envelope | `planning` | S0 | P1 | New primary model is intended to be M3: context + counterpart current IPV; M4 self-history is ablation only | Depends on RQ007 estimability contract and selected RQ008 temporal variables | Draft after RQ007 inventory and RQ008 discovery protocol |
 | **RQ010** | Group 4A/4B — WOD-E2E feasibility, tracking, and human preference validity | `planning` | S1 | **P0** | v0 access/schema/tracking/HPC feasibility plan drafted | Dataset not downloaded; actor-track availability, access, licence, tracking need, and compute requirements unknown | Independent plan review, then official-source feasibility audit |
 | **RQ011** | Group 5A — OnSite full-universe and run-level readiness | `planning` | S1 | **P0** | v0 full-universe readiness plan drafted; RQ003 top-five package remains the pilot | Full-universe mapping, run identity, repeated-run status, and selection bias are unresolved | Independent plan review, then canonical run crosswalk |
-| **RQ012** | Group 6A — OnSite event ontology and blind-annotation readiness | `planning` | S1 | **P0** | v0 event/annotation readiness plan drafted; existing anonymized 30-case sample and templates can be reused after audit | No real two-human annotations; event thresholds and log-field support not frozen | Independent plan review, event-field audit, and real annotator coordination |
+| **RQ012** | Group 6A — OnSite event ontology and blind-annotation readiness | `blocked` | S7 | **P0** | Wave-A readiness complete for run `RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37`: gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html` | `BLOCKED_FOR_HUMAN_LABELS`: final neutral media/card issuance, auditor sign-off, two accepted labels, kappa+AC1 agreement, upstream freezes, and explicit Gate 012B authorization absent | Complete human-label prerequisites; do not open RQ012B until explicit authorization |
 | **RQ013** | Beyond-safety incremental validity | `planning` | S0 | P2 | RQ003 provides a negative/boundary prior | Must wait for frozen RQ009 predictions and independent WOD/OnSite outcomes from RQ010–RQ012 | Draft only after upstream gates pass |
 
 ## Active execution waves
@@ -93,7 +93,7 @@ accepted decision or a reviewed execution artifact.
 - **RQ008A:** review the v0 plan, reserve an untouched confirmation set, then perform open temporal discovery.
 - **RQ010A:** review the v0 plan, then audit WOD-E2E release/access/schema and decide whether tracking and HPC are required.
 - **RQ011A:** review the v0 plan, then audit OnSite full-universe mappings, run identities, available fields, and repeated-run feasibility.
-- **RQ012A:** review the v0 plan, then freeze automatic event ontology and organize real two-human blinded annotation.
+- **RQ012A:** final reviewed Wave-A readiness package is complete: 9 automatic events; gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans, and 012B blocked; run `RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37`; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`; status remains `BLOCKED_FOR_HUMAN_LABELS`.
 
 ### Wave A plan documents
 
@@ -209,3 +209,4 @@ Rules:
 |---|---|
 | 2026-06-22 | Initialized program dashboard for PAPER001/PAPER002 and RQ001–RQ013; defined active waves, dependencies, synchronization rules, and current blockers. |
 | 2026-06-22 | Created centralized `reports/plans/` and drafted Wave A plans for RQ007, RQ008, RQ010, RQ011, and RQ012; recorded PAPER002 as directly modified but pending artifact verification. |
+| 2026-06-23 | Registered RQ012A Wave-A readiness complete but `BLOCKED_FOR_HUMAN_LABELS`: gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans, 012B blocked; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`. |

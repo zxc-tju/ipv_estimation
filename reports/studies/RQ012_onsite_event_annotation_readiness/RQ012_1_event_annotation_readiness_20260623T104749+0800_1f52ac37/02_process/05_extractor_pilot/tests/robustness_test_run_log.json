@@ -1,0 +1,45 @@
+{
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "worker_id": "RQ012-W17a-extractor-robustness",
+  "git_head": "13aafc86b29295187372173f408b6160b133c3c7",
+  "tests_total": 5,
+  "tests_failed": 0,
+  "scope_firewall": "Synthetic trajectory-only fixtures; no labels/IPV/outcomes/team identity/agreement/paper repo read.",
+  "results": [
+    {
+      "name": "e09_e15_duplicate_ego_timestamp_rejected",
+      "finding": "V03",
+      "status": "pass",
+      "message": "",
+      "traceback": ""
+    },
+    {
+      "name": "tied_nearest_neighbor_uses_lower_timestamp_deterministically",
+      "finding": "V03",
+      "status": "pass",
+      "message": "",
+      "traceback": ""
+    },
+    {
+      "name": "actor_identity_change_splits_and_blocks_primary_pair_interval",
+      "finding": "V04",
+      "status": "pass",
+      "message": "",
+      "traceback": ""
+    },
+    {
+      "name": "high_band_e15_suppresses_same_interval_e09_primary_count",
+      "finding": "V05",
+      "status": "pass",
+      "message": "",
+      "traceback": ""
+    },
+    {
+      "name": "e02_e18_ego_hard_stop_precedence_deoverlaps_primary_counts",
+      "finding": "V01",
+      "status": "pass",
+      "message": "",
+      "traceback": ""
+    }
+  ]
+}

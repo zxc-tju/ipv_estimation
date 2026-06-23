@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ012A Onsite Event Annotation Readiness</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2428;
+      --muted: #60707a;
+      --line: #d7dee2;
+      --soft: #f5f7f8;
+      --pass: #1f7a4d;
+      --hold: #9a5a00;
+      --block: #a12b2b;
+      --link: #175f8a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #ffffff;
+      line-height: 1.55;
+    }
+    main { max-width: 1120px; margin: 0 auto; padding: 32px 24px 56px; }
+    header { border-bottom: 2px solid var(--line); padding-bottom: 18px; margin-bottom: 28px; }
+    h1 { margin: 0 0 10px; font-size: 2rem; line-height: 1.15; }
+    h2 { margin: 34px 0 12px; font-size: 1.35rem; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+    h3 { margin: 22px 0 8px; font-size: 1.05rem; }
+    p { margin: 0 0 12px; }
+    a { color: var(--link); }
+    .meta, .note { color: var(--muted); }
+    .status { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+    .pill { border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 0.9rem; background: var(--soft); }
+    .pass { color: var(--pass); border-color: #8ec6a6; }
+    .hold { color: var(--hold); border-color: #d7b06c; }
+    .block { color: var(--block); border-color: #d49a9a; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .box { border: 1px solid var(--line); background: var(--soft); padding: 14px; border-radius: 6px; }
+    figure { margin: 18px 0; border: 1px solid var(--line); border-radius: 6px; padding: 12px; background: #fff; }
+    figure img {
+      display: block;
+      width: 100%;
+      min-height: 220px;
+      object-fit: contain;
+      border: 1px dashed var(--line);
+      background: #fafafa;
+    }
+    figcaption { margin-top: 10px; color: var(--muted); font-size: 0.95rem; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-size: 0.94rem; }
+    th, td { border: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+    th { background: var(--soft); }
+    code { background: var(--soft); padding: 1px 4px; border-radius: 3px; }
+    ul { margin-top: 6px; }
+    .artifact-list { columns: 2 320px; }
+    .artifact-list li { break-inside: avoid; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>RQ012A Onsite Event Annotation Readiness</h1>
+    <p class="meta">Run ID: <code>RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37</code></p>
+    <p>This offline report prepares figure source data and the reader-facing readiness narrative for Phase 12. It is a readiness package, not a validation report: no labels, agreement results, IPV values, official outcomes, ranks, team identities, or event-IPV associations are used here.</p>
+    <div class="status" aria-label="readiness status">
+      <span class="pill pass">012-0 pass</span>
+      <span class="pill pass">012-1 pass</span>
+      <span class="pill hold">012-2 text surfaces cleared</span>
+      <span class="pill hold">012-3 ready pending humans</span>
+      <span class="pill block">012B blocked</span>
+      <span class="pill block">overall BLOCKED_FOR_HUMAN_LABELS</span>
+    </div>
+    <p class="note">Figure provenance: the CSV source data and figure specifications are provided under <a href="../01_results/figures/source_data/figure_manifest.csv">source_data/figure_manifest.csv</a>. The final PNG/SVG/PDF files are rendered with the Nature figure skill via Python/matplotlib.</p>
+  </header>
+
+  <section id="overview">
+    <h2>Overview And Scope Boundary</h2>
+    <p>RQ012A asks whether an onsite event annotation workflow is ready to support later human annotation and a separately authorized RQ012B analysis. The current conclusion is narrow: the outcome-blind event universe, threshold rationale, automatic pilot health checks, blind-package text surfaces, annotation protocol, and merge-validation guardrails are prepared. The package remains blocked for human labels and final issuance dependencies.</p>
+    <p>The behavioural reference is outcome-blind behavioural evidence, not ground truth. No event class is treated as proof of IPV, and construct-proximal motif labels are kept out of primary endpoint status.</p>
+  </section>
+
+  <section id="signal-audit">
+    <h2>Signal Audit</h2>
+    <p>Gate 012-0 retained 9 automatic candidates, demoted 5 human-only candidates, and removed 6 unsupported planner/system candidates. The retained automatic events rely on available trajectory, timestamp, geometry, speed, acceleration, actor ID, or steering/lateral channels. Removed planner/system events lack explicit flags or authoritative status dictionaries.</p>
+    <figure>
+      <img src="../01_results/figures/fig1_signal_availability.png" alt="Placeholder for FIG1 signal availability by signal class and Gate 012-0 action">
+      <figcaption>FIG1 signal availability. Outputs: <a href="../01_results/figures/fig1_signal_availability.svg">SVG</a>, <a href="../01_results/figures/fig1_signal_availability.pdf">PDF</a>, <a href="../01_results/figures/fig1_signal_availability.png">PNG</a>. Source: <a href="../01_results/figures/source_data/fig1_signal_availability_source.csv">CSV</a>.</figcaption>
+    </figure>
+  </section>
+
+  <section id="ontology">
+    <h2>Ontology And B01 Endpoint Tiers</h2>
+    <p>The ontology covers physical safety, interaction quality, human motif, and planner/system classes. B01 endpoint tiers are explicit: only <code>independent_consequence_endpoint</code> items can become primary endpoints in a later authorized RQ012B workflow. <code>construct_proximal_descriptor</code> items are secondary descriptive context only, and <code>planner_system_event</code> candidates remain analytically distinct or removed when signals are unavailable.</p>
+    <figure>
+      <img src="../01_results/figures/fig2_event_ontology.png" alt="Placeholder for FIG2 ontology by class endpoint tier and extraction mode">
+      <figcaption>FIG2 event ontology. Outputs: <a href="../01_results/figures/fig2_event_ontology.svg">SVG</a>, <a href="../01_results/figures/fig2_event_ontology.pdf">PDF</a>, <a href="../01_results/figures/fig2_event_ontology.png">PNG</a>. Source: <a href="../01_results/figures/source_data/fig2_event_ontology_source.csv">CSV</a>.</figcaption>
+    </figure>
+  </section>
+
+  <section id="thresholds">
+    <h2>Threshold Rationale</h2>
+    <p>Gate 012-1 passed with all retained automatic-event thresholds sourced from outcome-blind standards, literature, platform references, measurement resolution, schema precedence, or engineering geometry. The B02 dual-track rule remains binding: exploratory threshold work may exist only as quarantined intuition, while any binding threshold used for reporting or later RQ012B must be outcome-blind and documented before use.</p>
+    <p>No threshold was selected from IPV, official coordination score, rank, team identity, labels, agreement, later outcomes, event frequency, or event-IPV association.</p>
+  </section>
+
+  <section id="extractor-pilot">
+    <h2>Extractor Pilot Health</h2>
+    <p>The automatic pilot is a health audit over 5 pilot sessions. Primary event counts are de-overlapped counts after precedence, not validation outcomes. The key cross-event fix is that E15 contact candidates take precedence over overlapping E09 near-miss intervals; E09 therefore has 463 raw intervals but 350 primary intervals, with 113 suppressed by precedence.</p>
+    <p>Red-team robustness fixes V01, V03, V04, and V05 are reflected in the regenerated pilot: cross-event hierarchy metadata, pair-event timestamp prevalidation, actor-stability guards, and same-band E09/E15 duplicate suppression are now present. The pilot remains outcome-blind and does not read labels or event-IPV associations.</p>
+    <figure>
+      <img src="../01_results/figures/fig3_extractor_pilot_health.png" alt="Placeholder for FIG3 extractor pilot health with computable fractions and de-overlapped primary counts">
+      <figcaption>FIG3 extractor pilot health. Outputs: <a href="../01_results/figures/fig3_extractor_pilot_health.svg">SVG</a>, <a href="../01_results/figures/fig3_extractor_pilot_health.pdf">PDF</a>, <a href="../01_results/figures/fig3_extractor_pilot_health.png">PNG</a>. Source: <a href="../01_results/figures/source_data/fig3_extractor_pilot_health_source.csv">CSV</a>.</figcaption>
+    </figure>
+  </section>
+
+  <section id="blind-package">
+    <h2>Blind-Package Audit</h2>
+    <p>Gate 012-2 is precisely labeled <code>text_issuance_surfaces_cleared</code>. The corrected text/CSV annotator-facing surfaces expose neutral item IDs and blank fields only; A02 proxy leakage was closed for those surfaces, and the release zip carries only the four verified text/CSV files with no host xattr payload in the transport archive.</p>
+    <p>The A03 metadata resolution is intentionally honest: host filesystem <code>com.apple.provenance</code> remained visible in the local environment, but the verified release transport has zero-byte extra fields and matching round-trip content hashes. Final neutral media/card issuance and auditor sign-off remain dependencies before real label acceptance.</p>
+    <figure>
+      <img src="../01_results/figures/fig4_blind_workflow_readiness_pipeline.png" alt="Placeholder for FIG4 blind workflow and readiness pipeline diagram">
+      <figcaption>FIG4 blind workflow and readiness pipeline. Outputs: <a href="../01_results/figures/fig4_blind_workflow_readiness_pipeline.svg">SVG</a>, <a href="../01_results/figures/fig4_blind_workflow_readiness_pipeline.pdf">PDF</a>, <a href="../01_results/figures/fig4_blind_workflow_readiness_pipeline.png">PNG</a>. Source: <a href="../01_results/figures/source_data/fig4_blind_workflow_readiness_pipeline_source.csv">CSV</a>.</figcaption>
+    </figure>
+  </section>
+
+  <section id="annotation-protocol">
+    <h2>Annotation Protocol</h2>
+    <p>The protocol requires two different independent human annotators, no mutual access, controlled submission, append-only raw label preservation, and no adjudication before saved agreement. The agreement protocol is frozen before results and specifies kappa plus AC1; no agreement has been computed in this package.</p>
+    <p>Training materials are fictional and separated from formal validation items. Templates contain neutral item IDs and blank fields only.</p>
+  </section>
+
+  <section id="merge-validation">
+    <h2>Merge Validation</h2>
+    <p>The merge-validation guardrails pass structural blank input only as a non-label fixture and reject or quarantine adversarial cases. V08 is fixed by near-duplicate and provenance-oriented quarantine screens: near-duplicate label vectors, implausible timing, template-order clones, and controlled-channel anomalies are quarantined rather than agreement-ready.</p>
+    <p>No merge, agreement, adjudication, or event-IPV output is produced by these tests.</p>
+  </section>
+
+  <section id="review-red-team">
+    <h2>Independent Review And Red Team</h2>
+    <p>The independent review and red-team blocker was the missing substantive readiness report. This HTML package and its figure source data address that report-preparation blocker while preserving the human-label blocker. Historical major red-team findings V01, V03, V04, V05, and V08 are reported as fixed in the later robustness and merge-hardening artifacts. V06 is carried forward with precision: text issuance surfaces are cleared, but media issuance and auditor sign-off remain unresolved dependencies.</p>
+  </section>
+
+  <section id="limitations">
+    <h2>Limitations</h2>
+    <ul>
+      <li>No human labels are present, and no agreement or adjudication has occurred.</li>
+      <li>No IPV, official score, rank, team identity, outcome, or event-IPV association is read or computed.</li>
+      <li>Automatic pilot counts are health metrics, not behavioural prevalence estimates or validation evidence.</li>
+      <li>E15 is a geometric contact candidate only, E16 is no-progress only, and E18 is a kinematic emergency-stop candidate only.</li>
+      <li>Gate 012-2 covers corrected text/issuance surfaces; final media/card issuance is still pending.</li>
+    </ul>
+  </section>
+
+  <section id="blocker">
+    <h2>Human-Label Blocker</h2>
+    <p><strong>Overall status: <code>BLOCKED_FOR_HUMAN_LABELS</code>.</strong> The package must not be described as PASS. Remaining dependencies include the frozen RQ011 analysis universe, final neutral media/card issuance, independent auditor sign-off, two accepted real human labels, raw label preservation, kappa+AC1 agreement under the frozen protocol, required RQ007/RQ009/RQ011 freezes, and explicit recorded Gate 012B authorization.</p>
+    <figure>
+      <img src="../01_results/figures/fig5_readiness_gates.png" alt="Placeholder for FIG5 readiness gates and remaining dependencies">
+      <figcaption>FIG5 readiness gates. Outputs: <a href="../01_results/figures/fig5_readiness_gates.svg">SVG</a>, <a href="../01_results/figures/fig5_readiness_gates.pdf">PDF</a>, <a href="../01_results/figures/fig5_readiness_gates.png">PNG</a>. Source: <a href="../01_results/figures/source_data/fig5_readiness_gates_source.csv">CSV</a>.</figcaption>
+    </figure>
+  </section>
+
+  <section id="gate-table">
+    <h2>Gate Summary</h2>
+    <table>
+      <thead>
+        <tr><th>Gate</th><th>Status</th><th>Interpretation</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>012-0</td><td>pass</td><td>Signal feasibility audit completed with unsupported items demoted or removed.</td></tr>
+        <tr><td>012-1</td><td>pass</td><td>Outcome-blind ontology and threshold rationale completed.</td></tr>
+        <tr><td>012-2</td><td>text_issuance_surfaces_cleared</td><td>Corrected text/CSV issuance surfaces cleared; media issuance and sign-off remain pending.</td></tr>
+        <tr><td>012-3</td><td>ready_pending_humans</td><td>Human protocol is ready, but real independent labels and agreement are absent.</td></tr>
+        <tr><td>012B</td><td>blocked</td><td>Later event-IPV analysis is not authorized.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="artifact-index">
+    <h2>Artifact Index</h2>
+    <ul class="artifact-list">
+      <li><a href="../01_results/annotation_readiness_status.json">annotation_readiness_status.json</a></li>
+      <li><a href="../01_results/tables/event_signal_availability.csv">event_signal_availability.csv</a></li>
+      <li><a href="../01_results/event_ontology.yaml">event_ontology.yaml</a></li>
+      <li><a href="../01_results/event_threshold_rationale.md">event_threshold_rationale.md</a></li>
+      <li><a href="../01_results/automatic_event_extractor_spec.md">automatic_event_extractor_spec.md</a></li>
+      <li><a href="../01_results/automatic_event_pilot.csv">automatic_event_pilot.csv</a></li>
+      <li><a href="../01_results/automatic_event_pilot_report.md">automatic_event_pilot_report.md</a></li>
+      <li><a href="../01_results/figures/source_data/figure_manifest.csv">figure_manifest.csv</a></li>
+      <li><a href="../01_results/figures/source_data/figure_specs.md">figure_specs.md</a></li>
+      <li><a href="../02_process/05_extractor_pilot/extractor_robustness_fix_note.md">extractor_robustness_fix_note.md</a></li>
+      <li><a href="../02_process/06_blind_package/blind_package_reaudit.md">blind_package_reaudit.md</a></li>
+      <li><a href="../02_process/06_blind_package/blind_issuance_manifest.csv">blind_issuance_manifest.csv</a></li>
+      <li><a href="../02_process/06_blind_package/blind_issuance_release_transport_manifest.csv">blind_issuance_release_transport_manifest.csv</a></li>
+      <li><a href="../01_results/annotation_codebook_v2.md">annotation_codebook_v2.md</a></li>
+      <li><a href="../01_results/blind_annotation_protocol.md">blind_annotation_protocol.md</a></li>
+      <li><a href="../01_results/annotations/annotator_01_template.csv">annotator_01_template.csv</a></li>
+      <li><a href="../01_results/annotations/annotator_02_template.csv">annotator_02_template.csv</a></li>
+      <li><a href="../01_results/annotations/neutral_item_manifest.csv">neutral_item_manifest.csv</a></li>
+      <li><a href="../01_results/agreement_analysis_protocol.yaml">agreement_analysis_protocol.yaml</a></li>
+      <li><a href="../01_results/annotation_merge_validation_tests.md">annotation_merge_validation_tests.md</a></li>
+      <li><a href="../01_results/human_coordination_checklist.md">human_coordination_checklist.md</a></li>
+      <li><a href="../02_process/08_merge_tests/phase_status.json">merge_tests_phase_status.json</a></li>
+      <li><a href="../02_process/09_review/independent_review.md">independent_review.md</a></li>
+      <li><a href="../02_process/10_red_team/red_team_findings.md">red_team_findings.md</a></li>
+      <li><a href="../02_process/01_plan_review/plan_resolution_v0_1.md">plan_resolution_v0_1.md</a></li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

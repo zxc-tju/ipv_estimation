@@ -1,0 +1,5 @@
+RQ012A reader-facing figures FIG1-FIG5 were rendered by the PI using the nature-figure skill
+(Python/matplotlib backend; editable SVG svg.fonttype=none, pdf.fonttype=42; colorblind-safe palette).
+Render script: ../render_figures.py ; environment: project .venv_fig (matplotlib 3.11.0).
+Outputs per figure: PNG (600 dpi view) + SVG + PDF in ../ (01_results/figures/).
+Outcome-blind readiness figures only; no IPV/score/rank/team values used.

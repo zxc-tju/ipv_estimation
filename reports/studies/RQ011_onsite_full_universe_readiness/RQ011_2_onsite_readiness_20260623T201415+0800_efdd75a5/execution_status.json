@@ -1,0 +1,58 @@
+{
+  "run_id": "RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5",
+  "git_head": "32ebf754ef746e6a437d763e637dc0c185696fa5",
+  "plan_sha256": "13142fc4ebdb8636ec099323e04e1428a09ac91a2399aa8b321f83cd5e6d3e10",
+  "created_at": "2026-06-23T20:14:15+08:00",
+  "canonical_data_root": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset",
+  "readiness_status": "PENDING",
+  "phases": {
+    "0": {
+      "status": "complete",
+      "mode": "bootstrap"
+    },
+    "1": {
+      "status": "complete",
+      "mode": "reused/imported",
+      "source_run": "RQ011_1_onsite_readiness_20260623T104838+0800_20aaee57"
+    },
+    "2": {
+      "status": "pending"
+    },
+    "3": {
+      "status": "pending"
+    },
+    "4": {
+      "status": "pending"
+    },
+    "5": {
+      "status": "pending"
+    },
+    "6": {
+      "status": "pending"
+    },
+    "7": {
+      "status": "pending"
+    },
+    "8": {
+      "status": "pending"
+    },
+    "9": {
+      "status": "pending"
+    },
+    "10": {
+      "status": "pending"
+    },
+    "11": {
+      "status": "pending"
+    },
+    "12": {
+      "status": "pending"
+    },
+    "13": {
+      "status": "pending"
+    },
+    "14": {
+      "status": "pending"
+    }
+  }
+}

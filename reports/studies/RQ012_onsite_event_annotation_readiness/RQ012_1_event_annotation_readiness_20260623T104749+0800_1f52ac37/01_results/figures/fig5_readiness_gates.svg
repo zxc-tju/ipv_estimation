@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="382.68pt" height="224.390388pt" viewBox="0 0 382.68 224.390388" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-06-23T16:25:06.811358</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.0, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 224.390388 
+L 382.68 224.390388 
+L 382.68 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 7.2 180.164232 
+L 375.48 180.164232 
+L 375.48 19.388232 
+L 7.2 19.388232 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 7.2 47.524032 
+L 201.031579 47.524032 
+L 201.031579 28.354586 
+L 7.2 28.354586 
+z
+" clip-path="url(#p29cc53e065)" style="fill: #2e7d46; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 7.2 78.442494 
+L 201.031579 78.442494 
+L 201.031579 59.273048 
+L 7.2 59.273048 
+z
+" clip-path="url(#p29cc53e065)" style="fill: #2e7d46; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 7.2 109.360955 
+L 201.031579 109.360955 
+L 201.031579 90.191509 
+L 7.2 90.191509 
+z
+" clip-path="url(#p29cc53e065)" style="fill: #e28e2c; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 7.2 140.279417 
+L 201.031579 140.279417 
+L 201.031579 121.109971 
+L 7.2 121.109971 
+z
+" clip-path="url(#p29cc53e065)" style="fill: #9a7bd0; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 7.2 171.197879 
+L 201.031579 171.197879 
+L 201.031579 152.028432 
+L 7.2 152.028432 
+z
+" clip-path="url(#p29cc53e065)" style="fill: #b64342; stroke: #ffffff; stroke-linejoin: miter"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 7px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #ffffff" x="11.076632" y="39.750764" transform="rotate(-0 11.076632 39.750764)">012-0  signal feasibility</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 6.5px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #2e7d46" x="208.784842" y="39.621438" transform="rotate(-0 208.784842 39.621438)">PASS</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 7px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #ffffff" x="11.076632" y="70.669226" transform="rotate(-0 11.076632 70.669226)">012-1  outcome-blind ontology and thresholds</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 6.5px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #2e7d46" x="208.784842" y="70.5399" transform="rotate(-0 208.784842 70.5399)">PASS</text>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 7px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #ffffff" x="11.076632" y="101.587687" transform="rotate(-0 11.076632 101.587687)">012-2  blind package integrity</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 700; font-size: 6.5px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #e28e2c" x="208.784842" y="101.458361" transform="rotate(-0 208.784842 101.458361)">TEXT-CLEARED</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 7px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #ffffff" x="11.076632" y="132.506217" transform="rotate(-0 11.076632 132.506217)">012-3  human coordination readiness</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 6.5px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #9a7bd0" x="208.784842" y="132.376823" transform="rotate(-0 208.784842 132.376823)">READY – PENDING HUMANS</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 7px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #ffffff" x="11.076632" y="163.424611" transform="rotate(-0 11.076632 163.424611)">012B  later event-IPV analysis authorization</text>
+   </g>
+   <g id="text_10">
+    <text style="font-weight: 700; font-size: 6.5px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start; fill: #b64342" x="208.784842" y="163.295284" transform="rotate(-0 208.784842 163.295284)">BLOCKED</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 5.8px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; fill: #767676" transform="translate(7.2 209.218956)">012B remains BLOCKED until: RQ011 frozen universe · final neutral media/card issuance · auditor sign-off ·</text>
+    <text style="font-size: 5.8px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; fill: #767676" transform="translate(7.2 215.534952)">two accepted human labels · κ + Gwet AC1 agreement · required RQ007/009/011 freezes · explicit authorization.</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Arial', 'Helvetica', 'DejaVu Sans', 'Liberation Sans', sans-serif; text-anchor: start" x="7.2" y="13.388232" transform="rotate(-0 7.2 13.388232)">RQ012A readiness gates  (n = 5)</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p29cc53e065">
+   <rect x="7.2" y="19.388232" width="368.28" height="160.776"/>
+  </clipPath>
+ </defs>
+</svg>

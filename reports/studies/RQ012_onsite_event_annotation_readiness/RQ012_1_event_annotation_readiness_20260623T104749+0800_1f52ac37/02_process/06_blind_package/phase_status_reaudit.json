@@ -1,0 +1,11 @@
+{
+  "phase": "phase6_reaudit",
+  "gate": "012-2",
+  "verdict": "cleared",
+  "remaining_dependencies": [
+    "BLOCKED_FOR_HUMAN_LABELS: final neutral media/card issuance awaits the frozen RQ011 analysis universe and an authorized material-preparation worker; this remains open but does not fail Gate 012-2 for the corrected text/issuance surfaces.",
+    "NONBLOCKING_SUPPORT_FIXITY_REFRESH: two non-facing support-file checksum rows in blind_issuance_manifest.csv changed after W07a evidence/status updates; facing-file and release-transport hashes match."
+  ],
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "git_head": "f38c402853d3fcb74c3863487a489750a8f36d28"
+}

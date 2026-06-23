@@ -1,0 +1,703 @@
+run_id: RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37
+worker_id: RQ012-W08-ontology
+phase: phase3_event_ontology
+deliverable: event_ontology
+status: complete
+sources:
+  signal_availability: 01_results/tables/event_signal_availability.csv
+  signal_audit_report: 02_process/02_signal_audit/signal_audit_report.md
+  signal_schema_inventory: 02_process/02_signal_audit/signal_schema_inventory.csv
+  binding_addendum: 02_process/01_plan_review/plan_resolution_v0_1.md
+  spec: reports/plans/RQ012_plan_v0_onsite_event_annotation_readiness_20260622.md
+scope_guardrails:
+  thresholds_deferred_to_phase: phase4
+  numeric_threshold_values_present: false
+  extractor_code_present: false
+  event_ipv_analysis_present: false
+  candidate_direction_basis: "A priori behavioural hypotheses only; not derived from IPV values, official outcomes, scores, ranks, labels, or event frequencies."
+endpoint_eligibility_policy:
+  primary_endpoint_allowed_only_for: independent_consequence_endpoint
+  primary_endpoint_forbidden_for:
+    - construct_proximal_descriptor
+    - planner_system_event
+    - annotation_quality_label
+  construct_proximal_rule: "Construct-proximal descriptors are secondary descriptive context only and are not eligible as primary RQ012B event-IPV validation endpoints."
+counts:
+  automatic: 9
+  human_only: 5
+  removed: 6
+class_coverage:
+  retained_event_classes:
+    - physical_safety
+    - interaction_quality
+    - human_motif
+  documented_unavailable_classes:
+    - planner_system
+  note: "Planner/system automatic candidates were removed at Gate 012-0 because explicit flags or authoritative status dictionaries were unavailable; no planner_system retained event is invented in this ontology."
+retained_events:
+  - event_id: E01
+    event_name: counterpart hard braking
+    behavioural_interpretation: "A counterpart actor exhibits sustained hard braking during an interaction context; this is treated as a behavioural consequence endpoint, not as a label of the counterpart's motive."
+    required_signals:
+      - counterpart actor ID
+      - timestamp
+      - speed
+      - acceleration or braking state
+      - optional ego-relative position for interaction context
+    actor: counterpart
+    rule_structure: "For each frozen counterpart trajectory, mark a braking episode when the hard-brake condition P_hard_brake_E01 is satisfied for at least D_min_E01 and the actor passes C_counterpart_identity_E01 within C_interaction_context_E01."
+    threshold_parameters:
+      - T_hard_brake_decel_E01
+      - T_braking_state_E01
+      - D_min_E01
+      - G_merge_E01
+      - G_missing_E01
+      - C_counterpart_identity_E01
+      - C_interaction_context_E01
+    minimum_duration_rule:
+      parameter: D_min_E01
+      rationale: "Filters transient frame noise and isolated braking spikes; value must be frozen outcome-blind in phase4."
+    merge_gap_rule:
+      parameter: G_merge_E01
+      rationale: "Merges adjacent braking intervals separated by brief nonqualifying gaps without changing actor identity."
+    onset_definition: "Episode onset is the first timestamp in the qualifying hard-brake run after duration confirmation."
+    end_definition: "Episode end is the last qualifying timestamp before the hard-brake condition remains false beyond G_merge_E01."
+    missing_data_rule: "If counterpart identity, timestamp, and braking/deceleration evidence are missing beyond G_missing_E01, mark the candidate not computable; do not infer counterpart identity from protected metadata."
+    online_offline_status: online
+    online_offline_rationale: "Can be detected causally from current and past counterpart states once counterpart identity rules are frozen."
+    known_confounds:
+      - traffic-control compliance
+      - obstacle avoidance
+      - sensor or simulator acceleration jitter
+      - wrong counterpart attribution
+    candidate_direction: competitive
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: hard braking by a counterpart can follow assertive or late-yield interaction pressure."
+    event_class: physical_safety
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E02
+    event_name: high deceleration
+    behavioural_interpretation: "An ego, counterpart, or other actor undergoes a sustained high-deceleration episode that may indicate a safety-relevant maneuver."
+    required_signals:
+      - ego or actor acceleration
+      - speed
+      - timestamp
+      - actor ID
+    actor: ego / counterpart / other
+    rule_structure: "For each actor trajectory, mark an episode when the deceleration condition P_high_decel_E02 is satisfied for at least D_min_E02 using the frozen acceleration-field precedence C_accel_field_E02."
+    threshold_parameters:
+      - T_decel_E02
+      - D_min_E02
+      - G_merge_E02
+      - G_missing_E02
+      - C_accel_field_E02
+    minimum_duration_rule:
+      parameter: D_min_E02
+      rationale: "Prevents a single unstable frame from becoming an event; value must be set outcome-blind in phase4."
+    merge_gap_rule:
+      parameter: G_merge_E02
+      rationale: "Combines interrupted deceleration runs for the same actor when the interruption is shorter than the frozen gap rule."
+    onset_definition: "Episode onset is the first timestamp in the actor-specific qualifying deceleration run."
+    end_definition: "Episode end is the last qualifying timestamp before the condition stays false beyond G_merge_E02."
+    missing_data_rule: "If actor ID, timestamp, speed, or the selected acceleration field is missing beyond G_missing_E02, mark the actor-window not computable; do not substitute another actor's state."
+    online_offline_status: online
+    online_offline_rationale: "Uses current and past actor kinematics only."
+    known_confounds:
+      - normal slowing for route geometry
+      - traffic-light compliance
+      - obstacle response
+      - field spelling or unit inconsistency
+    candidate_direction: non_specific
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: high deceleration can reflect competitive conflict, cautious yielding, or unrelated safety constraints."
+    event_class: physical_safety
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E03
+    event_name: high jerk
+    behavioural_interpretation: "An actor shows abrupt longitudinal acceleration change after applying a frozen causal derivative and smoothing rule."
+    required_signals:
+      - acceleration time series or speed time series
+      - timestamp
+      - actor ID
+    actor: ego / counterpart / other
+    rule_structure: "Derive causal longitudinal jerk J_long_E03 from same-actor kinematic history; mark an episode when P_high_jerk_E03 is satisfied for at least D_min_E03 after applying S_jerk_E03."
+    threshold_parameters:
+      - T_jerk_E03
+      - S_jerk_E03
+      - D_min_E03
+      - G_merge_E03
+      - G_missing_E03
+      - C_derivative_method_E03
+    minimum_duration_rule:
+      parameter: D_min_E03
+      rationale: "Requires persistence after derivative smoothing so timestamp jitter does not create isolated events."
+    merge_gap_rule:
+      parameter: G_merge_E03
+      rationale: "Merges same-actor jerk bursts split by short derivative dropouts."
+    onset_definition: "Episode onset is the first timestamp whose causal derivative sequence satisfies P_high_jerk_E03 after duration confirmation."
+    end_definition: "Episode end is the last qualifying timestamp before P_high_jerk_E03 remains false beyond G_merge_E03."
+    missing_data_rule: "If consecutive actor states needed for C_derivative_method_E03 are unavailable beyond G_missing_E03, mark the window not computable rather than using noncausal interpolation."
+    online_offline_status: online
+    online_offline_rationale: "Online only under causal smoothing; any noncausal centered smoother must be reported as an offline variant and is not this primary rule."
+    known_confounds:
+      - derivative amplification of timestamp jitter
+      - acceleration field spelling differences
+      - actuator or simulator discretization
+      - lane geometry not represented
+    candidate_direction: non_specific
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: abrupt jerk is a generic instability endpoint and is not directionally tied to one sociality mode."
+    event_class: physical_safety
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E04
+    event_name: forced yielding
+    behavioural_interpretation: "A human annotator judges that one actor's behavior pressures another actor to cede movement priority or slow/yield against the expected interaction flow."
+    required_signals:
+      - ego, counterpart, and non-counterpart trajectories
+      - right-of-way or intended route context
+      - gap or proximity evidence
+      - speed or deceleration evidence
+      - human context for forcedness
+    actor: forcing_actor / yielding_actor
+    rule_structure: "Human-only codebook decision: mark forced yielding when H_forcedness_evidence_E04, H_priority_context_E04, and H_actor_role_E04 support the motif; no automatic extractor rule is authorized."
+    threshold_parameters:
+      - H_forcedness_evidence_E04
+      - H_priority_context_E04
+      - H_actor_role_E04
+      - H_confidence_rule_E04
+      - D_min_E04
+      - G_merge_E04
+    minimum_duration_rule:
+      parameter: D_min_E04
+      rationale: "Requires a visible yielding sequence rather than a momentary pause; criterion must be written in the phase5 codebook without numeric threshold values here."
+    merge_gap_rule:
+      parameter: G_merge_E04
+      rationale: "Combines adjacent human-observed forced-yielding segments when the same actors and interaction meaning persist."
+    onset_definition: "Onset is the first visible moment the yielding actor begins to cede priority under the forcing context."
+    end_definition: "End is when the yielding actor resumes normal negotiation, the forcing context resolves, or evidence becomes insufficient."
+    missing_data_rule: "If right-of-way, route, actor-role, or visual/context evidence is insufficient, annotators must use the uncertainty or insufficient-evidence path rather than infer from protected metadata."
+    online_offline_status: offline
+    online_offline_rationale: "Requires full-window human context and right-of-way interpretation not available as a causal automatic signal."
+    known_confounds:
+      - lawful yielding
+      - courtesy yielding
+      - occluded traffic-control context
+      - uncertain priority or route intent
+    candidate_direction: competitive
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: forcing another actor to yield semantically aligns with assertive or competitive behavior."
+    event_class: human_motif
+    endpoint_eligibility: construct_proximal_descriptor
+    primary_endpoint_eligible: false
+    endpoint_eligibility_note: "Construct-proximal descriptor; forbidden as a primary RQ012B validation endpoint and allowed only as secondary descriptive context."
+    extraction_mode: human_only
+
+  - event_id: E05
+    event_name: yield-role reversal
+    behavioural_interpretation: "A human annotator judges that the actor expected to proceed instead yields, or the expected yielding role is reversed in the interaction."
+    required_signals:
+      - yielding role over time
+      - counterpart identity
+      - right-of-way or expected priority context
+      - actor trajectories
+    actor: expected_priority_actor / expected_yielding_actor
+    rule_structure: "Human-only codebook decision: mark role reversal when H_expected_priority_E05 and H_observed_yielding_role_E05 conflict under stable actor attribution C_actor_role_E05."
+    threshold_parameters:
+      - H_expected_priority_E05
+      - H_observed_yielding_role_E05
+      - C_actor_role_E05
+      - H_confidence_rule_E05
+      - D_min_E05
+      - G_merge_E05
+    minimum_duration_rule:
+      parameter: D_min_E05
+      rationale: "Requires an interpretable role reversal sequence rather than a transient hesitation."
+    merge_gap_rule:
+      parameter: G_merge_E05
+      rationale: "Merges adjacent role-reversal observations when the same role interpretation continues."
+    onset_definition: "Onset is the first visible moment the expected priority actor begins to yield or the expected yielding actor proceeds in the reversed role."
+    end_definition: "End is when priority negotiation resolves, actor roles stabilize, or evidence becomes insufficient."
+    missing_data_rule: "If expected priority cannot be established from blinded materials, mark insufficient evidence; do not use filenames, scenario IDs, or external outcome data."
+    online_offline_status: offline
+    online_offline_rationale: "Requires human interpretation of priority and role semantics across the interaction window."
+    known_confounds:
+      - courtesy yielding
+      - local traffic rule ambiguity
+      - occluded non-counterpart influence
+      - unstable counterpart identity
+    candidate_direction: over_yielding
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: yielding despite expected priority is a construct-proximal over-yielding motif."
+    event_class: human_motif
+    endpoint_eligibility: construct_proximal_descriptor
+    primary_endpoint_eligible: false
+    endpoint_eligibility_note: "Construct-proximal descriptor; forbidden as a primary RQ012B validation endpoint and allowed only as secondary descriptive context."
+    extraction_mode: human_only
+
+  - event_id: E06
+    event_name: repeated stop-go
+    behavioural_interpretation: "An actor alternates between stopped and moving states repeatedly, indicating oscillatory or unstable interaction resolution."
+    required_signals:
+      - speed time series
+      - timestamp
+      - actor ID
+      - optional acceleration
+    actor: ego / counterpart / other
+    rule_structure: "For each actor trajectory, identify stop states with P_stop_E06 and go states with P_go_E06; mark an episode when alternating stop-go cycles satisfy N_cycles_E06 and duration rules."
+    threshold_parameters:
+      - T_stop_speed_E06
+      - T_go_speed_E06
+      - N_cycles_E06
+      - D_stop_min_E06
+      - D_go_min_E06
+      - D_min_E06
+      - G_merge_E06
+      - G_missing_E06
+    minimum_duration_rule:
+      parameter: D_min_E06
+      rationale: "Ensures the stop-go pattern reflects a sustained oscillatory sequence rather than a single maneuver transition."
+    merge_gap_rule:
+      parameter: G_merge_E06
+      rationale: "Merges adjacent stop-go sequences for the same actor when separated by a short stable interval."
+    onset_definition: "Onset is the first timestamp of the first stop or go state that belongs to the qualifying alternating sequence."
+    end_definition: "End is the last timestamp of the final qualifying state before alternation ceases beyond G_merge_E06."
+    missing_data_rule: "If actor ID, timestamp, or speed is missing beyond G_missing_E06, mark the sequence not computable; do not bridge across actor identity changes."
+    online_offline_status: online
+    online_offline_rationale: "Can be accumulated from current and past actor speed states under frozen cycle rules."
+    known_confounds:
+      - queued traffic
+      - traffic-light cycling
+      - normal creep behavior
+      - non-counterpart obstruction
+    candidate_direction: non_specific
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: stop-go oscillation can result from either assertive conflict or excessive yielding."
+    event_class: interaction_quality
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E07
+    event_name: unnecessary stop
+    behavioural_interpretation: "A human annotator judges that an actor stopped despite no sufficient visible interaction, traffic-control, or obstacle reason in the blinded materials."
+    required_signals:
+      - stop event
+      - route or lane or right-of-way context
+      - obstacle and traffic-light context
+      - human judgment of necessity
+    actor: stopped_actor
+    rule_structure: "Human-only codebook decision: mark unnecessary stop when H_stop_visible_E07 is true and H_necessity_context_E07 does not support a required stop under H_confidence_rule_E07."
+    threshold_parameters:
+      - H_stop_visible_E07
+      - H_necessity_context_E07
+      - H_confidence_rule_E07
+      - D_min_E07
+      - G_merge_E07
+    minimum_duration_rule:
+      parameter: D_min_E07
+      rationale: "Requires a visible stop episode long enough for human necessity judgment; no value is set in this phase."
+    merge_gap_rule:
+      parameter: G_merge_E07
+      rationale: "Merges adjacent unnecessary-stop judgments when the same stopped actor and lack-of-necessity context persist."
+    onset_definition: "Onset is the first visible moment the actor enters the judged unnecessary stop."
+    end_definition: "End is when the actor resumes movement, a valid stop cause appears, or evidence becomes insufficient."
+    missing_data_rule: "If route, right-of-way, obstacle, or traffic-control context is insufficient, use the uncertainty or insufficient-evidence label rather than marking unnecessary stop."
+    online_offline_status: offline
+    online_offline_rationale: "Requires full-window human interpretation of necessity and context."
+    known_confounds:
+      - invisible obstacle or occlusion
+      - cautious compliance with traffic control
+      - latent route intent
+      - courtesy yielding
+    candidate_direction: over_yielding
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: stopping without visible necessity is a construct-proximal over-yielding or freezing motif."
+    event_class: human_motif
+    endpoint_eligibility: construct_proximal_descriptor
+    primary_endpoint_eligible: false
+    endpoint_eligibility_note: "Construct-proximal descriptor; forbidden as a primary RQ012B validation endpoint and allowed only as secondary descriptive context."
+    extraction_mode: human_only
+
+  - event_id: E08
+    event_name: conflict escalation
+    behavioural_interpretation: "A human annotator judges that the interaction worsens over time through increasing proximity, evasive response, blocked progress, or visible negotiation breakdown."
+    required_signals:
+      - multi-actor proximity
+      - closing speed
+      - deceleration or jerk
+      - interaction context
+      - severity progression
+    actor: ego / counterpart / involved_other
+    rule_structure: "Human-only codebook decision: mark escalation when H_progression_E08, H_interaction_link_E08, and H_severity_increase_E08 support a worsening conflict sequence."
+    threshold_parameters:
+      - H_progression_E08
+      - H_interaction_link_E08
+      - H_severity_increase_E08
+      - H_confidence_rule_E08
+      - D_min_E08
+      - G_merge_E08
+    minimum_duration_rule:
+      parameter: D_min_E08
+      rationale: "Requires observable progression rather than a single high-risk frame."
+    merge_gap_rule:
+      parameter: G_merge_E08
+      rationale: "Merges adjacent escalation segments when the same conflict sequence remains active."
+    onset_definition: "Onset is the first visible moment where severity begins increasing within the linked interaction."
+    end_definition: "End is when escalation resolves, plateaus outside the codebook rule, or evidence becomes insufficient."
+    missing_data_rule: "If actor linkage or severity progression is unclear, mark uncertain or insufficient evidence; do not infer progression from later IPV or outcome information."
+    online_offline_status: offline
+    online_offline_rationale: "Requires full-window human judgment of progression and interaction linkage."
+    known_confounds:
+      - benign close passing
+      - camera or perception occlusion
+      - unrelated actor cut-in
+      - unclear interaction start
+    candidate_direction: competitive
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: worsening conflict is expected to align more with assertive or competitive interaction patterns."
+    event_class: interaction_quality
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: human_only
+
+  - event_id: E09
+    event_name: near miss
+    behavioural_interpretation: "Ego and another actor reach a geometrically close or predicted-conflict state without requiring sensor-confirmed contact."
+    required_signals:
+      - ego and actor positions
+      - dimensions
+      - heading or courseAngle
+      - speed
+      - timestamp
+      - actor IDs
+    actor: ego / counterpart_or_other
+    rule_structure: "For each ego-actor pair, compute frozen geometry C_geometry_E09 and optional motion-risk proxy P_near_miss_E09; mark an episode when proximity or conflict conditions satisfy T_near_miss_E09 for at least D_min_E09."
+    threshold_parameters:
+      - T_distance_E09
+      - T_time_to_conflict_E09
+      - D_min_E09
+      - G_merge_E09
+      - G_missing_E09
+      - C_geometry_E09
+      - C_actor_pair_E09
+      - H_contact_precedence_E09
+    minimum_duration_rule:
+      parameter: D_min_E09
+      rationale: "Prevents transient geometry artifacts from becoming near-miss events."
+    merge_gap_rule:
+      parameter: G_merge_E09
+      rationale: "Merges same actor-pair near-miss intervals separated by a short nonqualifying gap."
+    onset_definition: "Onset is the first timestamp where the ego-actor pair satisfies the frozen near-miss condition."
+    end_definition: "End is the last qualifying timestamp before the pair remains outside the near-miss condition beyond G_merge_E09."
+    missing_data_rule: "If positions, dimensions, heading, timestamp, or actor IDs are missing beyond G_missing_E09, mark the pair-window not computable; do not use filenames or scenario metadata for attribution."
+    online_offline_status: online
+    online_offline_rationale: "Uses current and past actor states plus frozen geometry; no future outcome is required."
+    known_confounds:
+      - coordinate-frame mismatch
+      - actor dimension convention errors
+      - benign close passing
+      - occluded or missing actor state
+    candidate_direction: competitive
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: near-miss risk is hypothesized to rise under assertive or late-yield conflicts."
+    event_class: physical_safety
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E15
+    event_name: collision/contact
+    behavioural_interpretation: "A geometric overlap or contact-candidate between actors; it is not a sensor-confirmed collision because no explicit contact flag is available."
+    required_signals:
+      - actor positions
+      - dimensions
+      - heading or courseAngle
+      - timestamps
+      - actor IDs
+      - preferably collision or contact flag
+    actor: ego / counterpart_or_other
+    rule_structure: "For each actor pair, mark a geometric contact candidate when oriented footprints under C_geometry_E15 satisfy P_overlap_E15 for at least D_min_E15; label output as geometric proxy only."
+    threshold_parameters:
+      - T_overlap_tolerance_E15
+      - D_min_E15
+      - G_merge_E15
+      - G_missing_E15
+      - C_geometry_E15
+      - C_actor_pair_E15
+      - H_proxy_label_E15
+    minimum_duration_rule:
+      parameter: D_min_E15
+      rationale: "Reduces false contact candidates from single-frame geometry or coordinate artifacts."
+    merge_gap_rule:
+      parameter: G_merge_E15
+      rationale: "Merges same actor-pair overlap candidates separated by brief non-overlap gaps."
+    onset_definition: "Onset is the first timestamp where the frozen geometric contact-candidate condition is satisfied."
+    end_definition: "End is the last qualifying timestamp before the contact-candidate condition remains false beyond G_merge_E15."
+    missing_data_rule: "If geometry fields or actor IDs are missing beyond G_missing_E15, mark the pair-window not computable; do not upgrade proxy contact to confirmed collision."
+    online_offline_status: online
+    online_offline_rationale: "Current actor footprints are sufficient once geometry and missing-data rules are frozen."
+    known_confounds:
+      - bounding-box convention mismatch
+      - coordinate-frame mismatch
+      - actor dimension errors
+      - no sensor-confirmed contact flag
+    candidate_direction: competitive
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: geometric contact risk is hypothesized to be more likely under assertive or late-yield conflict, while remaining highly confounded."
+    event_class: physical_safety
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E16
+    event_name: off-route or no-progress timeout
+    behavioural_interpretation: "Only the no-progress timeout subcase is retained: ego fails to make progress under a frozen kinematic progress rule. The off-route subcase is unavailable until route, lane, and goal geometry are supplied."
+    required_signals:
+      - route, lane, or goal geometry for off-route
+      - ego position
+      - ego speed
+      - timestamp
+      - duration rule
+    actor: ego
+    rule_structure: "No-progress subcase: mark an episode when ego displacement/progress satisfies P_no_progress_E16 for at least D_no_progress_E16 under C_progress_window_E16. Off-route has no active rule in this ontology."
+    threshold_parameters:
+      - T_progress_displacement_E16
+      - T_progress_speed_E16
+      - D_no_progress_E16
+      - G_merge_E16
+      - G_missing_E16
+      - C_progress_window_E16
+      - H_off_route_unavailable_E16
+    minimum_duration_rule:
+      parameter: D_no_progress_E16
+      rationale: "Separates sustained no-progress timeout from normal brief waiting or negotiation."
+    merge_gap_rule:
+      parameter: G_merge_E16
+      rationale: "Merges adjacent no-progress intervals when ego movement remains below the frozen progress rule."
+    onset_definition: "Onset is the first timestamp of the sustained ego no-progress interval after duration confirmation."
+    end_definition: "End is when ego resumes progress beyond the frozen progress rule or data becomes insufficient."
+    missing_data_rule: "If ego position, speed, or timestamp is missing beyond G_missing_E16, mark the no-progress subcase not computable; do not attempt off-route extraction without route, lane, and goal geometry."
+    online_offline_status: online
+    online_offline_rationale: "No-progress can be accumulated from current and past ego trajectory states; off-route remains unavailable."
+    known_confounds:
+      - legitimate waiting at traffic control
+      - blocked queue
+      - mission stop not represented in schema
+      - absent route or goal geometry
+    candidate_direction: over_yielding
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: sustained no-progress is hypothesized to align with freezing or over-yielding patterns."
+    event_class: interaction_quality
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E18
+    event_name: emergency stop
+    behavioural_interpretation: "A kinematic emergency-stop candidate for ego based on hard braking and stop dynamics; it is not an explicit emergency-stop command without a flag or dictionary."
+    required_signals:
+      - ego speed
+      - deceleration or braking
+      - timestamp
+      - optional explicit emergency-stop flag
+    actor: ego
+    rule_structure: "Mark a kinematic emergency-stop candidate when P_emergency_stop_E18 combines frozen deceleration, braking, and stop-state conditions for at least D_min_E18."
+    threshold_parameters:
+      - T_emergency_decel_E18
+      - T_braking_state_E18
+      - T_stop_speed_E18
+      - D_min_E18
+      - G_merge_E18
+      - G_missing_E18
+      - H_kinematic_proxy_E18
+    minimum_duration_rule:
+      parameter: D_min_E18
+      rationale: "Requires a sustained emergency-stop pattern rather than a single braking frame."
+    merge_gap_rule:
+      parameter: G_merge_E18
+      rationale: "Merges adjacent emergency-stop candidate intervals when the same stop maneuver persists."
+    onset_definition: "Onset is the first timestamp in the qualifying hard-brake-to-stop candidate sequence."
+    end_definition: "End is when ego exits the frozen emergency-stop condition beyond G_merge_E18 or data becomes insufficient."
+    missing_data_rule: "If ego speed, timestamp, and braking/deceleration evidence are missing beyond G_missing_E18, mark the episode not computable; do not infer explicit emergency command status."
+    online_offline_status: online
+    online_offline_rationale: "Uses current and past ego kinematics and braking state only."
+    known_confounds:
+      - ordinary hard stop
+      - traffic-control compliance
+      - obstacle response
+      - no explicit emergency-stop flag
+    candidate_direction: non_specific
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: emergency-stop candidates may reflect multiple safety responses, not a single sociality direction."
+    event_class: physical_safety
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E19
+    event_name: abrupt lateral comfort events
+    behavioural_interpretation: "Ego shows abrupt lateral acceleration, lateral jerk, or steering-change behavior that may indicate comfort or stability degradation."
+    required_signals:
+      - lateral acceleration
+      - heading or courseAngle
+      - wheel or steering angle
+      - timestamp
+      - speed
+    actor: ego
+    rule_structure: "Derive causal lateral dynamics under C_lateral_derivative_E19 and S_lateral_E19; mark an episode when P_lateral_comfort_E19 is satisfied for at least D_min_E19."
+    threshold_parameters:
+      - T_lateral_acc_E19
+      - T_lateral_jerk_E19
+      - T_steering_rate_E19
+      - S_lateral_E19
+      - D_min_E19
+      - G_merge_E19
+      - G_missing_E19
+      - C_lateral_derivative_E19
+    minimum_duration_rule:
+      parameter: D_min_E19
+      rationale: "Filters isolated lateral spikes and derivative artifacts."
+    merge_gap_rule:
+      parameter: G_merge_E19
+      rationale: "Merges adjacent lateral-comfort intervals when the same maneuver remains active."
+    onset_definition: "Onset is the first timestamp whose causal lateral-dynamics sequence satisfies P_lateral_comfort_E19 after duration confirmation."
+    end_definition: "End is the last qualifying timestamp before P_lateral_comfort_E19 remains false beyond G_merge_E19."
+    missing_data_rule: "If lateral acceleration, heading, steering, speed, or timestamp evidence needed by C_lateral_derivative_E19 is missing beyond G_missing_E19, mark not computable; do not use noncausal smoothing for online status."
+    online_offline_status: online
+    online_offline_rationale: "Online only under causal smoothing and past/current ego states."
+    known_confounds:
+      - route curvature
+      - lane-change intent unavailable
+      - steering sensor discretization
+      - evasive maneuver unrelated to social interaction
+    candidate_direction: non_specific
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: abrupt lateral comfort degradation can arise from competitive conflict, avoidance, or non-social road geometry."
+    event_class: physical_safety
+    endpoint_eligibility: independent_consequence_endpoint
+    primary_endpoint_eligible: true
+    extraction_mode: automatic
+
+  - event_id: E20
+    event_name: yielding to a non-counterpart actor
+    behavioural_interpretation: "A human annotator judges that an actor yields to an actor outside the frozen counterpart relation, indicating role/context complexity not automatically resolvable from current signals."
+    required_signals:
+      - all actor IDs
+      - counterpart identity
+      - non-counterpart identity
+      - yielding kinematics
+      - route, right-of-way, or context
+    actor: yielding_actor / non_counterpart_actor
+    rule_structure: "Human-only codebook decision: mark non-counterpart yielding when H_yielding_visible_E20, C_counterpart_identity_E20, and H_non_counterpart_role_E20 support the motif."
+    threshold_parameters:
+      - H_yielding_visible_E20
+      - C_counterpart_identity_E20
+      - H_non_counterpart_role_E20
+      - H_context_rule_E20
+      - H_confidence_rule_E20
+      - D_min_E20
+      - G_merge_E20
+    minimum_duration_rule:
+      parameter: D_min_E20
+      rationale: "Requires a visible yielding action tied to the non-counterpart actor rather than a momentary hesitation."
+    merge_gap_rule:
+      parameter: G_merge_E20
+      rationale: "Merges adjacent non-counterpart-yielding judgments when actor roles and interaction meaning persist."
+    onset_definition: "Onset is the first visible moment the yielding actor begins yielding to the non-counterpart actor."
+    end_definition: "End is when yielding resolves, actor roles change, or evidence becomes insufficient."
+    missing_data_rule: "If counterpart/non-counterpart identity or route/context evidence is unclear, mark uncertain or insufficient evidence; do not infer from protected metadata."
+    online_offline_status: offline
+    online_offline_rationale: "Requires human interpretation of counterpart scope and yielding semantics across the full window."
+    known_confounds:
+      - courtesy yielding
+      - hidden priority constraints
+      - unstable counterpart identity
+      - multi-actor occlusion
+    candidate_direction: over_yielding
+    candidate_direction_rationale: "A priori only and not IPV/outcome-derived: yielding to a non-counterpart actor can indicate over-yielding or freezing outside the primary interaction."
+    event_class: human_motif
+    endpoint_eligibility: construct_proximal_descriptor
+    primary_endpoint_eligible: false
+    endpoint_eligibility_note: "Construct-proximal descriptor; forbidden as a primary RQ012B validation endpoint and allowed only as secondary descriptive context."
+    extraction_mode: human_only
+
+removed_events:
+  - event_id: E10
+    event_name: safety-controller intervention
+    event_class: planner_system
+    signal_class: unavailable
+    endpoint_eligibility: planner_system_event
+    extraction_mode: removed
+    out_of_scope_status: documented_unavailable
+    required_unavailable_signal_path:
+      - explicit safety-controller or intervention flag
+      - authoritative status-code dictionary
+      - timestamped system event stream
+    removal_reason: "Removed from automatic extraction until an explicit intervention flag or authoritative status-code dictionary is supplied."
+    primary_endpoint_eligible: false
+
+  - event_id: E11
+    event_name: planner fallback
+    event_class: planner_system
+    signal_class: unavailable
+    endpoint_eligibility: planner_system_event
+    extraction_mode: removed
+    out_of_scope_status: documented_unavailable
+    required_unavailable_signal_path:
+      - planner fallback mode or flag
+      - planner state
+      - timestamped planner event stream
+    removal_reason: "Removed because no credible fallback signal path exists in the available schema."
+    primary_endpoint_eligible: false
+
+  - event_id: E12
+    event_name: repeated replanning
+    event_class: planner_system
+    signal_class: unavailable
+    endpoint_eligibility: planner_system_event
+    extraction_mode: removed
+    out_of_scope_status: documented_unavailable
+    required_unavailable_signal_path:
+      - planner plan updates
+      - trajectory plan identifiers over time
+      - accepted or rejected plan state
+    removal_reason: "Removed because repeated replanning cannot be inferred from empty or absent planner plan channels."
+    primary_endpoint_eligible: false
+
+  - event_id: E13
+    event_name: trajectory rejection
+    event_class: planner_system
+    signal_class: unavailable
+    endpoint_eligibility: planner_system_event
+    extraction_mode: removed
+    out_of_scope_status: documented_unavailable
+    required_unavailable_signal_path:
+      - trajectory rejection flag or reason
+      - candidate trajectory set
+      - timestamped validator event
+    removal_reason: "Removed because trajectory rejection is not represented by the available replay schema."
+    primary_endpoint_eligible: false
+
+  - event_id: E14
+    event_name: mission failure
+    event_class: planner_system
+    signal_class: unavailable
+    endpoint_eligibility: planner_system_event
+    extraction_mode: removed
+    out_of_scope_status: documented_unavailable
+    required_unavailable_signal_path:
+      - explicit mission status or failure flag
+      - route or goal definition
+      - documented completion criteria
+    removal_reason: "Removed because mission failure lacks a documented automatic signal path in the current schema."
+    primary_endpoint_eligible: false
+
+  - event_id: E17
+    event_name: human/operator takeover
+    event_class: planner_system
+    signal_class: unavailable
+    endpoint_eligibility: planner_system_event
+    extraction_mode: removed
+    out_of_scope_status: documented_unavailable
+    required_unavailable_signal_path:
+      - explicit takeover or manual-control flag
+      - authoritative autoStatus, driveStatus, or controlType dictionary
+      - timestamped status event stream
+    removal_reason: "Removed because takeover cannot be identified without an explicit flag or authoritative status-code dictionary."
+    primary_endpoint_eligible: false

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RQ012A 中文解读 · OnSite 事件本体与盲标注就绪</title>
+<style>
+  :root{
+    --ink:#1d2733; --muted:#5b6b7b; --line:#e2e8f0; --bg:#f7f9fc;
+    --blue:#0f4d92; --green:#2e7d46; --amber:#e28e2c; --red:#b64342; --violet:#7c53b8;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.75;font-size:16px}
+  .wrap{max-width:940px;margin:0 auto;padding:0 20px 80px}
+  header{background:linear-gradient(135deg,#0f4d92,#15324f);color:#fff;padding:46px 20px 38px;margin-bottom:8px}
+  header .inner{max-width:940px;margin:0 auto}
+  header h1{margin:0 0 8px;font-size:27px;letter-spacing:.3px}
+  header p{margin:4px 0;opacity:.92;font-size:14.5px}
+  .badge{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.32);
+    padding:3px 11px;border-radius:20px;font-size:12.5px;margin:8px 8px 0 0}
+  h2{font-size:21px;margin:38px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+  h3{font-size:17px;margin:24px 0 8px;color:var(--blue)}
+  p{margin:10px 0}
+  .lead{font-size:17px;color:#33404f}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:16px 0;
+    box-shadow:0 1px 3px rgba(20,40,70,.05)}
+  .fig{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:22px 0}
+  .fig img{width:100%;height:auto;border-radius:6px;display:block}
+  .fig .cap{font-size:13.5px;color:var(--muted);margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+  .fig .cap b{color:var(--ink)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12.5px;font-weight:600;color:#fff;white-space:nowrap}
+  .p-pass{background:var(--green)} .p-part{background:var(--amber)} .p-block{background:var(--red)}
+  .p-pend{background:var(--violet)} .p-blue{background:var(--blue)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#eef3f9;color:#2b3a4a;font-weight:600}
+  ul{margin:10px 0;padding-left:22px} li{margin:5px 0}
+  .note{background:#fff8ec;border-left:4px solid var(--amber);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .good{background:#eef8f0;border-left:4px solid var(--green);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .warn{background:#fdeeed;border-left:4px solid var(--red);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .muted{color:var(--muted);font-size:13.5px}
+  .kx{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:#eef2f7;padding:1px 6px;border-radius:4px}
+  .toc a{color:var(--blue);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="inner">
+  <h1>RQ012A · OnSite 事件本体与盲标注就绪</h1>
+  <p>中文自然语言解读 · 面向非执行读者</p>
+  <p class="muted" style="color:#cfe0f5">运行 ID:RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37</p>
+  <div>
+    <span class="badge">总体状态:BLOCKED_FOR_HUMAN_LABELS(就绪完成,待真人标注)</span>
+    <span class="badge">Wave A · 只做"就绪",不做正式分析</span>
+  </div>
+</div></header>
+
+<div class="wrap">
+
+<div class="card toc">
+  <b>目录</b>
+  <ul style="columns:2">
+    <li><a href="#bg">一、这件事到底在干嘛</a></li>
+    <li><a href="#q">二、核心问题与"独立尺子"</a></li>
+    <li><a href="#how">三、整体怎么做的</a></li>
+    <li><a href="#f1">四、图1:哪些事件能自动测</a></li>
+    <li><a href="#f2">五、图2:事件本体与"防循环"</a></li>
+    <li><a href="#f3">六、图3:提取器体检</a></li>
+    <li><a href="#f4">七、图4:盲标注流水线</a></li>
+    <li><a href="#f5">五、图5:就绪门状态</a></li>
+    <li><a href="#find">八、最重要的发现与判断</a></li>
+    <li><a href="#limit">九、边界、局限与下一步</a></li>
+  </ul>
+</div>
+
+<!-- ============ 1 ============ -->
+<h2 id="bg">一、这件事到底在干嘛</h2>
+<p class="lead">一句话:这一轮<strong>不是去得出结论,而是去"造好并验干净一把尺子"</strong>,为日后真正的因果分析做准备。</p>
+<div class="card">
+<p>整个研究的远期目标(留到后续 RQ012B 才做)是回答一个问题:</p>
+<blockquote style="border-left:4px solid var(--blue);margin:10px 0;padding:6px 16px;background:#f2f7fd;border-radius:0 8px 8px 0">
+当一辆车的"社会性"(IPV)偏离正常——要么<b>太争抢</b>、要么<b>太退让</b>——时,是不是真的会在现实交互中<b>引发可观察的坏后果</b>(对方急刹、僵局、来回拉锯、险情)?
+</blockquote>
+<p>要回答它,你需要一把<strong>独立于 IPV 本身</strong>的尺子来量"后果"。这把尺子由三部分组成:<b>事件定义</b>(什么算"急刹/险情/僵局")、<b>自动提取器</b>(从轨迹数据里把事件抓出来)、<b>人工标注材料</b>(让真人来打更主观的交互标签)。</p>
+<p>本轮(RQ012A)<strong>只允许把尺子造好、检查干净、准备到"可以让两个真人开始标注"为止</strong>。明确<strong>不允许</strong>真的去算"事件和 IPV 的关系",更不允许编造人工标签。</p>
+</div>
+
+<!-- ============ 2 ============ -->
+<h2 id="q">二、核心问题与"独立尺子"为什么难</h2>
+<p>难点在于尺子很容易"从根上就歪了"。本轮独立审查 + 红队重点防住了四类隐患:</p>
+<table>
+<tr><th>隐患</th><th>通俗说法</th><th>处置</th></tr>
+<tr><td>循环论证</td><td>用"侵略性抢行"这种<b>本质就在复述 IPV</b> 的标签当后果 → 等于用 A 证明 A</td><td><span class="pill p-pass">已防</span> 终点资格分层</td></tr>
+<tr><td>结果泄漏</td><td>挑数据/定阈值时偷偷用了和答案相关的信息 → 尺子照着答案刻</td><td><span class="pill p-pass">已防</span> outcome-blind + 双轨</td></tr>
+<tr><td>流程后门</td><td>最终授权门漏检几项,未来可"合规地"绕过质检直接发布</td><td><span class="pill p-pass">已防</span> 门链式收紧</td></tr>
+<tr><td>伪造/绕过人</td><td>用模型标签或复制文件冒充双人标注</td><td><span class="pill p-pass">已防</span> 不可绕过 + merge 拦截</td></tr>
+</table>
+<div class="good"><b>结论:</b>这四道核心防线在最终红队中均判为"干净(未发现可利用漏洞)"。</div>
+
+<!-- ============ 3 ============ -->
+<h2 id="how">三、整体怎么做的</h2>
+<p>全程由 <strong>Claude 仅作编排控制器、所有实质工作交给 Codex CLI</strong> 完成,执行者与复核者严格分离(每次审查/红队都用全新会话),共派发约 <strong>20 个 Codex worker</strong>,跨越 14 个阶段。关键检查点:</p>
+<div class="grid2">
+  <div class="card" style="margin:8px 0">
+    <h3 style="margin-top:0">质量门(Gate)</h3>
+    <ul style="font-size:14.5px">
+      <li>012-0 信号可用 <span class="pill p-pass">PASS</span></li>
+      <li>012-1 阈值 outcome-blind <span class="pill p-pass">PASS</span></li>
+      <li>012-2 盲包完整 <span class="pill p-part">文本面 cleared</span></li>
+      <li>012-3 人类协调就绪 <span class="pill p-pend">就绪·待真人</span></li>
+      <li>012B 后续分析授权 <span class="pill p-block">BLOCKED</span></li>
+    </ul>
+  </div>
+  <div class="card" style="margin:8px 0">
+    <h3 style="margin-top:0">独立验证</h3>
+    <ul style="font-size:14.5px">
+      <li>提取器测试 <b>30/30</b> 通过</li>
+      <li>鲁棒性回归 <b>5/5</b> 通过</li>
+      <li>merge 拦截测试 <b>12/12</b> 通过</li>
+      <li>计划复审 / 盲包复审 / 最终审查 均 <b>CLEARED/PASS</b></li>
+      <li>图表经 <b>nature-figure</b> skill 渲染(15 个文件)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ FIG1 ============ -->
+<h2 id="f1">四、图1:哪些事件能自动测,哪些只能交给人</h2>
+<div class="fig">
+  <img src="../01_results/figures/fig1_signal_availability.png" alt="图1 信号可用性">
+  <div class="cap"><b>图1 · 信号可用性与 Gate 012-0 处置</b>(共 20 个候选事件)。横条按"信号类别"堆叠,颜色表示门处置:<span style="color:var(--blue)">保留自动</span> / <span style="color:var(--amber)">降级人工</span> / <span style="color:var(--red)">移除</span>。</div>
+</div>
+<p>我们对 20 个候选事件逐一审了"数据里到底有没有能测它的信号"。结果:</p>
+<ul>
+  <li><strong>9 个保留为自动</strong>:急刹、高减速、高 jerk、来回停走、险情(near miss)、几何接触、无进展超时、紧急停车候选、横向不适——都是<b>运动学/几何后果</b>,概念上独立于 IPV。</li>
+  <li><strong>5 个降级为"只能人工判"</strong>:被迫让行、让行角色反转、不必要停车、冲突升级、对非交互方让行——因为数据里<b>没有车道/路权/语义上下文</b>,机器无法判定"是不是被迫""有没有路权"。</li>
+  <li><strong>6 个移除</strong>:安全控制器介入、规划器回退、重规划、轨迹拒绝、任务失败、人工接管——数据里只有<b>没有字典的通用数值状态码</b>,诚实地不臆造语义。</li>
+</ul>
+<div class="note"><b>诚实之处:</b>"几何接触"只作为几何代理保留,不冒充"传感器确认的碰撞";"紧急停车"只作为运动学候选,不冒充"显式急停指令"。</div>
+
+<!-- ============ FIG2 ============ -->
+<h2 id="f2">五、图2:事件本体怎么分类,以及怎么防循环论证</h2>
+<div class="fig">
+  <img src="../01_results/figures/fig2_event_ontology.png" alt="图2 事件本体">
+  <div class="cap"><b>图2 · 事件本体:按类别 × 提取方式</b>。每条横条按提取方式分段(<span style="color:var(--blue)">自动</span>/<span style="color:var(--amber)">人工</span>/<span style="color:#888">移除</span>);标 <b>[n] not-primary</b> 的是"构念近邻"标签。</div>
+</div>
+<p>本体把事件分成四类:<b>物理安全</b>、<b>交互质量</b>、<b>规划器/系统</b>、<b>人类主观母题</b>。最关键的设计是 <strong>B01 终点资格分层</strong>:</p>
+<table>
+<tr><th>层级</th><th>含义</th><th>能否当"主验证终点"</th></tr>
+<tr><td>独立后果终点</td><td>与 IPV 构念概念可分(急刹、险情、僵局…)</td><td><span class="pill p-pass">可以</span></td></tr>
+<tr><td>构念近邻描述符</td><td>语义上复述了争抢/退让(aggressive intrusion、over-yielding/freeze…)</td><td><span class="pill p-block">禁止</span> 仅作次级背景</td></tr>
+</table>
+<p>这样就堵死了"用'侵略性抢行'去验证'IPV 偏争抢'"这种自欺式循环。图中 4 个被标 <span class="kx">not-primary</span> 的人类母题正是被锁住的部分。</p>
+
+<!-- ============ FIG3 ============ -->
+<h2 id="f3">六、图3:自动提取器的"体检报告"(不是结论)</h2>
+<div class="fig">
+  <img src="../01_results/figures/fig3_extractor_pilot_health.png" alt="图3 提取器体检">
+  <div class="cap"><b>图3 · 提取器 pilot 健康审计</b>(9 个自动事件,5 个 outcome-blind 样本 session;<b>全程未做任何 event–IPV 关联</b>)。a 可计算率;<b>b 原始 vs 去重后主计数(hero)</b>;c 阈值敏感性;d 采样率敏感性。</div>
+</div>
+<p>这一步只做"体检",不下结论。我们在小样本上跑了提取器,只报告数据健康指标:</p>
+<ul>
+  <li><b>可计算率</b>:E02/E03/E06/E16/E18/E19 ≈ 1.0,险情/接触 ≈ 0.999;<b>E01(对方急刹)= 0</b>,因为缺"对手方关系"冻结——诚实地不硬凑。</li>
+  <li><b>去重(面板 b,重点)</b>:险情 E09 的原始 463 个区间,经"接触优先于险情"规则去重后,<b>主计数降到 350</b>(抑制 113 个被同一物理时刻重复计数的)。这正是红队 V05 指出、随后修复的关键。</li>
+  <li><b>敏感性</b>:jerk(E03)对降采样高度敏感、紧急停车(E18)对类别化刹车阈值高度敏感——都已明确记录为后续注意点。</li>
+</ul>
+<div class="good"><b>独立质检:</b>提取器独立测试 30/30、鲁棒性回归 5/5 全部通过(由我亲自复跑确认);此前发现的"不可能值(负速度)泄漏进事件"缺陷已修复闭合。</div>
+
+<!-- ============ FIG4 ============ -->
+<h2 id="f4">七、图4:盲标注流水线走到哪了</h2>
+<div class="fig">
+  <img src="../01_results/figures/fig4_blind_workflow_readiness_pipeline.png" alt="图4 盲标注流水线">
+  <div class="cap"><b>图4 · 盲标注就绪流水线</b>。S1 中性签发(文本面已 cleared)→ S2–S5 标注/保存/一致性/裁决(均 <b>BLOCKED_FOR_HUMAN_LABELS</b>)→ S6 Gate 012B 授权(blocked)。</div>
+</div>
+<p>流水线<strong>已经备好材料、并在 S1 把"标注者可见的文本/签发面"做到泄漏干净</strong>,但<strong>刻意停在真人标注之前</strong>:</p>
+<ul>
+  <li>要求<b>至少两名真正独立的人类标注者</b>,互不可见彼此结果;原始标签永久保存(只增不改);</li>
+  <li>一致性统计<b>在看到结果之前就已冻结</b>:主用 <b>Cohen's κ</b>、辅以对患病率稳健的 <b>Gwet AC1</b>;</li>
+  <li>合并管线已用对抗样本证明能<b>拒绝</b>:空表、复制文件、模拟标签、错 ID、缺字段、身份泄漏,并把"近重复/疑似合谋"<b>隔离待审</b>;</li>
+  <li>在两份真人标签到位前,状态<b>不可绕过地</b>保持 <span class="kx">BLOCKED_FOR_HUMAN_LABELS</span>。</li>
+</ul>
+
+<!-- ============ FIG5 ============ -->
+<h2 id="f5">五、图5:五道就绪门的最终状态</h2>
+<div class="fig">
+  <img src="../01_results/figures/fig5_readiness_gates.png" alt="图5 就绪门">
+  <div class="cap"><b>图5 · RQ012A 就绪门状态</b>(共 5 道)。颜色与文字双重编码:<span style="color:var(--green)">PASS</span> / <span style="color:var(--amber)">文本面 cleared</span> / <span style="color:var(--violet)">就绪·待真人</span> / <span style="color:var(--red)">BLOCKED</span>。</div>
+</div>
+<p>这是全局的"红绿灯":前两道<b>全绿</b>(信号可用、阈值干净),第三道<b>黄</b>(文本面已干净、媒体卡片签发待后续),第四道<b>待真人</b>,最后的总授权门 012B <b>仍红</b>。这与本轮"只做就绪、不做分析"的定位完全一致。</p>
+
+<!-- ============ FIND ============ -->
+<h2 id="find">八、最重要的发现与判断</h2>
+<div class="card">
+<h3>① 一个方向性的科学发现</h3>
+<p>OnSite 回放日志<strong>只支持运动学/几何后果事件</strong>(急刹、险情、停走、横向不适……),<strong>不支持自动的语义交互角色事件</strong>(被迫让行、路权反转——缺车道/路权/地图),也<strong>不支持规划器内部事件</strong>(回退、重规划、接管——只有无字典的状态码)。这意味着 RQ012B 的自动"后果尺子"只能建立在运动学/几何事件上,语义类后果只能靠人工标注。</p>
+</div>
+<div class="card">
+<h3>② 三处关键把关(其中两处经你拍板)</h3>
+<ul>
+  <li><b>计划层阻塞</b>:独立审查发现循环论证、阈值泄漏、门后门三处硬伤 → 你拍板用"绑定附录"修复;阈值修复采纳你的<b>"双轨(探索贴标隔离 / 定案冻结防泄漏)+ 防火墙"</b>而非一刀切。</li>
+  <li><b>既有 RQ003 盲包泄漏</b>:不动他人产物,在本运行内<b>重建</b>了泄漏干净、可复现的签发包;<span class="kx">com.apple.provenance</span> 系统级不可剥离 → 诚实记录 + 用 zip 内容封装保证收件方不携带源主机信息。</li>
+  <li><b>红队 MAJOR 全部修复并复验</b>:跨事件去重(V01/V05)、配对时间戳(V03)、actor 身份稳定(V04)、merge 近重复合谋筛查(V08)。</li>
+</ul>
+</div>
+
+<!-- ============ LIMIT ============ -->
+<h2 id="limit">九、边界、局限与下一步</h2>
+<div class="warn">
+<b>这把尺子不是"完全独立的真值"。</b>它基于同一份观测到的轨迹行为,只能称为<b>outcome-blind 的行为参照</b>。报告全程避免"ground truth"措辞,也未做任何因果或 event–IPV 关联。
+</div>
+<p><b>本轮到此为止</b>。要进入 RQ012B 的正式 event–IPV 分析,必须先满足以下全部 <span class="pill p-block">BLOCKED</span> 依赖:</p>
+<ul>
+  <li>RQ011 冻结分析全集与运行标识</li>
+  <li>最终中性媒体/案例卡片签发 + auditor 签名</li>
+  <li><b>两份真正独立的人类标注</b></li>
+  <li>按冻结协议计算 κ + Gwet AC1 一致性</li>
+  <li>RQ007(可估性起点)/ RQ009(偏差定义)/ RQ011 的冻结</li>
+  <li>Gate 012B 的显式授权记录</li>
+</ul>
+
+<footer>
+  <p>RQ012A · Wave A 就绪研究 · 总体状态 <b>BLOCKED_FOR_HUMAN_LABELS</b>(就绪完成,未声称完成全部 RQ012)。</p>
+  <p>配套技术报告:<span class="kx">90_report/index.html</span> · 图表源数据与渲染脚本:<span class="kx">01_results/figures/</span> · 全部图表经 nature-figure(Python/matplotlib)渲染,提供 PNG/SVG/PDF。</p>
+  <p class="muted">本页为面向读者的中文自然语言解读,复用既有图表,离线可打开、纯相对路径、无外部资源。</p>
+</footer>
+
+</div>
+</body>
+</html>

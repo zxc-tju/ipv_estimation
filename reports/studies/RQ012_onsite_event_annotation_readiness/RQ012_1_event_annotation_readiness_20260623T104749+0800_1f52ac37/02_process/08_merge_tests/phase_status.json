@@ -1,0 +1,82 @@
+{
+  "phase": "phase9b_hardening",
+  "verdict": "pass",
+  "red_team_fixed": [
+    "V08"
+  ],
+  "tests_pass": true,
+  "rejections_proven": [
+    {
+      "fixture": "adversarial_empty_template_no_rows",
+      "expected_rejection_code": "empty_submission",
+      "actual_rejection_code": "empty_submission",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_all_blank_labels_completed_mode",
+      "expected_rejection_code": "incomplete_required_fields",
+      "actual_rejection_code": "incomplete_required_fields",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_copied_duplicate_file",
+      "expected_rejection_code": "copied_duplicate_submission",
+      "actual_rejection_code": "copied_duplicate_submission",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_simulated_labels_no_provenance",
+      "expected_rejection_code": "provenance_attestation_missing",
+      "actual_rejection_code": "provenance_attestation_missing",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_wrong_neutral_item_ids",
+      "expected_rejection_code": "item_id_set_mismatch",
+      "actual_rejection_code": "item_id_set_mismatch",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_incomplete_required_fields",
+      "expected_rejection_code": "incomplete_required_fields",
+      "actual_rejection_code": "incomplete_required_fields",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_identity_proxy_leakage",
+      "expected_rejection_code": "protected_identity_or_proxy_leakage",
+      "actual_rejection_code": "protected_identity_or_proxy_leakage",
+      "assert_match": true
+    }
+  ],
+  "quarantines_proven": [
+    {
+      "fixture": "adversarial_near_duplicate_label_vectors",
+      "expected_quarantine_code": "near_duplicate_label_pattern",
+      "actual_quarantine_code": "near_duplicate_label_pattern",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_identical_timing_clone",
+      "expected_quarantine_code": "implausible_completion_timing",
+      "actual_quarantine_code": "implausible_completion_timing",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_template_order_clone",
+      "expected_quarantine_code": "template_order_clone",
+      "actual_quarantine_code": "template_order_clone",
+      "assert_match": true
+    },
+    {
+      "fixture": "adversarial_controlled_channel_duplicate_submitter",
+      "expected_quarantine_code": "controlled_channel_evidence_anomaly",
+      "actual_quarantine_code": "controlled_channel_evidence_anomaly",
+      "assert_match": true
+    }
+  ],
+  "valid_structural_pass": true,
+  "no_agreement_or_event_ipv_computed": true,
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "git_head": "13aafc86b29295187372173f408b6160b133c3c7"
+}
