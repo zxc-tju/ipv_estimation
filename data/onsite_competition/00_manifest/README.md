@@ -2,7 +2,9 @@
 
 Generated: 2026-06-18T17:22:55 local time.
 
-This folder is a lightweight index for the active onsite competition payload. It does not replace the raw data. The active raw data remains under the two area folders beside this manifest.
+This folder is a lightweight index for the onsite competition payload. It does
+not replace the raw data. The raw and former top-five subset payloads are now
+archived under `archived/onsite_competition_raw_and_top5_subset_20260623/`.
 
 ## Files
 
@@ -37,7 +39,9 @@ Shanghai replay zip files were extracted into direct session folders under their
 
 ## Recommended Downstream Use
 
-1. Filter `score_team_coverage.csv` to `has_materialized_replay = True` for replay-based analysis.
-2. Join scores by `team_code` from `team_manifest.csv` or `session_manifest.csv`.
-3. For multi-run teams, keep `session_id` as part of the key instead of assuming one run per team.
-4. Ignore `hidden_metadata` rows in `file_inventory.csv` for analysis.
+1. Use `data/onsite_competition/all_teams_dataset/` as the current all-team
+   analysis package.
+2. Filter `score_team_coverage.csv` to `has_materialized_replay = True` for replay-based analysis.
+3. Join scores by `team_code` from `team_manifest.csv` or `session_manifest.csv`.
+4. For multi-run teams, keep `session_id` as part of the key instead of assuming one run per team.
+5. Ignore `hidden_metadata` rows in `file_inventory.csv` for analysis.
