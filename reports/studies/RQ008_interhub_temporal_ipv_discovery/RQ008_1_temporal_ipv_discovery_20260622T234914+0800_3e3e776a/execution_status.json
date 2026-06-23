@@ -1,0 +1,21 @@
+{
+  "run_id": "RQ008_1_temporal_ipv_discovery_20260622T234914+0800_3e3e776a",
+  "git_head": "38063a2ff9cdc717098cf3f821c2bb162a0ac1d9",
+  "plan_sha256": "3a94986587c3c30afa18b7a7c2151e272ac1382b24c43f8cbbf9a06b015f77db",
+  "phase": "12_report_assembly",
+  "phase_status": "DONE",
+  "split_gate": "PASS",
+  "discovery_review": "PASS_RATIFIED",
+  "hypothesis_freeze": "FROZEN_RQ008A",
+  "red_team": "PASS_WITH_FIXES",
+  "replication": "PARTIAL",
+  "nature_skill": "PASS_FIGURES_VIA_NATURE_SKILL",
+  "html_report": "DONE",
+  "final_review": "PASS",
+  "overall": "RQ008A_COMPLETE",
+  "confirmation_subset_opened": false,
+  "created_at": "2026-06-22T23:50:15+0800",
+  "updated_at": "2026-06-23T08:19:14+0800",
+  "atlas_gate": "PASS",
+  "alignment_gate": "PASS"
+}

@@ -1,0 +1,45 @@
+{
+  "overall_status": "phase3_access_license_in_progress",
+  "run_id": "RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e",
+  "updated_at": "2026-06-23T07:38:30.839232+08:00",
+  "phases": {
+    "0": {
+      "name": "Bootstrap run dir and metadata",
+      "status": "complete"
+    },
+    "1": "complete",
+    "2": "complete",
+    "3": "in_progress",
+    "4": {
+      "name": "Field crosswalk and tracking-need decision",
+      "status": "pending"
+    },
+    "5": {
+      "name": "Technical-route comparison",
+      "status": "pending"
+    },
+    "6": {
+      "name": "Tracking quality gate",
+      "status": "pending"
+    },
+    "7": {
+      "name": "Compute/storage/HPC budget",
+      "status": "pending"
+    },
+    "8": {
+      "name": "Pilot benchmark plan",
+      "status": "pending"
+    },
+    "9": {
+      "name": "Candidate-future actor protocol",
+      "status": "pending"
+    },
+    "10": {
+      "name": "Independent feasibility review",
+      "status": "pending"
+    },
+    "11": "complete",
+    "12": "complete",
+    "13": "in_progress"
+  }
+}

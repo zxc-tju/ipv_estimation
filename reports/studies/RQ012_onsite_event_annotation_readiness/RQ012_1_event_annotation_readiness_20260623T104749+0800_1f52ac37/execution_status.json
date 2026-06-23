@@ -1,0 +1,30 @@
+{
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "git_head": "38063a2ff9cdc717098cf3f821c2bb162a0ac1d9",
+  "plan_sha256": "921f6bb3b850126189895dcca52f054a1c6f5e95a16b05159bec0a13c26ad77e",
+  "overall_status": "IN_PROGRESS",
+  "human_label_status": "BLOCKED_FOR_HUMAN_LABELS",
+  "gates": {
+    "012-0": "pass",
+    "012-1": "pending",
+    "012-2": "pending",
+    "012-3": "pending",
+    "012B": "pending"
+  },
+  "phases": {
+    "phase0": "done",
+    "phase1": "done",
+    "phase2": "done",
+    "phase3": "pending",
+    "phase4": "pending",
+    "phase5": "pending",
+    "phase6": "pending",
+    "phase7": "pending",
+    "phase8": "pending",
+    "phase9": "pending",
+    "phase10": "pending",
+    "phase11": "pending",
+    "phase12": "pending",
+    "phase13": "pending"
+  }
+}

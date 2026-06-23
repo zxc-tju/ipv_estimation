@@ -212,3 +212,5 @@ Rules:
 | 2026-06-22 | Created centralized `reports/plans/` and drafted Wave A plans for RQ007, RQ008, RQ010, RQ011, and RQ012; recorded PAPER002 as directly modified but pending artifact verification. |
 | 2026-06-23 | Registered RQ008A final PASS: exploratory NEGATIVE 0/24 discovery, `FROZEN_RQ008A` protocol, confirmation unopened and Wave B pending explicit authorization. |
 | 2026-06-23 | Registered RQ007 COMPLETE: accepted calibrated C1-C3 in `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md`; report `reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/90_report/index.html`. |
+| 2026-06-23 | Completed RQ007 knowledge layer: added `synthesis.md`, `README.md`, and `report_index.md` alongside the already-accepted `decision.md` (C1-C3). No claim or status change. |
+| 2026-06-23 | Completed RQ008A knowledge layer: added `report_index.md`; verified the existing negative-discovery `synthesis.md`/`decision.md` (0/24 survivors) are consistent with `evidence.csv` and `execution_status.json`. No claim or status change. |

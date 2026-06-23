@@ -134,3 +134,31 @@ consistent. Full patch methods_v3_conditional_norm.patch (+304/-203) reproduces 
 Still open: [PLANNED] quantitative results need the code/data pipeline; acceptance criterion 15
 (independent leakage/split/score-direction/claim-evidence review) not yet performed; exact
 window length and estimator hyper-parameters deferred to Code Availability.
+
+## 2026-06-21 - Codex - Merge Overleaf 2026-06-21-1457 into main
+
+Files changed in paper repo: `main.tex` resolved to the Overleaf branch version, and
+`structure.md` restored from the Overleaf branch. The existing `main` repository files
+including CI, collaboration docs, `.gitignore`, and bibliography were retained.
+
+Summary: Per author instruction, merged `origin/overleaf-2026-06-21-1457` into `main`.
+The merge conflict represented a narrative fork: `main` contained the recently merged
+counterpart-conditioned current-IPV verifier rewrite, while the Overleaf branch contained
+the v3 self-anchor manuscript outline and full text. Conflict resolution intentionally keeps
+the Overleaf manuscript text as the newer drafting source: self-anchor is again the main
+online handle, with risk/PET framed as weak for interval narrowing, source-transfer numbers
+restored, planner-facing interface-demo numbers restored, and external validation kept
+inside `\planned{...}`. This reverts the manuscript narrative away from the
+counterpart-conditioned-current-IPV version in PR#2 while preserving the repository hygiene
+work from `main`.
+
+Verification: no conflict markers remained; `git diff --check` passed; CI-equivalent source
+lint passed for algorithm packages and dev markers; LaTeX environment begin/end counts
+matched for document, abstract, algorithm, algorithmic and figure; bibliography keys cited
+from `main.tex` exist in `bibliography/biblio.bib`. Full PDF compilation was not run locally
+because no TeX engine (`latexmk`, `pdflatex`, `tectonic`) was available in the Codex
+environment; GitHub CI should perform the full compile.
+
+Open risk: `structure.md` is restored as an outline and may become stale if the manuscript
+narrative changes again. The revived self-anchor claims should be checked against the latest
+RQ decisions before submission.

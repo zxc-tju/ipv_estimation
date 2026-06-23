@@ -1,0 +1,54 @@
+{
+  "created_at": "2026-06-23T10:48:38.204623+08:00",
+  "git_head": "38063a2ff9cdc717098cf3f821c2bb162a0ac1d9",
+  "phases": {
+    "0": {
+      "status": "complete"
+    },
+    "1": {
+      "status": "pending"
+    },
+    "10": {
+      "status": "pending"
+    },
+    "11": {
+      "status": "pending"
+    },
+    "12": {
+      "status": "pending"
+    },
+    "13": {
+      "status": "pending"
+    },
+    "14": {
+      "status": "pending"
+    },
+    "2": {
+      "status": "pending"
+    },
+    "3": {
+      "status": "pending"
+    },
+    "4": {
+      "status": "pending"
+    },
+    "5": {
+      "status": "pending"
+    },
+    "6": {
+      "status": "pending"
+    },
+    "7": {
+      "status": "pending"
+    },
+    "8": {
+      "status": "pending"
+    },
+    "9": {
+      "status": "pending"
+    }
+  },
+  "plan_sha256": "13142fc4ebdb8636ec099323e04e1428a09ac91a2399aa8b321f83cd5e6d3e10",
+  "readiness_status": "PENDING",
+  "run_id": "RQ011_1_onsite_readiness_20260623T104838+0800_20aaee57"
+}

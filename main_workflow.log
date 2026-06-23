@@ -1402,3 +1402,9 @@ Accepted claims: C3 ACCEPTED SUPPORTED: episode IPV summary is materially defini
 Gate summary: provenance PASS; estimability PASS; controls PASS; review PASS; red-team PASS; replication PASS; final no-blocker review PASS.
 Artifacts: decision=reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md; report=reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/90_report/index.html; evidence_matrix=reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/02_process/11_final_review/claim_evidence_matrix.csv.
 Maintenance: START_HERE.md updated with latest stable RQ007 report pointer and the `ipv_*_error` concentration-index-not-std caveat; PAPER_REPO untouched; no commit or push performed.
+
+[2026-06-23T14:26:53+0800] Task: Commit and push current local research report updates.
+Status: completed after push verification.
+Outcome: Prepared current rq007-estimability-run branch changes for GitHub, including RQ007/RQ008 knowledge-layer additions, RQ008/RQ010/RQ011/RQ012 study packages, RQ003_8 report boundary updates, PAPER001 handoff note, and RQ progress dashboard updates. Excluded macOS .DS_Store metadata from staging.
+Verification: Pre-commit inspection covered branch status, file sizes, remote branch presence, diff summary, git diff --check, and final push/status checks.
+Maintenance: START_HERE.md was already current for RQ007/RQ008 operating facts; no START_HERE edit was needed in this push task.

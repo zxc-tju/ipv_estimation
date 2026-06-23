@@ -1,32 +1,62 @@
 {
-  "later_phases": {
-    "0B_inventory": "pending",
-    "analysis_freeze": "pending",
-    "baseline_models": "pending",
-    "blind_annotation": "pending",
-    "confirmatory_analysis": "pending",
-    "directional_ipv": "PASS",
-    "final_review": "pending",
-    "gate0_measurement": "pending",
-    "gate_minus1": "pending",
-    "independent_replication": "pending",
-    "negative_controls": "pending",
-    "npc_analysis": "pending",
-    "red_team": "pending",
-    "report_build": "pending",
-    "state_dependence": "pending",
-    "tier_review": "pending"
-  },
-  "notes": "Phase 0A created metadata and path skeletons only.",
-  "phase_0A": {
-    "completed_at": "2026-06-20T22:16:46.313087+08:00",
-    "status": "complete",
-    "worker_id": "rq003_p0a_bootstrap"
-  },
-  "phase_4A_directional_ipv": {
-    "completed_at": "2026-06-21T04:33:27+08:00",
+  "run_id": "RQ003_8_nsfc_ipv_validation_codex_20260620T221646+0800_37bb9424",
+  "status": "PASS",
+  "tier": "C",
+  "generated_at": "2026-06-22T10:35:56+08:00",
+  "worker_id": "rq003_p11b_wording_fix",
+  "report_build": {
     "status": "PASS",
-    "worker_id": "rq003_p4a_directional_ipv"
+    "nature_skill_status": "USED",
+    "figures_with_full_format_set": 8,
+    "html_link_check": {
+      "href_count": 77,
+      "src_count": 8,
+      "invalid_links": [],
+      "external_or_absolute_links": [],
+      "status": "PASS"
+    },
+    "evidence_rows": 7,
+    "canonical_entry": "00_entry/index.html",
+    "compat_entry": "90_report/index.html"
   },
-  "run_id": "RQ003_8_nsfc_ipv_validation_codex_20260620T221646+0800_37bb9424"
+  "identity": {
+    "status": "PASS",
+    "checks": {
+      "run_root_exists": true,
+      "derived_root_exists": true,
+      "run_manifest_run_id_matches": true,
+      "run_manifest_run_root_matches": true,
+      "run_manifest_derived_root_matches": true,
+      "plan_sha256_txt_matches": true,
+      "plan_snapshot_sha256_matches": true,
+      "plan_path_sha256_matches": true,
+      "tier_c_decided": true,
+      "nature_skill_exists": true,
+      "required_phase_outputs_present": true
+    },
+    "missing": []
+  },
+  "phase_summary": {
+    "gate_minus1": "PASS",
+    "gate0": "PASS",
+    "analysis_freeze": "PASS_AFTER_REREVIEW",
+    "confirmatory_analysis": "NOT_EVALUABLE_PRIMARY_N0",
+    "negative_controls": "PASS",
+    "blind_annotation": "BLOCKED_H3_NO_REAL_TWO_ANNOTATOR_LABELS",
+    "state_dependence": "EXPLORATORY_BOUNDARY",
+    "npc_analysis": "BLOCKED_NON_IDENTIFIABLE_STRONGER_CLAIMS",
+    "red_team": "PASS",
+    "independent_replication": "PASS",
+    "tier_review": "TIER_C"
+  },
+  "paper_repo_modified": false,
+  "start_here_modified": false,
+  "main_workflow_log_modified": false,
+  "wording_constraints": {
+    "plan_not_strict_preregistration": true,
+    "nsfc_interhub_coverage_guarantee_supported": false,
+    "h3_real_two_annotator_results_exist": false,
+    "fallback_is_confirmatory": false,
+    "zero_effect_proof": false
+  }
 }

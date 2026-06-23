@@ -1,12 +1,46 @@
-# RQ003_8_nsfc_ipv_validation_codex_20260620T221646+0800_37bb9424
+# RQ003_8 NSFC IPV Validation Boundary Report
 
-Phase 0A bootstrap run for RQ003 NSFC IPV external-validation work.
+Run ID: `RQ003_8_nsfc_ipv_validation_codex_20260620T221646+0800_37bb9424`
 
-- Plan: `/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ003_nsfc_external_evidence/plans/RQ003_plan_v2_nsfc_ipv_validation_20260620.md`
-- Plan SHA-256: `98900786a4819e58e91f16eb8da84724c928ca5a6d2c40b2252cf106b56625e1`
-- Plan status: archived-approved
-- Registration status: not strict preregistration; frozen confirmatory analysis based on prior exploration
-- Worker: `rq003_p0a_bootstrap`
-- Created: `2026-06-20T22:16:46.313087+08:00`
+Status: PASS for Phase 10 report build.
 
-This run package currently contains only safe sync evidence, path contracts, metadata, traceability skeletons, and empty manifests required before downstream inventory and analysis phases. No formal statistics, figures, HTML report, paper-repository edits, or research judgments were performed in Phase 0A.
+Tier decision: **Tier C** domain-transfer / no-validated-increment result.
+
+Canonical offline entry: `00_entry/index.html`
+
+Compatibility offline entry: `90_report/index.html`
+
+## What This Package Supports
+
+- 150/150 top-five cells map from score to PDF to replay and are IPV-computable.
+- Gate 0 measurement checks pass.
+- Exact role-context high-support transfer is not evaluable: primary high-support N=0.
+- Fallback LOTO is small and uncertain: delta_R2=+0.0094 with CI crossing zero.
+- LOSO reverses direction.
+- Negative controls meet expectation and IPV-removed equals kinematics-only.
+- H3 blind mechanism is blocked because real two-annotator labels do not exist.
+- NPC stronger matching is non-identifiable without script-version and seed fields.
+- Independent replication reproduces N=0 and fallback estimates.
+
+## What This Package Does Not Support
+
+- Validated criterion validity.
+- Successful domain transfer.
+- Transferable NSFC coverage guarantees from InterHub calibration.
+- Independently expert-validated coordination-endpoint wording.
+- An NPC effect-identification or identical-input claim.
+- A blind behavioral mechanism claim.
+- Any statement that the paper repository was modified.
+
+## Main Artifacts
+
+- `01_results/figures/figure_manifest.csv`
+- `evidence.csv`
+- `TRACEABILITY.md`
+- `execution_status.json`
+- `02_process/19_report_build/nature_skill_manifest.json`
+- `02_process/19_report_build/worker_report.json`
+
+Note: `START_HERE.md` and `main_workflow.log` were intentionally not modified for this task per the Phase 10 worker scope.
+
+Paper repo hygiene: this run made zero paper-repo edits; the paper repo working tree has a pre-existing unrelated `.gitignore` modification, left untouched.
