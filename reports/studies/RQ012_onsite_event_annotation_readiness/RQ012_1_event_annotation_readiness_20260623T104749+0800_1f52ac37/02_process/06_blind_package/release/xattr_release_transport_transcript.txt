@@ -1,0 +1,177 @@
+RQ012A W07a xattr and release transport transcript
+Generated UTC: 2026-06-23T05:56:41Z
+Host uname: Darwin xiaocongdeMac-mini.local 25.5.0 Darwin Kernel Version 25.5.0: Mon Apr 27 20:41:26 PDT 2026; root:xnu-12377.121.6~2/RELEASE_ARM64_T8132 arm64
+
+Facing file type probe:
+/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_01_template.csv: CSV text
+/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_02_template.csv: CSV text
+/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/neutral_item_manifest.csv: ASCII text, with CRLF line terminators
+/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/codebook_issuance_notes.md: ASCII text, with very long lines (458)
+
+Initial content sha256 by basename:
+48b1932fdaa75eaed642fc20a9375357206bc03e8f9308dd69d2b8e94f825036  annotator_01_template.csv
+eb030ba4159eb173cb6a60b6adb167af57a4351902380409f041baac2f351ab1  annotator_02_template.csv
+4ea60346c754ea6000cdcb135d4e45be42e60bfd44d60b751c8b199943bb7909  neutral_item_manifest.csv
+9edbef8da7a0dd7014db48e43213f146ac22a1c9f3ceed9d1ab547a1411ebcde  codebook_issuance_notes.md
+
+Task 1: initial xattr -l for each facing file:
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_01_template.csv]
+xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_02_template.csv]
+xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/neutral_item_manifest.csv]
+xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/codebook_issuance_notes.md]
+xattr -l status=0
+com.apple.provenance: 
+
+Task 1: attempt xattr -c for each facing file, then re-check:
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_01_template.csv]
+xattr -c status=0
+post xattr -c: xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_02_template.csv]
+xattr -c status=0
+post xattr -c: xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/neutral_item_manifest.csv]
+xattr -c status=0
+post xattr -c: xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/codebook_issuance_notes.md]
+xattr -c status=0
+post xattr -c: xattr -l status=0
+com.apple.provenance: 
+
+Task 1: attempt xattr -d com.apple.provenance for each facing file, then re-check:
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_01_template.csv]
+xattr -d com.apple.provenance status=0
+post xattr -d: xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_02_template.csv]
+xattr -d com.apple.provenance status=0
+post xattr -d: xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/neutral_item_manifest.csv]
+xattr -d com.apple.provenance status=0
+post xattr -d: xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/codebook_issuance_notes.md]
+xattr -d com.apple.provenance status=0
+post xattr -d: xattr -l status=0
+com.apple.provenance: 
+
+Task 1: /tmp copy re-application probe using annotator_01_template.csv:
+tmp copy path: /tmp/RQ012A_W07a_xattr_copy_24564/annotator_01_template.csv
+tmp copy xattr -l status=0
+com.apple.provenance: 
+tmp copy sha256: 48b1932fdaa75eaed642fc20a9375357206bc03e8f9308dd69d2b8e94f825036  /tmp/RQ012A_W07a_xattr_copy_24564/annotator_01_template.csv
+
+Task 2: build content-only zip transport:
+  adding: annotator_01_template.csv (deflated 72%)
+  adding: annotator_02_template.csv (deflated 72%)
+  adding: neutral_item_manifest.csv (deflated 75%)
+  adding: codebook_issuance_notes.md (deflated 45%)
+zip status=0
+zip path: /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/06_blind_package/release/RQ012A_facing_content_release.zip
+zip sha256: 5ffd533dcc905aa91468b94fb94bd6aee51cce91ab02382aa9ff48d808b30b88  /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/06_blind_package/release/RQ012A_facing_content_release.zip
+
+zipinfo -1 entries:
+annotator_01_template.csv
+annotator_02_template.csv
+neutral_item_manifest.csv
+codebook_issuance_notes.md
+
+zipinfo -v extra-field excerpts:
+  length of extra field:                          0 bytes
+  length of extra field:                          0 bytes
+  length of extra field:                          0 bytes
+  length of extra field:                          0 bytes
+  length of extra field:                          0 bytes
+  length of extra field:                          0 bytes
+  length of extra field:                          0 bytes
+  length of extra field:                          0 bytes
+
+Task 2: extract zip to clean temp dir and check xattrs:
+unzip status=0
+extract dir: /tmp/RQ012A_W07a_roundtrip_24564
+
+[/tmp/RQ012A_W07a_roundtrip_24564/annotator_01_template.csv]
+extracted xattr -l status=0
+com.apple.provenance: 
+
+[/tmp/RQ012A_W07a_roundtrip_24564/annotator_02_template.csv]
+extracted xattr -l status=0
+com.apple.provenance: 
+
+[/tmp/RQ012A_W07a_roundtrip_24564/neutral_item_manifest.csv]
+extracted xattr -l status=0
+com.apple.provenance: 
+
+[/tmp/RQ012A_W07a_roundtrip_24564/codebook_issuance_notes.md]
+extracted xattr -l status=0
+com.apple.provenance: 
+
+Task 2: extracted content sha256 by basename:
+48b1932fdaa75eaed642fc20a9375357206bc03e8f9308dd69d2b8e94f825036  annotator_01_template.csv
+eb030ba4159eb173cb6a60b6adb167af57a4351902380409f041baac2f351ab1  annotator_02_template.csv
+4ea60346c754ea6000cdcb135d4e45be42e60bfd44d60b751c8b199943bb7909  neutral_item_manifest.csv
+9edbef8da7a0dd7014db48e43213f146ac22a1c9f3ceed9d1ab547a1411ebcde  codebook_issuance_notes.md
+
+Task 2: content hash comparison pre vs post:
+HASH_COMPARISON=IDENTICAL
+
+Final facing xattr recheck after all attempts:
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_01_template.csv]
+xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_02_template.csv]
+xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/neutral_item_manifest.csv]
+xattr -l status=0
+com.apple.provenance: 
+
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/codebook_issuance_notes.md]
+xattr -l status=0
+com.apple.provenance: 
+
+Task 1/2 exact residual provenance value hex probe:
+
+Facing file xattr -px com.apple.provenance values:
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_01_template.csv]
+01 02 00 FF BD 6D E9 61 30 D0 1F 
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/annotator_02_template.csv]
+01 02 00 FF BD 6D E9 61 30 D0 1F 
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/neutral_item_manifest.csv]
+01 02 00 FF BD 6D E9 61 30 D0 1F 
+[/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/01_results/annotations/codebook_issuance_notes.md]
+01 02 00 FF BD 6D E9 61 30 D0 1F 
+
+Extracted round-trip file xattr -px com.apple.provenance values:
+[/tmp/RQ012A_W07a_hex_roundtrip_25304/annotator_01_template.csv]
+01 02 00 FF BD 6D E9 61 30 D0 1F 
+[/tmp/RQ012A_W07a_hex_roundtrip_25304/annotator_02_template.csv]
+01 02 00 FF BD 6D E9 61 30 D0 1F 
+[/tmp/RQ012A_W07a_hex_roundtrip_25304/neutral_item_manifest.csv]
+01 02 00 FF BD 6D E9 61 30 D0 1F 
+[/tmp/RQ012A_W07a_hex_roundtrip_25304/codebook_issuance_notes.md]
+01 02 00 FF BD 6D E9 61 30 D0 1F 

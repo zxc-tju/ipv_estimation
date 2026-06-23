@@ -1,0 +1,66 @@
+{
+  "document_status": "REPORT_PREPARED",
+  "overall": "BLOCKED_FOR_HUMAN_LABELS",
+  "overall_reason": "Wave-A readiness artifacts are prepared, but real human labels, final neutral media/card issuance, auditor sign-off, agreement computation, and Gate 012B authorization remain pending.",
+  "gates": {
+    "012-0": "pass",
+    "012-1": "pass",
+    "012-2": "text_issuance_surfaces_cleared",
+    "012-3": "ready_pending_humans",
+    "012B": "blocked"
+  },
+  "gate_details": {
+    "012-0": {
+      "label": "signal feasibility",
+      "status": "pass",
+      "evidence": "01_results/tables/event_signal_availability.csv"
+    },
+    "012-1": {
+      "label": "outcome-blind ontology and thresholds",
+      "status": "pass",
+      "evidence": "01_results/event_ontology.yaml; 01_results/event_threshold_rationale.md"
+    },
+    "012-2": {
+      "label": "blind-package integrity",
+      "status": "text_issuance_surfaces_cleared",
+      "evidence": "02_process/06_blind_package/blind_package_reaudit.md",
+      "remaining_blocked_for_human_labels_dependencies": [
+        "final neutral media/card issuance after the frozen RQ011 analysis universe",
+        "independent auditor sign-off for the final issued media/card package",
+        "refresh of support-file fixity rows before archival freeze if required"
+      ]
+    },
+    "012-3": {
+      "label": "human coordination readiness",
+      "status": "ready_pending_humans",
+      "evidence": "01_results/blind_annotation_protocol.md; 01_results/human_coordination_checklist.md; 01_results/agreement_analysis_protocol.yaml",
+      "remaining_blocked_for_human_labels_dependencies": [
+        "two real independent human annotation files",
+        "append-only raw label preservation",
+        "agreement computation under the frozen kappa+AC1 protocol"
+      ]
+    },
+    "012B": {
+      "label": "later event-IPV analysis authorization",
+      "status": "blocked",
+      "evidence": "02_process/01_plan_review/plan_resolution_v0_1.md",
+      "remaining_blocked_for_human_labels_dependencies": [
+        "RQ011 frozen analysis universe",
+        "final neutral media/card issuance",
+        "auditor sign-off",
+        "two accepted real human labels",
+        "agreement results saved under the frozen protocol",
+        "required RQ007/RQ009/RQ011 freezes",
+        "explicit recorded Gate 012B authorization"
+      ]
+    }
+  },
+  "human_labels_present": false,
+  "agreement_computed": false,
+  "event_ipv_association_computed": false,
+  "figures_rendered": true,
+  "figure_rendering_note": "Figure source CSVs and specs are prepared under 01_results/figures/source_data; PNG/SVG/PDF figures are rendered with the Nature figure skill via Python/matplotlib.",
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "git_head": "13aafc86b29295187372173f408b6160b133c3c7",
+  "updated_by": "RQ012-W20-registrar"
+}

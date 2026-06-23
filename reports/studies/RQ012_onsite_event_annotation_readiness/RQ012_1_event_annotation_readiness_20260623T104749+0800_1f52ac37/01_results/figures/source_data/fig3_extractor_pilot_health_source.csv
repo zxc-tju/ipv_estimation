@@ -1,0 +1,10 @@
+event_id,event_name,computable_units,total_units,computable_fraction,raw_event_count,primary_event_count,suppressed_by_precedence,event_rate_per_computable_unit,threshold_low_count,threshold_central_count,threshold_high_count,sampling_original_count,sampling_decimate2_count,sampling_delta,sampling_relative_delta,impossible_values,actor_attribution_failures,missing_data_failures,guard
+E01,counterpart hard braking,0,1703,0.000000,0,0,0,0.000000,0,0,0,0,0,0,,0,1703,1703,not emitted; frozen counterpart relation unavailable
+E02,high deceleration,1708,1708,1.000000,1770,1770,0,1.036300,2568,1770,1283,1770,1964,194,0.109605,2,0,5,automatic kinematic/geometric pilot output
+E03,high jerk,1708,1708,1.000000,1615,1615,0,0.945550,8818,1615,287,1615,6612,4997,3.094118,2,0,5,automatic kinematic/geometric pilot output
+E06,repeated stop-go,1708,1708,1.000000,186,186,0,0.108899,212,186,32,186,194,8,0.043011,2,0,4,automatic kinematic/geometric pilot output
+E09,near miss,917,1703,0.538462,463,350,113,0.381679,228,350,423,350,860,510,1.457143,4,0,802,automatic kinematic/geometric pilot output
+E15,collision/contact geometric candidate,917,1703,0.538462,114,114,0,0.124318,114,114,110,114,161,47,0.412281,4,0,802,geometric contact candidate only; not sensor-confirmed collision
+E16,no-progress timeout,5,5,1.000000,48,48,0,9.600000,66,48,17,48,39,-9,-0.187500,2,0,4,no-progress only; off-route guarded off because route/lane/goal geometry is unavailable
+E18,kinematic emergency-stop candidate,5,5,1.000000,0,0,0,0.000000,0,0,202,0,1,1,,2,0,4,kinematic emergency-stop candidate only; no explicit e-stop command flag
+E19,abrupt lateral comfort events,5,5,1.000000,2,2,0,0.400000,32,2,2,2,3,1,0.500000,2,0,4,automatic kinematic/geometric pilot output

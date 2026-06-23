@@ -1,0 +1,21 @@
+{
+  "phase": "phase4",
+  "gate": "012-1",
+  "verdict": "pass",
+  "data_derived": false,
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "worker_id": "RQ012-W09-thresholds",
+  "git_head": "f38c402853d3fcb74c3863487a489750a8f36d28",
+  "created_at": "2026-06-23T14:08:42+0800",
+  "automatic_events": 9,
+  "threshold_parameters": 63,
+  "track": "confirmatory",
+  "outcome_blind": true,
+  "exploratory_used": false,
+  "paper_repo_accessed": false,
+  "notes": [
+    "No data-derived threshold value was used, so no dev_subset_manifest.csv was required.",
+    "All retained thresholds are sourced from standards, literature, platform references, measurement resolution, schema field precedence, or outcome-blind engineering rules.",
+    "Parameters requiring unavailable route/lane/goal geometry or frozen counterpart relation are guarded as not computable rather than guessed."
+  ]
+}

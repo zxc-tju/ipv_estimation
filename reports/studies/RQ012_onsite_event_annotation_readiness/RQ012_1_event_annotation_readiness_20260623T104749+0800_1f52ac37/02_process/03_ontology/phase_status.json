@@ -1,0 +1,13 @@
+{
+  "phase": "phase3",
+  "deliverable": "event_ontology",
+  "verdict": "complete",
+  "counts": {
+    "automatic": 9,
+    "human_only": 5,
+    "removed": 6
+  },
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "worker_id": "RQ012-W08-ontology",
+  "git_head": "f38c402853d3fcb74c3863487a489750a8f36d28"
+}

@@ -1,0 +1,10 @@
+{
+  "annotator_role": "annotator_01",
+  "coordinator_verified_submitter_id": "test-fixture-adversarial_wrong_neutral_item_ids-annotator_01",
+  "adversarial_test_fixture": true,
+  "not_real_human_labels": true,
+  "structural_gate_only": true,
+  "human_attestation": false,
+  "provenance_purpose": "RQ012 W8 merge-validation fixture only; not a human label file.",
+  "anti_fabrication_notice": "This sidecar supports structural guardrail testing only. It does not claim a real human attestation and must not be used for agreement."
+}

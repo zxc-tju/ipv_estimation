@@ -1,0 +1,89 @@
+{
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "generated_at_utc": "2026-06-23T08:00:38.528633+00:00",
+  "structural_only": true,
+  "allow_test_fixtures": true,
+  "near_duplicate_config": {
+    "label_cell_similarity_threshold": 0.95,
+    "minimum_comparable_label_cells": 20,
+    "note_similarity_threshold": 0.95,
+    "minimum_note_characters": 40,
+    "minimum_completion_seconds": 300.0,
+    "identical_timing_tolerance_seconds": 1.0,
+    "order_similarity_threshold": 1.0
+  },
+  "status": "QUARANTINED",
+  "accepted_as_real_human_labels": false,
+  "agreement_computed": false,
+  "event_ipv_association_computed": false,
+  "merge_or_agreement_output_created": false,
+  "human_label_status": "BLOCKED_FOR_HUMAN_LABELS",
+  "raw_input_archive": [
+    {
+      "role": "annotator_01",
+      "source_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/fixtures/adversarial_template_order_clone_annotator_01.csv",
+      "sha256": "cced3e774ee781528876cc89edda4a9479b4510bc287cccdec962b649e437ba8",
+      "byte_size": 1148,
+      "archive_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/raw_input_archive/annotator_01_cced3e774ee78152_adversarial_template_order_clone_annotator_01.csv",
+      "already_present": true
+    },
+    {
+      "role": "annotator_02",
+      "source_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/fixtures/adversarial_template_order_clone_annotator_02.csv",
+      "sha256": "af03377530029235acf19c0a028d79dc1dd2be7af2fbd071d21620c9d9ddec9a",
+      "byte_size": 1148,
+      "archive_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/raw_input_archive/annotator_02_af03377530029235_adversarial_template_order_clone_annotator_02.csv",
+      "already_present": true
+    }
+  ],
+  "quarantine_code": "template_order_clone",
+  "quarantine_reason": "Annotator files use the same item order where assigned templates should differ",
+  "quarantine_details": {
+    "config": {
+      "label_cell_similarity_threshold": 0.95,
+      "minimum_comparable_label_cells": 20,
+      "note_similarity_threshold": 0.95,
+      "minimum_note_characters": 40,
+      "minimum_completion_seconds": 300.0,
+      "identical_timing_tolerance_seconds": 1.0,
+      "order_similarity_threshold": 1.0
+    },
+    "label_cell_similarity": {
+      "identical_label_confidence_cells": 6,
+      "comparable_label_confidence_cells": 240,
+      "similarity": 0.025
+    },
+    "note_text_similarity": {
+      "paired_nonblank_note_rows": 0,
+      "minimum_note_characters": 0,
+      "similarity": null
+    },
+    "completion_timing": {
+      "annotator_01": {
+        "start_utc": "",
+        "end_utc": "",
+        "duration_seconds": null
+      },
+      "annotator_02": {
+        "start_utc": "",
+        "end_utc": "",
+        "duration_seconds": null
+      },
+      "short_duration_count": 0,
+      "identical_timing_window": false
+    },
+    "item_order_similarity": {
+      "matching_positions": 30,
+      "comparable_positions": 30,
+      "similarity": 1.0,
+      "exact_same_order": true
+    },
+    "controlled_channel_evidence": {
+      "annotator_01_channel_submitter_id_present": false,
+      "annotator_02_channel_submitter_id_present": false,
+      "annotator_01_channel_receipt_id_present": false,
+      "annotator_02_channel_receipt_id_present": false,
+      "issues": []
+    }
+  }
+}

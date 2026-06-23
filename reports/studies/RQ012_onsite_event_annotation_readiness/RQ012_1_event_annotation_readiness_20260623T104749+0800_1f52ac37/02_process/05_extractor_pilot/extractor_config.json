@@ -1,0 +1,43 @@
+{
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "worker_id": "RQ012-W10-extractor-pilot",
+  "pilot_seed": 202606230510,
+  "sample_n_sessions": 5,
+  "max_time_alignment_gap_s": 0.1,
+  "dimension_scale_rule": "If length or width is greater than 30, treat the source value as centimeters and divide by 100 before geometric rules.",
+  "bands": {
+    "low": {
+      "E01": {"decel_mps2": 3.0, "d_min_s": 0.2, "merge_gap_s": 0.2, "missing_gap_s": 0.2, "interaction_distance_m": 30.0},
+      "E02": {"decel_mps2": 3.0, "d_min_s": 0.2, "merge_gap_s": 0.2, "missing_gap_s": 0.2},
+      "E03": {"jerk_mps3": 3.0, "smooth_s": 0.2, "d_min_s": 0.2, "merge_gap_s": 0.2, "missing_gap_s": 0.2},
+      "E06": {"stop_speed_mps": 0.2, "go_speed_mps": 0.8, "n_cycles": 2, "stop_min_s": 0.3, "go_min_s": 0.3, "d_min_s": 3.0, "merge_gap_s": 0.5, "missing_gap_s": 0.2},
+      "E09": {"distance_m": 0.25, "time_to_conflict_s": 1.0, "d_min_s": 0.1, "merge_gap_s": 0.2, "missing_gap_s": 0.2},
+      "E15": {"overlap_tolerance_m": -0.1, "d_min_s": 0.1, "merge_gap_s": 0.2, "missing_gap_s": 0.2},
+      "E16": {"progress_displacement_m": 0.5, "progress_speed_mps": 0.2, "no_progress_s": 5.0, "merge_gap_s": 1.0, "missing_gap_s": 0.2},
+      "E18": {"emergency_decel_mps2": 3.4, "brake_mode": "strict_decel_to_stop", "stop_speed_mps": 0.2, "d_min_s": 0.2, "merge_gap_s": 0.2, "missing_gap_s": 0.2},
+      "E19": {"lateral_acc_mps2": 2.0, "lateral_jerk_mps3": 3.0, "steering_rate_dps": 60.0, "smooth_s": 0.2, "d_min_s": 0.2, "merge_gap_s": 0.2, "missing_gap_s": 0.2}
+    },
+    "central": {
+      "E01": {"decel_mps2": 3.4, "d_min_s": 0.3, "merge_gap_s": 0.3, "missing_gap_s": 0.3, "interaction_distance_m": 50.0},
+      "E02": {"decel_mps2": 3.4, "d_min_s": 0.3, "merge_gap_s": 0.3, "missing_gap_s": 0.3},
+      "E03": {"jerk_mps3": 5.0, "smooth_s": 0.3, "d_min_s": 0.3, "merge_gap_s": 0.3, "missing_gap_s": 0.3},
+      "E06": {"stop_speed_mps": 0.3, "go_speed_mps": 1.0, "n_cycles": 2, "stop_min_s": 0.5, "go_min_s": 0.5, "d_min_s": 4.0, "merge_gap_s": 1.0, "missing_gap_s": 0.3},
+      "E09": {"distance_m": 0.5, "time_to_conflict_s": 1.5, "d_min_s": 0.2, "merge_gap_s": 0.3, "missing_gap_s": 0.3},
+      "E15": {"overlap_tolerance_m": 0.0, "d_min_s": 0.2, "merge_gap_s": 0.3, "missing_gap_s": 0.3},
+      "E16": {"progress_displacement_m": 1.0, "progress_speed_mps": 0.3, "no_progress_s": 10.0, "merge_gap_s": 2.0, "missing_gap_s": 0.3},
+      "E18": {"emergency_decel_mps2": 4.5, "brake_mode": "decel_plus_brake_or_stop", "stop_speed_mps": 0.3, "d_min_s": 0.3, "merge_gap_s": 0.3, "missing_gap_s": 0.3},
+      "E19": {"lateral_acc_mps2": 2.5, "lateral_jerk_mps3": 5.0, "steering_rate_dps": 100.0, "smooth_s": 0.3, "d_min_s": 0.3, "merge_gap_s": 0.3, "missing_gap_s": 0.3}
+    },
+    "high": {
+      "E01": {"decel_mps2": 4.5, "d_min_s": 0.5, "merge_gap_s": 0.5, "missing_gap_s": 0.5, "interaction_distance_m": 70.0},
+      "E02": {"decel_mps2": 4.5, "d_min_s": 0.5, "merge_gap_s": 0.5, "missing_gap_s": 0.5},
+      "E03": {"jerk_mps3": 7.0, "smooth_s": 0.5, "d_min_s": 0.5, "merge_gap_s": 0.5, "missing_gap_s": 0.5},
+      "E06": {"stop_speed_mps": 0.5, "go_speed_mps": 1.5, "n_cycles": 3, "stop_min_s": 1.0, "go_min_s": 1.0, "d_min_s": 6.0, "merge_gap_s": 2.0, "missing_gap_s": 0.5},
+      "E09": {"distance_m": 1.0, "time_to_conflict_s": 2.0, "d_min_s": 0.3, "merge_gap_s": 0.5, "missing_gap_s": 0.5},
+      "E15": {"overlap_tolerance_m": 0.1, "d_min_s": 0.3, "merge_gap_s": 0.5, "missing_gap_s": 0.5},
+      "E16": {"progress_displacement_m": 2.0, "progress_speed_mps": 0.5, "no_progress_s": 15.0, "merge_gap_s": 3.0, "missing_gap_s": 0.5},
+      "E18": {"emergency_decel_mps2": 6.0, "brake_mode": "broad_decel_or_brake", "stop_speed_mps": 0.5, "d_min_s": 0.5, "merge_gap_s": 0.5, "missing_gap_s": 0.5},
+      "E19": {"lateral_acc_mps2": 3.0, "lateral_jerk_mps3": 7.0, "steering_rate_dps": 140.0, "smooth_s": 0.5, "d_min_s": 0.5, "merge_gap_s": 0.5, "missing_gap_s": 0.5}
+    }
+  }
+}

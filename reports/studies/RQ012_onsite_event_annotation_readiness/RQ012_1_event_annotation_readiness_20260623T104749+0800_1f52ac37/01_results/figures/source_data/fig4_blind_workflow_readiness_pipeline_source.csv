@@ -1,0 +1,12 @@
+row_type,element_id,stage_order,stage_label,from_stage,to_stage,state,status,gate,dependency_note,evidence_relpath
+node,S1,1,neutral issuance,,,text_issuance_surfaces_cleared,partial_cleared,012-2,Corrected text/CSV issuance surfaces are cleared; final neutral media/card issuance and signed auditor record remain pending.,../../02_process/06_blind_package/blind_package_reaudit.md
+node,S2,2,independent labeling,,,blocked_for_human_labels,blocked,012-3,Two independent real human annotators have not submitted accepted labels.,../../01_results/blind_annotation_protocol.md
+node,S3,3,raw preservation,,,protocol_ready_pending_label_receipt,pending,012-3,Append-only raw label preservation is specified but awaits real accepted submissions.,../../01_results/human_coordination_checklist.md
+node,S4,4,independent agreement,,,frozen_not_computed,pending,012-3,Agreement protocol is frozen before results; kappa and AC1 are not computed until accepted labels exist.,../../01_results/agreement_analysis_protocol.yaml
+node,S5,5,adjudication,,,not_started,pending,012-3,Adjudication starts only after independent agreement is saved under the frozen protocol.,../../01_results/blind_annotation_protocol.md
+node,S6,6,Gate 012B authorization,,,blocked,blocked,012B,"Event-IPV analysis remains blocked pending all Wave-A gates, labels, agreement, required freezes, and explicit authorization.",../../02_process/01_plan_review/plan_resolution_v0_1.md
+edge,E1,,issuance to labeling,S1,S2,dependency,blocked_by_media_and_humans,012-3,Formal label acceptance requires final neutral media/card issuance and independent human annotators.,../../02_process/06_blind_package/phase_status_reaudit.json
+edge,E2,,labeling to raw preservation,S2,S3,dependency,pending_real_submissions,012-3,Accepted real submissions must be preserved before merge or agreement work.,../../01_results/human_coordination_checklist.md
+edge,E3,,raw preservation to agreement,S3,S4,dependency,pending_two_labels,012-3,Agreement uses two accepted independent submissions and the frozen kappa+AC1 protocol.,../../01_results/agreement_analysis_protocol.yaml
+edge,E4,,agreement to adjudication,S4,S5,dependency,pending_agreement_output,012-3,Adjudication cannot start until agreement is computed and saved.,../../01_results/blind_annotation_protocol.md
+edge,E5,,adjudication to Gate 012B,S5,S6,dependency,blocked_for_authorization,012B,Gate 012B also requires RQ007/RQ009/RQ011 freezes and explicit recorded authorization.,../../02_process/01_plan_review/plan_resolution_v0_1.md

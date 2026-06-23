@@ -1,0 +1,22 @@
+{
+  "schema": "rq012_artifact_manifest_v1",
+  "artifacts": [
+    {"path": "01_results/tables/event_signal_availability.csv", "status": "pending"},
+    {"path": "01_results/exports/event_ontology.yaml", "status": "pending"},
+    {"path": "02_process/04_thresholds/event_threshold_rationale.md", "status": "pending"},
+    {"path": "02_process/05_extractor_pilot/automatic_event_extractor_spec.md", "status": "pending"},
+    {"path": "01_results/tables/automatic_event_pilot.csv", "status": "pending"},
+    {"path": "02_process/05_extractor_pilot/automatic_event_pilot_report.md", "status": "pending"},
+    {"path": "02_process/06_blind_package/blind_package_leakage_audit.md", "status": "pending"},
+    {"path": "01_results/annotations/annotation_codebook_v2.md", "status": "pending"},
+    {"path": "02_process/07_annotation_protocol/blind_annotation_protocol.md", "status": "pending"},
+    {"path": "01_results/annotations/annotator_training_package/", "status": "pending"},
+    {"path": "01_results/annotations/annotator_01_template.csv", "status": "pending"},
+    {"path": "01_results/annotations/annotator_02_template.csv", "status": "pending"},
+    {"path": "02_process/07_annotation_protocol/agreement_analysis_protocol.yaml", "status": "pending"},
+    {"path": "02_process/08_merge_tests/annotation_merge_validation_tests.md", "status": "pending"},
+    {"path": "02_process/07_annotation_protocol/human_coordination_checklist.md", "status": "pending"},
+    {"path": "execution_status.json", "status": "pending"},
+    {"path": "90_report/onsite_event_annotation_readiness_report.html", "status": "pending"}
+  ]
+}

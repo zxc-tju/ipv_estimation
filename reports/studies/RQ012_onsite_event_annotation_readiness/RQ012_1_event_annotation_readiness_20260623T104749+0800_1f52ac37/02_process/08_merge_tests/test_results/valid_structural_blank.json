@@ -1,0 +1,114 @@
+{
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "generated_at_utc": "2026-06-23T08:00:38.519768+00:00",
+  "structural_only": true,
+  "allow_test_fixtures": true,
+  "near_duplicate_config": {
+    "label_cell_similarity_threshold": 0.95,
+    "minimum_comparable_label_cells": 20,
+    "note_similarity_threshold": 0.95,
+    "minimum_note_characters": 40,
+    "minimum_completion_seconds": 300.0,
+    "identical_timing_tolerance_seconds": 1.0,
+    "order_similarity_threshold": 1.0
+  },
+  "status": "PASS_STRUCTURAL_ONLY",
+  "accepted_as_real_human_labels": false,
+  "agreement_computed": false,
+  "event_ipv_association_computed": false,
+  "merge_or_agreement_output_created": false,
+  "human_label_status": "BLOCKED_FOR_HUMAN_LABELS",
+  "raw_input_archive": [
+    {
+      "role": "annotator_01",
+      "source_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/fixtures/valid_structural_blank_annotator_01.csv",
+      "sha256": "48b1932fdaa75eaed642fc20a9375357206bc03e8f9308dd69d2b8e94f825036",
+      "byte_size": 908,
+      "archive_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/raw_input_archive/annotator_01_48b1932fdaa75eae_valid_structural_blank_annotator_01.csv",
+      "already_present": true
+    },
+    {
+      "role": "annotator_02",
+      "source_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/fixtures/valid_structural_blank_annotator_02.csv",
+      "sha256": "eb030ba4159eb173cb6a60b6adb167af57a4351902380409f041baac2f351ab1",
+      "byte_size": 908,
+      "archive_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/raw_input_archive/annotator_02_eb030ba4159eb173_valid_structural_blank_annotator_02.csv",
+      "already_present": true
+    }
+  ],
+  "near_duplicate_screen": {
+    "config": {
+      "label_cell_similarity_threshold": 0.95,
+      "minimum_comparable_label_cells": 20,
+      "note_similarity_threshold": 0.95,
+      "minimum_note_characters": 40,
+      "minimum_completion_seconds": 300.0,
+      "identical_timing_tolerance_seconds": 1.0,
+      "order_similarity_threshold": 1.0
+    },
+    "label_cell_similarity": {
+      "identical_label_confidence_cells": 0,
+      "comparable_label_confidence_cells": 0,
+      "similarity": null
+    },
+    "note_text_similarity": {
+      "paired_nonblank_note_rows": 0,
+      "minimum_note_characters": 0,
+      "similarity": null
+    },
+    "completion_timing": {
+      "annotator_01": {
+        "start_utc": "",
+        "end_utc": "",
+        "duration_seconds": null
+      },
+      "annotator_02": {
+        "start_utc": "",
+        "end_utc": "",
+        "duration_seconds": null
+      },
+      "short_duration_count": 0,
+      "identical_timing_window": false
+    },
+    "item_order_similarity": {
+      "matching_positions": 0,
+      "comparable_positions": 30,
+      "similarity": 0.0,
+      "exact_same_order": false
+    },
+    "controlled_channel_evidence": {
+      "annotator_01_channel_submitter_id_present": false,
+      "annotator_02_channel_submitter_id_present": false,
+      "annotator_01_channel_receipt_id_present": false,
+      "annotator_02_channel_receipt_id_present": false,
+      "issues": []
+    },
+    "verdict": "PASS_NO_NEAR_DUPLICATE_OR_COLLUSION_FLAGS"
+  },
+  "test_fixture_mode": true,
+  "neutral_item_count": 30,
+  "handoff_manifest": {
+    "frozen_agreement_protocol": "01_results/agreement_analysis_protocol.yaml",
+    "raw_input_archive": [
+      {
+        "role": "annotator_01",
+        "source_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/fixtures/valid_structural_blank_annotator_01.csv",
+        "sha256": "48b1932fdaa75eaed642fc20a9375357206bc03e8f9308dd69d2b8e94f825036",
+        "byte_size": 908,
+        "archive_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/raw_input_archive/annotator_01_48b1932fdaa75eae_valid_structural_blank_annotator_01.csv",
+        "already_present": true
+      },
+      {
+        "role": "annotator_02",
+        "source_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/fixtures/valid_structural_blank_annotator_02.csv",
+        "sha256": "eb030ba4159eb173cb6a60b6adb167af57a4351902380409f041baac2f351ab1",
+        "byte_size": 908,
+        "archive_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/raw_input_archive/annotator_02_eb030ba4159eb173_valid_structural_blank_annotator_02.csv",
+        "already_present": true
+      }
+    ],
+    "annotator_01_provenance_digest": "e388356c756c39c2080ec9e766c2cb53529bdd4ec622a74aee4335d750df2f8c",
+    "annotator_02_provenance_digest": "71caa7e582cb08e11f3837cb83013ddcb6f546b78c86c68b87b77f6fca212231",
+    "neutral_item_count": 30
+  }
+}

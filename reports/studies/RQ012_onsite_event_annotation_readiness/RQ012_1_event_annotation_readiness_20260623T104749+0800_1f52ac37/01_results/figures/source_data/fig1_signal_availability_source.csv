@@ -1,0 +1,21 @@
+event_id,event_name,signal_class,gate_012_0_action,outcome_blind_extractable,endpoint_eligibility,missingness_risk_level,source_note
+E01,counterpart hard braking,derivable,keep_automatic,yes_after_counterpart_rule_and_threshold_freeze,independent_consequence_endpoint,low,Actor kinematics exist; counterpart rule and threshold freeze remain required.
+E02,high deceleration,direct,keep_automatic,yes_after_threshold_freeze,independent_consequence_endpoint,low,Acceleration and speed are directly recorded for ego/world actors.
+E03,high jerk,derivable,keep_automatic,yes_after_threshold_and_smoothing_freeze,independent_consequence_endpoint,moderate,Derivative extraction requires frozen smoothing and missing-data rules.
+E04,forced yielding,partially_observable,demote_human_only,no_complete_automatic_path,construct_proximal_descriptor,high,Kinematics alone cannot establish forcedness or right-of-way.
+E05,yield-role reversal,partially_observable,demote_human_only,no_complete_automatic_path,construct_proximal_descriptor,high,Role reversal requires semantic priority and role interpretation.
+E06,repeated stop-go,derivable,keep_automatic,yes_after_threshold_freeze,independent_consequence_endpoint,low,Speed and timestamp channels support stop-go cycle derivation.
+E07,unnecessary stop,partially_observable,demote_human_only,no_complete_automatic_path,construct_proximal_descriptor,high,Necessity interpretation lacks route and context signals.
+E08,conflict escalation,partially_observable,demote_human_only,no_complete_automatic_path,independent_consequence_endpoint,moderate-high,Escalation semantics and thresholds are not automatically supported.
+E09,near miss,derivable,keep_automatic,yes_after_geometry_and_threshold_freeze,independent_consequence_endpoint,low,Geometry and actor IDs support near-miss proxy extraction after geometry freeze.
+E10,safety-controller intervention,unavailable,remove,no,planner_system_event,high,No explicit intervention flag or authoritative status-code dictionary.
+E11,planner fallback,unavailable,remove,no,planner_system_event,high,No fallback key or documented planner-status semantics.
+E12,repeated replanning,unavailable,remove,no,planner_system_event,high,No plan-update counter or nonempty plan list in inspected logs.
+E13,trajectory rejection,unavailable,remove,no,planner_system_event,high,No rejection or validator channel represented in available schema.
+E14,mission failure,unavailable,remove,no,planner_system_event,high,No explicit mission failure dictionary or route/goal geometry.
+E15,collision/contact,derivable,keep_automatic,yes_as_geometric_proxy_after_geometry_rule_freeze,independent_consequence_endpoint,moderate,"Retained only as geometric contact candidate, not sensor-confirmed collision."
+E16,off-route or no-progress timeout,partially_observable,keep_automatic,partial_no_progress_only,independent_consequence_endpoint,moderate-high,No-progress is retained; off-route remains unavailable without route/lane/goal geometry.
+E17,human/operator takeover,unavailable,remove,no,planner_system_event,high,No takeover flag or authoritative status-code dictionary.
+E18,emergency stop,derivable,keep_automatic,yes_as_kinematic_candidate_after_threshold_freeze,independent_consequence_endpoint,moderate,Retained only as kinematic emergency-stop candidate.
+E19,abrupt lateral comfort events,derivable,keep_automatic,yes_after_threshold_and_smoothing_freeze,independent_consequence_endpoint,moderate-low,"Lateral acceleration, steering, speed, and timestamp channels exist."
+E20,yielding to a non-counterpart actor,partially_observable,demote_human_only,no_complete_automatic_path,construct_proximal_descriptor,high,Non-counterpart yielding semantics lack frozen role/context rules.

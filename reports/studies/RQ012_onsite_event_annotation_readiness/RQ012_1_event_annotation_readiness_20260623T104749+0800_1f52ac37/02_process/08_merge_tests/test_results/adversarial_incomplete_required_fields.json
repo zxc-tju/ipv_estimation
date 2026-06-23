@@ -1,0 +1,47 @@
+{
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "generated_at_utc": "2026-06-23T08:00:38.524604+00:00",
+  "structural_only": false,
+  "allow_test_fixtures": false,
+  "near_duplicate_config": {
+    "label_cell_similarity_threshold": 0.95,
+    "minimum_comparable_label_cells": 20,
+    "note_similarity_threshold": 0.95,
+    "minimum_note_characters": 40,
+    "minimum_completion_seconds": 300.0,
+    "identical_timing_tolerance_seconds": 1.0,
+    "order_similarity_threshold": 1.0
+  },
+  "status": "REJECTED",
+  "accepted_as_real_human_labels": false,
+  "agreement_computed": false,
+  "event_ipv_association_computed": false,
+  "merge_or_agreement_output_created": false,
+  "human_label_status": "BLOCKED_FOR_HUMAN_LABELS",
+  "raw_input_archive": [
+    {
+      "role": "annotator_01",
+      "source_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/fixtures/adversarial_incomplete_required_fields_annotator_01.csv",
+      "sha256": "b766f97f971ada911a1cfcdac20bb2999b03c4d5e360381217624fd0813d8c2e",
+      "byte_size": 2586,
+      "archive_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/raw_input_archive/annotator_01_b766f97f971ada91_adversarial_incomplete_required_fields_annotator_01.csv",
+      "already_present": true
+    },
+    {
+      "role": "annotator_02",
+      "source_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/fixtures/adversarial_incomplete_required_fields_annotator_02.csv",
+      "sha256": "362ec3d4df7e881c2730644c953ad13672152f6d3e765c5da663ac2c71fe82f5",
+      "byte_size": 2588,
+      "archive_path": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/02_process/08_merge_tests/raw_input_archive/annotator_02_362ec3d4df7e881c_adversarial_incomplete_required_fields_annotator_02.csv",
+      "already_present": true
+    }
+  ],
+  "rejection_code": "incomplete_required_fields",
+  "rejection_reason": "annotator_01:2 aggressive_intrusion is blank; completed submissions require 0/1 labels",
+  "rejection_details": {
+    "role": "annotator_01",
+    "row": 2,
+    "neutral_item_id": "RQ012NI022",
+    "column": "aggressive_intrusion"
+  }
+}

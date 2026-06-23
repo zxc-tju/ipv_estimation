@@ -1,0 +1,152 @@
+run_id: "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37"
+worker_id: "RQ012-W13-annotation-protocol"
+phase: "phase8_9a"
+status: "frozen"
+human_label_status: "BLOCKED_FOR_HUMAN_LABELS"
+frozen_before_results: true
+agreement_results_viewed: false
+labels_generated_by_this_worker: false
+agreement_computed_by_this_worker: false
+
+source_artifacts:
+  addendum: "02_process/01_plan_review/plan_resolution_v0_1.md"
+  codebook: "01_results/annotation_codebook_v2.md"
+  annotation_templates_dir: "01_results/annotations"
+  issuance_manifest: "02_process/06_blind_package/blind_issuance_manifest.csv"
+  release_transport_manifest: "02_process/06_blind_package/blind_issuance_release_transport_manifest.csv"
+  blind_protocol: "01_results/blind_annotation_protocol.md"
+
+unit_definitions:
+  clip_level:
+    unit: "neutral_item_id x label"
+    labels:
+      substantive:
+        - "aggressive_intrusion"
+        - "appropriate_assertiveness"
+        - "over_yielding_freeze"
+        - "oscillation"
+        - "deadlock"
+        - "smooth_reciprocal_negotiation"
+      annotation_quality:
+        - "unrelated_failure"
+        - "insufficient_evidence"
+    definition: "For each neutral item and label, compare annotator_01 and annotator_02 binary presence/absence after schema validation, before adjudication."
+  event_level:
+    unit: "matched positive label episode within neutral_item_id"
+    occurrence_definition: "An event-level occurrence match requires both annotators to mark the same label as present for the same neutral_item_id."
+    timing_definition: "For mutually positive labels with event_start_sec and event_end_sec supplied by both annotators, timing agreement is evaluated with temporal IoU and onset/end absolute differences."
+    temporal_match_rule:
+      minimum_temporal_iou: 0.50
+      maximum_onset_difference_seconds: 2.0
+      maximum_end_difference_seconds: 2.0
+    nonlocalizable_rule: "If one or both annotators leave event times blank because the behavior is global or not localizable, occurrence remains clip-level analyzable but the pair is excluded from event-timing denominators with an audit count."
+
+statistics:
+  primary:
+    name: "Cohen's kappa"
+    abbreviation: "kappa"
+    justification: "Two independent human annotators produce nominal binary labels per neutral item; Cohen's kappa is the pre-registered primary chance-corrected statistic for two-rater clip-level label agreement."
+    computation:
+      per_label: true
+      macro_average_across_labels: true
+      report_observed_agreement: true
+      report_confidence_interval: "bootstrap over neutral_item_id where feasible; otherwise exact or clearly marked not estimable"
+  prevalence_aware_secondary:
+    name: "Gwet's AC1"
+    abbreviation: "AC1"
+    justification: "RQ012 labels may be rare or imbalanced; Gwet's AC1 is frozen as the prevalence-aware secondary statistic because Cohen's kappa can be unstable under low prevalence."
+    computation:
+      per_label: true
+      macro_average_across_labels: true
+      report_positive_agreement: true
+      report_negative_agreement: true
+  event_timing:
+    name: "temporal overlap agreement"
+    metrics:
+      - "temporal_iou"
+      - "absolute_onset_difference_seconds"
+      - "absolute_end_difference_seconds"
+    report_corpus_summary:
+      - "count_mutually_positive_localized_events"
+      - "share_meeting_temporal_match_rule"
+      - "median_absolute_onset_difference_seconds"
+      - "median_absolute_end_difference_seconds"
+
+minimum_usable_agreement_threshold:
+  clip_level_primary_endpoints:
+    eligible_labels:
+      - "oscillation"
+      - "deadlock"
+      - "smooth_reciprocal_negotiation"
+    primary_kappa_minimum: 0.60
+    macro_primary_kappa_minimum: 0.60
+    secondary_ac1_minimum: 0.70
+    observed_agreement_minimum: 0.80
+    rare_label_rule: "If a primary endpoint has fewer than five positive cases by either annotator and kappa is unstable or not estimable, it is not accepted solely on kappa; AC1 must be at least 0.70 and positive agreement must be at least 0.70, with the low-prevalence caveat reported."
+  event_timing:
+    minimum_share_meeting_temporal_match_rule: 0.70
+    maximum_median_absolute_onset_difference_seconds: 2.0
+  below_threshold_action: "BLOCKED: do not authorize event-IPV analysis for any endpoint failing the applicable threshold without a new frozen protocol amendment and explicit authorization."
+
+missing_uncertain_and_insufficient_evidence:
+  blank_required_label_cell: "Treat as missing, not as 0. Resolve through schema/provenance correction before agreement if possible without exposing labels across annotators; otherwise exclude pairwise with audit count."
+  confidence_1: "Treat as high uncertainty. If accompanied by all substantive labels equal to 0 and notes beginning with INSUFFICIENT_EVIDENCE, code the item-level quality state as insufficient_evidence."
+  insufficient_evidence: "Not a primary endpoint. Report agreement on insufficient_evidence separately. Exclude affected substantive endpoint cells from downstream endpoint denominators unless adjudication later creates a separate usable consensus file."
+  unrelated_failure: "Annotation-quality label only. Report agreement separately and exclude from primary event-IPV endpoint eligibility."
+  uncertain_positive_label: "A positive label with confidence 2 remains a positive label for independent agreement, with low-confidence sensitivity counts reported."
+  notes: "Free-text notes are not agreement labels except for the codebook-defined INSUFFICIENT_EVIDENCE prefix."
+
+adjudication:
+  allowed_before_agreement: false
+  starts_only_after:
+    - "two raw independent human label files saved append-only"
+    - "schema and provenance checks recorded"
+    - "independent agreement statistics computed and archived"
+  raw_file_rule: "Never edit raw annotator files. Adjudication creates a separate derived consensus file."
+  disagreement_order:
+    - "provenance_and_schema_exceptions"
+    - "insufficient_evidence_and_unrelated_failure_status"
+    - "independent_consequence_endpoint_presence_absence"
+    - "construct_proximal_descriptor_presence_absence"
+    - "event_timing_windows"
+    - "confidence_and_note_clarifications"
+  record_required_fields:
+    - "neutral_item_id"
+    - "label"
+    - "annotator_01_value"
+    - "annotator_02_value"
+    - "adjudicated_value"
+    - "reason"
+    - "adjudicator_id"
+    - "timestamp"
+    - "source_raw_file_hashes"
+
+gate_012b_authorization_chain:
+  event_ipv_analysis_authorized_by_this_protocol: false
+  required_before_any_event_ipv_analysis:
+    gates:
+      "012-0": "PASS documented"
+      "012-1": "PASS documented"
+      "012-2": "PASS documented"
+      "012-3": "PASS documented"
+    frozen_deliverables:
+      - "ontology with endpoint_eligibility"
+      - "threshold rationale with confirmatory-track provenance"
+      - "blind-package audit"
+      - "agreement-analysis protocol saved before viewing agreement results"
+    human_annotation_prerequisites:
+      - "two real independent human annotation files"
+      - "annotator attestations and provenance checks passed"
+      - "raw labels preserved append-only"
+      - "agreement computed under this frozen protocol"
+    external_freezes:
+      - "RQ007 freeze complete and cited"
+      - "RQ009 freeze complete and cited"
+      - "RQ011 freeze complete and cited"
+    authorization_record: "explicit recorded authorization permitting RQ012B event-IPV analysis"
+  invalid_paths:
+    - "starting event-IPV analysis with any Gate 012-0..012-3 missing, failed, provisional, or undocumented"
+    - "using construct_proximal_descriptor labels as primary event-IPV validation endpoints"
+    - "using simulated, model-generated, duplicate, copied, prior, or borrowed labels as human labels"
+    - "adjudicating before independent agreement has been computed and archived"
+    - "choosing or changing statistics after viewing agreement results"

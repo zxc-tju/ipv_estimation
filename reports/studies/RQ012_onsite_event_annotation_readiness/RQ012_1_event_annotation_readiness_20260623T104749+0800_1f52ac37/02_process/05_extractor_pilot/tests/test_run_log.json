@@ -1,0 +1,279 @@
+{
+  "run_id": "RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37",
+  "worker_id": "RQ012-W12-extractor-test",
+  "git_head": "13aafc86b29295187372173f408b6160b133c3c7",
+  "tests_total": 30,
+  "tests_failed": 0,
+  "results": [
+    {
+      "name": "unit_e01_not_computable",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "extract_e01 with one unresolved world actor",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e02_should_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E02 accel=-3.5 for 3 samples",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e02_should_not_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E02 accel=-3.39 for 3 samples",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e03_should_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E03 acceleration ramp step 1.0",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e03_should_not_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E03 acceleration ramp step 0.4",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e06_should_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E06 stop-go-stop-go over 4.0 s",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e06_should_not_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E06 one stop-go cycle",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e09_should_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E09 0.4 m clearance for 2 samples",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e09_should_not_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E09 0.6 m clearance for 2 samples",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e15_should_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E15 0.1 m footprint penetration for 2 samples",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e15_should_not_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E15 0.1 m positive clearance for 2 samples",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e16_should_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E16 stationary low-speed ego for 10 s",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e16_should_not_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E16 ego speed 0.31 m/s for 10 s",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e18_should_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E18 accel=-4.6 and speed=0.2 for 3 samples",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e18_should_not_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E18 accel=-4.6 without brake/stop support",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e19_should_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E19 lat_acc=2.6 for 3 samples",
+      "traceback": ""
+    },
+    {
+      "name": "unit_e19_should_not_trigger",
+      "category": "unit",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E19 lat_acc=2.4 for 3 samples",
+      "traceback": ""
+    },
+    {
+      "name": "boundary_value_thresholds",
+      "category": "boundary",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "just-inside/outside thresholds for E02,E03,E06,E09,E15,E16,E18,E19",
+      "traceback": ""
+    },
+    {
+      "name": "boundary_min_duration",
+      "category": "boundary",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "below/at D_min for E02,E09,E15",
+      "traceback": ""
+    },
+    {
+      "name": "boundary_merge_gap",
+      "category": "boundary",
+      "severity": "medium",
+      "status": "pass",
+      "message": "",
+      "repro": "E02 two runs separated by 0.29 s vs 0.31 s",
+      "traceback": ""
+    },
+    {
+      "name": "boundary_empty_and_single_sample_inputs",
+      "category": "boundary",
+      "severity": "medium",
+      "status": "pass",
+      "message": "",
+      "repro": "zero-length and single-sample sessions for all computable events",
+      "traceback": ""
+    },
+    {
+      "name": "time_alignment_within_gap",
+      "category": "time_alignment",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E09 world frames 50 ms offset from ego",
+      "traceback": ""
+    },
+    {
+      "name": "time_alignment_outside_gap",
+      "category": "time_alignment",
+      "severity": "medium",
+      "status": "pass",
+      "message": "",
+      "repro": "E09 world frames >100 ms from ego",
+      "traceback": ""
+    },
+    {
+      "name": "time_alignment_multi_actor_frames",
+      "category": "time_alignment",
+      "severity": "medium",
+      "status": "pass",
+      "message": "",
+      "repro": "one aligned and one unaligned actor",
+      "traceback": ""
+    },
+    {
+      "name": "time_alignment_duplicate_timestamps",
+      "category": "time_alignment",
+      "severity": "medium",
+      "status": "pass",
+      "message": "",
+      "repro": "E02 duplicate timestamps [0,0,100]",
+      "traceback": ""
+    },
+    {
+      "name": "time_alignment_out_of_order_timestamps",
+      "category": "time_alignment",
+      "severity": "low",
+      "status": "pass",
+      "message": "",
+      "repro": "E02 timestamps [200,0,100]",
+      "traceback": ""
+    },
+    {
+      "name": "determinism_reproducibility",
+      "category": "determinism",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "extract_all_events twice on same synthetic session",
+      "traceback": ""
+    },
+    {
+      "name": "impossible_nan_inf_rejected",
+      "category": "impossible_values",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E02 NaN speed and infinite acceleration",
+      "traceback": ""
+    },
+    {
+      "name": "impossible_duplicate_timestamp_not_emitted",
+      "category": "impossible_values",
+      "severity": "medium",
+      "status": "pass",
+      "message": "",
+      "repro": "E02 four duplicate timestamps",
+      "traceback": ""
+    },
+    {
+      "name": "impossible_negative_speed_not_emitted",
+      "category": "impossible_values",
+      "severity": "high",
+      "status": "pass",
+      "message": "",
+      "repro": "E02 speed=-1.0 and accel=-3.5 for 0.3 s",
+      "traceback": ""
+    }
+  ]
+}
