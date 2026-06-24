@@ -1,11 +1,11 @@
 # RQ007 Synthesis: Interaction-Conditioned IPV Estimability
 
-Status: study final review PASS; knowledge-layer `decision.md` missing. Development/guard only; held-out sealed.
+Status: study final review PASS; knowledge-layer `decision.md` frozen 2026-06-24. Development/guard only; held-out sealed.
 
 Run: `RQ007_1_ipv_estimability_20260622T155229Z_289d9a99` (overall `COMPLETE`; all gates PASS).
 Report: `reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/90_report/index.html`.
-Candidate carry-forward claims: C1, C2, and C3 below. Treat them as not paper-frozen until a
-knowledge-layer `decision.md` exists.
+Accepted claims C1, C2, and C3 below; frozen in `decision.md` (2026-06-24) with the
+proximity-bounded caveat and provisional-until-held-out wording.
 
 ## Research question
 

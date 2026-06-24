@@ -1,6 +1,6 @@
 # Codex Review: RQ007 Interaction-Conditioned IPV Estimability
 
-Status: review-complete; study final review PASS; knowledge-layer `decision.md` is missing.
+Status: review-complete; study final review PASS; knowledge-layer `decision.md` added after review on 2026-06-24.
 Review date: 2026-06-24.
 
 ## Scope
@@ -14,6 +14,7 @@ Reviewed knowledge-layer files:
 - `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/README.md`
 - `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/report_index.md`
 - `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/synthesis.md`
+- `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md` (added after the initial review)
 
 Primary study evidence read:
 
@@ -98,10 +99,10 @@ negotiation."
 
 ## Knowledge-Layer Action
 
-The existing knowledge README and synthesis say the interpretation is accepted
-or frozen in `decision.md`, but no `decision.md` exists in this knowledge
-folder at review time. Before paper use, create the missing decision file or
-revise the knowledge README/synthesis so the layer is internally consistent.
+The initial review found that README/synthesis referred to a missing
+`decision.md`. That gap was closed on 2026-06-24 by adding the decision file and
+updating README/synthesis/report index wording. Future paper use should cite the
+decision file, not this review note, as the claim ledger.
 
 Recommended decision state: accept as a development/guard estimability boundary,
 hold out final confirmation, and require proximity/history-bounded wording for

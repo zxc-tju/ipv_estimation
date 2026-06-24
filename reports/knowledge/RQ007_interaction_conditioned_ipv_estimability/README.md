@@ -1,6 +1,6 @@
 # RQ007: Interaction-Conditioned IPV Estimability
 
-Status: study final review PASS (development/guard; held-out sealed); knowledge `decision.md` missing
+Status: study final review PASS (development/guard; held-out sealed); knowledge `decision.md` frozen 2026-06-24
 
 Execution layer: `reports/studies/RQ007_interaction_conditioned_ipv_estimability/`
 Latest run: `RQ007_1_ipv_estimability_20260622T155229Z_289d9a99` (`COMPLETE`; all gates PASS)
@@ -21,9 +21,9 @@ interaction-conditioned (the estimator concentration index is lower within causa
 windows) but mostly proximity-driven, with a small conflict-geometry-specific residual whose
 case-clustered CIs exclude zero; estimability is not behavioural settling; and episode-level
 IPV summaries are definition-dependent. See `synthesis.md` for the consolidated read,
-`report_index.md` for the execution package, and `reviews/codex_review.md` for the current
-knowledge-layer gap.
+`decision.md` for the frozen claim ledger, `report_index.md` for the execution package, and
+`reviews/` for the review boundary.
 
-This knowledge folder is the single synthesis point for RQ007. Do not treat the claims as
-paper-frozen until a knowledge-layer `decision.md` exists. Do not use sealed/held-out, PET,
-intensity, order, priority, or outcome fields as claim sources.
+This knowledge folder is the single synthesis point for RQ007. The claims are frozen in
+`decision.md` (2026-06-24); apply the proximity-bounded caveat. Do not use sealed/held-out,
+PET, intensity, order, priority, or outcome fields as claim sources.

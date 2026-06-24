@@ -104,21 +104,24 @@ the execution version.
 - RQ003 Tier B NSFC IPV validation final reader:
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/00_entry/index.html`
 - RQ007 interaction-conditioned IPV estimability report (development/guard estimability boundary;
-  final study review PASS, but knowledge `decision.md` is missing):
+  knowledge `decision.md` frozen 2026-06-24; held-out sealed):
   `reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/00_entry/index.html`
 - RQ008 InterHub temporal IPV discovery report (negative discovery-only result;
-  0/24 candidates survived, confirmation split remains unopened):
+  knowledge `decision.md` frozen 2026-06-24; 0/24 candidates survived,
+  confirmation split remains unopened):
   `reports/studies/RQ008_interhub_temporal_ipv_discovery/RQ008_1_temporal_ipv_discovery_20260622T234914+0800_3e3e776a/00_entry/index.html`
 - RQ010 WOD-E2E tracking feasibility report (`T2_FULL_TRACKING_REQUIRED`;
-  Route 4 preferred, Route 5 fallback, HPC blocked pending access):
+  knowledge `decision.md` frozen 2026-06-24; Route 4 preferred,
+  Route 5 fallback, HPC blocked pending access):
   `reports/studies/RQ010_wod_e2e_tracking_feasibility/RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e/00_entry/index.html`
 - RQ012A OnSite event annotation readiness Wave-A package (9 automatic events;
   gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans,
-  012B blocked; `BLOCKED_FOR_HUMAN_LABELS`, not full PASS):
+  012B blocked; knowledge `decision.md` freezes the deferral, not a full PASS):
   `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`
 - RQ011A OnSite full-universe readiness (re-run on complete data; `READY_WITH_FROZEN_EXCLUSIONS`:
   outcome universe full 300 / replay 285 with T19 excluded; run-level & repeated-run not identifiable
-  by design; supersedes the suspended RQ011_1 incomplete-data run):
+  by design; knowledge `decision.md` frozen 2026-06-24; supersedes the suspended
+  RQ011_1 incomplete-data run):
   `reports/studies/RQ011_onsite_full_universe_readiness/RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5/90_report/index.html`
 
 ## Latest Review Packets
@@ -146,6 +149,19 @@ the execution version.
 
 These review packets are evidence-boundary reviews, not accepted
 `decision.md` freezes.
+
+## Latest Decision Packets
+
+- RQ007 accepted development/guard estimability boundary:
+  `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md`
+- RQ008 accepted negative temporal-discovery boundary:
+  `reports/knowledge/RQ008_interhub_temporal_ipv_discovery/decision.md`
+- RQ010 accepted WOD-E2E feasibility/tracking-route boundary:
+  `reports/knowledge/RQ010_wod_e2e_tracking_feasibility/decision.md`
+- RQ011 accepted OnSite readiness/scope boundary:
+  `reports/knowledge/RQ011_onsite_full_universe_readiness/decision.md`
+- RQ012 frozen Wave-A readiness deferral:
+  `reports/knowledge/RQ012_onsite_event_annotation_readiness/decision.md`
 
 ## How To Run Tests
 

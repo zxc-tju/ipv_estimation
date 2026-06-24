@@ -1,6 +1,6 @@
 # RQ Research Program Progress Dashboard
 
-Last synchronized: **2026-06-22**  
+Last synchronized: **2026-06-24**
 Scope: `PAPER001/PAPER002` and `RQ001–RQ013`  
 Machine-readable registry: [`rq_progress_registry.csv`](rq_progress_registry.csv)  
 Central plan index: [`../plans/README.md`](../plans/README.md)
@@ -76,11 +76,11 @@ accepted decision or a reviewed execution artifact.
 | **RQ004** | Episode-level IPV state organization | `review` | S7 | P1 | Supports state-conditioned response-surface framing, not a universal law | Exact paper-safe decision not frozen | Freeze R1 episode-level claim boundary |
 | **RQ005** | Manuscript evidence-gap and leakage governance | `review` | S7 | P1 | Supports framework, leakage contract, and claim downgrades | Decision not frozen | Freeze governance decision |
 | **RQ006** | Sigma sensitivity | `archived-review` | S7 | P3 | Sigma=0.1 is healthier; IPV magnitude remains parameter-sensitive | Not a substantive verifier-validity result | Retain as robustness appendix evidence |
-| **RQ007** | Group 1 — interaction-conditioned IPV estimability | `planning` | S1 | **P0** | v0 plan drafted; existing `sigma01_ipv_timeseries.csv` is the primary online IPV time-series input | Data dictionary, uncertainty meaning, interaction-opportunity definition, and estimability gate are not frozen | Independent plan review, then provenance and field audit |
-| **RQ008** | Group 2A/2B — InterHub temporal IPV discovery and confirmation | `planning` | S1 | **P0** | v0 discovery plan drafted with discovery/confirmation separation | Protected split and valid-window contract are not frozen; formal confirmation depends on RQ007 | Independent plan review and protected confirmation-set reservation |
+| **RQ007** | Group 1 — interaction-conditioned IPV estimability | `accepted` | S7 | **P0** | COMPLETE; decision frozen (C1-C3) in `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md`: dev/guard interaction-conditioned estimability, proximity-bounded residual, held-out sealed | Held-out confirmation pending (sealed split); claims provisional until confirmed | Use frozen C1-C3 with proximity-bounded caveat; feed RQ009 |
+| **RQ008** | Group 2A/2B — InterHub temporal IPV discovery and confirmation | `accepted` | S7 | **P0** | RQ008A COMPLETE; negative discovery boundary frozen (0/24 directional structures survived) in `reports/knowledge/RQ008_interhub_temporal_ipv_discovery/decision.md`; confirmation hold-out unopened | Wave B requires Attack-10 (direction-sensitive) amendment + explicit authorization | Cite only as exploratory negative boundary; keep Wave B frozen |
 | **RQ009** | Dynamic counterpart-conditioned human envelope | `planning` | S0 | P1 | New primary model is intended to be M3: context + counterpart current IPV; M4 self-history is ablation only | Depends on RQ007 estimability contract and selected RQ008 temporal variables | Draft after RQ007 inventory and RQ008 discovery protocol |
-| **RQ010** | Group 4A/4B — WOD-E2E feasibility, tracking, and human preference validity | `feasibility-audit complete` | S2 | **P0** | T2_FULL_TRACKING_REQUIRED; Gate010-0 PASS; HPC BLOCKED_PENDING_ACCESS; red-team CLEAR (run RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e) | M3 needs self-built multi-camera tracking; official sizes sign-in-gated; map geometry missing; RQ009 provisional | RQ010B: authorized pilot/data + clear tracking gate + frozen RQ009 |
-| **RQ011** | Group 5A — OnSite full-universe and run-level readiness | `readiness complete` | S6 | **P0** | Re-run on complete data (run `RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5`): `READY_WITH_FROZEN_EXCLUSIONS`; 20 teams/300 cells; outcome universe full 300, replay universe 285 (T19 excluded, replay missing); 33 collisions recovered from diagnostic PDFs; independent re-verify + red-team (PASS_NO_BLOCKER) + replication (full agreement) + final review PASS; report `reports/studies/RQ011_onsite_full_universe_readiness/RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5/90_report/index.html`; supersedes suspended RQ011_1 (incomplete OneDrive sync) | Run-level & repeated-run not identifiable by design (one run/team); replay set carries moderate residual selection bias (T19 excluded); `script_version_seed` missing (not needed for matched-scenario) | RQ011B (if pursued): matched-scenario algorithm×scenario analysis on full-300 outcomes / 285 replay, with stated exclusions |
+| **RQ010** | Group 4A/4B — WOD-E2E feasibility, tracking, and human preference validity | `accepted` | S7 | **P0** | decision frozen (feasibility boundary) in `reports/knowledge/RQ010_wod_e2e_tracking_feasibility/decision.md`; T2_FULL_TRACKING_REQUIRED; Gate010-0 PASS; HPC BLOCKED_PENDING_ACCESS; red-team CLEAR (run RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e) | M3 needs self-built multi-camera tracking; official sizes sign-in-gated; map geometry unavailable; RQ009 provisional | RQ010B: authorized pilot/data + clear tracking gate + frozen RQ009 |
+| **RQ011** | Group 5A — OnSite full-universe and run-level readiness | `accepted` | S7 | **P0** | decision frozen (READY_WITH_FROZEN_EXCLUSIONS) in `reports/knowledge/RQ011_onsite_full_universe_readiness/decision.md`; re-run on complete data (run `RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5`): `READY_WITH_FROZEN_EXCLUSIONS`; 20 teams/300 cells; outcome universe full 300, replay universe 285 (T19 excluded, replay absent); 33 collisions recovered from diagnostic PDFs; independent re-verify + red-team (PASS_NO_BLOCKER) + replication (full agreement) + final review PASS; report `reports/studies/RQ011_onsite_full_universe_readiness/RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5/90_report/index.html`; supersedes suspended RQ011_1 (incomplete OneDrive sync) | Run-level & repeated-run not identifiable by design (one run/team); replay set carries moderate residual selection bias (T19 excluded); `script_version_seed` unavailable (not needed for matched-scenario) | RQ011B (if pursued): matched-scenario algorithm×scenario analysis on full-300 outcomes / 285 replay, with stated exclusions |
 | **RQ012** | Group 6A — OnSite event ontology and blind-annotation readiness | `blocked` | S7 | **P0** | Wave-A readiness complete for run `RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37`: gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html` | `BLOCKED_FOR_HUMAN_LABELS`: final neutral media/card issuance, auditor sign-off, two accepted labels, kappa+AC1 agreement, upstream freezes, and explicit Gate 012B authorization absent | Complete human-label prerequisites; do not open RQ012B until explicit authorization |
 | **RQ013** | Beyond-safety incremental validity | `planning` | S0 | P2 | RQ003 provides a negative/boundary prior | Must wait for frozen RQ009 predictions and independent WOD/OnSite outcomes from RQ010–RQ012 | Draft only after upstream gates pass |
 
@@ -89,9 +89,9 @@ accepted decision or a reviewed execution artifact.
 ### Wave A — start now
 
 - **PAPER002:** verify the direct paper-project modification, register its exact commit/branch, and review the v4 structure and claim boundaries.
-- **RQ007:** review the v0 plan, then audit `sigma01_ipv_timeseries.csv` and define interaction opportunity, uncertainty, and provisional estimability.
-- **RQ008A:** review the v0 plan, reserve an untouched confirmation set, then perform open temporal discovery.
-- **RQ010A:** review the v0 plan, then audit WOD-E2E release/access/schema and decide whether tracking and HPC are required.
+- **RQ007:** COMPLETE — knowledge `decision.md` frozen 2026-06-24 for C1-C3 (development/guard only; held-out sealed; proximity-bounded residual).
+- **RQ008A:** COMPLETE — negative discovery boundary frozen 2026-06-24; 0/24 directional temporal structures survived; Wave B remains frozen pending Attack-10 amendment + explicit authorization.
+- **RQ010A:** COMPLETE — feasibility decision frozen 2026-06-24; `T2_FULL_TRACKING_REQUIRED`; RQ010B blocked pending signed-in access, tracking pilot, and frozen RQ009.
 - **RQ011A:** COMPLETE — re-run on complete data finished with `READY_WITH_FROZEN_EXCLUSIONS` (outcome full 300; replay 285, T19 excluded; run-level/repeated-run not identifiable by design); run `RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5`; report `reports/studies/RQ011_onsite_full_universe_readiness/RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5/90_report/index.html`. The earlier RQ011_1 was suspended (incomplete OneDrive sync) and is superseded.
 - **RQ012A:** final reviewed Wave-A readiness package is complete: 9 automatic events; gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans, and 012B blocked; run `RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37`; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`; status remains `BLOCKED_FOR_HUMAN_LABELS`.
 
@@ -196,11 +196,12 @@ Rules:
 
 - PAPER002 was reportedly modified directly in the paper project, but the exact commit/branch and independent review are not yet registered here.
 - RQ001, RQ002, RQ004, and RQ005 have review material but no accepted `decision.md` claim slate.
-- RQ007 has not yet frozen how interaction opportunity and IPV estimability are defined.
-- RQ008 lacks a committed discovery/confirmation split.
+- RQ007 decision frozen (accepted C1-C3, proximity-bounded, dev/guard; held-out sealed).
+- RQ008 decision frozen (accepted negative discovery boundary; Wave B frozen pending Attack-10 amendment + authorization).
+- RQ011 evidence.csv is empty and the final readiness leaf rests on a PI-authorized RT10 re-grade; RQ012 evidence.csv is empty (populate when 012B runs).
 - RQ009 cannot start formal modelling before RQ007/RQ008 gates.
-- WOD-E2E access, actor tracks, tracking need, and HPC requirements are unknown.
-- OnSite full-universe/run-level analysis readiness is unresolved.
+- RQ010B remains blocked because signed-in data/access, tracker quality, official scale, and frozen RQ009 are still pending.
+- OnSite outcome/replay readiness is frozen at RQ011A, but run-level/repeated-run claims remain non-identifiable and RQ011B still needs separate authorization.
 - No real two-human OnSite annotations currently exist.
 
 ## Changelog
@@ -210,3 +211,4 @@ Rules:
 | 2026-06-22 | Initialized program dashboard for PAPER001/PAPER002 and RQ001–RQ013; defined active waves, dependencies, synchronization rules, and current blockers. |
 | 2026-06-22 | Created centralized `reports/plans/` and drafted Wave A plans for RQ007, RQ008, RQ010, RQ011, and RQ012; recorded PAPER002 as directly modified but pending artifact verification. |
 | 2026-06-23 | Registered RQ012A Wave-A readiness complete but `BLOCKED_FOR_HUMAN_LABELS`: gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans, 012B blocked; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`. |
+| 2026-06-24 | Froze knowledge-layer `decision.md` for RQ007 (accepted C1-C3, proximity-bounded), RQ008 (accepted negative discovery boundary), RQ010 (feasibility boundary, T2 tracking; RQ010B blocked-pending-access), RQ011 (READY_WITH_FROZEN_EXCLUSIONS), RQ012 (Wave-A readiness; BLOCKED_FOR_HUMAN_LABELS). Synced registry + dashboard + STUDIES.md; corrected stale RQ007/RQ008 `planning` rows to `accepted`. Flagged RQ011/RQ012 empty `evidence.csv` and the PI-authorized RQ011 RT10 re-grade. |

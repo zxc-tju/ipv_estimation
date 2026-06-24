@@ -1476,3 +1476,9 @@ Status: completed pending push at log time.
 Outcome: Prepared local updates covering cmux-backed macOS launchers, RQ011A complete-data readiness report/status updates, RQ007/RQ008/RQ010/RQ011/RQ012 knowledge review packets, START_HERE/STUDIES/progress registry maintenance, and knowledge-layer wording fixes so missing decision.md files are not described as frozen decisions.
 Verification: git diff --check passed; zsh -n passed for both launcher scripts; python3 -m unittest tests.test_shortcut_scripts -q passed; RQ011 execution_status.json parsed with python3 -m json.tool.
 Maintenance: START_HERE.md reflects current RQ007/RQ008/RQ010/RQ011/RQ012 paths, report entries, review packets, launcher behavior, and weak-spot boundaries.
+
+[2026-06-24T18:58:27+0800] Task: Organize local knowledge-decision updates and push to remote.
+Status: completed pending push at log time.
+Outcome: Prepared knowledge-layer decision freezes for RQ007, RQ008, RQ010, RQ011, and RQ012; restored RQ008 README/synthesis; updated START_HERE, STUDIES, progress dashboard, and registry so accepted/blocked statuses point to decision.md files rather than stale review-only or planning states.
+Verification: git diff --check passed; consistency search found no stale decision-missing/status-unresolved wording in START_HERE, STUDIES, progress dashboard, RQ007 knowledge, or RQ008 knowledge.
+Maintenance: START_HERE.md now lists the latest decision packets for RQ007/RQ008/RQ010/RQ011/RQ012.
