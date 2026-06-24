@@ -1445,3 +1445,34 @@ Status: completed.
 Outcome: Marked PR #2 ready for review, merged rq010a-wod-e2e-feasibility into main with merge commit c6645278439f8759aa2f605df32b11e37f1668e5, checked out/synchronized local main, and pruned the deleted remote RQ010 branch.
 Verification: PR #2 is MERGED and no longer draft; local main tracks origin/main; git fetch --prune removed origin/rq010a-wod-e2e-feasibility; remote merged-branch list contains only origin/main.
 Maintenance: Logged this merge/cleanup workflow in main_workflow.log.
+
+[2026-06-24T11:19:51+0800] Task: Make macOS agent launchers default to cmux.
+Status: completed.
+Outcome: Updated `scripts/launch_codex.command` and `scripts/launch_claude.command` so double-click launches enter the project root, verify `cmux` plus the target CLI, then run `cmux codex-teams` or `cmux claude-teams` instead of starting raw CLI sessions.
+Verification: `zsh -n scripts/launch_codex.command`, `zsh -n scripts/launch_claude.command`, and `python3 -m unittest tests.test_shortcut_scripts -q` passed.
+Maintenance: START_HERE.md updated to document the cmux-backed launcher behavior.
+
+[2026-06-24] RQ011A OnSite full-universe & run-level readiness — RE-RUN ON COMPLETE DATA: COMPLETE
+- Role: Claude orchestration-only PI; all execution via Codex CLI (gpt-5.5/xhigh) under .codex-fleet/rq011-onsite-readiness/. Figures via Nature-figure skill (matplotlib). Registry edits applied by Claude (integrator) after Codex registrar stalled twice on transient MCP transport hang.
+- RUN_ID: RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5 (reports/studies/RQ011_onsite_full_universe_readiness/). GIT_HEAD 32ebf754, PLAN_SHA256 13142fc4. Supersedes suspended RQ011_1 (incomplete OneDrive sync).
+- Data: data/onsite_competition/all_teams_dataset (20 teams, 300 team×scenario cells, 20 diagnostic PDFs). Completeness gate = COMPLETE.
+- FINAL READINESS STATUS: READY_WITH_FROZEN_EXCLUSIONS. Outcome universe = full 300 (all 20 teams' PDF scores); replay/IPV universe = clean 285 (T19 excluded: its vehicle-3190 replay is absent). Run-level & repeated-run NOT identifiable (one run/team by design) — recorded as scope boundaries, not defects.
+- Field reversal vs suspended run: diagnostic PDFs recovered success/failure + collisions (score 0 = collision; 33 collisions) + intervention(autonomy default) ⇒ clean set field-sufficient; only script_version_seed missing (not needed for matched-scenario).
+- 6-team correction (PI-authorized, evidence-backed): 5 promoted to clean (T1 dedup; T4/T10/T12 timestamp session selection; T18 cross-folder replay in T19 folder); T19 kept replay-excluded (own replay missing). Mapping counts: unique_clean 210 + conflict_resolved 75 = 285 clean; wrong_folder 15 (T19). Selection bias: high(90 excluded)→moderate(T19 only); replay collision 8.4% vs full 11.0%; T19=60%.
+- Unit: algorithm×scenario, matched-scenario cross-algorithm (no repeated runs). Interaction-estimability interface: partial (ego/onset derivable; counterpart/map-role need RQ007 rule-freezing).
+- Verification: Phase-1 plan addendum imported (data-independent, previously GATE CLOSED). Independent re-verify PASS (0 concern/0 fail). Red team PASS_NO_BLOCKER (1 nonblocking traceability). Replication FULL agreement (0 divergence). Decision-tree RT10 precedence fix (262,144-combo determinism). Final review PASS after F3 map_route partial-class correction. Boundary: no IPV–outcome read.
+- Deliverables: offline HTML 00_entry/index.html + 90_report/index.html (no external assets); 5 Nature-skill figures (PNG+PDF+SVG); caveats RT03/RT04/RT06 documented.
+- Next (optional, requires separate authorization): RQ011B matched-scenario algorithm×scenario analysis on full-300 outcomes / 285 replay with stated exclusions. This round = readiness only; no IPV–outcome claims made.
+
+[2026-06-24T16:00:25+0800] Task: Codex review for RQ007, RQ008, RQ010, RQ011, and RQ012 study results.
+Status: completed.
+Outcome: Reviewed the current study packages and existing knowledge-layer materials for RQ007/RQ008/RQ010/RQ011/RQ012. Wrote evidence-boundary Codex reviews under each corresponding reports/knowledge RQ directory, separating carry-forward claims from rejected/deferred claims and noting missing/stale decision or traceability surfaces.
+Artifacts: reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/reviews/codex_review.md; reports/knowledge/RQ008_interhub_temporal_ipv_discovery/reviews/codex_review.md; reports/knowledge/RQ010_wod_e2e_tracking_feasibility/reviews/codex_review.md; reports/knowledge/RQ011_onsite_full_universe_readiness/reviews/codex_review.md; reports/knowledge/RQ012_onsite_event_annotation_readiness/reviews/codex_review.md.
+Verification: rg confirmed review headers/status lines for all five files; git diff --check passed for the new review files and START_HERE.md.
+Maintenance: START_HERE.md updated with RQ007/RQ008/RQ010/RQ011 active paths, report entries, latest review packets, and current weak-spot boundaries.
+
+[2026-06-24T17:50:20+0800] Task: Organize local research/report updates and push to remote.
+Status: completed pending push at log time.
+Outcome: Prepared local updates covering cmux-backed macOS launchers, RQ011A complete-data readiness report/status updates, RQ007/RQ008/RQ010/RQ011/RQ012 knowledge review packets, START_HERE/STUDIES/progress registry maintenance, and knowledge-layer wording fixes so missing decision.md files are not described as frozen decisions.
+Verification: git diff --check passed; zsh -n passed for both launcher scripts; python3 -m unittest tests.test_shortcut_scripts -q passed; RQ011 execution_status.json parsed with python3 -m json.tool.
+Maintenance: START_HERE.md reflects current RQ007/RQ008/RQ010/RQ011/RQ012 paths, report entries, review packets, launcher behavior, and weak-spot boundaries.

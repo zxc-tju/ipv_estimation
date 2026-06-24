@@ -2,6 +2,7 @@
 
 PROJECT_DIR="/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation"
 CLI_COMMAND="codex"
+CMUX_SUBCOMMAND="codex-teams"
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$HOME/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$PATH"
 
@@ -29,6 +30,18 @@ cd "$PROJECT_DIR" || {
   exit 1
 }
 
+if ! command -v cmux >/dev/null 2>&1; then
+  echo "没有找到 cmux 命令。"
+  echo "请确认 cmux 已安装，并且能在普通终端中直接运行：cmux"
+  echo
+  echo "当前目录：$PWD"
+  echo "当前 PATH：$PATH"
+  echo
+  echo "按回车关闭这个窗口。"
+  read -r _
+  exit 127
+fi
+
 if ! command -v "$CLI_COMMAND" >/dev/null 2>&1; then
   echo "没有找到 $CLI_COMMAND 命令。"
   echo "请确认 Codex CLI 已安装，并且能在普通终端中直接运行：$CLI_COMMAND"
@@ -42,6 +55,6 @@ if ! command -v "$CLI_COMMAND" >/dev/null 2>&1; then
 fi
 
 echo "已进入项目：$PWD"
-echo "启动 $CLI_COMMAND ..."
+echo "通过 cmux 启动 $CLI_COMMAND ..."
 echo
-exec "$CLI_COMMAND"
+exec cmux "$CMUX_SUBCOMMAND"

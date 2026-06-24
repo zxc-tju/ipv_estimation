@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-06-23.
+Last reviewed: 2026-06-24.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the research
@@ -31,9 +31,10 @@ question index in `STUDIES.md`.
 
 - macOS double-click Terminal launchers live at
   `scripts/launch_claude.command` and `scripts/launch_codex.command`.
-- Each launcher enters this project root, then starts the corresponding CLI.
-  If the CLI command is missing, the Terminal window stays open with the
-  current directory and PATH for diagnosis.
+- Each launcher enters this project root, then starts the corresponding CLI via
+  `cmux codex-teams` or `cmux claude-teams`. If `cmux` or the CLI command is
+  missing, the Terminal window stays open with the current directory and PATH
+  for diagnosis.
 
 ## Canonical Knowledge And Report Paths
 
@@ -59,6 +60,10 @@ question index in `STUDIES.md`.
 | RQ004 IPV state space | `reports/studies/RQ004_ipv_state_space/` | `reports/knowledge/RQ004_ipv_state_space/` |
 | RQ005 NMI evidence gap | `reports/studies/RQ005_nmi_evidence_gap/` | `reports/knowledge/RQ005_nmi_evidence_gap/` |
 | RQ006 sigma sensitivity | `reports/studies/RQ006_sigma_sensitivity/` | `reports/knowledge/RQ006_sigma_sensitivity/` |
+| RQ007 interaction-conditioned IPV estimability | `reports/studies/RQ007_interaction_conditioned_ipv_estimability/` | `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/` |
+| RQ008 InterHub temporal IPV discovery | `reports/studies/RQ008_interhub_temporal_ipv_discovery/` | `reports/knowledge/RQ008_interhub_temporal_ipv_discovery/` |
+| RQ010 WOD-E2E tracking feasibility | `reports/studies/RQ010_wod_e2e_tracking_feasibility/` | `reports/knowledge/RQ010_wod_e2e_tracking_feasibility/` |
+| RQ011 onsite full-universe readiness | `reports/studies/RQ011_onsite_full_universe_readiness/` | `reports/knowledge/RQ011_onsite_full_universe_readiness/` |
 | RQ012 onsite event annotation readiness | `reports/studies/RQ012_onsite_event_annotation_readiness/` | `reports/knowledge/RQ012_onsite_event_annotation_readiness/` |
 
 For parallel agent runs under one RQ, use execution names like
@@ -98,10 +103,23 @@ the execution version.
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_5_nsfc_open_explore_codex_20260619/00_entry/index.html`
 - RQ003 Tier B NSFC IPV validation final reader:
   `reports/studies/RQ003_nsfc_external_evidence/RQ003_6_nsfc_ipv_validation_codex_20260620T160628+0800_fbd2d3f0/00_entry/index.html`
+- RQ007 interaction-conditioned IPV estimability report (development/guard estimability boundary;
+  final study review PASS, but knowledge `decision.md` is missing):
+  `reports/studies/RQ007_interaction_conditioned_ipv_estimability/RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/00_entry/index.html`
+- RQ008 InterHub temporal IPV discovery report (negative discovery-only result;
+  0/24 candidates survived, confirmation split remains unopened):
+  `reports/studies/RQ008_interhub_temporal_ipv_discovery/RQ008_1_temporal_ipv_discovery_20260622T234914+0800_3e3e776a/00_entry/index.html`
+- RQ010 WOD-E2E tracking feasibility report (`T2_FULL_TRACKING_REQUIRED`;
+  Route 4 preferred, Route 5 fallback, HPC blocked pending access):
+  `reports/studies/RQ010_wod_e2e_tracking_feasibility/RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e/00_entry/index.html`
 - RQ012A OnSite event annotation readiness Wave-A package (9 automatic events;
   gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans,
   012B blocked; `BLOCKED_FOR_HUMAN_LABELS`, not full PASS):
   `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`
+- RQ011A OnSite full-universe readiness (re-run on complete data; `READY_WITH_FROZEN_EXCLUSIONS`:
+  outcome universe full 300 / replay 285 with T19 excluded; run-level & repeated-run not identifiable
+  by design; supersedes the suspended RQ011_1 incomplete-data run):
+  `reports/studies/RQ011_onsite_full_universe_readiness/RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5/90_report/index.html`
 
 ## Latest Review Packets
 
@@ -115,6 +133,16 @@ the execution version.
   `reports/knowledge/RQ005_nmi_evidence_gap/reviews/codex_review.md`
 - RQ006 Codex review:
   `reports/knowledge/RQ006_sigma_sensitivity/reviews/codex_review.md`
+- RQ007 Codex review:
+  `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/reviews/codex_review.md`
+- RQ008 Codex review:
+  `reports/knowledge/RQ008_interhub_temporal_ipv_discovery/reviews/codex_review.md`
+- RQ010 Codex review:
+  `reports/knowledge/RQ010_wod_e2e_tracking_feasibility/reviews/codex_review.md`
+- RQ011 Codex review:
+  `reports/knowledge/RQ011_onsite_full_universe_readiness/reviews/codex_review.md`
+- RQ012 Codex review:
+  `reports/knowledge/RQ012_onsite_event_annotation_readiness/reviews/codex_review.md`
 
 These review packets are evidence-boundary reviews, not accepted
 `decision.md` freezes.
@@ -159,3 +187,9 @@ These review packets are evidence-boundary reviews, not accepted
   state-space law; RQ005 supports a verifier framework/gap record, not deployed
   early warning or planner performance; RQ006 supports sigma=0.1 as the healthier
   current source, while sigma remains a numeric sensitivity boundary.
+- RQ007 supports an estimability/measurement boundary, not causal interaction
+  timing or held-out confirmation; RQ008 supports a negative directional
+  temporal-discovery result, not proof that all temporal dynamics are absent.
+- RQ010 is feasibility-only and requires full tracking before WOD-E2E IPV use;
+  RQ011 separates full_300 outcomes from clean_285 replay/IPV surfaces; RQ012 is
+  annotation-readiness only and remains blocked for human labels.

@@ -6,8 +6,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = ROOT / "scripts"
 SCRIPT_SPECS = {
-    "launch_claude.command": "claude",
-    "launch_codex.command": "codex",
+    "launch_claude.command": ("claude", "claude-teams"),
+    "launch_codex.command": ("codex", "codex-teams"),
 }
 
 
@@ -23,17 +23,19 @@ class ShortcutScriptTests(unittest.TestCase):
             )
 
     def test_shortcut_scripts_cd_to_project_before_starting_cli(self):
-        for script_name, cli_command in SCRIPT_SPECS.items():
+        for script_name, (cli_command, cmux_subcommand) in SCRIPT_SPECS.items():
             script_path = SCRIPTS_DIR / script_name
             script_text = script_path.read_text(encoding="utf-8")
 
             self.assertTrue(script_text.startswith("#!/bin/zsh"))
             self.assertIn(f'PROJECT_DIR="{ROOT}"', script_text)
             self.assertIn(f'CLI_COMMAND="{cli_command}"', script_text)
+            self.assertIn(f'CMUX_SUBCOMMAND="{cmux_subcommand}"', script_text)
+            self.assertIn("command -v cmux", script_text)
             self.assertIn('command -v "$CLI_COMMAND"', script_text)
             self.assertLess(
                 script_text.index('cd "$PROJECT_DIR"'),
-                script_text.index('exec "$CLI_COMMAND"'),
+                script_text.index('exec cmux "$CMUX_SUBCOMMAND"'),
             )
             self.assertIn("按回车关闭这个窗口", script_text)
 

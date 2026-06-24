@@ -4,7 +4,26 @@
   "plan_sha256": "13142fc4ebdb8636ec099323e04e1428a09ac91a2399aa8b321f83cd5e6d3e10",
   "created_at": "2026-06-23T20:14:15+08:00",
   "canonical_data_root": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset",
-  "readiness_status": "PENDING",
+  "readiness_status": "READY_WITH_FROZEN_EXCLUSIONS",
+  "scope_boundaries": [
+    "run_level_not_identifiable",
+    "no_repeated_runs"
+  ],
+  "frozen_exclusions": [
+    "T19"
+  ],
+  "exclusion_scope": "replay_only",
+  "outcome_universe": "full_300",
+  "replay_universe": "clean_285",
+  "selection_caveat": "moderate residual replay bias: excluding T19 lowers replay collision rate to ~8.4% vs 11.0% full",
+  "rt10_fix": {
+    "worker_id": "statusfix3",
+    "applied_at": "2026-06-24T09:34:12+08:00",
+    "status": "applied",
+    "decision": "run_level_claims_allowed=false is a scope boundary, not a terminal final-status leaf, when matched_scenario_feasible=true and frozen exclusions are supported.",
+    "corrected_leaf": "READY_WITH_FROZEN_EXCLUSIONS",
+    "pi_authorized_correction_applied": true
+  },
   "phases": {
     "0": {
       "status": "complete",
@@ -16,43 +35,53 @@
       "source_run": "RQ011_1_onsite_readiness_20260623T104838+0800_20aaee57"
     },
     "2": {
-      "status": "pending"
+      "status": "complete"
     },
     "3": {
-      "status": "pending"
+      "status": "complete"
     },
     "4": {
-      "status": "pending"
+      "status": "complete"
     },
     "5": {
-      "status": "pending"
+      "status": "complete"
     },
     "6": {
-      "status": "pending"
+      "status": "complete"
     },
     "7": {
-      "status": "pending"
+      "status": "complete"
     },
     "8": {
-      "status": "pending"
+      "status": "complete",
+      "mode": "corrected-universe missingness/selection re-check",
+      "summary": "Corrected universe uses full_300 outcome cells and clean_285 replay cells; T19 is the single replay-only exclusion; residual replay bias is moderate."
     },
     "9": {
-      "status": "pending"
+      "status": "complete",
+      "mode": "corrected final readiness status",
+      "summary": "Final status recomputed as READY_WITH_FROZEN_EXCLUSIONS with run-level and repeated-run limitations recorded as scope boundaries."
     },
     "10": {
-      "status": "pending"
+      "status": "complete",
+      "mode": "red-team review",
+      "summary": "RT10 identified the imported decision-tree precedence defect; RT03, RT04, and RT06 remain documented nonblocking caveats."
     },
     "11": {
-      "status": "pending"
+      "status": "complete",
+      "mode": "statusfix3 RT10 amendment",
+      "summary": "Decision-tree precedence amended without adding or renaming leaves; final readiness leaf recomputed on the corrected full_300 outcome / clean_285 replay universe."
     },
     "12": {
-      "status": "pending"
+      "status": "complete"
     },
     "13": {
-      "status": "pending"
+      "status": "complete"
     },
     "14": {
-      "status": "pending"
+      "status": "complete"
     }
-  }
+  },
+  "overall_status": "complete",
+  "completed_at": "2026-06-24T12:45:00+08:00"
 }
