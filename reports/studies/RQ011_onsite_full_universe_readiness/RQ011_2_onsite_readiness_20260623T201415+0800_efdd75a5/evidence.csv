@@ -1,1 +1,7 @@
-evidence_id,phase,claim_or_check,unit,status,source_path,source_locator,method,value,uncertainty,notes
+evidence_id,claim_or_check,unit,status,source_path,source_locator,method,value,uncertainty,notes
+RQ011-EV-UNIT,Primary analysis unit is algorithm×scenario (matched scenario),unit,accepted,02_process/08_analysis_unit/analysis_unit_decision.md,chosen_unit,readiness-decision,algorithm×scenario,low,backfilled 2026-06-24 from process files by knowledge integrator
+RQ011-EV-OUTCOME,Outcome universe full_300 (20 teams x 15 scenarios; official score/collision/deduction),cells,accepted,02_process/08_analysis_unit/analysis_unit_decision.md,outcome_universe,inventory,300,none,no outcome-side exclusion
+RQ011-EV-REPLAY,Replay/IPV universe clean_285 (T19 excluded replay-only),cells,accepted,02_process/08_analysis_unit/analysis_unit_decision.md,replay_universe,inventory,285,moderate-selection-bias,no unique T19-owned vehicle-3190 replay/session
+RQ011-EV-COLLISIONS,Collision counts across universes,collisions,accepted,90_report/index.html,diagnostic_pdfs,count,full_300=33;replay_285=24;T19=9of15,none,replay collision rate ~8.4% vs 11.0% full
+RQ011-EV-IDENT,Run-level/repeated-run/seed/causal effects not identifiable,identifiability,accepted,02_process/08_analysis_unit/analysis_unit_decision.md,identifiability_boundary,readiness-decision,not_identifiable,none,one official autonomous run per team
+RQ011-EV-READINESS,Final readiness leaf,status,accepted,execution_status.json,readiness_status,red-team+replication(full)+final-review PASS,READY_WITH_FROZEN_EXCLUSIONS,none,PI-authorized RT10 re-grade; supersedes suspended RQ011_1

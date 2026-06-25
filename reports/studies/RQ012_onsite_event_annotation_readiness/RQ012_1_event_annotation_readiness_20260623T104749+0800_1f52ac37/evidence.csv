@@ -1,1 +1,8 @@
 evidence_id,claim,gate,artifact_path,status,notes
+RQ012-EV-G0,Provenance/identity gate passed,012-0,execution_status.json,pass,backfilled 2026-06-24 from process files by knowledge integrator
+RQ012-EV-G1,Event ontology/codebook ready (automatic vs human-only vs removed events separated),012-1,01_results/annotator_training_package/README.md,pass,construct-proximal labels secondary only
+RQ012-EV-G2,Neutral text/media issuance surfaces cleared,012-2,90_report/index.html,text_issuance_cleared,backfilled
+RQ012-EV-G3,Annotation pipeline ready,012-3,execution_status.json,ready,was ready_pending_humans; human path now deprecated
+RQ012-EV-AUTOEVENTS,Automatic event extractor (9 events) computable without humans,012-1,02_process/08_merge_tests/fixtures/README.md,pass,extractor health only; not outcomes
+RQ012-EV-HUMANLABELS,Two-human blind annotation,012B,execution_status.json,DEPRECATED_PI_2026-06-24,PI decision: drop human blind annotation; consequence reference = automatic events + OnSite official outcomes; human alignment via WOD + InterHub
+RQ012-EV-NOLABELS,No simulated or real human labels present,012B,execution_status.json,confirmed,human_labels_present=false

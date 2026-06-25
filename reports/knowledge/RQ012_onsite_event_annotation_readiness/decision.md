@@ -1,32 +1,36 @@
 # RQ012 Decision: OnSite Event Annotation Readiness
 
-Status: BLOCKED_FOR_HUMAN_LABELS — Wave-A annotation readiness accepted as a protocol/scaffold; substantive event-annotation evidence DEFERRED (knowledge-layer freeze of the deferral, human-directed 2026-06-24).
+Status: ACCEPTED — scope revised by PI 2026-06-24. Automatic-event readiness accepted; **two-human blind annotation DEPRECATED (not pursued).** Consequence/behaviour reference will use automatic events + OnSite official outcomes; human alignment is relocated to WOD-E2E preference + InterHub.
 
 Run ID: `RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37`
 Plan SHA-256: `921f6bb3b850126189895dcca52f054a1c6f5e95a16b05159bec0a13c26ad77e`
-Basis for freeze: final review PASS (offline report, links/figure provenance, no simulated labels, no event-IPV association, explicit blocked boundary); `reviews/claude_review.md` and `reviews/codex_review.md` both concur. Frozen at PI direction.
+Basis: final review PASS; `reviews/claude_review.md` + `reviews/codex_review.md`; PI decision 2026-06-24 to drop human blind annotation.
 
-## Accepted Claims (readiness only)
+## PI Decision (2026-06-24): drop human blind annotation
+
+The two-human blinded annotation (convergent human-judgment leg) is **deprecated**. Rationale: it was the optional convergent-validity leg; the program retains two stronger, already-available signals — WOD-E2E released human preference scores (human alignment) and OnSite official rankings/scores/collisions/deductions (objective criterion + consequence). A 2-annotator study is weak/slow evidence; automatic event extraction covers event-aligned analysis without humans.
+
+Coupling condition (noted): with annotation dropped, the human-alignment leg rests on **WOD-E2E (RQ010) + InterHub**; this raises the importance of RQ010B (now authorized).
+
+## Accepted Claims (readiness)
 
 | ID | Claim |
 |---|---|
-| RQ012-KC-READINESS | Wave-A annotation readiness: Gates 012-0/012-1 pass; 012-2 text/surface-cleared; 012-3 ready-pending-humans; **012B blocked**. A blinded, outcome-free event-labeling design and extractor-readiness checks exist. |
-| RQ012-KC-NO-LABELS | No simulated/real labels were introduced (`human_labels_present=false`; blank templates). No event-IPV, event-score, event-rank, or team-identity association is computed or claimed. |
-| RQ012-KC-CODEBOOK | The codebook separates automatic, human-only, and removed events; construct-proximal labels are secondary only. The automatic pilot is extractor/data-health evidence only (computability, counts, precedence suppression, sampling-rate sensitivity). |
+| RQ012-KC-READINESS | Gates 012-0/012-1 pass; 012-2 text/surface-cleared; 012-3 ready. The blinded, outcome-free event design and extractor-readiness checks exist. |
+| RQ012-KC-AUTOEVENTS | The automatic event extractor (9 events; precedence/identity guards) is computable without humans — usable for event-aligned analysis (extractor health only, not outcomes). |
+| RQ012-KC-CODEBOOK | The codebook separates automatic, human-only, and removed events; construct-proximal labels are secondary. |
 
-## Deferred / Blocked Claims
+## Deprecated / Not Pursued
 
-| Claim | Reason |
+| Item | Disposition |
 |---|---|
-| Behavioural validation; event-IPV / event-outcome association; event-rate generalization | No human labels; blocked by design. |
-| Human annotation complete | Two accepted independent labels + kappa + AC1 still required. |
-| Automatic event counts as scientific outcomes | Pilot shows extractor stability/weaknesses only. |
-| Construct-proximal labels (aggressive intrusion, appropriate assertiveness, over-yielding freeze) as primary endpoints | Secondary-only by design. |
+| Two real human blind labels + kappa/AC1 agreement | DEPRECATED (PI 2026-06-24); Gate 012B closed as not-pursued. |
+| Human-only events as primary endpoints | Dropped; use automatic events + official outcomes instead. |
 
-## Gate 012B Dependencies (all required before opening)
+## Downstream Effect
 
-Real two-human blinded labels + kappa/AC1 agreement; final neutral media/card issuance; auditor sign-off; upstream freezes RQ007 (now frozen), RQ011 (now frozen), and RQ009 (still pending); explicit Gate 012B authorization.
+RQ012B (event-aligned harm) is reframed to **automatic events + OnSite official outcomes** (no human labels). This removes the human-label dependency from RQ012B and RQ013 (beyond-safety). `evidence.csv` back-filled 2026-06-24.
 
 ## Paper Handoff
 
-Usable only as a protocol/scaffold and a readiness statement; NOT as evidence of event/harm annotation or interaction-consequence measurement. Prepares the behaviour/consequence reference for RQ012B and RQ013; cannot advance without the dependencies above. Note: `evidence.csv` is header-only — populate when 012B runs.
+OnSite consequence/realised-deficit evidence = automatic events + official collisions/scores/deductions (objective). Do NOT claim a human-judgment convergent leg from OnSite; human alignment is carried by WOD-E2E preference + InterHub.
