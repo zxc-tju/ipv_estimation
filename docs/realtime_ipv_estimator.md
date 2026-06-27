@@ -23,28 +23,51 @@ with RealtimeIPVEstimator.for_realtime_sign(
 ```
 
 This uses the named five-candidate grid
-`SIGN_REALTIME_CANDIDATE_IPV_VALUES = [-3, -1, 0, 1, 3] * pi / 8`, keeps the
-accurate SLSQP solver, and batches both agents' candidate optimizations into
-one persistent worker pool call per frame.
+`SIGN_REALTIME_CANDIDATE_IPV_VALUES = [-3, -1, 0, 1, 3] * pi / 8`, the fixed
+vectorized cost backend, and realtime SLSQP options (`maxiter=8`, `ftol=1e-2`).
+The estimator keeps a persistent worker pool for non-exact modes.
 
-Use the seven-candidate `parallel_accurate` path when IPV value fidelity matters
-more than strict latency:
+Use seven-candidate `solver_mode="fast"` when IPV value fidelity matters more
+than strict latency:
 
 ```python
 with RealtimeIPVEstimator(
     history_window=10,
-    solver_preset="parallel_accurate",
+    solver_mode="fast",
     max_workers=20,
 ) as estimator:
     ipv, err = estimator.estimate_current(primary_sequence, counterpart_sequence)
 ```
 
-`parallel_accurate` keeps the accurate SLSQP settings and the legacy seven IPV
-candidates. This is the accuracy-preserving path.
+`fast` keeps the legacy seven IPV candidates and SLSQP defaults while using the
+vectorized backend fixed to match exact mode. The deprecated
+`solver_preset="parallel_accurate"` alias maps to this mode and enables
+candidate parallelism for one-off calls.
 
-For one-off calls, `estimate_ipv_current()` now defaults to `parallel_accurate`.
-For sustained loops, prefer `RealtimeIPVEstimator` so worker processes are
-reused across frames.
+For one-off calls, `estimate_ipv_current()` now defaults to `solver_mode="exact"`
+for sigma01 parity. For sustained loops, prefer `RealtimeIPVEstimator` so worker
+processes are reused across frames.
+
+## Sigma01 Parity Regression
+
+The compact parity test is environment-aware:
+
+- `fast` must match `exact` strictly (`1e-10`) on the fixture cases.
+- Local `exact` must match `tests/fixtures/ipv_exact_local_golden.json`
+  strictly (`1e-10`).
+- Local `exact` must stay within a documented loose sigma01 sanity bound
+  (`0.1`); the observed macOS arm64 venv drift is about `0.0587`.
+- Strict `exact` versus sigma01 bit parity (`1e-12`) is gated behind
+  `RQ_IPV_PARITY_STRICT=1` and should only be enabled in the sigma01 generation
+  environment.
+
+IPV bit-exact reproducibility of sigma01 requires the generation environment
+(HPC / pinned scipy). Locally, exact mode can differ by roughly `0.06` due to
+SLSQP/scipy/platform behavior even when the unchanged legacy loop is run.
+Therefore `fast==exact` and `exact==local-golden` are the local regression
+guards, while the sigma01 check is a cross-environment sanity bound unless run
+on the pinned HPC stack. The strict HPC check previously passed at max diff
+`4.44e-16`.
 
 ## Validation Snapshot
 

@@ -1,0 +1,160 @@
+{
+  "description": "Current local-venv exact-mode golden for IPV estimator parity tests. This fixture is intentionally separate from the sigma01 HPC reference because SLSQP/scipy/platform changes move exact-mode results locally.",
+  "source_fixture": "tests/fixtures/ipv_estimator_parity_fixture.json",
+  "source_reference": "RQ009 sigma01 parity sample compact fixture generated read-only on tongji-hpc from hpc_hw4 outputs and pkl-derived references",
+  "generated_on": "2026-06-27",
+  "generated_with": {
+    "python": "3.9.6",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "numpy": "2.0.2",
+    "scipy": "1.13.1",
+    "solver_mode": "exact",
+    "py_command": "PYTHONPATH=\"$(pwd)/src\" /Users/xiaocong/.rq009_codex_fleet/venv/bin/python"
+  },
+  "history_window": 4,
+  "min_observation": 4,
+  "cases": [
+    {
+      "case_index": 0,
+      "exact_ipv": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.082623865423377,
+          0.8154697568341347
+        ],
+        [
+          0.41474712051684737,
+          1.0695608579906268
+        ],
+        [
+          0.020665095848950578,
+          0.21357039096098884
+        ],
+        [
+          0.08821348315349259,
+          -0.1590575681929311
+        ]
+      ],
+      "exact_error": [
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          0.17008342013193944,
+          0.4237669314839748
+        ],
+        [
+          0.5616707245567706,
+          0.08148060482815334
+        ],
+        [
+          0.5053979291693059,
+          0.5907738390241686
+        ],
+        [
+          0.6182832176022954,
+          0.5918518471835137
+        ]
+      ]
+    },
+    {
+      "case_index": 1,
+      "exact_ipv": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.15099224069374734,
+          0.0
+        ],
+        [
+          0.022554558666009555,
+          -1.0701863751731489
+        ],
+        [
+          -0.12054778252900862,
+          -1.1573321652596447
+        ],
+        [
+          0.044541448540101974,
+          -1.0429418835938589
+        ]
+      ],
+      "exact_error": [
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          0.613407339595041,
+          0.6220355269907728
+        ],
+        [
+          0.6217708763370158,
+          0.19404593547218418
+        ],
+        [
+          0.6165693887012522,
+          0.05140288170456875
+        ],
+        [
+          0.6212164556414405,
+          0.21380329072375437
+        ]
+      ]
+    }
+  ]
+}

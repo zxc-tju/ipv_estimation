@@ -61,6 +61,35 @@ MAX_JERK = 2.0
 # initial guess on interacting agent's IPV
 INITIAL_IPV_GUESS = 0
 virtual_agent_IPV_range = np.array([-3, -2, -1, 0, 1, 2, 3]) * math.pi / 8
+realtime_agent_IPV_range = np.array([-3, -1, 0, 1, 3]) * math.pi / 8
+
+SOLVER_MODE_OPTIONS = {
+    "exact": None,
+    "fast": None,
+    "realtime": {"maxiter": 8, "ftol": 1e-2},
+}
+SOLVER_PRESET_ALIASES = {
+    "accurate": {
+        "solver_mode": "exact",
+        "solver_options": None,
+        "parallel_candidates": False,
+    },
+    "parallel_accurate": {
+        "solver_mode": "fast",
+        "solver_options": None,
+        "parallel_candidates": True,
+    },
+    "balanced": {
+        "solver_mode": "fast",
+        "solver_options": {"maxiter": 20, "ftol": 1e-3},
+        "parallel_candidates": False,
+    },
+    "realtime": {
+        "solver_mode": "realtime",
+        "solver_options": None,
+        "parallel_candidates": False,
+    },
+}
 
 # likelihood function
 sigma = 0.1
@@ -81,6 +110,66 @@ def _prepare_reference(target, origin_point, ref):
     return smooth_ployline(ref)
 
 
+def resolve_ipv_solver_settings(
+    solver_mode="exact",
+    solver_preset=None,
+    solver_options=None,
+):
+    """Resolve the public IPV solver selector and deprecated preset aliases."""
+    mode = solver_mode or "exact"
+    if solver_preset is not None:
+        if solver_preset not in SOLVER_PRESET_ALIASES:
+            allowed = ", ".join(sorted(SOLVER_PRESET_ALIASES))
+            raise ValueError(
+                f"Unknown solver_preset {solver_preset!r}; expected one of: {allowed}."
+            )
+        alias = SOLVER_PRESET_ALIASES[solver_preset]
+        alias_mode = alias["solver_mode"]
+        if mode not in ("exact", alias_mode):
+            raise ValueError(
+                "solver_mode and deprecated solver_preset conflict: "
+                f"{mode!r} vs preset {solver_preset!r} -> {alias_mode!r}."
+            )
+        warnings.warn(
+            "solver_preset is deprecated; use solver_mode="
+            f"{alias_mode!r} instead.",
+            FutureWarning,
+            stacklevel=3,
+        )
+        mode = alias_mode
+        mode_options = alias["solver_options"]
+    else:
+        mode_options = SOLVER_MODE_OPTIONS.get(mode)
+
+    if mode not in SOLVER_MODE_OPTIONS:
+        allowed = ", ".join(sorted(SOLVER_MODE_OPTIONS))
+        raise ValueError(f"Unknown solver_mode {mode!r}; expected one of: {allowed}.")
+
+    if mode_options is None:
+        mode_options = SOLVER_MODE_OPTIONS[mode]
+    resolved = {} if mode_options is None else dict(mode_options)
+    if solver_options:
+        resolved.update(solver_options)
+    return mode, (resolved or None)
+
+
+def resolve_ipv_candidate_values(solver_mode="exact", candidate_ipv_values=None):
+    if candidate_ipv_values is not None:
+        return np.asarray(candidate_ipv_values, dtype=float)
+    if solver_mode == "realtime":
+        return realtime_agent_IPV_range
+    return virtual_agent_IPV_range
+
+
+def _cost_backend_for_solver_mode(solver_mode):
+    if solver_mode == "exact":
+        return cal_individual_cost, cal_group_cost
+    if solver_mode in {"fast", "realtime"}:
+        return _cal_individual_cost_vectorized, _cal_group_cost_vectorized
+    allowed = ", ".join(sorted(SOLVER_MODE_OPTIONS))
+    raise ValueError(f"Unknown solver_mode {solver_mode!r}; expected one of: {allowed}.")
+
+
 def _solve_candidate_ipv_track(task):
     candidate_agent = Agent(
         np.array(task["position"], copy=True),
@@ -96,19 +185,24 @@ def _solve_candidate_ipv_track(task):
     candidate_agent.reference = task["reference"]
     candidate_agent.ipv = task["ipv"]
     solver_options = task["solver_options"]
+    solver_mode = task.get("solver_mode", "exact")
     if solver_options is None:
-        virtual_track = candidate_agent.solve_optimization(task["inter_track"])
+        virtual_track = candidate_agent.solve_optimization(
+            task["inter_track"],
+            solver_mode=solver_mode,
+        )
     else:
         virtual_track = candidate_agent.solve_optimization(
             task["inter_track"],
             solver_options=solver_options,
+            solver_mode=solver_mode,
         )
     return virtual_track[:, 0:2]
 
 
 def _resolve_candidate_ipv_values(candidate_ipv_values=None):
     if candidate_ipv_values is None:
-        return virtual_agent_IPV_range
+        return resolve_ipv_candidate_values("exact")
     return np.asarray(candidate_ipv_values, dtype=float)
 
 
@@ -117,6 +211,7 @@ def _build_candidate_ipv_tasks(
     inter_track,
     solver_options,
     candidate_ipv_values=None,
+    solver_mode="exact",
 ):
     ipv_range = _resolve_candidate_ipv_values(candidate_ipv_values)
     return [
@@ -130,6 +225,7 @@ def _build_candidate_ipv_tasks(
             "ipv": ipv_temp,
             "inter_track": inter_track,
             "solver_options": solver_options,
+            "solver_mode": solver_mode,
         }
         for ipv_temp in ipv_range
     ]
@@ -142,8 +238,9 @@ def _apply_candidate_ipv_tracks(
     *,
     return_details=False,
     candidate_ipv_values=None,
+    solver_mode="exact",
 ):
-    ipv_range = _resolve_candidate_ipv_values(candidate_ipv_values)
+    ipv_range = resolve_ipv_candidate_values(solver_mode, candidate_ipv_values)
     for track_xy in virtual_tracks_recent:
         subject.virtual_track_collection.append(track_xy)
 
@@ -597,7 +694,7 @@ class Agent:
             if count_iter > iter_limit:  # limited to less than 10 iterations
                 break
 
-    def solve_optimization(self, inter_track, *, solver_options=None):
+    def solve_optimization(self, inter_track, *, solver_options=None, solver_mode="exact"):
         """
         Solve optimization to output best solution given interacting counterpart's track
         非线性轨迹博弈中的优化问题定义
@@ -625,7 +722,7 @@ class Agent:
         bds = bds_acc + bds_str
 
         # 非线性效用函数
-        fun = utility_fun(self_info, inter_track)  # objective function
+        fun = utility_fun(self_info, inter_track, solver_mode=solver_mode)  # objective function
 
         minimize_kwargs = {
             "bounds": bds,
@@ -675,6 +772,8 @@ class Agent:
         inter_track,
         *,
         return_details=False,
+        solver_mode="exact",
+        solver_preset=None,
         solver_options=None,
         candidate_executor=None,
         candidate_ipv_values=None,
@@ -688,12 +787,23 @@ class Agent:
 
         """
 
+        solver_mode, resolved_solver_options = resolve_ipv_solver_settings(
+            solver_mode=solver_mode,
+            solver_preset=solver_preset,
+            solver_options=solver_options,
+        )
+        resolved_candidate_ipv_values = resolve_ipv_candidate_values(
+            solver_mode,
+            candidate_ipv_values,
+        )
+
         # plt.plot(self_actual_track[:, 0], self_actual_track[:, 1], color='green')
         candidate_tasks = _build_candidate_ipv_tasks(
             self,
             inter_track,
-            solver_options,
-            candidate_ipv_values,
+            resolved_solver_options,
+            resolved_candidate_ipv_values,
+            solver_mode=solver_mode,
         )
         if candidate_executor is None:
             virtual_tracks_recent = [
@@ -717,7 +827,8 @@ class Agent:
             self_actual_track,
             virtual_tracks_recent,
             return_details=return_details,
-            candidate_ipv_values=candidate_ipv_values,
+            candidate_ipv_values=resolved_candidate_ipv_values,
+            solver_mode=solver_mode,
         )
 
 
@@ -864,13 +975,13 @@ def cal_individual_cost(track, target, ref=None):
     计算个体行为相关的损失项
     """
 
+    track = np.asarray(track)
     cv, s = _prepare_reference(target, track[0, :], ref)
 
     # initialize an array to store distance from each point in the track to cv
-    track_xy = np.asarray(track)[:, 0:2]
-    cv_xy = np.asarray(cv)[:, 0:2]
-    diff = cv_xy[None, :, :] - track_xy[:, None, :]
-    dis2cv = np.sqrt(np.min(np.sum(diff * diff, axis=2), axis=1))
+    dis2cv = np.zeros([np.size(track, 0), 1])
+    for i in range(np.size(track, 0)):
+        dis2cv[i] = np.amin(np.linalg.norm(cv - track[i, 0:2], axis=1))
 
     "1. cost of travel delay"
     "行程延迟损失"
@@ -896,6 +1007,58 @@ def cal_group_cost(track_packed):
     """
     计算群体行为相关的损失项：相对速度矢量在相对位置矢量方向上的投影
     """
+    track_self, track_inter = track_packed
+    pos_rel = track_inter - track_self
+    dis_rel = np.linalg.norm(pos_rel, axis=1)
+
+    vel_self = (track_self[1:, :] - track_self[0:-1, :]) / dt
+    vel_inter = (track_inter[1:, :] - track_inter[0:-1, :]) / dt
+    vel_rel = vel_self - vel_inter
+
+    vel_rel_along_sum = 0
+    for i in range(np.size(vel_rel, 0)):
+        if dis_rel[i + 1] > 3:
+            collision_factor = 0.5
+        else:
+            collision_factor = 1.5
+        nearness_temp = collision_factor * pos_rel[i + 1, :].dot(vel_rel[i, :]) / dis_rel[i + 1]
+        # do not give reward to negative nearness (flee action)
+        vel_rel_along_sum = vel_rel_along_sum + (nearness_temp + np.abs(nearness_temp)) * 0.5
+    cost_group = vel_rel_along_sum / TRACK_LEN
+
+    # print('group cost:', cost_group)
+    return cost_group * WEIGHT_GRP
+
+
+def _cal_individual_cost_vectorized(track, target, ref=None):
+    """
+    Vectorized equivalent of ``cal_individual_cost`` for fast/realtime modes.
+    """
+
+    track = np.asarray(track)
+    cv, s = _prepare_reference(target, track[0, :], ref)
+
+    track_xy = track[:, 0:2]
+    cv_xy = np.asarray(cv)[:, 0:2]
+    diff = cv_xy[None, :, :] - track_xy[:, None, :]
+    # Match the loop backend's ``np.linalg.norm(..., axis=1)`` reduction before
+    # taking the per-track-point minimum; the algebraically equivalent
+    # sqrt(sum(square())) form can perturb SLSQP paths on older NumPy/SciPy.
+    dis2cv = np.min(np.linalg.norm(diff, axis=2), axis=1)
+
+    travel_distance = np.linalg.norm(track[-1, 0:2] - track[0, 0:2]) / np.size(track, 0)
+    cost_travel_distance = - travel_distance
+    cost_mean_deviation = max(0.2, dis2cv.mean())
+
+    cost_metric = np.array([cost_travel_distance, cost_mean_deviation])
+    cost_interior = weight_metric.dot(cost_metric.T)
+    return cost_interior * WEIGHT_INT
+
+
+def _cal_group_cost_vectorized(track_packed):
+    """
+    Vectorized equivalent of ``cal_group_cost`` for fast/realtime modes.
+    """
     track_self, track_inter = (np.asarray(track_packed[0]), np.asarray(track_packed[1]))
     pos_rel = track_inter - track_self
     dis_rel = np.linalg.norm(pos_rel, axis=1)
@@ -905,12 +1068,10 @@ def cal_group_cost(track_packed):
     vel_rel = vel_self - vel_inter
 
     collision_factor = np.where(dis_rel[1:] > 3, 0.5, 1.5)
-    nearness = collision_factor * np.sum(pos_rel[1:, :] * vel_rel, axis=1) / dis_rel[1:]
-    # do not give reward to negative nearness (flee action)
+    nearness = collision_factor * np.einsum("ij,ij->i", pos_rel[1:, :], vel_rel) / dis_rel[1:]
+    # Keep the legacy positive-part formula so fast differs only by fp order.
     vel_rel_along_sum = np.sum((nearness + np.abs(nearness)) * 0.5)
     cost_group = vel_rel_along_sum / TRACK_LEN
-
-    # print('group cost:', cost_group)
     return cost_group * WEIGHT_GRP
 
 
@@ -1009,8 +1170,9 @@ def idm_model(para, vel_self, vel_rel, gap):
     return acc
 
 
-def utility_fun(self_info, track_inter):
+def utility_fun(self_info, track_inter, *, solver_mode="exact"):
     prepared_ref = _prepare_reference(self_info[4], self_info[0], self_info[5])
+    individual_cost_fun, group_cost_fun = _cost_backend_for_solver_mode(solver_mode)
 
     def fun(u):
         """
@@ -1026,8 +1188,8 @@ def utility_fun(self_info, track_inter):
         track_info_self = bicycle_model(u, init_state_4_kine, np.size(track_inter, 0), dt)
         track_self = track_info_self[:, 0:2]
         track_all = [track_self, track_inter[:, 0:2]]
-        interior_cost = cal_individual_cost(track_self, target=self_info[4], ref=prepared_ref)
-        group_cost = cal_group_cost(track_all)
+        interior_cost = individual_cost_fun(track_self, target=self_info[4], ref=prepared_ref)
+        group_cost = group_cost_fun(track_all)
         util = np.cos(self_info[3]) * interior_cost + np.sin(self_info[3]) * group_cost
         # print('interior_cost:', interior_cost)
         # print('group_cost:', group_cost)

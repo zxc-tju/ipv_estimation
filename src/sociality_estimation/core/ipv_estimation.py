@@ -19,17 +19,18 @@ import numpy as np
 from sociality_estimation.core import agent as agent_module
 from sociality_estimation.core.agent import Agent
 
-SOLVER_PRESETS: Dict[str, Optional[Dict[str, float]]] = {
-    "accurate": None,
-    "parallel_accurate": None,
-    "balanced": {"maxiter": 20, "ftol": 1e-3},
-    "realtime": {"maxiter": 8, "ftol": 1e-2},
-}
+SOLVER_MODES = tuple(agent_module.SOLVER_MODE_OPTIONS)
+SOLVER_PRESETS = tuple(agent_module.SOLVER_PRESET_ALIASES)
 
-SIGN_REALTIME_CANDIDATE_IPV_VALUES = np.array(
-    [-3, -1, 0, 1, 3],
-    dtype=float,
-) * np.pi / 8
+SIGN_REALTIME_CANDIDATE_IPV_VALUES = agent_module.realtime_agent_IPV_range.copy()
+
+
+@dataclass(frozen=True)
+class _SolverConfig:
+    mode: str
+    solver_options: Optional[Dict[str, float]]
+    candidate_ipv_values: np.ndarray
+    auto_parallel_candidates: bool
 
 
 @dataclass
@@ -62,21 +63,36 @@ def _prepare_reference_for_repeated_use(reference):
     return agent_module.smooth_ployline(reference)
 
 
-def _resolve_solver_options(
-    solver_preset: str,
+def _resolve_solver_config(
+    solver_mode: str,
+    solver_preset: Optional[str],
     solver_options: Optional[Dict[str, float]],
-) -> Optional[Dict[str, float]]:
-    if solver_preset not in SOLVER_PRESETS:
-        allowed = ", ".join(sorted(SOLVER_PRESETS))
-        raise ValueError(
-            f"Unknown solver_preset {solver_preset!r}; expected one of: {allowed}."
+    candidate_ipv_values: Optional[Sequence[float]],
+    *,
+    max_workers: Optional[int],
+) -> _SolverConfig:
+    mode, resolved_options = agent_module.resolve_ipv_solver_settings(
+        solver_mode=solver_mode,
+        solver_preset=solver_preset,
+        solver_options=solver_options,
+    )
+    resolved_candidates = agent_module.resolve_ipv_candidate_values(
+        mode,
+        candidate_ipv_values,
+    )
+    auto_parallel = False
+    if solver_preset is not None:
+        auto_parallel = bool(
+            agent_module.SOLVER_PRESET_ALIASES[solver_preset]["parallel_candidates"]
         )
-
-    preset_options = SOLVER_PRESETS[solver_preset]
-    resolved = {} if preset_options is None else dict(preset_options)
-    if solver_options:
-        resolved.update(solver_options)
-    return resolved or None
+    elif max_workers is not None and mode in {"fast", "realtime"}:
+        auto_parallel = True
+    return _SolverConfig(
+        mode=mode,
+        solver_options=resolved_options,
+        candidate_ipv_values=resolved_candidates,
+        auto_parallel_candidates=auto_parallel,
+    )
 
 
 def _estimate_agent_ipv(
@@ -85,6 +101,7 @@ def _estimate_agent_ipv(
     inter_track: np.ndarray,
     *,
     return_details: bool,
+    solver_mode: str,
     solver_options: Optional[Dict[str, float]],
     candidate_executor=None,
     candidate_ipv_values=None,
@@ -96,6 +113,7 @@ def _estimate_agent_ipv(
         pass
     else:
         kwargs["solver_options"] = solver_options
+    kwargs["solver_mode"] = solver_mode
     if candidate_executor is not None:
         kwargs["candidate_executor"] = candidate_executor
     if candidate_ipv_values is not None:
@@ -115,6 +133,7 @@ def _estimate_agent_pair_ipv_parallel(
     *,
     return_primary_details: bool,
     return_counterpart_details: bool,
+    solver_mode: str,
     solver_options: Optional[Dict[str, float]],
     candidate_executor,
     candidate_ipv_values=None,
@@ -124,12 +143,14 @@ def _estimate_agent_pair_ipv_parallel(
         counterpart_track,
         solver_options,
         candidate_ipv_values,
+        solver_mode=solver_mode,
     )
     counterpart_tasks = agent_module._build_candidate_ipv_tasks(
         counterpart_agent,
         primary_track,
         solver_options,
         candidate_ipv_values,
+        solver_mode=solver_mode,
     )
     split_index = len(primary_tasks)
     virtual_tracks = list(
@@ -144,6 +165,7 @@ def _estimate_agent_pair_ipv_parallel(
         virtual_tracks[:split_index],
         return_details=return_primary_details,
         candidate_ipv_values=candidate_ipv_values,
+        solver_mode=solver_mode,
     )
     counterpart_details = agent_module._apply_candidate_ipv_tracks(
         counterpart_agent,
@@ -151,6 +173,7 @@ def _estimate_agent_pair_ipv_parallel(
         virtual_tracks[split_index:],
         return_details=return_counterpart_details,
         candidate_ipv_values=candidate_ipv_values,
+        solver_mode=solver_mode,
     )
     return primary_details, counterpart_details
 
@@ -163,7 +186,8 @@ def estimate_ipv_pair(
     min_observation: int = 4,
     return_diagnostics: bool = False,
     diagnostic_steps: Optional[Sequence[int]] = None,
-    solver_preset: str = "accurate",
+    solver_mode: str = "exact",
+    solver_preset: Optional[str] = None,
     solver_options: Optional[Dict[str, float]] = None,
     max_workers: Optional[int] = None,
     candidate_executor=None,
@@ -193,19 +217,23 @@ def estimate_ipv_pair(
         diagnostic_steps: Optional iterable of timestep indices to capture when
             ``return_diagnostics`` is enabled. If ``None`` every step starting
             from ``min_observation`` is recorded.
-        solver_preset: Optimizer preset. ``"accurate"`` preserves the legacy
-            SLSQP defaults; ``"balanced"`` is a conservative bounded-iteration
-            mode; ``"realtime"`` prioritises online latency; and
-            ``"parallel_accurate"`` keeps the accurate solver settings while
-            evaluating IPV candidates with a process pool.
+        solver_mode: ``"exact"`` uses the legacy loop cost backend and seven
+            IPV candidates; ``"fast"`` uses the fixed vectorized backend and
+            seven candidates; ``"realtime"`` uses the vectorized backend,
+            five candidates, and bounded SLSQP options.
+        solver_preset: Deprecated alias. ``"accurate"`` maps to ``"exact"``,
+            ``"parallel_accurate"`` maps to ``"fast"`` with an internal
+            process pool, ``"balanced"`` maps to ``"fast"`` with conservative
+            SLSQP options, and ``"realtime"`` maps to ``"realtime"``.
         solver_options: Optional SciPy SLSQP options overriding the selected
-            preset, e.g. ``{"maxiter": 20, "ftol": 1e-3}``.
-        max_workers: Optional process-pool worker count used by
-            ``"parallel_accurate"`` when no ``candidate_executor`` is supplied.
+            mode or deprecated preset, e.g. ``{"maxiter": 20, "ftol": 1e-3}``.
+        max_workers: Optional process-pool worker count for ``"fast"`` or
+            ``"realtime"`` when no ``candidate_executor`` is supplied. Deprecated
+            ``solver_preset="parallel_accurate"`` also enables this pool.
         candidate_executor: Optional executor implementing ``map`` for callers
             that want to reuse a persistent worker pool across online frames.
         candidate_ipv_values: Optional explicit IPV candidate grid. Defaults to
-            the legacy seven-candidate grid in ``agent.virtual_agent_IPV_range``.
+            the mode's grid.
 
     Returns:
         ipv_values: Array ``(T, 2)`` holding IPV for ``primary`` and ``counterpart``.
@@ -228,9 +256,15 @@ def estimate_ipv_pair(
     diag_steps = set(diagnostic_steps) if diagnostic_steps is not None else None
     primary_reference = _prepare_reference_for_repeated_use(primary.reference)
     counterpart_reference = _prepare_reference_for_repeated_use(counterpart.reference)
-    resolved_solver_options = _resolve_solver_options(solver_preset, solver_options)
+    solver_config = _resolve_solver_config(
+        solver_mode,
+        solver_preset,
+        solver_options,
+        candidate_ipv_values,
+        max_workers=max_workers,
+    )
     executor_context = nullcontext(candidate_executor)
-    if solver_preset == "parallel_accurate" and candidate_executor is None:
+    if solver_config.auto_parallel_candidates and candidate_executor is None:
         executor_context = ProcessPoolExecutor(max_workers=max_workers)
 
     with executor_context as active_candidate_executor:
@@ -266,16 +300,18 @@ def estimate_ipv_pair(
                     primary_track,
                     counterpart_track,
                     return_details=collect_primary,
-                    solver_options=resolved_solver_options,
-                    candidate_ipv_values=candidate_ipv_values,
+                    solver_mode=solver_config.mode,
+                    solver_options=solver_config.solver_options,
+                    candidate_ipv_values=solver_config.candidate_ipv_values,
                 )
                 counter_details = _estimate_agent_ipv(
                     counterpart_agent,
                     counterpart_track,
                     primary_track,
                     return_details=collect_counter,
-                    solver_options=resolved_solver_options,
-                    candidate_ipv_values=candidate_ipv_values,
+                    solver_mode=solver_config.mode,
+                    solver_options=solver_config.solver_options,
+                    candidate_ipv_values=solver_config.candidate_ipv_values,
                 )
             else:
                 primary_details, counter_details = _estimate_agent_pair_ipv_parallel(
@@ -285,9 +321,10 @@ def estimate_ipv_pair(
                     counterpart_track,
                     return_primary_details=collect_primary,
                     return_counterpart_details=collect_counter,
-                    solver_options=resolved_solver_options,
+                    solver_mode=solver_config.mode,
+                    solver_options=solver_config.solver_options,
                     candidate_executor=active_candidate_executor,
-                    candidate_ipv_values=candidate_ipv_values,
+                    candidate_ipv_values=solver_config.candidate_ipv_values,
                 )
             if not collect_primary:
                 primary_details = None
@@ -341,7 +378,8 @@ def estimate_ipv_current(
     *,
     history_window: int = 10,
     return_diagnostics: bool = False,
-    solver_preset: str = "parallel_accurate",
+    solver_mode: str = "exact",
+    solver_preset: Optional[str] = None,
     solver_options: Optional[Dict[str, float]] = None,
     max_workers: Optional[int] = None,
     candidate_executor=None,
@@ -373,6 +411,7 @@ def estimate_ipv_current(
         min_observation=steps - 1,
         return_diagnostics=return_diagnostics,
         diagnostic_steps=[steps - 1] if return_diagnostics else None,
+        solver_mode=solver_mode,
         solver_preset=solver_preset,
         solver_options=solver_options,
         max_workers=max_workers,
@@ -403,33 +442,40 @@ class RealtimeIPVEstimator:
     """
     Stateful online IPV estimator that can reuse workers across frames.
 
-    Use this class for realtime loops. Calling ``estimate_ipv_current`` with
-    ``solver_preset="parallel_accurate"`` creates a temporary process pool for
-    that call, while this wrapper keeps the pool alive until ``close`` or the
-    context manager exits.
+    Use this class for realtime loops when a persistent candidate worker pool is
+    useful across frames.
     """
 
     def __init__(
         self,
         *,
         history_window: int = 10,
-        solver_preset: str = "parallel_accurate",
+        solver_mode: str = "exact",
+        solver_preset: Optional[str] = None,
         solver_options: Optional[Dict[str, float]] = None,
         max_workers: Optional[int] = None,
         candidate_executor=None,
         candidate_ipv_values: Optional[Sequence[float]] = None,
     ):
         self.history_window = history_window
+        self._solver_config = _resolve_solver_config(
+            solver_mode,
+            solver_preset,
+            solver_options,
+            candidate_ipv_values,
+            max_workers=max_workers,
+        )
+        self.solver_mode = self._solver_config.mode
         self.solver_preset = solver_preset
-        self.solver_options = solver_options
+        self.solver_options = self._solver_config.solver_options
         self.max_workers = max_workers
-        self.candidate_ipv_values = candidate_ipv_values
+        self.candidate_ipv_values = self._solver_config.candidate_ipv_values
         self._external_candidate_executor = candidate_executor
         self._candidate_executor = None
 
     @classmethod
     def for_realtime_sign(cls, **kwargs):
-        kwargs.setdefault("solver_preset", "parallel_accurate")
+        kwargs.setdefault("solver_mode", "realtime")
         if "candidate_ipv_values" not in kwargs:
             kwargs["candidate_ipv_values"] = SIGN_REALTIME_CANDIDATE_IPV_VALUES.copy()
         return cls(**kwargs)
@@ -445,7 +491,7 @@ class RealtimeIPVEstimator:
     def _ensure_candidate_executor(self):
         if self._external_candidate_executor is not None:
             return self._external_candidate_executor
-        if self.solver_preset != "parallel_accurate":
+        if self.solver_mode == "exact":
             return None
         if self._candidate_executor is None:
             self._candidate_executor = ProcessPoolExecutor(max_workers=self.max_workers)
@@ -471,7 +517,7 @@ class RealtimeIPVEstimator:
             counterpart,
             history_window=self.history_window,
             return_diagnostics=return_diagnostics,
-            solver_preset=self.solver_preset,
+            solver_mode=self.solver_mode,
             solver_options=self.solver_options,
             candidate_executor=self._ensure_candidate_executor(),
             candidate_ipv_values=self.candidate_ipv_values,
