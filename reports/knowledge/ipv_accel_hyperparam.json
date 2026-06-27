@@ -1,0 +1,147 @@
+{
+  "accel_commit": "a0fee535",
+  "accel_commit_full": "a0fee5354ecafe5cb8dbcfc6507ec69efa973e14",
+  "worker_id": "INV-ipv-accel-hyperparam",
+  "date": "2026-06-27",
+  "hyperparameter": [
+    {
+      "name": "solver_preset / solver_options",
+      "location": "src/sociality_estimation/core/ipv_estimation.py:22-27,65-79,158-170; src/sociality_estimation/core/agent.py:600-639",
+      "current_default": "solver_preset='accurate', solver_options=None (SciPy SLSQP defaults)",
+      "legacy_equiv_value": "same as current default; not a vectorization accuracy knob"
+    },
+    {
+      "name": "candidate_ipv_values",
+      "location": "src/sociality_estimation/core/agent.py:63,109-112; src/sociality_estimation/core/ipv_estimation.py:170",
+      "current_default": "None, resolving to [-3,-2,-1,0,1,2,3] * pi/8",
+      "legacy_equiv_value": "same seven-candidate grid"
+    },
+    {
+      "name": "cal_individual_cost / cal_group_cost vectorization granularity",
+      "location": "src/sociality_estimation/core/agent.py:862-914",
+      "current_default": "no parameter; hard-coded vectorized objective helpers",
+      "legacy_equiv_value": "none; requires numerically equivalent helper implementation, not config"
+    }
+  ],
+  "sample": {
+    "case_ids": [
+      "ipv_000001",
+      "ipv_000004",
+      "ipv_000005",
+      "ipv_001788"
+    ],
+    "frames_per_case": 12,
+    "history_window": 10,
+    "min_observation": 4,
+    "perspective_anchors": 64,
+    "values_compared": 192,
+    "reference_clip_margin_m": 60.0,
+    "reference_max_points": 40,
+    "reference_smooth_points": 40,
+    "baseline": "archived HPC/sigma01 parity files"
+  },
+  "archived_baseline": {
+    "hpc_hw10_vs_sigma01_full_sample_max_abs_diff": 1.1102230246251565e-16,
+    "hpc_hw10_vs_sigma01_subset_max_abs_diff": 9.020562075079397e-17,
+    "archived_local_hw10_vs_sigma01_full_sample_max_abs_diff": 1.1244582089284632
+  },
+  "parity_restored_at_high_accuracy": false,
+  "max_abs_diff_default": 0.3141348682582335,
+  "mean_abs_diff_default": 0.023990428243039392,
+  "high_accuracy_setting": {
+    "solver_preset": "accurate",
+    "solver_options": {
+      "ftol": 1e-14,
+      "maxiter": 2000
+    }
+  },
+  "max_abs_diff_high_acc": 0.626191780704079,
+  "mean_abs_diff_high_acc": 0.02681366643959845,
+  "speedup_at_parity": null,
+  "recommended_config": "No config-only setting restores sigma01 parity. Use pinned HPC legacy estimator for sigma01-compatible output or fix the vectorized helpers to be numerically equivalent.",
+  "verdict": "genuine_non_equivalent",
+  "speed_accuracy_sweep": [
+    {
+      "setting": "scratch current with loop helper monkeypatch",
+      "max_abs_diff_vs_legacy": 0.45851989560527673,
+      "mean_abs_diff_vs_legacy": 0.023104985237703546,
+      "runtime_sec_median": 16.707061125000003,
+      "sec_per_anchor_median": 0.26104783007812504
+    },
+    {
+      "setting": "solver_preset=accurate",
+      "max_abs_diff_vs_legacy": 0.3141348682582335,
+      "mean_abs_diff_vs_legacy": 0.023990428243039392,
+      "runtime_sec_median": 10.503153000000005,
+      "sec_per_anchor_median": 0.16411176562500007
+    },
+    {
+      "setting": "solver_preset=parallel_accurate,max_workers=4",
+      "max_abs_diff_vs_legacy": 0.3141348682582335,
+      "mean_abs_diff_vs_legacy": 0.023990428243039392,
+      "runtime_sec_median": 7.717459209000001,
+      "sec_per_anchor_median": 0.12058530014062502
+    },
+    {
+      "setting": "solver_preset=accurate,solver_options={'ftol':1e-12,'maxiter':1000}",
+      "max_abs_diff_vs_legacy": 0.6732598991849208,
+      "mean_abs_diff_vs_legacy": 0.02712463647119546,
+      "runtime_sec_median": 41.37554387499999,
+      "sec_per_anchor_median": 0.6464928730468749
+    },
+    {
+      "setting": "solver_preset=accurate,solver_options={'ftol':1e-14,'maxiter':2000}",
+      "max_abs_diff_vs_legacy": 0.626191780704079,
+      "mean_abs_diff_vs_legacy": 0.02681366643959845,
+      "runtime_sec_median": 50.684495666000004,
+      "sec_per_anchor_median": 0.7919452447812501
+    },
+    {
+      "setting": "solver_preset=accurate,solver_options={'ftol':1e-12,'maxiter':1000,'eps':1e-9}",
+      "max_abs_diff_vs_legacy": 1.0346763307607156,
+      "mean_abs_diff_vs_legacy": 0.06003802378397707,
+      "runtime_sec_median": 22.618367084,
+      "sec_per_anchor_median": 0.3534119856875
+    },
+    {
+      "setting": "solver_preset=balanced",
+      "max_abs_diff_vs_legacy": 2.3561900603011603,
+      "mean_abs_diff_vs_legacy": 0.09656862802380371,
+      "runtime_sec_median": 1.3436413749999998,
+      "sec_per_anchor_median": 0.020994396484374997
+    },
+    {
+      "setting": "solver_preset=realtime",
+      "max_abs_diff_vs_legacy": 2.2432316599877025,
+      "mean_abs_diff_vs_legacy": 0.1370229429974629,
+      "runtime_sec_median": 0.5921780409999999,
+      "sec_per_anchor_median": 0.009252781890624999
+    },
+    {
+      "setting": "13-candidate IPV grid, pi/16 step",
+      "max_abs_diff_vs_legacy": 0.4446384691199836,
+      "mean_abs_diff_vs_legacy": 0.051331565062312345,
+      "runtime_sec_median": 19.621541541000003,
+      "sec_per_anchor_median": 0.30658658657812504
+    },
+    {
+      "setting": "25-candidate IPV grid, pi/32 step",
+      "max_abs_diff_vs_legacy": 0.4300682637893677,
+      "mean_abs_diff_vs_legacy": 0.08332207671140929,
+      "runtime_sec_median": 37.973214125000005,
+      "sec_per_anchor_median": 0.5933314707031251
+    }
+  ],
+  "commands_run_key": [
+    "git show --date=iso --stat --patch a0fee535 -- src/sociality_estimation/core/agent.py agent.py",
+    "git log --date=iso --oneline --stat --max-count=8 -- src/sociality_estimation/core/agent.py agent.py",
+    "ssh -o BatchMode=yes -o ConnectTimeout=12 tongji-hpc 'cd /share/home/u25310231/ZXC/ipv_estimation && git rev-parse HEAD && sha256sum agent.py ipv_estimation.py tools/utility.py tools/Lattice.py tools/lattice_planner.py'",
+    "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python /tmp/ipv_accel_hyperparam_INV/run_experiment.py"
+  ],
+  "scratch_files": [
+    "/tmp/ipv_accel_hyperparam_INV/run_experiment.py",
+    "/tmp/ipv_accel_hyperparam_INV/results.json"
+  ],
+  "tracked_src_edited": false,
+  "paper_repo_touched": false
+}

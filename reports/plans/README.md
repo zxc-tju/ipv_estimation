@@ -16,6 +16,20 @@ synthesis, and accepted/rejected claims remain under `reports/knowledge/`.
 
 Prompt index: `prompts/README.md`.
 
+## Wave B plans (substantive evidence; launched 2026-06-24)
+
+| RQ | Topic | Status | Plan |
+|---|---|---|---|
+| RQ009 | Dynamic counterpart-conditioned envelope (M3) | approved | `RQ009_plan_v0_dynamic_counterpart_conditioned_envelope_20260624.md` |
+| RQ010B | WOD-E2E tracking build + human-preference validity | approved | `RQ010B_plan_v0_wod_e2e_tracking_and_preference_validity_20260624.md` |
+| RQ011B | OnSite matched-scenario algorithm validity | approved | `RQ011B_plan_v0_onsite_matched_scenario_validity_20260624.md` |
+| RQ012B | OnSite automatic-event harm (no human labels) | approved | `RQ012B_plan_v0_onsite_automatic_event_harm_20260624.md` |
+
+Locked addendum: RQ011B SAP v1 (PI-approved 2026-06-25) is `RQ011B_SAP_v1_locked_20260625.md`.
+
+Coordination + sequencing + the M3-vs-M4 pivot gate: `WAVE_B_launch_plan_20260624.md`.
+Each Wave B plan needs an independent plan review before `approved -> running`.
+
 ## Planning rules
 
 - A `v0` plan is a scoped proposal, not a frozen confirmatory specification.

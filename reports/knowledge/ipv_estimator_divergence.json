@@ -1,0 +1,108 @@
+{
+  "local_last_change_date": "2026-06-19 23:01:38 +0800",
+  "local_last_change_commit": "0827f504c32cb0322979d27c4fe6c964113569b3",
+  "local_last_change_subject": "Make the repository navigable around canonical roots",
+  "local_refactor_commit": {
+    "commit": "0827f504c32cb0322979d27c4fe6c964113569b3",
+    "date": "2026-06-19 23:01:38 +0800",
+    "subject": "Make the repository navigable around canonical roots",
+    "classification": "flat-to-src package refactor; import/path/default-output changes only for estimator math"
+  },
+  "local_last_logic_change": {
+    "commit": "a0fee5354ecafe5cb8dbcfc6507ec69efa973e14",
+    "date": "2026-06-15 12:52:29 +0800",
+    "subject": "Add realtime IPV sign estimator"
+  },
+  "hpc_legacy": {
+    "path": "/share/home/u25310231/ZXC/ipv_estimation",
+    "git_head": "5edd28104bf5989e2dc258c9405ce897d7523cc4",
+    "git_head_date": "2026-06-12 00:32:37 +0800",
+    "git_head_subject": "Run full InterHub IPV with sigma 0.1",
+    "sha256": {
+      "process_interhub.py": "0a08606200c97fc4b340444b2cf56317c8905a24ea7a0712ea2b3f50f22b334d",
+      "agent.py": "8c5c633846cb07c88c31c19770a6f69a7bcfde058c0dad291d1cc79ab4663d08",
+      "ipv_estimation.py": "30b9fd0fbf615b737d201387710d0ebd986e468e49baa1b92b6cc7ca5e827dfe",
+      "tools/utility.py": "46d58d2dfc13f2bbcf3acf4a2986dc4145d52fbd2d06e40e3f8a7a59fdc154c5",
+      "tools/Lattice.py": "f3ca6075748e77d15e790316aaf28dfcb67710d2ef0091f52f64f301d926e70a",
+      "tools/lattice_planner.py": "0626acbb747fc9753f2e7af5a1aa2cc9307ba3ba8c64ccc84c93d84a9b508934"
+    }
+  },
+  "logic_change_commits": [
+    {
+      "commit": "005b6dfed1bf017157c3cc1f14449d6ee36249b9",
+      "date": "2025-10-31 09:37:12 +0800",
+      "subject": "Add IPV diagnostic helpers and visualization",
+      "classification": "pre-sigma01 estimator logic: active global dt/TRACK_LEN/MIN_DIS and reliability collection"
+    },
+    {
+      "commit": "e14b1039cc3d043d7273d5386766dce4ccac8ca0",
+      "date": "2026-06-07 22:22:14 +0800",
+      "subject": "Speed up remaining nuPlan IPV reruns",
+      "classification": "pre-sigma01 reference-preparation logic included in baseline"
+    },
+    {
+      "commit": "5edd28104bf5989e2dc258c9405ce897d7523cc4",
+      "date": "2026-06-12 00:32:37 +0800",
+      "subject": "Run full InterHub IPV with sigma 0.1",
+      "classification": "sigma01 baseline; changed sigma 0.02 to 0.1"
+    },
+    {
+      "commit": "a0fee5354ecafe5cb8dbcfc6507ec69efa973e14",
+      "date": "2026-06-15 12:52:29 +0800",
+      "subject": "Add realtime IPV sign estimator",
+      "classification": "post-sigma01 genuine logic drift; rewrote cost helpers/candidate APIs"
+    }
+  ],
+  "matched_param_agree": false,
+  "max_abs_diff_matched_params": 0.28116810052219554,
+  "mean_abs_diff_matched_params": 0.01111504310902534,
+  "matched_param_sample": {
+    "cases": 4,
+    "frame_rows": 48,
+    "estimated_rows": 32,
+    "values_compared": 192,
+    "case_ids": [
+      "ipv_000001",
+      "ipv_000004",
+      "ipv_000005",
+      "ipv_001788"
+    ],
+    "params": {
+      "sigma": 0.1,
+      "history_window": 10,
+      "min_observation": 4,
+      "reference_clip_margin_m": 60.0,
+      "reference_max_points": 40,
+      "reference_smooth_points": 40,
+      "nuplan_downsample": "20Hz to 10Hz",
+      "solver": "legacy/default SLSQP; local solver_preset=accurate"
+    }
+  },
+  "divergence_type": "genuine_logic",
+  "responsible_diffs": [
+    {
+      "function": "cal_individual_cost",
+      "legacy_lines": "agent.py:746-783",
+      "local_lines": "src/sociality_estimation/core/agent.py:862-892",
+      "commit": "a0fee5354ecafe5cb8dbcfc6507ec69efa973e14",
+      "description": "Loop-based distance-to-reference calculation was vectorized; this changes optimizer numerics in the SLSQP objective path."
+    },
+    {
+      "function": "cal_group_cost",
+      "legacy_lines": "agent.py:786-810",
+      "local_lines": "src/sociality_estimation/core/agent.py:895-914",
+      "commit": "a0fee5354ecafe5cb8dbcfc6507ec69efa973e14",
+      "description": "Loop-based relative-nearness aggregation was vectorized; restoring the old loop helper with cal_individual_cost reproduced legacy candidate tracks and weights exactly for a differing diagnostic frame."
+    }
+  ],
+  "non_responsible_diffs": [
+    "sigma kernel unchanged at sigma=0.1 and sigma2=0.05",
+    "seven-candidate IPV grid unchanged for matched accurate calls",
+    "cal_traj_reliability source unchanged",
+    "weight-to-IPV and error=1-sqrt(sum(w^2)) aggregation unchanged",
+    "planning/Lattice.py byte-identical; utility.py and lattice_planner.py layout/import-only",
+    "candidate task reconstruction not responsible: current helper path and legacy-style deepcopy loop had zero track/weight difference inside current package",
+    "solver_preset not responsible: matched run used local solver_preset=accurate, resolving to default SLSQP"
+  ],
+  "verdict": "Local estimator files last changed on 2026-06-19 in commit 0827f504 as a package-layout refactor, but the genuine sigma01-incompatible logic change was introduced on 2026-06-15 in commit a0fee535. The current local estimator is genuinely drifted from the pinned sigma01-generation code; the earlier parity failure was not only a parameter/default/entrypoint mismatch."
+}

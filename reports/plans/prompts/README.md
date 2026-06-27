@@ -11,6 +11,17 @@ orchestrator only; Codex CLI is the sole executor.
 | RQ011 | `../RQ011_plan_v0_onsite_full_universe_readiness_20260622.md` | `RQ011_prompt_claude_codex_orchestration_20260622.md` |
 | RQ012 | `../RQ012_plan_v0_onsite_event_annotation_readiness_20260622.md` | `RQ012_prompt_claude_codex_orchestration_20260622.md` |
 
+## Wave B prompts (substantive evidence; 2026-06-24)
+
+| RQ | Plan | Prompt |
+|---|---|---|
+| RQ009 | `../RQ009_plan_v0_dynamic_counterpart_conditioned_envelope_20260624.md` | `RQ009_prompt_claude_codex_orchestration_20260624.md` |
+| RQ010B | `../RQ010B_plan_v0_wod_e2e_tracking_and_preference_validity_20260624.md` | `RQ010B_prompt_claude_codex_orchestration_20260624.md` |
+| RQ011B | `../RQ011B_plan_v0_onsite_matched_scenario_validity_20260624.md` | `RQ011B_prompt_claude_codex_orchestration_20260624.md` |
+| RQ012B | `../RQ012B_plan_v0_onsite_automatic_event_harm_20260624.md` | `RQ012B_prompt_claude_codex_orchestration_20260624.md` |
+
+Sequencing/gates: `../WAVE_B_launch_plan_20260624.md` (RQ009 + RQ010B-B1 in parallel now; RQ011B/012B + RQ010B-B2 after M3 freezes; RQ009 M3-vs-M4 is the pivot gate). RQ010B阶段2需用户授权 Waymo 访问;RQ010B/011B/012B阶段3需 RQ009 冻结的 M3。
+
 ## Shared execution contract
 
 Every prompt requires:
@@ -24,3 +35,9 @@ Every prompt requires:
 - Every reader-facing figure must be generated using the Nature skill; no silent plotting fallback is permitted.
 - Null, reverse, failed, and blocked findings remain visible and are recorded in `tried.md`.
 - Git safety rules prohibit destructive resets, cleans, force pushes, overwriting uncommitted work, and mixing research-repository and paper-repository edits.
+
+## Global requirements (Wave B onward, 2026-06-24)
+
+- **Language:** the main Claude agent reports to the user **in Chinese** throughout the run (Codex task contracts may be mixed-language; user-facing replies must be Chinese).
+- **Bilingual report:** the final reader report is produced in **both** English (`${RUN_ROOT}/90_report/index.html`) and Chinese (`${RUN_ROOT}/90_report/index.zh.html`), both offline; `00_entry/index.html` links both.
+- **Visualization:** all reader-facing figures are produced by a **dedicated Codex visualization worker using the nature(-figure) skill** (Codex has it); no silent plotting fallback — BLOCKED if the skill is unavailable.

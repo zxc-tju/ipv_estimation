@@ -1,0 +1,378 @@
+{
+  "worker_id": "SURV-ipv-api",
+  "role": "api-surveyor",
+  "date": "2026-06-27",
+  "read_only_scope": {
+    "src_edited": false,
+    "paper_repo_touched": false,
+    "hpc_access": "read-only ssh commands with BatchMode and ConnectTimeout"
+  },
+  "entry_points": [
+    {
+      "name": "MotionSequence",
+      "location": "src/sociality_estimation/core/ipv_estimation.py:35-55",
+      "signature": "MotionSequence(data: np.ndarray, target: str, reference: Optional[np.ndarray] = None)",
+      "params": [
+        {"name": "data", "type": "np.ndarray", "default": null, "required": true},
+        {"name": "target", "type": "str", "default": null, "required": true},
+        {"name": "reference", "type": "Optional[np.ndarray]", "default": "None", "required": false}
+      ],
+      "return_shape": "dataclass; validates data is 2D with at least five columns [x,y,vx,vy,heading]"
+    },
+    {
+      "name": "estimate_ipv_pair",
+      "location": "src/sociality_estimation/core/ipv_estimation.py:158-335",
+      "signature": "estimate_ipv_pair(primary: MotionSequence, counterpart: MotionSequence, *, history_window: int = 10, min_observation: int = 4, return_diagnostics: bool = False, diagnostic_steps: Optional[Sequence[int]] = None, solver_preset: str = 'accurate', solver_options: Optional[Dict[str, float]] = None, max_workers: Optional[int] = None, candidate_executor=None, candidate_ipv_values: Optional[Sequence[float]] = None) -> Union[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray, Dict[str, List[Dict[str, np.ndarray]]]]]",
+      "params": [
+        {"name": "primary", "type": "MotionSequence", "default": null, "required": true},
+        {"name": "counterpart", "type": "MotionSequence", "default": null, "required": true},
+        {"name": "history_window", "type": "int", "default": 10, "required": false},
+        {"name": "min_observation", "type": "int", "default": 4, "required": false},
+        {"name": "return_diagnostics", "type": "bool", "default": false, "required": false},
+        {"name": "diagnostic_steps", "type": "Optional[Sequence[int]]", "default": "None", "required": false},
+        {"name": "solver_preset", "type": "str", "default": "accurate", "required": false},
+        {"name": "solver_options", "type": "Optional[Dict[str, float]]", "default": "None", "required": false},
+        {"name": "max_workers", "type": "Optional[int]", "default": "None", "required": false},
+        {"name": "candidate_executor", "type": "executor with map", "default": "None", "required": false},
+        {"name": "candidate_ipv_values", "type": "Optional[Sequence[float]]", "default": "None", "required": false}
+      ],
+      "return_shape": "(ipv_values, ipv_errors), each (T,2); optional diagnostics dict when return_diagnostics=True; current pre-min_observation rows are ipv=0.0,error=1.0"
+    },
+    {
+      "name": "estimate_ipv_current",
+      "location": "src/sociality_estimation/core/ipv_estimation.py:338-388",
+      "signature": "estimate_ipv_current(primary: MotionSequence, counterpart: MotionSequence, *, history_window: int = 10, return_diagnostics: bool = False, solver_preset: str = 'parallel_accurate', solver_options: Optional[Dict[str, float]] = None, max_workers: Optional[int] = None, candidate_executor=None, candidate_ipv_values: Optional[Sequence[float]] = None) -> Union[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray, Dict[str, List[Dict[str, np.ndarray]]]]]",
+      "params": [
+        {"name": "primary", "type": "MotionSequence", "default": null, "required": true},
+        {"name": "counterpart", "type": "MotionSequence", "default": null, "required": true},
+        {"name": "history_window", "type": "int", "default": 10, "required": false},
+        {"name": "return_diagnostics", "type": "bool", "default": false, "required": false},
+        {"name": "solver_preset", "type": "str", "default": "parallel_accurate", "required": false},
+        {"name": "solver_options", "type": "Optional[Dict[str, float]]", "default": "None", "required": false},
+        {"name": "max_workers", "type": "Optional[int]", "default": "None", "required": false},
+        {"name": "candidate_executor", "type": "executor with map", "default": "None", "required": false},
+        {"name": "candidate_ipv_values", "type": "Optional[Sequence[float]]", "default": "None", "required": false}
+      ],
+      "return_shape": "(ipv_pair, err_pair), each (2,); optional diagnostics dict when return_diagnostics=True"
+    },
+    {
+      "name": "RealtimeIPVEstimator.__init__",
+      "location": "src/sociality_estimation/core/ipv_estimation.py:412-429",
+      "signature": "RealtimeIPVEstimator(*, history_window: int = 10, solver_preset: str = 'parallel_accurate', solver_options: Optional[Dict[str, float]] = None, max_workers: Optional[int] = None, candidate_executor=None, candidate_ipv_values: Optional[Sequence[float]] = None)",
+      "params": [
+        {"name": "history_window", "type": "int", "default": 10, "required": false},
+        {"name": "solver_preset", "type": "str", "default": "parallel_accurate", "required": false},
+        {"name": "solver_options", "type": "Optional[Dict[str, float]]", "default": "None", "required": false},
+        {"name": "max_workers", "type": "Optional[int]", "default": "None", "required": false},
+        {"name": "candidate_executor", "type": "executor with map", "default": "None", "required": false},
+        {"name": "candidate_ipv_values", "type": "Optional[Sequence[float]]", "default": "None", "required": false}
+      ],
+      "return_shape": "stateful estimator object"
+    },
+    {
+      "name": "RealtimeIPVEstimator.for_realtime_sign",
+      "location": "src/sociality_estimation/core/ipv_estimation.py:430-435",
+      "signature": "RealtimeIPVEstimator.for_realtime_sign(cls, **kwargs)",
+      "params": [
+        {"name": "kwargs", "type": "dict", "default": "{}", "required": false}
+      ],
+      "return_shape": "RealtimeIPVEstimator; defaults solver_preset='parallel_accurate' and candidate_ipv_values=[-3,-1,0,1,3]*pi/8"
+    },
+    {
+      "name": "RealtimeIPVEstimator.estimate_current",
+      "location": "src/sociality_estimation/core/ipv_estimation.py:459-478",
+      "signature": "estimate_current(self, primary: MotionSequence, counterpart: MotionSequence, *, return_diagnostics: bool = False)",
+      "params": [
+        {"name": "primary", "type": "MotionSequence", "default": null, "required": true},
+        {"name": "counterpart", "type": "MotionSequence", "default": null, "required": true},
+        {"name": "return_diagnostics", "type": "bool", "default": false, "required": false}
+      ],
+      "return_shape": "(ipv_pair, err_pair), each (2,); optional diagnostics dict"
+    },
+    {
+      "name": "RealtimeIPVEstimator.estimate_sign_current",
+      "location": "src/sociality_estimation/core/ipv_estimation.py:480-492",
+      "signature": "estimate_sign_current(self, primary: MotionSequence, counterpart: MotionSequence, *, threshold: float = 0.05) -> Tuple[np.ndarray, np.ndarray, np.ndarray]",
+      "params": [
+        {"name": "primary", "type": "MotionSequence", "default": null, "required": true},
+        {"name": "counterpart", "type": "MotionSequence", "default": null, "required": true},
+        {"name": "threshold", "type": "float", "default": 0.05, "required": false}
+      ],
+      "return_shape": "(signs, ipv_values, ipv_errors), each (2,)"
+    },
+    {
+      "name": "Agent.estimate_self_ipv",
+      "location": "src/sociality_estimation/core/agent.py:672-721",
+      "signature": "estimate_self_ipv(self, self_actual_track, inter_track, *, return_details=False, solver_options=None, candidate_executor=None, candidate_ipv_values=None)",
+      "params": [
+        {"name": "self_actual_track", "type": "array-like xy track", "default": null, "required": true},
+        {"name": "inter_track", "type": "array-like xy track", "default": null, "required": true},
+        {"name": "return_details", "type": "bool", "default": false, "required": false},
+        {"name": "solver_options", "type": "dict or None", "default": "None", "required": false},
+        {"name": "candidate_executor", "type": "executor with map", "default": "None", "required": false},
+        {"name": "candidate_ipv_values", "type": "sequence or None", "default": "None", "required": false}
+      ],
+      "return_shape": "Mutates self.ipv and self.ipv_error; returns details dict only when return_details=True"
+    },
+    {
+      "name": "Agent.solve_optimization",
+      "location": "src/sociality_estimation/core/agent.py:600-646",
+      "signature": "solve_optimization(self, inter_track, *, solver_options=None)",
+      "params": [
+        {"name": "inter_track", "type": "array-like xy track", "default": null, "required": true},
+        {"name": "solver_options", "type": "dict or None", "default": "None", "required": false}
+      ],
+      "return_shape": "self.trj_solution, array with columns [x,y,vx,vy,heading]"
+    }
+  ],
+  "cost_helpers": {
+    "current": [
+      {
+        "name": "cal_individual_cost",
+        "location": "src/sociality_estimation/core/agent.py:862-892",
+        "form": "vectorized broadcast all reference distances"
+      },
+      {
+        "name": "cal_group_cost",
+        "location": "src/sociality_estimation/core/agent.py:895-914",
+        "form": "vectorized collision factor, nearness, and np.sum aggregation"
+      }
+    ],
+    "legacy_sigma01": [
+      {
+        "name": "cal_individual_cost",
+        "location": "git show 5edd2810:agent.py:746-783",
+        "form": "loop over track points, np.amin(np.linalg.norm(cv - point, axis=1))"
+      },
+      {
+        "name": "cal_group_cost",
+        "location": "git show 5edd2810:agent.py:786-810",
+        "form": "Python loop over relative velocities, if/else collision factor, incremental sum"
+      }
+    ],
+    "diff_scope": [
+      "a0fee535 rewrote legacy flat agent.py cost helpers from loop to vectorized form; current packaged lines preserve that vectorized form.",
+      "Prior isolation found restoring old loop helpers reproduced legacy diagnostic tracks and weights exactly; candidate-task refactor was not the cause."
+    ],
+    "likelihood_and_aggregation": {
+      "likelihood": "src/sociality_estimation/core/agent.py:917-980; active trajectory-similarity Gaussian product kernel with sigma=0.1",
+      "aggregation": "src/sociality_estimation/core/agent.py:150-157; ipv=sum(ipv_range*weight), ipv_error=1-sqrt(sum(weight**2))"
+    }
+  },
+  "candidate_generation": {
+    "grid_default": "src/sociality_estimation/core/agent.py:63; [-3,-2,-1,0,1,2,3]*pi/8",
+    "grid_resolution": "src/sociality_estimation/core/agent.py:109-112",
+    "task_build": "src/sociality_estimation/core/agent.py:115-135",
+    "task_solve": "src/sociality_estimation/core/agent.py:84-106",
+    "apply_weights": "src/sociality_estimation/core/agent.py:138-164",
+    "optimizer": "src/sociality_estimation/core/agent.py:600-646",
+    "objective": "src/sociality_estimation/core/agent.py:1012-1036",
+    "dynamics": "src/sociality_estimation/planning/utility.py:70-93 bicycle_model",
+    "lattice_status": "lattice_planning is not on estimate_ipv_pair path; it is a simulation controller path at src/sociality_estimation/planning/lattice_planner.py:28-83"
+  },
+  "existing_knobs": [
+    {
+      "name": "solver_preset",
+      "accepted_values": {
+        "accurate": {"solver_options": null, "parallel": false, "grid_change": false},
+        "parallel_accurate": {"solver_options": null, "parallel": true, "grid_change": false},
+        "balanced": {"solver_options": {"maxiter": 20, "ftol": 0.001}, "parallel": false, "grid_change": false},
+        "realtime": {"solver_options": {"maxiter": 8, "ftol": 0.01}, "parallel": false, "grid_change": false}
+      },
+      "defaults": {
+        "estimate_ipv_pair": "accurate",
+        "estimate_ipv_current": "parallel_accurate",
+        "RealtimeIPVEstimator": "parallel_accurate",
+        "pipelines/interhub/process_interhub.py": "accurate"
+      },
+      "locations": ["src/sociality_estimation/core/ipv_estimation.py:22-27", "pipelines/interhub/process_interhub.py:1887-1897"]
+    },
+    {
+      "name": "solver_options",
+      "accepted_values": "Any dict passed through to scipy.optimize.minimize options for SLSQP",
+      "default": "None",
+      "effect": "Overrides preset options; not a vectorization parity knob"
+    },
+    {
+      "name": "candidate_ipv_values",
+      "accepted_values": "Any numeric sequence coercible to np.asarray(..., dtype=float)",
+      "default": "None -> seven-candidate virtual_agent_IPV_range",
+      "effect": "Changes candidate grid; for_realtime_sign sets five-candidate grid"
+    },
+    {
+      "name": "parallel_accurate",
+      "accepted_values": "solver_preset value",
+      "default": "online wrappers only",
+      "effect": "Same SLSQP defaults and same grid; enables ProcessPoolExecutor if no executor is supplied"
+    },
+    {
+      "name": "history_window",
+      "default": 10,
+      "effect": "Rolling estimation window; start=max(0,t-history_window)"
+    },
+    {
+      "name": "min_observation",
+      "default": 4,
+      "effect": "First timestep estimated by estimate_ipv_pair"
+    },
+    {
+      "name": "reference_clip_margin_m/reference_max_points/reference_smooth_points",
+      "default": "pipeline CLI defaults 0/0/0; sigma01 used 60/40/40",
+      "effect": "Pipeline preprocessing before MotionSequence reference"
+    },
+    {
+      "name": "DATASET_DOWNSAMPLE_FACTORS",
+      "default": {"nuplan_train": 2},
+      "effect": "Pipeline downsampling, nuPlan 20Hz to 10Hz"
+    }
+  ],
+  "sigma01_generation_params": {
+    "hpc_path": "/share/home/u25310231/ZXC/ipv_estimation",
+    "git_head": "5edd28104bf5989e2dc258c9405ce897d7523cc4",
+    "git_subject": "Run full InterHub IPV with sigma 0.1",
+    "agent_sigma": 0.1,
+    "agent_sigma2": 0.05,
+    "history_window": 10,
+    "min_observation": 4,
+    "candidate_grid": "[-3,-2,-1,0,1,2,3]*pi/8",
+    "solver": "SciPy SLSQP defaults; no solver_preset/options existed",
+    "cost_backend": "legacy loop helpers",
+    "reference_clip_margin_m": 60.0,
+    "reference_max_points": 40,
+    "reference_smooth_points": 40,
+    "nuplan_downsample": "factor 2, 20Hz to 10Hz",
+    "heading_threshold_deg": 12.0,
+    "plots": false,
+    "case_timeout_seconds": 1800,
+    "outer_parallelism": "4 shards, 96 workers per shard, mp_start_method=fork",
+    "source_csv": "interhub_traj_lane/0_raw_data/full_datasets/index.csv",
+    "pkl_root": "interhub_traj_lane/0_raw_data/full_datasets/pkl",
+    "evidence": [
+      "archived/report_process/interhub_20260612_sigma_0_1_full_rerun/01_process/hpc_run_files/submit_full_datasets_sigma01_array.sh:30-42,103-118",
+      "archived/report_process/interhub_20260612_sigma_0_1_full_rerun/01_process/hpc_audit/processing_summary_shard_00_of_04.json",
+      "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/03_features/code_parity.md"
+    ]
+  },
+  "callers": [
+    {
+      "file": "pipelines/interhub/process_interhub.py",
+      "lines": "1162-1168",
+      "how_invoked": "estimate_ipv_pair(seq_primary, seq_secondary, history_window=task.history_window, min_observation=task.min_observation, solver_preset=task.solver_preset)",
+      "params_passed": ["history_window", "min_observation", "solver_preset"]
+    },
+    {
+      "file": "src/sociality_estimation/core/ipv_estimation.py",
+      "lines": "369-381",
+      "how_invoked": "estimate_ipv_current calls estimate_ipv_pair with min_observation=steps-1",
+      "params_passed": ["history_window", "return_diagnostics", "diagnostic_steps", "solver_preset", "solver_options", "max_workers", "candidate_executor", "candidate_ipv_values"]
+    },
+    {
+      "file": "src/sociality_estimation/core/ipv_estimation.py",
+      "lines": "469-478",
+      "how_invoked": "RealtimeIPVEstimator.estimate_current calls estimate_ipv_current",
+      "params_passed": ["history_window", "return_diagnostics", "solver_preset", "solver_options", "candidate_executor", "candidate_ipv_values"]
+    },
+    {
+      "file": "pipelines/simulation/simulator.py",
+      "lines": "854-858",
+      "how_invoked": "Agent.estimate_self_ipv(track_lt_temp, track_gs_temp) and reverse",
+      "params_passed": []
+    },
+    {
+      "file": "pipelines/simulation/simulator.py",
+      "lines": "2206-2207",
+      "how_invoked": "deep-copied agents call estimate_self_ipv(nds_trj_lt, nds_trj_gs) and reverse",
+      "params_passed": []
+    },
+    {
+      "file": "archived/legacy_scripts/process_argoverse.py",
+      "lines": "200-210",
+      "how_invoked": "estimate_ipv_pair(artifacts.motion_lt, artifacts.motion_gs, optional return_diagnostics and diagnostic_steps)",
+      "params_passed": ["return_diagnostics", "diagnostic_steps"]
+    },
+    {
+      "file": "archived/legacy_scripts/process_interhub_json_legacy.py",
+      "lines": "575-582",
+      "how_invoked": "estimate_ipv_pair(seq_primary, seq_secondary, history_window=HISTORY_WINDOW, min_observation=MIN_OBSERVATION, return_diagnostics=enable_diagnostics, diagnostic_steps=diag_steps)",
+      "params_passed": ["history_window", "min_observation", "return_diagnostics", "diagnostic_steps"]
+    }
+  ],
+  "selector_recommendation": {
+    "recommendation": "add solver_mode default='exact'; keep solver_preset as deprecated alias",
+    "reason": "The new modes control cost backend, candidate grid, solver settings, and parallelism, so they are broader than the current solver_preset semantics.",
+    "new_values": ["exact", "fast", "realtime"],
+    "default": "exact"
+  },
+  "proposed_mode_map": {
+    "exact": {
+      "cost_backend": "legacy_loop",
+      "candidate_grid": "seven candidate default [-3,-2,-1,0,1,2,3]*pi/8",
+      "solver_options": null,
+      "parallel_candidates": false,
+      "purpose": "sigma01 parity"
+    },
+    "fast": {
+      "cost_backend": "legacy_equiv_vectorized",
+      "candidate_grid": "same seven candidate default",
+      "solver_options": null,
+      "parallel_candidates": "optional/online persistent executor; avoid nested pools in batch unless explicit",
+      "purpose": "same answer as exact, faster"
+    },
+    "realtime": {
+      "cost_backend": "legacy_equiv_vectorized",
+      "candidate_grid": "SIGN_REALTIME_CANDIDATE_IPV_VALUES [-3,-1,0,1,3]*pi/8 unless explicit override",
+      "solver_options": {"maxiter": 8, "ftol": 0.01},
+      "parallel_candidates": "prefer persistent executor for online use",
+      "purpose": "approximate realtime"
+    }
+  },
+  "backward_compat": {
+    "existing_callers_default": "No explicit mode or preset should resolve to exact.",
+    "old_solver_preset_mapping": {
+      "accurate": "exact",
+      "parallel_accurate": "fast with seven-grid and candidate parallelism",
+      "balanced": "fast with seven-grid and solver_options {'maxiter':20,'ftol':1e-3}; deprecated compatibility path",
+      "realtime": "realtime; to preserve old seven-grid realtime, pass explicit seven-grid candidate_ipv_values"
+    },
+    "pipeline_plan": [
+      "Add --solver-mode {exact,fast,realtime} default exact.",
+      "Keep --solver-preset as deprecated alias.",
+      "Record solver_mode and deprecated solver_preset in metadata.",
+      "Expose candidate grid override only if needed later."
+    ]
+  },
+  "parity_test_plan": {
+    "test_file": "tests/test_ipv_estimator_parity.py",
+    "fixture_dir": "tests/fixtures/ipv_sigma01_parity/",
+    "frozen_reference_source": [
+      "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/parity/sigma01_sample_timeseries.csv",
+      "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/03_features/code_parity.md",
+      "HPC legacy git 5edd28104bf5989e2dc258c9405ce897d7523cc4"
+    ],
+    "assertions": [
+      "exact equals frozen legacy values to atol <= 1e-16, rtol=0",
+      "fast equals exact to the same tolerance before calling fast same-answer",
+      "realtime returns finite candidate-range values and errors in [0,1]",
+      "old solver_preset aliases resolve as documented"
+    ]
+  },
+  "risks": [
+    "Changing default to exact intentionally changes current local outputs back to sigma01-compatible values.",
+    "Current solver_preset name is too narrow for composite estimator modes.",
+    "Candidate parallelism can oversubscribe when process_interhub already uses outer process pools.",
+    "ProcessPool task payloads need pickle-safe backend identifiers.",
+    "Module-level globals dt/TRACK_LEN/sigma/sigma2/grid are hidden couplings.",
+    "estimate_ipv_pair docstring says pre-min_observation rows are NaN but code returns 0/1.",
+    "The current realtime preset is solver-only; desired realtime mode also changes grid.",
+    "Fast vectorized equivalence may fail at 1e-16 unless reduction order is controlled.",
+    "Simulation code calls Agent.estimate_self_ipv directly, so backend selector must reach Agent too."
+  ],
+  "acceptance_criteria": {
+    "AC1": "PASS",
+    "AC2": "PASS",
+    "AC3": "PASS",
+    "AC4": "PASS",
+    "AC5": "PASS",
+    "AC6": "PASS"
+  }
+}
