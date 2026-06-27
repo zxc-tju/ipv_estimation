@@ -1,6 +1,6 @@
 # RQ Research Program Progress Dashboard
 
-Last synchronized: **2026-06-24**
+Last synchronized: **2026-06-24**  
 Scope: `PAPER001/PAPER002` and `RQ001–RQ013`  
 Machine-readable registry: [`rq_progress_registry.csv`](rq_progress_registry.csv)  
 Central plan index: [`../plans/README.md`](../plans/README.md)
@@ -12,17 +12,19 @@ Codex, and future reviewers. It tracks research status, dependencies, evidence s
 blocking conditions, and the next gate without replacing the detailed files inside each
 RQ folder.
 
-The evidence chain currently being pursued is:
+The active evidence chain is now:
 
 ```text
 online IPV time-series
 → interaction-conditioned estimability
-→ human temporal organization
-→ dynamic counterpart-conditioned envelope
-→ WOD-E2E human preference validity
-→ OnSite matched-scenario validity and interaction consequences
+→ estimability-aware dynamic counterpart-conditioned envelope
+→ OnSite matched-scenario validity (first external priority)
+→ WOD-E2E human-preference validity (parallel engineering path)
 → incremental value relative to prespecified safety/kinematic baselines
 ```
+
+RQ008 remains a negative temporal-discovery boundary rather than a required positive link in
+this chain.
 
 ## Source-of-truth order
 
@@ -35,19 +37,19 @@ When sources disagree, use this order:
 5. this dashboard;
 6. chat discussion or an uncommitted local note.
 
-A chat update may be recorded as a proposed change, but it must not silently override an
-accepted decision or a reviewed execution artifact.
+A chat update may record a PI decision, but it must not silently override an accepted decision
+or a reviewed execution artifact.
 
 ## Status vocabulary
 
 | Program status | Meaning |
 |---|---|
 | `planning` | Scope or plan is being drafted. |
-| `approved` | Plan is approved and ready for execution. |
+| `approved` | PI has authorized launch; independent plan review remains the first execution gate. |
 | `running` | Execution is active. |
 | `review` | Results or a claimed implementation exist and require independent verification. |
 | `accepted` | Paper-safe claims are frozen in `decision.md`. |
-| `writing` | Accepted claims are being applied in the manuscript repository. |
+| `writing` | The verified manuscript baseline is active and is being updated from accepted evidence. |
 | `done` | Research and paper handoff are complete. |
 | `archived-review` | Preserved as robustness/history, not an active headline result. |
 | `blocked` | A hard data, design, access, or evidence gate prevents progress. |
@@ -55,7 +57,7 @@ accepted decision or a reviewed execution artifact.
 | Stage | Meaning |
 |---|---|
 | `S0 Scope` | Research question and boundaries are being defined. |
-| `S1 Plan` | Initial plan, endpoints, gates, and deliverables are being drafted. |
+| `S1 Plan` | Initial plan, endpoints, gates, and deliverables are being drafted/reviewed. |
 | `S2 Inventory` | Data, provenance, access, fields, and feasibility are being audited. |
 | `S3 Execute` | Data processing, modelling, annotation, or analysis is underway. |
 | `S4 Review` | Independent review and falsification are underway. |
@@ -69,108 +71,93 @@ accepted decision or a reviewed execution artifact.
 | ID | Work group / topic | Status | Stage | Priority | Current evidence position | Hard blocker or boundary | Next gate |
 |---|---|---:|---:|---:|---|---|---|
 | **PAPER001** | Existing manuscript context | `reference` | S8 | P1 | Historical manuscript context and prior drafts retained | Not a claim-decision source; RQ decisions govern paper wording | Continue as archive/reference |
-| **PAPER002** | Group 0 — dynamic-IPV v4 evidence architecture | `review` | S4 | **P0** | Human lead reports that the paper project was modified directly | The modified artifact has not yet been verified in the research dashboard; current visible paper-repository `main` still needs commit/branch reconciliation | Register the exact paper commit or branch and perform independent structure/claim review |
-| **RQ001** | Legacy online interval deployability | `accepted` | S7 | P1 | Strong engineering prior for route-conditioned self-anchor interval; usable only as legacy evidence / M4 ablation under the new paper logic | Decision still pending; old target/model do not establish the new M3 dynamic norm | Freeze bounded decision and protocol crosswalk |
-| **RQ002** | Self-anchor group-norm validity | `accepted` | S7 | P1 | Two reviews reject self-anchor-only normative authority and identify norm-laundering risk | Formal `decision.md` still pending | Freeze rejection/ablation boundary |
-| **RQ003** | NSFC external evidence | `accepted` | S7 | P1 | Tier B feasibility, diagnostic-alignment, abstention, replication, and transfer-boundary evidence | No robust IPV-specific increment; H3 blind labels blocked; full universe not analysis-ready | Reuse only as pilot/boundary evidence |
-| **RQ004** | Episode-level IPV state organization | `accepted` | S7 | P1 | Supports state-conditioned response-surface framing, not a universal law | Exact paper-safe decision not frozen | Freeze R1 episode-level claim boundary |
-| **RQ005** | Manuscript evidence-gap and leakage governance | `accepted` | S7 | P1 | Supports framework, leakage contract, and claim downgrades | Decision not frozen | Freeze governance decision |
-| **RQ006** | Sigma sensitivity | `archived-review` | S7 | P3 | Sigma=0.1 is healthier; IPV magnitude remains parameter-sensitive | Not a substantive verifier-validity result | Retain as robustness appendix evidence |
-| **RQ007** | Group 1 — interaction-conditioned IPV estimability | `accepted` | S7 | **P0** | COMPLETE; decision frozen (C1-C3) in `reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md`: dev/guard interaction-conditioned estimability, proximity-bounded residual, held-out sealed | Held-out confirmation pending (sealed split); claims provisional until confirmed | Use frozen C1-C3 with proximity-bounded caveat; feed RQ009 |
-| **RQ008** | Group 2A/2B — InterHub temporal IPV discovery and confirmation | `accepted` | S7 | **P0** | RQ008A COMPLETE; negative discovery boundary frozen (0/24 directional structures survived) in `reports/knowledge/RQ008_interhub_temporal_ipv_discovery/decision.md`; confirmation hold-out unopened | Wave B requires Attack-10 (direction-sensitive) amendment + explicit authorization | Cite only as exploratory negative boundary; keep Wave B frozen |
-| **RQ009** | Dynamic counterpart-conditioned human envelope | `complete` | S7 | **P0** | COMPLETE; decision frozen in `reports/knowledge/RQ009_dynamic_counterpart_conditioned_envelope/decision.md`: marginally valid M3 envelope and robust counterpart-IPV practical null; report `reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/00_entry/index.html` | Boundaries: subgroup coverage uneven (126/264), LODO M3 90% coverage 0.749-0.991, target zero atom 21.5%, associational/single IPV operationalization | Use frozen decision/report as upstream input; do not claim a positive counterpart-conditioning mechanism |
-| **RQ010** | Group 4A/4B — WOD-E2E feasibility, tracking, and human preference validity | `accepted` | S7 | **P0** | decision frozen (feasibility boundary) in `reports/knowledge/RQ010_wod_e2e_tracking_feasibility/decision.md`; T2_FULL_TRACKING_REQUIRED; Gate010-0 PASS; HPC BLOCKED_PENDING_ACCESS; red-team CLEAR (run RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e) | M3 needs self-built multi-camera tracking; official sizes sign-in-gated; map geometry unavailable; RQ009 provisional | RQ010B: authorized pilot/data + clear tracking gate + frozen RQ009 |
-| **RQ011** | Group 5A — OnSite full-universe and run-level readiness | `accepted` | S7 | **P0** | decision frozen (READY_WITH_FROZEN_EXCLUSIONS) in `reports/knowledge/RQ011_onsite_full_universe_readiness/decision.md`; re-run on complete data (run `RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5`): `READY_WITH_FROZEN_EXCLUSIONS`; 20 teams/300 cells; outcome universe full 300, replay universe 285 (T19 excluded, replay absent); 33 collisions recovered from diagnostic PDFs; independent re-verify + red-team (PASS_NO_BLOCKER) + replication (full agreement) + final review PASS; report `reports/studies/RQ011_onsite_full_universe_readiness/RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5/90_report/index.html`; supersedes suspended RQ011_1 (incomplete OneDrive sync) | Run-level & repeated-run not identifiable by design (one run/team); replay set carries moderate residual selection bias (T19 excluded); `script_version_seed` unavailable (not needed for matched-scenario) | RQ011B (if pursued): matched-scenario algorithm×scenario analysis on full-300 outcomes / 285 replay, with stated exclusions |
-| **RQ012** | Group 6A — OnSite event ontology and blind-annotation readiness | `accepted` | S7 | **P0** | Scope revised 2026-06-24: human blind annotation deprecated (automatic events + OnSite official outcomes; human alignment via WOD+InterHub). Wave-A readiness complete for run `RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37`: gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html` | `BLOCKED_FOR_HUMAN_LABELS`: final neutral media/card issuance, auditor sign-off, two accepted labels, kappa+AC1 agreement, upstream freezes, and explicit Gate 012B authorization absent (RQ012A leg) | RQ012B W0 extractor-health complete (M3-independent slice; 4-role validated); run RQ012B stages 3-5 (deviation→harm) after RQ009 M3 freeze |
-| **RQ013** | Beyond-safety incremental validity | `planning` | S0 | P2 | RQ003 provides a negative/boundary prior | Must wait for frozen RQ009 predictions and independent WOD/OnSite outcomes from RQ010–RQ012 | Draft only after upstream gates pass |
+| **PAPER002** | Dynamic-IPV v4.1 evidence architecture | `writing` | S8 | **P0** | Verified on paper-repository `main`: merge commit `c6783577`; `structure.md` is v4.1 estimability-aware dynamic norm, `claims_register.md` is v4.1, and `main.tex` uses the same narrative | Pending markers remain for unfinished R2/R3/R4–R6 evidence; paper is not submission-ready | Treat `c6783577` as the current manuscript baseline and reconcile all future Overleaf round-trips against `structure.md` |
+| **RQ001** | Legacy online interval deployability | `review` | S7 | P1 | Engineering prior for route-conditioned self-anchor interval; usable only as M4 ablation/history | Decision pending; old target/model do not establish the new M3 norm | Freeze bounded decision and protocol crosswalk |
+| **RQ002** | Self-anchor group-norm validity | `review` | S7 | P1 | Reviews reject self-anchor-only normative authority and identify norm laundering | Formal decision still pending | Freeze rejection/ablation boundary |
+| **RQ003** | NSFC external evidence | `accepted` | S7 | P1 | Tier B feasibility and transfer-boundary evidence | No robust IPV-specific increment; prior H3 blind labels blocked | Reuse only within accepted Tier B boundary |
+| **RQ004** | Episode-level IPV state organization | `review` | S7 | P1 | Supports state-conditioned response-surface framing, not a universal law | Exact paper-safe decision not frozen | Freeze R1 claim boundary |
+| **RQ005** | Manuscript evidence-gap and leakage governance | `review` | S7 | P1 | Supports framework, leakage contract, and claim downgrades | Decision not frozen | Freeze governance decision |
+| **RQ006** | Sigma sensitivity | `archived-review` | S7 | P3 | Sigma=0.1 is healthier; IPV magnitude remains parameter-sensitive | Not substantive verifier-validity evidence | Retain as robustness appendix evidence |
+| **RQ007** | Interaction-conditioned IPV estimability | `accepted` | S7 | **P0** | C1–C3 frozen on development/guard; proximity-bounded residual; held-out sealed | Held-out confirmation remains unopened and irreversible once accessed | Keep sealed while RQ009 design/code/thresholds are frozen; request a separate PI decision at Gate 009-5 |
+| **RQ008** | InterHub temporal IPV discovery | `accepted` | S7 | P2 | Negative discovery boundary frozen: 0/24 directional structures survived controls | PI decision: do not run RQ008B now; confirmation remains unopened | Do not use discovery motifs in RQ009; no further action unless PI later reopens RQ008B |
+| **RQ009** | Estimability-aware dynamic counterpart-conditioned human envelope | `approved` | S1 | **P0** | PI authorized launch; plan and Claude→Codex prompt created. M3 is primary, M4 self-history is ablation; RQ008 motifs excluded | Independent plan review required; RQ007 sealed data unavailable until a separate authorization | Start plan review and pre-sealed implementation; stop at `READY_FOR_SEALED_TEST` until PI authorizes opening |
+| **RQ010** | WOD-E2E tracking feasibility and human preference validity | `accepted` | S2 | P1 | Feasibility decision frozen: `T2_FULL_TRACKING_REQUIRED`; Route 4 preferred, Route 5 fallback | PI authorizes signed-in access/pilot in principle, but user must personally sign in/accept licence and make data available; exact scale/HPC remains unknown | Obtain signed-in manifest/size, then run ratings-blind pilot; do not block RQ009 or OnSite |
+| **RQ011** | OnSite full-universe and run-level readiness | `accepted` | S7 | **P0** | `READY_WITH_FROZEN_EXCLUSIONS`; full_300 outcomes, clean_285 replay/IPV, T19 replay-only exclusion | No repeated runs/run-level/causal claims; moderate replay-selection caveat | OnSite is first external priority after RQ009 freezes its inference package; launch RQ011B then |
+| **RQ012** | OnSite event ontology and blind-annotation readiness | `blocked` | S7 | P3 | Wave-A readiness complete; event ontology/extractor/blind protocol preserved | PI decision: two-human annotation is deferred. No labels/agreement/event-IPV claims | Keep `BLOCKED_FOR_HUMAN_LABELS`; no active work unless PI revisits after WOD/OnSite progress |
+| **RQ013** | Beyond-safety incremental validity | `planning` | S0 | P2 | RQ003 provides a negative/boundary prior | Requires frozen RQ009 and independent external outcomes; human-label route is currently deferred | Draft after RQ009 and initial OnSite results; WOD may add human-preference evidence later |
+
+## Current PI decisions
+
+- **Defer two-human annotation.** RQ012 remains a protocol/scaffold only.
+- **Launch RQ009.** Plan: `reports/plans/RQ009_plan_v0_dynamic_counterpart_conditioned_envelope_20260624.md`.
+- **Do not run RQ008B.** The negative RQ008A boundary remains frozen.
+- **Do not open RQ007 sealed data yet.** First freeze RQ009 completely; then ask for a separate irreversible opening decision.
+- **Authorize WOD signed-in access and a small ratings-blind pilot in principle.** User action is still needed for account/licence/login.
+- **Prioritize OnSite external validation after RQ009.** WOD proceeds in parallel but does not block it.
+- **Use paper-repository `main` merge `c6783577` as the current v4.1 manuscript baseline.**
 
 ## Active execution waves
 
-### Wave A — start now
+### Active now
 
-- **PAPER002:** verify the direct paper-project modification, register its exact commit/branch, and review the v4 structure and claim boundaries.
-- **RQ007:** COMPLETE — knowledge `decision.md` frozen 2026-06-24 for C1-C3 (development/guard only; held-out sealed; proximity-bounded residual).
-- **RQ008A:** COMPLETE — negative discovery boundary frozen 2026-06-24; 0/24 directional temporal structures survived; Wave B remains frozen pending Attack-10 amendment + explicit authorization.
-- **RQ010A:** COMPLETE — feasibility decision frozen 2026-06-24; `T2_FULL_TRACKING_REQUIRED`; RQ010B blocked pending signed-in access, tracking pilot, and frozen RQ009.
-- **RQ011A:** COMPLETE — re-run on complete data finished with `READY_WITH_FROZEN_EXCLUSIONS` (outcome full 300; replay 285, T19 excluded; run-level/repeated-run not identifiable by design); run `RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5`; report `reports/studies/RQ011_onsite_full_universe_readiness/RQ011_2_onsite_readiness_20260623T201415+0800_efdd75a5/90_report/index.html`. The earlier RQ011_1 was suspended (incomplete OneDrive sync) and is superseded.
-- **RQ012A:** final reviewed Wave-A readiness package is complete: 9 automatic events; gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans, and 012B blocked; run `RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37`; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`; status remains `BLOCKED_FOR_HUMAN_LABELS`.
-- **RQ012B (W0, Wave-B):** M3-independent extractor-health slice COMPLETE; scientific harm endpoint `BLOCKED_PENDING_M3` (RQ009 M3 unfrozen → plan stages 3/4/5 deferred). Frozen 9-event extractor on clean_285: computability 280/285 (98.25%), precedence suppression 2.66% (E09<E15), identity 100%, E01=0 definitionally inert, **sampling-rate sensitive → pin native ~10 Hz downstream**; absolute counts are convention-dependent extractor evidence only. 4-role validated (plan-review PROCEED-WITH-CONDITIONS / red-team CLEAR / blind replication AGREE on health+direction / final-review PASS); Nature-figure skill used; bilingual offline report. Run `RQ012B_1_event_harm_20260625T202307+0800_38f47437`; entry `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_1_event_harm_20260625T202307+0800_38f47437/00_entry/index.html`.
+- **RQ009:** independent plan review → inventory/measurement audit → split/feature freeze → M0–M5 implementation → conformal/abstention → controls → pre-opening review.
+- **RQ010 pilot preparation:** obtain signed-in official manifest/size and prepare the ratings-blind tracker pilot after user completes login/licence access.
+- **Paper baseline:** keep `structure.md` v4.1 and claims register synchronized with accepted RQ decisions; do not replace them with the v3 self-anchor narrative.
 
-### Wave A plan documents
+### Explicitly paused
 
-| RQ | Plan |
-|---|---|
-| RQ007 | `reports/plans/RQ007_plan_v0_interaction_conditioned_ipv_estimability_20260622.md` |
-| RQ008 | `reports/plans/RQ008_plan_v0_interhub_temporal_ipv_discovery_20260622.md` |
-| RQ010 | `reports/plans/RQ010_plan_v0_wod_e2e_tracking_feasibility_20260622.md` |
-| RQ011 | `reports/plans/RQ011_plan_v0_onsite_full_universe_readiness_20260622.md` |
-| RQ012 | `reports/plans/RQ012_plan_v0_onsite_event_annotation_readiness_20260622.md` |
+- **RQ008B:** no execution and no confirmation-data access.
+- **RQ012 human labels:** no media issuance, annotation, agreement, or Gate 012B work until PI revisits.
+- **RQ007 held-out:** sealed until RQ009 reaches `READY_FOR_SEALED_TEST` and PI explicitly authorizes opening.
 
-### Wave B — start only after upstream gates
+### After RQ009 freezes
 
-- **RQ008B:** held-out temporal confirmation after RQ007 freezes the estimability/valid-window contract.
-- **RQ009:** M0–M5 dynamic envelope after RQ007 and RQ008 provide frozen inputs.
-- **RQ010B:** WOD tracking implementation and preference analysis after the RQ010 feasibility gate and frozen RQ009 model.
-- **RQ011B:** OnSite matched-scenario algorithm validity after the readiness gate and RQ009 prediction freeze.
-- **RQ012B:** event-aligned harm analysis only after real human labels, RQ007 onset definitions, and RQ009 deviation definitions exist.
+1. **OnSite first:** RQ011B matched `algorithm × scenario` analysis using full_300 outcomes and clean_285 replay/IPV with the T19 caveat.
+2. **WOD in parallel:** tracker pilot and quality gate; formal preference analysis only after tracking and RQ009 gates pass.
+3. **RQ013 later:** baseline-relative incremental validity using available external outcomes.
 
-### Wave C — synthesis and manuscript use
+## Active plan documents
 
-- **RQ013:** beyond-safety incremental validity using frozen predictions and independent outcomes.
-- Independent red team, replication, and cross-RQ claim review.
-- PAPER002 final manuscript update using accepted `decision.md` files only.
+| RQ | Plan | Main-agent prompt |
+|---|---|---|
+| RQ007 | `reports/plans/RQ007_plan_v0_interaction_conditioned_ipv_estimability_20260622.md` | `reports/plans/prompts/RQ007_prompt_claude_codex_orchestration_20260622.md` |
+| RQ008 | `reports/plans/RQ008_plan_v0_interhub_temporal_ipv_discovery_20260622.md` | `reports/plans/prompts/RQ008_prompt_claude_codex_orchestration_20260622.md` |
+| RQ009 | `reports/plans/RQ009_plan_v0_dynamic_counterpart_conditioned_envelope_20260624.md` | `reports/plans/prompts/RQ009_prompt_claude_codex_orchestration_20260624.md` |
+| RQ010 | `reports/plans/RQ010_plan_v0_wod_e2e_tracking_feasibility_20260622.md` | `reports/plans/prompts/RQ010_prompt_claude_codex_orchestration_20260622.md` |
+| RQ011 | `reports/plans/RQ011_plan_v0_onsite_full_universe_readiness_20260622.md` | `reports/plans/prompts/RQ011_prompt_claude_codex_orchestration_20260622.md` |
+| RQ012 | `reports/plans/RQ012_plan_v0_onsite_event_annotation_readiness_20260622.md` | `reports/plans/prompts/RQ012_prompt_claude_codex_orchestration_20260622.md` |
 
 ## Dependency map
 
 ```mermaid
 flowchart LR
-  P2[PAPER002 v4 architecture]
+  P2[PAPER002 v4.1]
   R7[RQ007 estimability]
-  R8A[RQ008A discovery]
-  R8B[RQ008B confirmation]
+  R8[RQ008 negative boundary]
   R9[RQ009 dynamic envelope]
-  R10A[RQ010A WOD feasibility]
+  R10P[RQ010 tracking pilot]
   R10B[RQ010B WOD preference]
-  R11A[RQ011A OnSite readiness]
-  R11B[RQ011B matched-scenario validity]
-  R12A[RQ012A event + annotation readiness]
-  R12B[RQ012B event-aligned harm]
+  R11A[RQ011 readiness]
+  R11B[RQ011B OnSite validity]
+  R12[RQ012 deferred]
   R13[RQ013 beyond-safety]
 
-  R7 --> R8B
-  R8A --> R8B
   R7 --> R9
-  R8B --> R9
-  R10A --> R10B
-  R9 --> R10B
+  R8 -. excludes unconfirmed motifs .-> R9
   R11A --> R11B
-  R7 --> R11B
   R9 --> R11B
-  R12A --> R12B
-  R7 --> R12B
-  R9 --> R12B
-  R10B --> R13
+  R10P --> R10B
+  R9 --> R10B
   R11B --> R13
-  R12B --> R13
+  R10B --> R13
   R9 --> R13
   R13 --> P2
 ```
 
-## How existing RQs feed the new paper logic
-
-| Existing RQ | New role |
-|---|---|
-| RQ001 | Engineering prior, interval-method history, and M4 self-history ablation evidence; not the new M3 headline result. |
-| RQ002 | Falsification evidence against self-anchor normative authority. |
-| RQ003 | OnSite feasibility/Tier B boundary pilot and a source of negative-control lessons. |
-| RQ004 | Episode-level state-organization evidence for the new R1. |
-| RQ005 | Leakage, provenance, abstention, and claim-governance contract. |
-| RQ006 | Estimator-parameter sensitivity and robustness boundary. |
-
 ## Synchronization protocol
 
 When the user or an agent reports progress, update both this dashboard and
-`rq_progress_registry.csv` using the following minimum fields:
+`rq_progress_registry.csv` with:
 
 ```text
 ID
@@ -185,35 +172,29 @@ last_updated
 
 Rules:
 
-1. Do not advance a status on the basis of a chat summary alone when a reviewed artifact is required.
+1. Do not advance scientific status without the required reviewed artifact.
 2. Record `blocked` explicitly; do not reinterpret it as a null result.
 3. `accepted` requires a claim decision in `reports/knowledge/<RQ>/decision.md`.
-4. `writing` requires an accepted decision plus an explicit manuscript handoff.
-5. Every status change must identify the artifact or human decision that caused the change.
-6. Preserve negative, null, and failed results in the dashboard notes or linked RQ artifacts.
+4. `writing` requires a verified paper baseline or accepted manuscript handoff.
+5. Every status change must identify the artifact or PI decision that caused it.
+6. Preserve negative, null, failed, and deferred results.
 7. Dates use ISO `YYYY-MM-DD`; paths are repository-relative whenever possible.
 
 ## Current program-level blockers
 
-- PAPER002 was reportedly modified directly in the paper project, but the exact commit/branch and independent review are not yet registered here.
-- RQ001/RQ002/RQ004/RQ005 decisions frozen 2026-06-24 (RQ001 bounded/M4 ablation; RQ002 self-anchor falsification/M4; RQ004 R1 state; RQ005 governance/leakage contract).
-- RQ009 greenlit (approved) 2026-06-24; RQ010B authorized (pilot+Route-4 tracker+HPC); RQ012 human blind annotation deprecated (PI decision).
-- RQ007 decision frozen (accepted C1-C3, proximity-bounded, dev/guard; held-out sealed).
-- RQ008 decision frozen (accepted negative discovery boundary; Wave B frozen pending Attack-10 amendment + authorization).
-- RQ011 evidence.csv is empty and the final readiness leaf rests on a PI-authorized RT10 re-grade; RQ012 evidence.csv is empty (populate when 012B runs).
-- RQ009 cannot start formal modelling before RQ007/RQ008 gates.
-- RQ010B remains blocked because signed-in data/access, tracker quality, official scale, and frozen RQ009 are still pending.
-- OnSite outcome/replay readiness is frozen at RQ011A, but run-level/repeated-run claims remain non-identifiable and RQ011B still needs separate authorization.
-- No real two-human OnSite annotations currently exist.
+- RQ001, RQ002, RQ004, and RQ005 still lack accepted `decision.md` claim slates.
+- RQ009 has PI authorization but has not yet passed independent plan review or reached its pre-opening freeze.
+- RQ007 held-out confirmation remains sealed by design.
+- RQ010 signed-in access, official data volume, tracker quality, and final HPC decision remain unresolved.
+- RQ011B waits for the frozen RQ009 inference package.
+- RQ012 substantive behavioural evidence is deferred because the PI has paused two-human annotation.
+- RQ013 waits for RQ009 and external outcomes.
 
 ## Changelog
 
 | Date | Change |
 |---|---|
-| 2026-06-22 | Initialized program dashboard for PAPER001/PAPER002 and RQ001–RQ013; defined active waves, dependencies, synchronization rules, and current blockers. |
-| 2026-06-22 | Created centralized `reports/plans/` and drafted Wave A plans for RQ007, RQ008, RQ010, RQ011, and RQ012; recorded PAPER002 as directly modified but pending artifact verification. |
-| 2026-06-23 | Registered RQ012A Wave-A readiness complete but `BLOCKED_FOR_HUMAN_LABELS`: gates 012-0/012-1 pass, 012-2 text-cleared, 012-3 ready-pending-humans, 012B blocked; report `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012_1_event_annotation_readiness_20260623T104749+0800_1f52ac37/90_report/index.html`. |
-| 2026-06-24 | Froze knowledge-layer `decision.md` for RQ007 (accepted C1-C3, proximity-bounded), RQ008 (accepted negative discovery boundary), RQ010 (feasibility boundary, T2 tracking; RQ010B blocked-pending-access), RQ011 (READY_WITH_FROZEN_EXCLUSIONS), RQ012 (Wave-A readiness; BLOCKED_FOR_HUMAN_LABELS). Synced registry + dashboard + STUDIES.md; corrected stale RQ007/RQ008 `planning` rows to `accepted`. Flagged RQ011/RQ012 empty `evidence.csv` and the PI-authorized RQ011 RT10 re-grade. |
-| 2026-06-24 | PI decisions applied: froze RQ001/002/004/005 decision.md (legacy M4 ablation / R1 state / leakage governance / self-anchor falsification); greenlit RQ009 (M3, planning->approved); authorized RQ010B (signed-in pilot + Route-4 multi-camera tracker + HPC); revised RQ012 scope (human blind annotation deprecated -> automatic events + OnSite official outcomes; human alignment relocated to WOD+InterHub). Back-filled RQ011/RQ012 evidence.csv. Manuscript checked: live main.tex is v4.1 (supersedes PR#2); flagged R2 "temporal organization" wording vs RQ008 negative. Committed knowledge/ to git. |
-| 2026-06-24 | Wave B launched (PI, all four lines): drafted approved v1 plans RQ009 (M3 envelope), RQ010B (tracker+preference), RQ011B (matched-scenario), RQ012B (automatic-event harm) + `WAVE_B_launch_plan_20260624.md` in `reports/plans/`. Sequencing: RQ009 + RQ010B-B1 tracker in parallel now; RQ011B/012B + RQ010B-B2 after M3 freeze; RQ013 last. Pivot gate = RQ009 M3-vs-M4 sharpness; two big bets = M3 sharpness + external IPV-outcome association (RQ003 null prior). |
-| 2026-06-25 | RQ012B Wave-B W0 executed via Codex fleet orchestration (Claude = controller; isolated CODEX_HOME, no MCP). RQ009 M3 unfrozen → harm-association endpoint (plan stages 3/4/5) `BLOCKED_PENDING_M3`; ran the M3-independent slice: stage-1 plan review + stage-2/W0 frozen 9-event extractor health on clean_285 (280/285; precedence 2.66% E09<E15; identity 100%; E01=0 definitional; sampling-rate sensitive → pin native ~10 Hz; counts convention-dependent evidence only). Data-health PASS (leakage clean; mask=clean_285; no caps). 4-role validated (plan-review → red-team CLEAR → blind replication AGREE → final-review PASS); Nature-figure figures + bilingual offline HTML. Run `RQ012B_1_event_harm_20260625T202307+0800_38f47437`. No new manuscript claim (endpoint blocked). Synced registry + report_index + decision addendum + STUDIES + START_HERE. |
+| 2026-06-22 | Initialized the program dashboard and Wave-A plans. |
+| 2026-06-23 | Registered RQ012A readiness as `BLOCKED_FOR_HUMAN_LABELS`. |
+| 2026-06-24 | Froze knowledge decisions for RQ007, RQ008, RQ010, RQ011, and RQ012. |
+| 2026-06-24 | Recorded PI decisions: defer human annotation; launch RQ009; do not run RQ008B; keep RQ007 sealed until RQ009 pre-opening freeze; authorize WOD signed-in pilot in principle; prioritize OnSite; verify paper `main` at `c6783577` as v4.1 baseline. Added RQ009 plan and orchestration prompt. |

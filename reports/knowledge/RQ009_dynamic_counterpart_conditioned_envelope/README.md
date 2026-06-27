@@ -1,21 +1,31 @@
-# RQ009: Dynamic Counterpart-Conditioned Human Envelope (M3)
+# RQ009: Estimability-Aware Dynamic Counterpart-Conditioned Human Envelope
 
-Status: APPROVED / greenlit by PI 2026-06-24 (was planning). Execution not yet run; no `decision.md` until results exist.
+Status: `approved for launch; independent plan review is the first gate`
 
-Knowledge layer for the primary dynamic verifier model (M3): the estimability-aware, conformally calibrated dynamic envelope conditioned on the current state and the counterpart's current IPV.
+Execution layer: `reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/`
 
-## Frozen upstream inputs (all satisfied)
+Plan:
+`reports/plans/RQ009_plan_v0_dynamic_counterpart_conditioned_envelope_20260624.md`
 
-- **RQ007 (estimability contract, frozen):** separate interaction opportunity / IPV estimability / human-reference support / deviation; never read high uncertainty as neutral IPV. Use the valid-window/estimability contract.
-- **RQ008 (frozen, negative):** no directional temporal IPV law survived discovery → RQ009 must NOT rely on temporal motifs; use context + counterpart current IPV (and, at most, estimable-window structure marked pending).
-- **RQ004 (frozen):** R1 state-conditioned response surface (risk × geometry × role × time) is the contextual norm.
-- **RQ002 (frozen):** self-anchor → M4 ablation only; norm is the human population conditional distribution, not agent-owned.
-- **RQ005 (frozen):** leakage contract — observed PET / post-hoc labels offline-only; causal provenance for runtime inputs.
+Main-agent prompt:
+`reports/plans/prompts/RQ009_prompt_claude_codex_orchestration_20260624.md`
 
-## Scope (M0–M5)
+## Question
 
-M3 = context + counterpart current IPV + split-conformal (primary). M4 = context + ego self-anchor (sharpness ablation only). Plus M0 global scalar, M1 oracle PET-bin, M2 context-only, M5 source-aware/OOD-gated. Target = same-window current rolling IPV; support/OOD → abstain.
+Among active, estimable interaction windows, can a calibrated human current-IPV interval
+conditioned on causal context and the counterpart's current IPV provide a reliable and selective
+measure of conditional social atypicality?
 
-## Next action
+## Binding boundaries
 
-Draft the RQ009 execution plan and run M0–M5 under the frozen contracts; it gates RQ010B (M3 preference test), RQ011B (matched-scenario), and RQ013. This README records the greenlight; it is not a results decision.
+- M3 (`context + counterpart current IPV`) is primary.
+- M4 (`context + ego self-history`) is an ablation only.
+- RQ007 development/guard estimability claims may be used with their proximity-bounded caveat.
+- RQ007 sealed data remain unopened until RQ009 reaches its independently reviewed
+  `READY_FOR_SEALED_TEST` state and the PI gives a new explicit authorization.
+- RQ008B is not authorized; no RQ008 exploratory motif enters the primary model.
+- WOD/OnSite outcomes and ratings are denylisted during RQ009 development.
+- OnSite is the first external handoff after the RQ009 inference package freezes.
+
+No `decision.md` exists yet. This folder must not be used as an accepted paper claim ledger until a
+reviewed execution and explicit knowledge decision are present.
