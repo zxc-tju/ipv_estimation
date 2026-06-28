@@ -2,6 +2,11 @@
 
 Last verified: 2026-06-27 by `INFRA-hpc-reuse-doc`.
 
+Shared cross-project HPC usage guide:
+`/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/HPC_TONGJI_USAGE_GUIDE.md`.
+Use that file for global access, safety, directory, and Slurm conventions; keep
+this file as the InterHub/IPV-specific reuse reference.
+
 This is a cross-RQ operating reference for reusable Tongji HPC assets created or
 validated during the InterHub/RQ009 IPV work. Verification was read-only on HPC:
 `ssh`, `stat`, `ls`/`find`, `wc`, `git rev-parse`, conda import smoke, and
@@ -10,6 +15,10 @@ validated during the InterHub/RQ009 IPV work. Verification was read-only on HPC:
 ## Access And Safety
 
 - SSH alias: `tongji-hpc`.
+- User working root on HPC: `/share/home/u25310231/ZXC`.
+- All durable HPC project work should live under that `/ZXC` root unless the
+  user explicitly says otherwise.
+- Slurm job names must start with `zxc-` for newly submitted jobs.
 - Connection pattern:
 
 ```bash
@@ -218,6 +227,7 @@ Change for the new run:
   RUN_SPACE=/share/home/u25310231/ZXC/<new_run_space>
   #SBATCH --output and --error paths
   job names/comments and consolidation rename suffixes
+  #SBATCH --job-name=zxc-<short-task-name>
 ```
 
 The RQ009 array used 4 shards (`#SBATCH --array=0-3`) and
@@ -228,21 +238,21 @@ may delay some array tasks.
 
 ```bash
 ssh -o BatchMode=yes -o ConnectTimeout=12 tongji-hpc \
-  'cd /share/home/u25310231/ZXC/<new_run_space> && sbatch submit_full_datasets_sigma01_hw<N>_<rq>_array.sh'
+  'cd /share/home/u25310231/ZXC/<new_run_space> && sbatch --job-name=zxc-<task> submit_full_datasets_sigma01_hw<N>_<rq>_array.sh'
 ```
 
 6. Submit merge after the array succeeds:
 
 ```bash
 ssh -o BatchMode=yes -o ConnectTimeout=12 tongji-hpc \
-  'cd /share/home/u25310231/ZXC/<new_run_space> && sbatch --dependency=afterok:<array_job_id> merge_full_datasets_sigma01_hw<N>_<rq>.sh'
+  'cd /share/home/u25310231/ZXC/<new_run_space> && sbatch --job-name=zxc-<task>-merge --dependency=afterok:<array_job_id> merge_full_datasets_sigma01_hw<N>_<rq>.sh'
 ```
 
 7. Submit consolidation after merge succeeds:
 
 ```bash
 ssh -o BatchMode=yes -o ConnectTimeout=12 tongji-hpc \
-  'cd /share/home/u25310231/ZXC/<new_run_space> && sbatch run_consolidate_sigma01_hw<N>_batch.sh'
+  'cd /share/home/u25310231/ZXC/<new_run_space> && sbatch --job-name=zxc-<task>-consolidate run_consolidate_sigma01_hw<N>_batch.sh'
 ```
 
 8. Verify rows, checksum, and key columns before reuse:
@@ -297,7 +307,7 @@ Submit:
 
 ```bash
 ssh -o BatchMode=yes -o ConnectTimeout=12 tongji-hpc \
-  'cd /share/home/u25310231/ZXC/<run_space> && sbatch <script>.sh'
+  'cd /share/home/u25310231/ZXC/<run_space> && sbatch --job-name=zxc-<task> <script>.sh'
 ```
 
 Fetch:
@@ -330,4 +340,3 @@ scp -p -o BatchMode=yes -o ConnectTimeout=15 \
   `data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/target_hw4/`
 - Current operating pointer:
   `START_HERE.md`
-

@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-06-27.
+Last reviewed: 2026-06-28.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -8,14 +8,110 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
-- RQ012B Stage 3+ OnSite M3-anchor enabling build now has AV-perspective
-  clean_285 anchors under
-  `/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_m3_av_anchors.parquet`:
-  267/285 units covered, 267 anchors, 30/32 M3 required inputs fully populated.
-  This build computes pinned-estimator IPV features/targets only; no
-  event/outcome join or harm association has been run.
-- RQ012B Stage 3+ frozen-M3 OOD/support gate is complete for the 267 OnSite
-  AV anchors. As-is gate pass is 51/267 anchors/units, with 216 abstentions;
+- RQ012B Stage 4/5 deviation-to-harm association and negative-control battery is
+  complete for the expanded all-valid frozen-M3 OnSite deviation table. Analysis
+  set is the pre-registered gate-passing units: `n=245` units across 19 teams;
+  exclusions are 18 replay-eligible units that failed IPV/anchor build before
+  deviation plus 22 built units with no gate-passing anchor. Final verdict is
+  `NULL`: no primary objective harm co-primary deviation effect is reliable
+  after BH-FDR or label-permutation control, and none passes the full
+  stage-5 battery. Primary co-primary effects: official_safety
+  `frac_outside_90` increment `1.1595e-05`, 95% CI
+  `[9.728e-08, 0.0013195]`, permutation p `0.7429`, q `0.999`;
+  official_safety `max_abs_exceedance_90` increment `0.0001303`, 95% CI
+  `[6.687e-07, 0.0013279]`, p `0.6485`, q `0.9947`;
+  collision/intervention indicator increments were effectively zero with p
+  `0.3845`/`0.6941` and q `0.9422`/`0.999`. W0 event-count associations are
+  secondary only; E16 sparse event rows included some low p-values, but
+  automatic-event counts alone are not a scientific outcome and several
+  controls failed. Stage 4b full interaction-failure consequence battery is now
+  complete over the 8 non-inert automatic behavioural manifestations, 4
+  behavioural groupings, and 4 official subscores with kinematic-only +
+  exposure baseline, seed `20260628`, 5,000 team-block permutations, and 300
+  team-cluster bootstraps. Full-battery verdict is `BOUNDED` with `0`
+  SUPPORTED endpoints: strongest powered channel is NEAR-MISS/CONTACT
+  `max_abs_exceedance_90` IRR `1.2239`, 95% CI `[1.0314, 1.3450]`,
+  permutation p `0.0018`, BH q `0.05119`, baseline-incremental and beating
+  placebo/label but failing M2; E09 near-miss similarly has IRR `1.2329`, p
+  `0.0018`, q `0.05119` but fails placebo and M2. E16 no-progress/deadlock is
+  bounded and control-passing (IRR `1.4967`, p `0.002599`, q `0.05119`) but is
+  explicitly UNDERPOWERED. No official subscore or abrupt/discomfort channel
+  passes BH-FDR/control requirements, and no interaction-failure channel is
+  IPV-specifically supported by deviation. Full-battery artifacts:
+  `data/derived/onsite_competition/RQ012B_event_harm/stage4b/full_battery/{full_battery_results.csv,endpoint_summary.csv,negative_control_results_full_battery.csv}`
+  and
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/04_harm_association/{harm_association_full_battery_report.md,results_full_battery.json}`.
+  Earlier Stage 4/5 artifacts:
+  `data/derived/onsite_competition/RQ012B_event_harm/stage4plus/` and
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/04_harm_association/{harm_association_report.md,results.json}`;
+  stage-5 detail:
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/05_negative_controls/negative_control_detail.csv`.
+  Publication figure package for HA-1/HA-2/HA-3 plus the intuitive Stage-4b
+  partial-rank Fig. 4:
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/01_results/figures/`
+  with PNG/PDF/SVG figure groups, per-panel source CSVs, manifest, and plotting
+  scripts. Latest added figure:
+  `fig4_deviation_vs_failures_intuitive.{png,pdf,svg}`, computed from
+  `unit_analysis_table.parquet` as exposure-controlled partial Spearman
+  correlations with event rates and `100 - official_score`; all point estimates
+  are positive but weak, and too-passive lower-tail deviation is larger than
+  too-aggressive upper-tail deviation in 9/10 displayed consequences.
+  Bilingual offline-openable report package:
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/90_report/index.html`,
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/90_report/index.zh.html`,
+  and entry page
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/00_entry/index.html`.
+  Independent blind replication by a different route also reproduces NULL:
+  team-block outcome-profile permutation plus exposure-controlled rank/logistic
+  tests gave official_safety p `0.0762`/`0.2529` for
+  `frac_outside_90`/`max_abs_exceedance_90`, collision/intervention p
+  `0.3421`/`0.8956`, all `AGREE`; artifacts:
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/08_replication/`.
+  Independent full-battery replication/red-team recheck also `AGREE`s with the
+  bounded/null story while adding two wording caveats: the displayed/powered
+  consequences have uniform positive worse-direction partial-r signs, but the
+  full 16-endpoint family has sparse underpowered E18/E19 exceptions; and the
+  strict `partial r <= 0.17` shorthand holds for the displayed simple-rank view
+  but not for the NEAR-MISS/CONTACT grouping (`r=0.205`, still small). E16
+  lower-tail deadlock remains the only all-control-passing row in the
+  independent Poisson check (M3 increment `0.03817`, M2 `0.03606`, placebo
+  `0.01534`, within-team permutation p `0.0010`, 52 units with E16>0), but is
+  underpowered and published BH q is `0.05119`; near-miss and
+  NEAR-MISS/CONTACT max-exceedance lose to M2 (`0.04335` vs `0.04536`, and
+  `0.04879` vs `0.05145`). Recheck artifacts:
+  `data/derived/onsite_competition/RQ012B_event_harm/stage4b/recheck/` and
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/08_replication/full_battery_recheck_report.md`.
+  Reproduce the original Stage 4/5 run with
+  `/Users/xiaocong/.rq009_codex_fleet/venv/bin/python reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/04_harm_association/run_harm_association.py --seed 20260628 --n-permutations 5000 --bootstrap 300`.
+  Reproduce the full-battery Stage 4b run with
+  `/Users/xiaocong/.rq009_codex_fleet/venv/bin/python reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/04_harm_association/run_harm_association_full_battery.py --seed 20260628 --n-permutations 5000 --bootstrap 300`.
+  Reproduce the full-battery independent recheck with
+  `/Users/xiaocong/.rq009_codex_fleet/venv/bin/python data/derived/onsite_competition/RQ012B_event_harm/stage4b/recheck/recheck_full_battery.py --seed 20260628 --n-permutations 5000`.
+- RQ012B Stage 3+ OnSite all-valid M3-anchor enabling build now has
+  AV-perspective clean_285 anchors under
+  `/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet`:
+  267/285 units covered, 67,861 anchors, 29/32 M3 required inputs fully
+  populated, dense IPV rows at
+  `data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet`.
+  This HPC build used pinned legacy estimator HEAD `5edd2810` with
+  process-pool Slurm job `1710800` on one AMD 192-core node. The expanded
+  frozen-M3 OOD/support gate and deviation scan is complete: gate pass
+  19,044/67,861 anchors and 245/267 units; abstain 48,817 anchors. At the 90%
+  band, 840 gate-passing anchors across 149 units are out-of-band; 80%/95%
+  counts are 2,475/447 anchors and 193/116 units. Per-unit max absolute 90%
+  exceedance is >0 for 149 units (nonzero min/median/max
+  0.00158/0.24593/1.06895). Abstention remains structural: distance over
+  threshold for 47,166 category-eligible anchors and unsupported joint cells
+  for 1,651 anchors; imputed-NaN distance features are common (64,040 anchors,
+  45,301 abstainers) but are not a separate frozen-gate hard-fail. Stage 4/5
+  harm association has now been run from this expanded deviation table; see the
+  current RQ012B Stage 4/5 bullet above. Stage-3 gate report:
+  `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/ood_gate_multi/ood_gate_multi_report.md`.
+  Scored data:
+  `data/derived/onsite_competition/RQ012B_event_harm/stage3plus/ood_gate_multi/`.
+- Prior RQ012B Stage 3+ frozen-M3 OOD/support gate is complete only for the
+  earlier one-anchor-per-unit 267-anchor OnSite AV build. As-is gate pass is
+  51/267 anchors/units, with 216 abstentions;
   units with usable deviation are 51. Dominant frozen hard-fail causes are
   k=25 distance over threshold 1.6072176695 for 136 category-eligible anchors
   and unsupported joint cells for 80 anchors (`F|equal|AV;HV`=60,
@@ -52,7 +148,11 @@ question index in `STUDIES.md`.
   v4.1 estimability-aware dynamic norm and must supersede v3 self-anchor round-trips.
 - The 20260612 sigma 0.1 full-rerun data source is under
   `data/derived/interhub/20260612_sigma_0_1_full_rerun/00_hpc_outputs/`.
-- HPC reuse: HPC (Tongji) reusable assets + how-to → `reports/knowledge/INFRA_hpc_tongji_reuse.md`.
+- HPC reuse: shared Tongji HPC usage guide for all local projects →
+  `../HPC_TONGJI_USAGE_GUIDE.md`; InterHub/IPV-specific reusable assets remain
+  in `reports/knowledge/INFRA_hpc_tongji_reuse.md`. On HPC, durable work lives
+  under `/share/home/u25310231/ZXC`, and newly submitted Slurm job names must
+  start with `zxc-`.
 - RQ010B WOD-E2E Tongji HPC basic parser access is now working under
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/`. The 2026-06-26 four-shard
   ratings-sealed structural pre-flight sampled all 12 candidate-bearing
@@ -85,15 +185,13 @@ question index in `STUDIES.md`.
   from `gs://waymo_open_dataset_v_1_4_3/individual_files/`, exact-size and
   crc32c verified. Manifest:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/manifests/perception_dev.tsv`.
-- RQ010B Waymo Perception v1.4.3 finetune subset is now complete on Tongji
-  HPC under `/share/home/u25310231/ZXC/RQ010B_wod_e2e/data/perception/`: first
-  64 deterministic-sorted `.tfrecord` training segments plus first 16
-  validation segments, exact-size and crc32c verified against Mac `gsutil stat`.
-  Manifest:
-  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/manifests/perception_finetune.tsv`
-  (80 rows, 80 ok, total bytes 80,523,139,102). Transient token/temp/lock
-  state was removed after completion; final rescue log:
-  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/perception_finetune_rescue_20260626T174924Z.log`.
+- RQ010B Waymo Perception v1.4.3 finetune subset is now 256 training plus
+  16 validation `.tfrecord` segments on Tongji HPC under
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/data/perception/`, crc32c verified
+  with manifest
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/manifests/perception_256.tsv`
+  (272/272 ok). This supersedes the earlier 64-train/16-val
+  `perception_finetune.tsv` subset for current StreamPETR finetuning.
 - RQ010B StreamPETR Route 4 dev6 dry-run finetune now passes end-to-end on
   Tongji HPC L40. Converted infos are
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/data/waymo_stream_petr/waymo_infos_train_4seg.pkl`
@@ -107,14 +205,16 @@ question index in `STUDIES.md`.
   `73.2736 -> 40.4284`, and the lightweight Waymo center-distance smoke eval
   completed with `waymo_center_recall_2m=0.0` on 397 val samples. This metric
   validates the eval path only; it is not an accuracy claim.
-- RQ010B StreamPETR Route 4 lead-config 64-train/16-val finetune was
-  resubmitted as detached Tongji Slurm job `1707389` on 2026-06-27 02:48 CST
-  after job `1707307` failed at MMCV config parse with
+- RQ010B StreamPETR Route 4 lead-config 64-train/16-val finetune was stopped
+  early after best 16-val smoke recall plateaued around epoch 4. Frozen best
+  checkpoint:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/work_dirs/streampetr_waymo_finetune64_leadcfg_20260627/best_waymo_center_recall_2m_iter_50732.pth`.
+  The original Slurm job was `1707389` (L40 node `gpu4037`), launched
+  2026-06-27 02:48 CST after job `1707307` failed at MMCV config parse with
   `TypeError: cannot pickle '_io.BufferedReader' object`. The config fix
   deletes the closed `_handle` left by the parse-time train-info `with open`
-  block, and login-node `Config.fromfile(...)` now returns
-  `CONFIG_PARSE_OK`. Job `1707389` was `RUNNING` on L40 node `gpu4037` at
-  launch check. Sbatch:
+  block, and login-node `Config.fromfile(...)` returns `CONFIG_PARSE_OK`.
+  Sbatch:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/scripts/streampetr_waymo_finetune64_leadcfg_20260627.sbatch`;
   config:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/StreamPETR/projects/configs/StreamPETR/stream_petr_r50_flash_704_waymo_5cam_finetune64_leadcfg.py`;
@@ -123,11 +223,84 @@ question index in `STUDIES.md`.
   Slurm logs:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/streampetr_waymo_finetune64_1707389.out`
   and `.err`. The job first converts
-  `waymo_infos_train_64seg.pkl` and `waymo_infos_val_16seg.pkl`, then runs a
-  12-pass fixed-iteration one-L40 schedule with eval/checkpoint each pass,
-  `max_keep_ckpts=3`, best-checkpoint saving on `waymo_center_recall_2m`,
-  `--time=36:00:00`, estimated about 30 GPU-hours. This is an engineering
-  finetune launch only; no result or research claim is available yet.
+  `waymo_infos_train_64seg.pkl` and `waymo_infos_val_16seg.pkl`.
+- RQ010B §5 detector-quality/error-model gate is complete for the frozen
+  Route 4 best checkpoint on 16 Perception validation segments. Evaluation job
+  `1710088` ran on one L40 for 00:28:41 (0.478 GPU-h allocated; script runtime
+  estimate 0.460 GPU-h). Method: StreamPETR single-GPU inference, classwise
+  rotated BEV NMS (`score>=0.05`, IoU `0.25`, max `100` detections/frame),
+  center-distance AP/matching at 2 m because official Waymo LET-3D-AP metrics
+  ops were unavailable in the current env. Validation-selected operating point
+  is score threshold `0.15` (max micro-F1 on the same 16-val segments). Result:
+  overall AP `0.00328`, recall `0.08034`, precision `0.03276`; Vehicle AP
+  `0.00432`, recall `0.10585`, precision `0.03276`; Pedestrian and Cyclist AP,
+  recall, and precision all `0.0`. Verdict: this 64-segment detector is not
+  adequate for tracker + HOTA/AMOTA QA; add the remaining 734 Perception
+  training segments (full 798 total) with class-balanced checks and retrain
+  before retesting Route 4. Route 5 remains fallback if full-data Route 4 still
+  leaves Pedestrian/Cyclist near zero. Outputs:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_route4_detector_quality_best50732_20260627_summary.json`,
+  `_metrics_by_class_range.csv`, `_error_model.json`, and `_error_model.csv`.
+- RQ010B improved StreamPETR Waymo Perception 256-train/16-val finetune is
+  resumed/running as train-only 4-L40 DDP Slurm job `1712698` on partition
+  `L40` (`RUNNING` on `gpu4011` at final handoff check on 2026-06-28;
+  `--time=24:00:00`, max allocated 96 L40 GPU-h; do not wait for completion in
+  ordinary launch handoffs). Previous jobs failed only in in-loop distributed
+  evaluation: `1712416` on `gpu4009` failed after epoch-1 eval with NCCL
+  watchdog timeout, and `1712590` on `gpu4025` saved `iter_25354.pth` then
+  failed at DistEvalHook with `TypeError: 'NoneType' object is not iterable` in
+  `projects/mmdet3d_plugin/datasets/waymo_dataset.py evaluate()`. Training was
+  healthy with loss around 21 and checkpoints `iter_12677.pth` and
+  `iter_25354.pth`. Current no-eval fix applied on HPC: `tools/train.py` keeps
+  `timeout=datetime.timedelta(hours=4)` for `init_dist`; the active config sets
+  `evaluation=None`, `custom_hooks=[]`, `raw_equivalent_epochs=12`,
+  `max_iters=152124`, `checkpoint_config.interval=12677`, and
+  `max_keep_ckpts=-1`; `projects/mmdet3d_plugin/core/apis/mmdet_train.py`
+  skips eval-hook registration when `evaluation is None`; the resume sbatch
+  also passes `--no-validate` and resumes explicitly from `iter_25354.pth`.
+  Evaluate saved checkpoints separately on 1 GPU. Config:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/StreamPETR/projects/configs/StreamPETR/stream_petr_r50_flash_704_waymo_5cam_finetune256_balanced_warminit.py`;
+  warm-init checkpoint:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/checkpoints/stream_petr_waymo3_warminit_nusc_car_ped_bicycle.pth`.
+  Recipe uses ClassBalancedDataset `oversample_thr=0.70`, nuScenes class-row
+  warm init (`car->Vehicle`, `pedestrian->Pedestrian`, `bicycle->Cyclist`),
+  5x LR for `pts_bbox_head.cls_branches`, grid mask plus resize/flip and
+  BEV rot/scale augmentation. The config hard-points to
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/data/waymo_stream_petr/waymo_infos_train_256seg.pkl`
+  and
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/data/waymo_stream_petr/waymo_infos_val_16seg.pkl`
+  and fails if they are absent. Converted-info assertion:
+  train 50,708 samples/256 scenes/360,505,501 bytes; val 3,151 samples/16
+  scenes/22,943,129 bytes; JSON
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/waymo_infos_256_16_assert_1712385.json`.
+  `Config.fromfile` passes with 4-GPU schedule
+  `raw_iters_per_epoch=12677`, `checkpoint_interval=12677`,
+  `eval_interval=164801` (disabled sentinel greater than `max_iters`),
+  `max_iters=152124`, `evaluation is None`, and zero custom hooks. Quick
+  4-L40 DDP smoke job `1712408` on `gpu4011` passed warm-init +
+  class-balanced sampler
+  + DDP backprop with averaged loss decreasing
+  `78.1665 -> 66.1600 -> 59.0420`;
+  logs:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/streampetr_waymo_finetune256_ddp_smoke_1712408.log`
+  and `.jsonl`. Original full-run sbatch:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/scripts/streampetr_waymo_finetune256_balanced_warminit_ddp4_20260628.sbatch`;
+  failed timeout-fix resume sbatch:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/scripts/streampetr_waymo_finetune256_balanced_warminit_ddp4_resume_timeoutfix_20260628.sbatch`;
+  active no-eval resume sbatch:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/scripts/streampetr_waymo_finetune256_balanced_warminit_ddp4_resume_noeval_20260628.sbatch`;
+  resume checkpoint:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/work_dirs/streampetr_waymo_finetune256_balanced_warminit_ddp4_20260628/iter_25354.pth`
+  (`latest.pth -> iter_25354.pth`);
+  work dir:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/work_dirs/streampetr_waymo_finetune256_balanced_warminit_ddp4_20260628/`;
+  Slurm logs:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/streampetr_waymo_finetune256_ddp4_1712416.out`
+  and `.err` for the first failed run,
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/streampetr_waymo_finetune256_ddp4_resume_1712590.out`
+  and `.err` for the failed eval-resume job, and
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/streampetr_waymo_finetune256_ddp4_resume_noeval_1712698.out`
+  and `.err` for the active train-only resume job.
 - RQ009 Phase 3 features gate is now PASS. The hw=4 target source remains
   the verified frame-level `sigma01_hw4_ipv_timeseries.csv` with 3,695,981
   data rows, exact key overlap with sigma01, SHA-256
@@ -454,9 +627,10 @@ Each execution must create a unique atomically locked RUN_ID/RUN_ROOT.
   Waymo Perception v1.4.3 dev and finetune subsets for StreamPETR
   dataloader/calibration work are at `data/perception/{training,validation}/`
   with manifests `manifests/perception_dev.tsv` (6 files, all crc32c matched on
-  2026-06-26) and `manifests/perception_finetune.tsv` (64 training plus 16
+  2026-06-26), `manifests/perception_finetune.tsv` (64 training plus 16
   validation files, all crc32c matched on 2026-06-27; total bytes
-  80,523,139,102).
+  80,523,139,102), and current `manifests/perception_256.tsv` (256 training
+  plus 16 validation files, 272/272 crc32c ok).
   Latest Route 4 real-Waymo StreamPETR smoke artifacts are
   `data/waymo_stream_petr/waymo_infos_train_1seg.pkl`,
   `checkpoints/stream_petr_waymo3_reinit_cls.pth`, and
@@ -467,14 +641,39 @@ Each execution must create a unique atomically locked RUN_ID/RUN_ROOT.
   `projects/configs/StreamPETR/stream_petr_r50_flash_704_waymo_5cam_dev6_dryrun.py`,
   `work_dirs/streampetr_waymo_dev6_dryrun_20260626/iter_40.pth`, and summary
   `logs/streampetr_waymo_dev6_dryrun_summary_20260626.md`.
-  Active Route 4 64/16 finetune launch artifacts are Slurm job `1707389`,
-  config
+  Latest Route 4 64/16 finetune artifacts are config
   `projects/configs/StreamPETR/stream_petr_r50_flash_704_waymo_5cam_finetune64_leadcfg.py`,
   script `scripts/streampetr_waymo_finetune64_leadcfg_20260627.sbatch`, work
   dir `work_dirs/streampetr_waymo_finetune64_leadcfg_20260627/`, logs
   `logs/streampetr_waymo_finetune64_1707389.out`/`.err`, and existing converted
   infos `data/waymo_stream_petr/waymo_infos_train_64seg.pkl` plus
-  `data/waymo_stream_petr/waymo_infos_val_16seg.pkl`.
+  `data/waymo_stream_petr/waymo_infos_val_16seg.pkl`. Latest §5 detector
+  quality/error-model outputs are under `results/` with prefix
+  `rq010b_route4_detector_quality_best50732_20260627`, especially
+  `_summary.json`, `_metrics_by_class_range.csv`, `_error_model.json`,
+  `_error_model.csv`, `_matched_tp_errors.csv`, and `_threshold_sweep.csv`.
+  Latest improved recipe config/smoke/launch artifacts are
+  `projects/configs/StreamPETR/stream_petr_r50_flash_704_waymo_5cam_finetune256_balanced_warminit.py`,
+  warm-init checkpoint
+  `checkpoints/stream_petr_waymo3_warminit_nusc_car_ped_bicycle.pth`,
+  converted infos `data/waymo_stream_petr/waymo_infos_train_256seg.pkl` plus
+  `data/waymo_stream_petr/waymo_infos_val_16seg.pkl`,
+  support files
+  `projects/mmdet3d_plugin/datasets/waymo_ap_dataset.py`,
+  `projects/mmdet3d_plugin/core/evaluation/waymo_early_stopping.py`,
+  `tools/waymo_perception/make_waymo_warminit_checkpoint.py`, and
+  `tools/waymo_perception/smoke_train_waymo_ddp.py`, DDP smoke logs
+  `logs/streampetr_waymo_finetune256_ddp_smoke_1712408.log`/`.jsonl`,
+  failed Slurm jobs `1712416` and `1712590`, active train-only resume Slurm
+  job `1712698`, no-eval resume sbatch
+  `scripts/streampetr_waymo_finetune256_balanced_warminit_ddp4_resume_noeval_20260628.sbatch`,
+  work dir
+  `work_dirs/streampetr_waymo_finetune256_balanced_warminit_ddp4_20260628/`,
+  resume checkpoint `latest.pth -> iter_25354.pth`, and Slurm logs
+  `logs/streampetr_waymo_finetune256_ddp4_resume_noeval_1712698.out`/`.err`
+  (failed run logs remain
+  `logs/streampetr_waymo_finetune256_ddp4_1712416.out`/`.err` and
+  `logs/streampetr_waymo_finetune256_ddp4_resume_1712590.out`/`.err`).
 - Onsite competition current all-team package, generated locally and ignored:
   `data/onsite_competition/all_teams_dataset/` (rebuild with
   `scripts/build_onsite_all_teams_dataset.py`)
@@ -632,6 +831,13 @@ These review packets are evidence-boundary reviews, not accepted
 - RQ009 must not read RQ007 sealed data until all rules/code/thresholds are frozen and the PI
   explicitly authorizes opening.
 - RQ010 requires full tracking; exact data/HPC scale remains sign-in gated.
+- RQ010B Route 4 64-segment StreamPETR is not tracker-ready: §5 detector
+  quality on 16 Perception validation segments has overall 2 m center-distance
+  AP `0.00328`, recall `0.08034`, precision `0.03276`, and zero
+  Pedestrian/Cyclist detections at the selected operating point. The improved
+  balanced/warm-init recipe now parses, smokes, and has a first-epoch
+  checkpoint (`iter_12677.pth`) from the 256-seg run, but no completed improved
+  detector-quality gate exists yet.
 - RQ011 supports full_300 outcomes and clean_285 replay/IPV with T19 replay-only exclusion;
   run-level/repeated-run/causal claims are unavailable.
 - RQ012 is readiness-only and human annotation is deferred.
