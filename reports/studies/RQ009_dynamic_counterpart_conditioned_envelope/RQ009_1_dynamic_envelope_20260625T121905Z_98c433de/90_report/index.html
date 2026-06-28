@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ009 Dynamic Counterpart-Conditioned Online IPV Envelope</title>
+  
+<style>
+:root {
+  color-scheme: light;
+  --ink: #202124;
+  --muted: #5f6368;
+  --line: #dadce0;
+  --soft: #f6f7f9;
+  --accent: #0072B2;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  color: var(--ink);
+  background: #ffffff;
+  line-height: 1.55;
+}
+main { max-width: 1040px; margin: 0 auto; padding: 28px 28px 56px; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 22px; }
+h1 { font-size: 26px; margin: 0 0 8px; line-height: 1.18; }
+h2 { font-size: 18px; margin: 32px 0 10px; border-top: 1px solid var(--line); padding-top: 18px; }
+h3 { font-size: 14px; margin: 18px 0 8px; }
+p { margin: 8px 0; }
+.meta, .small { color: var(--muted); font-size: 12px; }
+.headline { font-size: 15px; padding: 12px 14px; background: var(--soft); border-left: 4px solid var(--accent); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+.metric { border: 1px solid var(--line); padding: 10px; background: #fff; }
+.metric strong { display: block; font-size: 18px; margin-bottom: 2px; }
+figure { margin: 18px 0 24px; padding: 0; }
+figure img { width: 100%; height: auto; border: 1px solid var(--line); background: #fff; }
+figcaption { font-size: 12.5px; color: #303134; margin-top: 8px; }
+.filelinks { font-size: 12px; color: var(--muted); }
+a { color: #005ea8; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0 16px; font-size: 12px; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; vertical-align: top; }
+th { background: var(--soft); text-align: left; }
+code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+pre { background: #f8f9fa; padding: 10px 12px; overflow-x: auto; border: 1px solid var(--line); }
+ul { margin-top: 6px; }
+@media (max-width: 760px) {
+  main { padding: 18px 14px 42px; }
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+
+</head>
+<body>
+<main>
+  <header>
+    <h1>RQ009 Dynamic Counterpart-Conditioned Online IPV Envelope</h1>
+    <p class="meta">Phase 11 offline bilingual report; figures generated with the nature-figure Python workflow.<br>Run ID: <code>RQ009_1_dynamic_envelope_20260625T121905Z_98c433de</code> · Worker: <code>RQ009-W11b-report-fix</code> · Nature skill: <code>available+used</code></p>
+    <p class="meta"><a href="../00_entry/index.html">Entry</a> · <a href="index.zh.html">中文</a></p>
+  </header>
+  <p class="headline">The held-out test evidence supports a marginally valid online IPV interval envelope: M3 reaches 80/90/95% coverages of 0.816, 0.899, and 0.950 after OOD abstention. The practical adaptation signal is not in counterpart-IPV channels: context alone cuts 90% width by 42.3% versus M0, whereas M3 and the IPV-removed control differ by only -0.015% in 90% Winkler score with a case-cluster CI spanning zero. The interpretable conclusion is that adaptation is largely encoded in online kinematics and interaction context, not in a robust, cross-case counterpart-IPV performance increment.</p>
+  
+        <div class="grid">
+          <div class="metric"><strong>0.899</strong> M3 90% test coverage<br><span class="small">n=1,209,857 anchors; 7,550 cases</span></div>
+          <div class="metric"><strong>-42.3%</strong> M2 vs M0 90% width delta</div>
+          <div class="metric"><strong>-0.015%</strong> M3 vs IPV-removed 90% Winkler delta</div>
+        </div>
+        
+  
+        <h2>Provenance And Code Parity</h2>
+        <p>Phase 2 passed provenance and schema checks: the primary data hash matched, <code>scene_unique_id + frame_index</code> is unique, physical <code>dt</code> is 0.1 s, uncertainty semantics are source-proven, and the frozen windows are feasible. Phase 3 then assembled 6,397,266 perspective-anchor rows across train, guard_tune, calibration, and test; the hw=4 target lookup has code parity max absolute difference 0.0, and the independent matrix audit re-derived 400 sampled targets with max absolute difference 0.0.</p>
+        <p>Leakage safeguards are explicit: M3 excludes target-window outcomes, realized order, PET/offline risk, target-adjacent ego kinematics, and M4-only ego self-anchor fields. The matrix audit found no case split bleed and no future-peek signal; the largest numeric M3 feature-target absolute correlation was 0.115.</p>
+
+        <h2>Calibration</h2>
+        <p>The calibration stage fit M0-M5 plus controls with CQR and a train/guard OOD support gate. Non-crossing checks passed, M3 conformal validity passed, and the main test abstention rate is 4.778%. The 80% endpoint nudge caveat is retained because exact boundary ties affect the 80% count, while 90% and 95% are stable.</p>
+        
+    <figure id="c1_validity_envelope">
+      <img src="../01_results/figures/c1_validity_envelope.png" alt="C1 figure">
+      <figcaption>C1 figure. Marginal coverage is shown against nominal coverage for every tier with the ±3 pp acceptance band. The lower panels isolate the M3 coverage deltas and the held-out 90% width distribution.</figcaption>
+      <p class="filelinks"><a href="../01_results/figures/c1_validity_envelope.svg">SVG</a> · <a href="../01_results/figures/c1_validity_envelope.pdf">PDF</a> · <a href="../01_results/figures/c1_validity_envelope.source.csv">source CSV</a> · <a href="../01_results/figures/c1_validity_envelope.metadata.json">metadata</a></p>
+    </figure>
+    
+
+        <h2>M0-M5 Evaluation</h2>
+        <p>The large sharpness change happens when online context enters the model: at 90%, M2 reduces mean width by 42.3% and Winkler by 35.6% versus M0. Adding counterpart IPV in M3 changes Winkler by -0.015% versus M2, effectively no practical gain.</p>
+        
+    <figure id="c2_context_dominates">
+      <img src="../01_results/figures/c2_context_dominates.png" alt="C2 figure">
+      <figcaption>C2 figure. Width and Winkler bars at 90% compare M0-M5 and controls with case-cluster confidence intervals.</figcaption>
+      <p class="filelinks"><a href="../01_results/figures/c2_context_dominates.svg">SVG</a> · <a href="../01_results/figures/c2_context_dominates.pdf">PDF</a> · <a href="../01_results/figures/c2_context_dominates.source.csv">source CSV</a> · <a href="../01_results/figures/c2_context_dominates.metadata.json">metadata</a></p>
+    </figure>
+    
+
+        <h2>M3-vs-M4 Gate And Practical Null</h2>
+        <p>The formal M3-vs-M4 gate did not escalate. M3 is 2.96% wider and 2.78% higher in 90% Winkler than M4, below the preregistered bars. More importantly, M3 and the IPV-removed control are practically indistinguishable at 90%: paired row-weighted Winkler difference -0.000211, case-cluster 95% CI [-0.001886, 0.001505], case sign p=0.863.</p>
+        
+    <figure id="c3_counterpart_ipv_null">
+      <img src="../01_results/figures/c3_counterpart_ipv_null.png" alt="C3 figure">
+      <figcaption>C3 figure. The counterpart-IPV practical null is shown by the paired effect, row-vs-case significance contrast, full exploration sweep, and model-free dependency probes.</figcaption>
+      <p class="filelinks"><a href="../01_results/figures/c3_counterpart_ipv_null.svg">SVG</a> · <a href="../01_results/figures/c3_counterpart_ipv_null.pdf">PDF</a> · <a href="../01_results/figures/c3_counterpart_ipv_null.source.csv">source CSV</a> · <a href="../01_results/figures/c3_counterpart_ipv_null.metadata.json">metadata</a></p>
+    </figure>
+    
+
+        <h2>Exploration, Horizon, And Dependency Reconciliation</h2>
+        <p>The 15 registered guard-tune exploration candidates did not clear both statistical and practical bars. The best point screen remained below the 0.02 ΔR² threshold (best dR² C04=-0.000912), and the best interval Winkler reduction was only -1.190%, far below 5%. The horizon sweep likewise found no guard-tune candidate requiring test confirmation. Dependency reconciliation corrected the earlier -0.11 to -0.125 curve: that curve used a different raw-current/Ridge estimand. The canonical HGB out-of-sample partial r stays near -0.04 and does not grow with horizon.</p>
+        
+    <figure id="c4_horizon_reconciliation">
+      <img src="../01_results/figures/c4_horizon_reconciliation.png" alt="C4 figure">
+      <figcaption>C4 figure. Canonical out-of-sample partial r is overlaid with the artifactual horizon curve, with held-out ΔR² shown against the 0.02 threshold.</figcaption>
+      <p class="filelinks"><a href="../01_results/figures/c4_horizon_reconciliation.svg">SVG</a> · <a href="../01_results/figures/c4_horizon_reconciliation.pdf">PDF</a> · <a href="../01_results/figures/c4_horizon_reconciliation.source.csv">source CSV</a> · <a href="../01_results/figures/c4_horizon_reconciliation.metadata.json">metadata</a></p>
+    </figure>
+    
+
+        <h2>Ego Self-Anchor</h2>
+        <p>M4 shows a small self-anchor benefit: at 90%, its width is 0.987 versus M2 1.009 and M3 1.016; its Winkler score is 1.384 versus M2 1.423 and M3 1.423. This is useful for sharpness, but not large enough to alter the counterpart-IPV conclusion.</p>
+        
+    <figure id="c5_self_anchor_marginal">
+      <img src="../01_results/figures/c5_self_anchor_marginal.png" alt="C5 figure">
+      <figcaption>C5 figure. M4 sharpness is compared directly with M2 and M3 at 90%, then summarized across nominal levels.</figcaption>
+      <p class="filelinks"><a href="../01_results/figures/c5_self_anchor_marginal.svg">SVG</a> · <a href="../01_results/figures/c5_self_anchor_marginal.pdf">PDF</a> · <a href="../01_results/figures/c5_self_anchor_marginal.source.csv">source CSV</a> · <a href="../01_results/figures/c5_self_anchor_marginal.metadata.json">metadata</a></p>
+    </figure>
+    
+
+        <h2>Limitations</h2>
+        <p>The result is marginal, not conditionally uniform. Across reportable subgroup rows, 126/264 fall outside ±3 pp. Leave-one-dataset-out 90% M3 coverage ranges from 0.749 to 0.991. Abstention is essential to the deployment contract and should be treated as part of the envelope, not as a cosmetic filter.</p>
+        <p>A separate target-distribution caveat is atom/boundary mass: the scored IPV target has a ~21.5% exact-zero atom (273,819/1,270,566) plus many exact-repeat and boundary values. This creates the 80% boundary-tie / 1e-10 endpoint-nudge coverage fragility and attenuates correlations, so it qualifies both interval-tie behavior and the interpretation of the practical null.</p>
+        
+    <figure id="c6_limitations">
+      <img src="../01_results/figures/c6_limitations.png" alt="C6 figure">
+      <figcaption>C6 figure. Conditional subgroup coverage, leave-one-dataset-out transfer, and abstention/post-abstention behavior summarize the main limitations.</figcaption>
+      <p class="filelinks"><a href="../01_results/figures/c6_limitations.svg">SVG</a> · <a href="../01_results/figures/c6_limitations.pdf">PDF</a> · <a href="../01_results/figures/c6_limitations.source.csv">source CSV</a> · <a href="../01_results/figures/c6_limitations.metadata.json">metadata</a></p>
+    </figure>
+    
+
+        <h2>Robustness, Review, Red Team, And Replication</h2>
+        <p>Perturbation sensitivity used outcome-blind train/calibration/guard-tune subsamples and found no validity break or practical null flip: M3 guard_tune coverage range 0.8754..0.9119; M3 paired relative Winkler gain vs ipv_removed range -0.541%..1.193%. Validity robust=True; counterpart null robust=True. Independent review passed with no blocking or major findings. Red team found no leakage or null-effect exploit, while retaining the 80% tie caveat. Clean-room replication reproduced M3 90% coverage and M3-vs-M4 direction, then reconciliation showed the apparent null divergence was a unit-of-analysis and route-labeling issue; all observed null-route effects remained far below the 5% meaningful bar.</p>
+        
+    <figure id="c7_robustness_perturbation">
+      <img src="../01_results/figures/c7_robustness_perturbation.png" alt="C7 figure">
+      <figcaption>C7 figure. Perturbation coverage and M3-vs-IPV-removed Winkler deltas show robustness of validity and practical-null conclusions.</figcaption>
+      <p class="filelinks"><a href="../01_results/figures/c7_robustness_perturbation.svg">SVG</a> · <a href="../01_results/figures/c7_robustness_perturbation.pdf">PDF</a> · <a href="../01_results/figures/c7_robustness_perturbation.source.csv">source CSV</a> · <a href="../01_results/figures/c7_robustness_perturbation.metadata.json">metadata</a></p>
+    </figure>
+    
+
+        <h2>Reproduction Commands</h2>
+        <p><code>&lt;REPO_ROOT&gt;</code> is the repository root; <code>&lt;RUN_ROOT&gt;</code> is this run directory under <code>reports/studies/</code>.</p>
+        <pre><code>cd &lt;RUN_ROOT&gt;
+export PYTHONPATH="&lt;REPO_ROOT&gt;/src:$PYTHONPATH"
+python 02_process/11_report/build_report.py
+open 00_entry/index.html</code></pre>
+        <p>Primary upstream commands are preserved in each phase script under <code>02_process/</code>; this Phase 11 command rebuilds only the reader-facing figures, source-data extracts, evidence table, and bilingual offline report from frozen artifacts.</p>
+
+        <h2>Artifact Index</h2>
+        <table><thead><tr><th>Artifact</th><th>Path</th></tr></thead><tbody>
+<tr><td>Figure manifest</td><td><a href="../01_results/figures/figure_manifest.csv">01_results/figures/figure_manifest.csv</a></td></tr>
+<tr><td>Evidence table</td><td><a href="../evidence.csv">evidence.csv</a></td></tr>
+<tr><td>Report gate</td><td><a href="../report_gate.json">report_gate.json</a></td></tr>
+<tr><td>Build script</td><td><a href="../02_process/11_report/build_report.py">02_process/11_report/build_report.py</a></td></tr>
+<tr><td>English report</td><td><a href="index.html">90_report/index.html</a></td></tr>
+<tr><td>Chinese report</td><td><a href="index.zh.html">90_report/index.zh.html</a></td></tr>
+</tbody></table>
+        
+</main>
+</body>
+</html>

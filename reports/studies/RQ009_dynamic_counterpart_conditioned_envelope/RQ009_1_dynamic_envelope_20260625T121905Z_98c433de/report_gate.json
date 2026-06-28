@@ -1,0 +1,10 @@
+{
+  "nature_skill_status": "available+used",
+  "figures_n": 7,
+  "bilingual_ok": true,
+  "offline_ok": true,
+  "offline_verified_how": "Python file:// reads plus relative href/src existence scan; no /Users, http(s), or CDN tokens",
+  "all_conclusions_have_figures": true,
+  "evidence_rows": 14,
+  "blockers": []
+}

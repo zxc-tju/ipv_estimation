@@ -1,0 +1,94 @@
+{
+  "rq": "RQ009",
+  "run_id": "RQ009_1_dynamic_envelope_20260625T121905Z_98c433de",
+  "run_root": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de",
+  "derived_root": "/Users/xiaocong/Library/CloudStorage/OneDrive-\u4e2a\u4eba/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de",
+  "git_head": "4aef4d22bb639bf003c48094607c970e55445d5f",
+  "branch": "main",
+  "plan_sha256": "b8c027a717af08cd70de6ef2b5221b387323f1131623f39fa5fd688f89baa254",
+  "created_utc": "2026-06-25T12:19:05Z",
+  "updated_utc": "2026-06-26T18:36:15Z",
+  "registered_local_time": "2026-06-27T02:36:15+0800",
+  "phase": "12_complete",
+  "phase_status": "PASS",
+  "overall_status": "COMPLETE",
+  "worker_id": "RQ009-W12b-registrar",
+  "gates": {
+    "plan_review": "PASS",
+    "provenance": "PASS",
+    "features": "PASS",
+    "matrix_audit": "PASS",
+    "calibration": "PASS",
+    "calibration_audit": "PASS",
+    "evaluation": "PASS",
+    "m3_vs_m4": "PASS_NO_ESCALATION",
+    "exploration": "NULL_CONFIRMED",
+    "horizon": "NULL_ACROSS_HORIZONS",
+    "dependency_reconcile": "ROBUST_NULL",
+    "perturbation": "PASS_VALIDITY_AND_NULL_ROBUST",
+    "independent_review": "PASS",
+    "red_team": "PASS_NO_EXPLOIT",
+    "replication": "PASS_WITH_RECONCILIATION",
+    "report": "PASS",
+    "final_review": "PASS_READY_TO_REGISTER",
+    "registration": "PASS"
+  },
+  "primary_decision": {
+    "online_ipv_envelope": "ACCEPTED_MODERATE_MARGINAL_VALIDITY",
+    "counterpart_ipv_increment": "ACCEPTED_STRONG_PRACTICAL_NULL",
+    "context_kinematics_sharpness": "ACCEPTED_CONTEXT_DOMINANT",
+    "m3_vs_m4": "NO_ESCALATION_M3_NOT_BETTER",
+    "primary_counterpart_conditioning_hypothesis": "NOT_SUPPORTED"
+  },
+  "headline_metrics": {
+    "m3_coverage_80_90_95": [
+      0.8162154701,
+      0.8986657101,
+      0.9496345436
+    ],
+    "m3_90_width": 1.0161520998,
+    "m3_90_winkler": 1.4229346736,
+    "m3_minus_ipv_removed_90_winkler": -0.0002114264,
+    "m3_minus_ipv_removed_90_ci": [
+      -0.0018861799,
+      0.0015049791
+    ],
+    "m3_minus_ipv_removed_case_sign_p": 0.8629432501,
+    "m2_vs_m0_90_width_pct": -42.2712479057,
+    "m2_vs_m0_90_winkler_pct": -35.6118433109
+  },
+  "limitations": {
+    "subgroups_outside_3pp": "126/264",
+    "lodo_m3_90_coverage_range": [
+      0.7487903244,
+      0.9914812374
+    ],
+    "target_zero_atom": "273819/1270566=0.215509",
+    "scope": "associational, single IPV operationalization, gate-passing rows"
+  },
+  "report_gate": {
+    "nature_skill_status": "available+used",
+    "figures_n": 7,
+    "bilingual_ok": true,
+    "offline_ok": true,
+    "evidence_rows": 14,
+    "blockers": []
+  },
+  "final_review_gate": {
+    "status": "PASS",
+    "ready_to_register": true,
+    "blocking": 0,
+    "major": 0,
+    "minor": 0
+  },
+  "artifacts": {
+    "decision_md": "reports/knowledge/RQ009_dynamic_counterpart_conditioned_envelope/decision.md",
+    "entry_html": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/00_entry/index.html",
+    "html_entry_en": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/90_report/index.html",
+    "html_entry_zh": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/90_report/index.zh.html",
+    "evidence_csv": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/evidence.csv",
+    "figure_manifest": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/01_results/figures/figure_manifest.csv",
+    "final_review_gate": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/12_final_review/final_review_gate.json"
+  },
+  "next_phase": "registered"
+}

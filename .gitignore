@@ -60,6 +60,9 @@ reports/studies/**/scripts/
 reports/studies/**/tmp/
 reports/studies/**/work/
 reports/studies/**/*.html
+# English HTML reports ARE tracked in git (per PI 2026-06-28); Chinese *.zh.html stays ignored.
+!reports/studies/**/index.html
+reports/studies/**/*.zh.html
 reports/studies/**/*.joblib
 reports/studies/**/*.parquet
 reports/studies/**/venv/
