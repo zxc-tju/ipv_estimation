@@ -7,7 +7,7 @@ Status: `review-complete`; this is a cross-RQ paper-architecture review, not an 
 
 ## Reviewed materials
 
-This review was prepared from the current GitHub `main` state of `zxc-tju/ipv_estimation`, focusing on the following knowledge and report records:
+This review was prepared from the current GitHub `main` state of `zxc-tju/ipv_estimation`, focusing on:
 
 - `reports/knowledge/RQ009_dynamic_counterpart_conditioned_envelope/decision.md`
 - `reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/README.md`
@@ -20,11 +20,11 @@ This review was prepared from the current GitHub `main` state of `zxc-tju/ipv_es
 - `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/README.md`
 - current `STUDIES.md`, `RQ_PROGRESS_DASHBOARD.md`, and `rq_progress_registry.csv`
 
-The formal claim ledgers remain the individual `decision.md` files. If this review conflicts with an RQ decision file, the RQ decision file controls.
+The formal claim ledgers remain the individual RQ `decision.md` files. If this review conflicts with an RQ decision file, the RQ decision file controls.
 
 ## Executive conclusion
 
-The recent Wave-B evidence substantially clarifies the paper direction:
+The recent Wave-B evidence clarifies the paper direction:
 
 ```text
 RQ009: method result accepted — context-conditioned conformal envelope works.
@@ -33,7 +33,7 @@ RQ011B: completed as provisional null / under-identified — OnSite moment-level
 RQ012B: completed as bounded/null — OnSite M3 deviation does not robustly predict realised interaction-failure harm.
 ```
 
-The manuscript should no longer be framed as a validated counterpart-IPV or self-anchor social-compliance verifier. The strongest supported manuscript spine is now:
+The manuscript should not be framed as a validated counterpart-IPV or self-anchor social-compliance verifier. The strongest supported spine is now:
 
 > An estimability-aware, context-conditioned split-conformal envelope can serve as an empirical runtime monitor; however, the IPV-conditioning channels do not add measurable value over context, and OnSite consequence tests currently provide bounded/null evidence rather than successful external validation.
 
@@ -65,16 +65,14 @@ Therefore the paper should not argue that counterpart IPV is the operative mecha
 
 ### Boundaries
 
-RQ009 has important limitations:
-
-- conditional subgroup coverage is uneven: `126/264` supported subgroup rows outside ±3 pp;
-- LODO transfer coverage ranges roughly `0.749–0.991`, so transfer is not unconditional;
-- exact-zero target atom around `21.6%` qualifies tie/endpoint interpretation;
-- it is an empirical monitor, not a formal proof or planner-performance result.
+- Conditional subgroup coverage is uneven: `126/264` supported subgroup rows outside ±3 pp.
+- LODO transfer coverage ranges roughly `0.749–0.991`, so transfer is not unconditional.
+- The exact-zero target atom around `21.6%` qualifies tie/endpoint interpretation.
+- The result is an empirical monitor, not a formal proof or planner-performance result.
 
 ### Review judgment
 
-Use RQ009 as the R3 method result, but rename the supported method in manuscript prose as:
+Use RQ009 as the R3 method result, but name the supported method:
 
 ```text
 estimability-aware context-conditioned conformal envelope
@@ -95,18 +93,18 @@ validated social-compliance verifier
 
 RQ010B remains in progress. The v3 plan defines the right scientific question: among three same-scene candidate ego futures, does lower frozen-envelope deviation predict higher human preference, specifically beyond kinematic/safety baselines and control batteries?
 
-The data facts are now clear:
+The data facts are clear:
 
 - WOD-E2E has 8 surround cameras, ego history/future, routing command, and rater feedback candidates.
 - It does not provide actor tracks, LiDAR, or HD map in the E2E release.
-- The human preference test therefore cannot run until a rating-blind multi-camera tracking layer clears QA.
+- The human-preference test cannot run until a rating-blind multi-camera tracking layer clears QA.
 
 ### Engineering progress
 
 The Tongji HPC setup is active. The current operating brief records:
 
 - E2E parser access is working under `/share/home/u25310231/ZXC/RQ010B_wod_e2e/`;
-- the four-shard structural pre-flight sampled candidate-bearing frames and passed structural t* checks on those sampled frames;
+- a four-shard structural pre-flight sampled candidate-bearing frames and passed t* checks on that sample;
 - StreamPETR Route 4 infrastructure is installed;
 - Perception v1.4.3 dev and finetune subsets have been downloaded and crc32c verified;
 - dummy, smoke, and small training runs have executed.
@@ -124,7 +122,7 @@ A 256-train / 16-val StreamPETR finetune is or was running as the next Route-4 a
 
 RQ010B is the only remaining path that could provide a strong independent human-preference leg, but it is an engineering-risk path. It should remain in progress until the Route-4 QA decision is known.
 
-Do not use WOD-E2E as manuscript evidence yet. Current paper-safe wording is:
+Current paper-safe wording:
 
 > WOD-E2E is being prepared as an independent human-preference validation surface, but the released fields require a rating-blind multi-camera tracking layer before the frozen envelope can be tested.
 
@@ -142,7 +140,7 @@ RQ011B attempts a moment-level runtime-monitor validity test on OnSite. The clos
 PROVISIONAL_NULL / UNDER_IDENTIFIED
 ```
 
-Primary within-interaction failure-moment contrast is under-identified because the C1 matched-control set has zero controls. Robustness controls do not rescue the test:
+The primary within-interaction failure-moment contrast is under-identified because the C1 matched-control set has zero controls. Robustness controls do not rescue the test:
 
 - C2 ROC AUC around `0.493`;
 - small or near-zero effects;
@@ -151,7 +149,7 @@ Primary within-interaction failure-moment contrast is under-identified because t
 
 ### Interpretation
 
-This is not a clean refutation of IPV monitoring. It primarily diagnoses the OnSite failure-segment measurement layer:
+This is not a clean refutation of IPV monitoring. It diagnoses the OnSite failure-segment measurement layer:
 
 - collision-only criteria are too sparse;
 - broad any-failure criteria are saturated;
@@ -163,7 +161,7 @@ RQ011B should not enter the manuscript as a main result. Its safe role is a limi
 
 > OnSite moment-level monitor validity was not demonstrated under the current failure-segment retrieval; the result is under-identified and motivates a dedicated failure-segmentation layer before strong runtime-monitor claims.
 
-Do not phrase it as:
+Avoid:
 
 ```text
 OnSite refutes IPV monitoring
@@ -176,7 +174,7 @@ causal failure prediction
 
 ### Result
 
-RQ012B has completed the scientific endpoint using automatic events and official outcomes, after dropping the two-human blind annotation path. The result is a bounded/null finding:
+RQ012B has completed the scientific endpoint using automatic events and official outcomes, after dropping the two-human blind annotation path. The result is bounded/null:
 
 > M3 deviation does not robustly, IPV-specifically predict realised OnSite interaction-failure harm.
 
@@ -203,7 +201,9 @@ The pattern is coherent but not robust:
 
 ### Review judgment
 
-RQ012B is a credible negative/boundary result and should be preserved. The paper should not claim realised-harm validation on OnSite. Safe wording:
+RQ012B is a credible negative/boundary result and should be preserved. The paper should not claim realised-harm validation on OnSite.
+
+Safe wording:
 
 > In OnSite, frozen-envelope deviation produced a measurable out-of-band signal, but it did not robustly or IPV-specifically predict realised interaction-failure harm under the current automatic-event and official-outcome battery.
 
@@ -220,16 +220,16 @@ OnSite validates behavioural consequences
 automatic events are human-judgment labels
 ```
 
-## Cross-RQ synthesis for the paper
+## Cross-RQ synthesis for the manuscript
 
-### What is currently supported
+### Supported
 
 1. A context-conditioned conformal envelope is materially sharper than a global floor while maintaining near-nominal marginal coverage.
 2. Estimability gating and abstention are important; IPV estimates are not equally interpretable at all moments.
 3. The current OnSite evidence is useful as stress testing and boundary evidence, not as successful external validation.
 4. WOD-E2E remains the main possible route to independent human-preference validity, pending tracking QA.
 
-### What is not supported
+### Not supported
 
 1. Counterpart-IPV conditioning as a mechanism.
 2. Ego self-history / self-anchor as a group norm.
@@ -250,9 +250,9 @@ Use RQ007 for interaction-conditioned estimability and RQ008 as a negative disco
 
 ### R3 — Context-conditioned conformal envelope
 
-Use RQ009 as the core method result. Main text should emphasize sharpness, near-nominal coverage, abstention, and empirical runtime-monitor framing.
+Use RQ009 as the core method result. Emphasize sharpness, near-nominal coverage, abstention, and empirical runtime-monitor framing.
 
-### R4 — WOD-E2E human preference validation
+### R4 — WOD-E2E human-preference validation
 
 Keep as ongoing or pending. It becomes a main result only after RQ010B tracking QA and rating-unlock analysis pass.
 
