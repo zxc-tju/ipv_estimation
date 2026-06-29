@@ -1,3 +1,5 @@
+> Interaction-conditioned parsimony amendment v2 accepted 2026-06-28; see RQ011B_SAP_v2_interaction_conditioned_locked_20260628.md; the interaction-conditioned criterion supersedes the single-anchor criterion sections.
+
 # RQ011B Locked Statistical Analysis Plan v1
 
 Status: **LOCKED — PI-approved 2026-06-25; supersedes the underspecified parts of plan v0**  

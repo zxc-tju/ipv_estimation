@@ -1,0 +1,376 @@
+{
+  "RUN_ID": "RQ011B_1_matched_scenario_20260625T202454_8331bd49",
+  "RUN_ROOT": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49",
+  "DERIVED_ROOT": "/Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49",
+  "GIT_HEAD": "4aef4d22bb639bf003c48094607c970e55445d5f",
+  "PLAN_SHA256": "e4b2c3be29a84dc7a3191d97af6379391dbdafab91b185a881e033053eb5d837",
+  "m3_frozen": false,
+  "paused_at": "2026-06-25T12:49:49Z",
+  "phase0_bootstrap": "done",
+  "phase0_note": "Bootstrap initialized the run universe; the only deviation was benign DERIVED_PARENT creation during preflight. No analysis, audit, modeling, plotting, gate judgment, M3 use, or self-review was performed.",
+    "phase1_plan_review": "FAIL_RESOLVED_BY_LOCKED_SAP",
+    "phase1_blockers": {
+        "B001": "resolved_by_locked_SAP",
+        "B002": "resolved_by_locked_SAP",
+        "B003": "resolved_by_locked_SAP",
+        "B004": "resolved_by_locked_SAP",
+        "B005": "resolved_by_locked_SAP"
+    },
+    "phase1_summary": "Independent plan review found five blocking issues: unfrozen confirmatory endpoint/model specification, incomplete leakage denylist, underdefined negative controls, non-falsifiable PASS/FAIL thresholds, and missing RQ009 M3-vs-M4 downstream-clearance gate. SAP v2 was revised, independently re-reviewed as PASS with 7/7 review blockers closed, and PI-accepted on 2026-06-25; the locked SAP resolves B001-B005 by specification. Phase 3 remains paused only on RQ009 Gate G1.",
+  "phase2_provenance_audit": "PASS",
+  "phase2_summary": {
+    "outcome_cells_full": 300,
+    "clean_replay_cells": 285,
+    "replay_only_exclusion": "T19",
+    "t19_cells": 15,
+    "missing_official_fields": 0,
+    "duplicate_primary_keys": 0,
+    "checks_total": 28,
+    "checks_fail": 0,
+    "headline": "300 outcome cells; 285 clean replay cells; full_300 - clean_285 equals T19 across 15 scenarios; 0 missing official fields; 0 duplicate keys; 28 checks and 0 FAIL."
+  },
+    "sap_locked": true,
+    "sap_path": "reports/plans/RQ011B_SAP_v1_locked_20260625.md",
+    "sap_acceptance_date": "2026-06-25",
+    "accepted_config": {
+        "primary_coefficient_floor": {
+            "abs_beta_min": 0.15,
+            "expected_direction": "beta < 0"
+        },
+        "primary_partial_R2_floor": {
+            "tau": 0.03,
+            "formula": "partial_R2 = 1 - SSE_M3/SSE_baseline"
+        },
+        "negative_control_margins": {
+            "delta_beta": 0.05,
+            "delta_R2": 0.01,
+            "uncertainty": "paired two-way team x scenario blocked confidence interval"
+        },
+        "uncertainty": {
+            "bootstrap": "two-way team x scenario blocked wild cluster bootstrap",
+            "B": 10000,
+            "seed": 20260625,
+            "permutations_B_perm": 10000,
+            "permutation_base_seed": 20260625
+        },
+        "support_floor": {
+            "n_min": 210,
+            "n_per_slope_min": 10,
+            "required_scenarios": 15,
+            "teams_min": 16,
+            "cells_per_scenario_min": 10
+        },
+        "LOSO": {
+            "transfer_model": "separate no-scenario-FE transfer model",
+            "k": "12/15",
+            "single_scenario_influence_cap": 0.4
+        },
+        "collision_secondary": {
+            "two_predictors_if_events_min": 20,
+            "two_predictors_if_non_events_min": 20,
+            "events_10_to_19": "M3-only exact/permutation or descriptive",
+            "events_below_10": "no inferential claim"
+        },
+        "log_opportunity_duration_z": "dropped_from_baseline",
+        "deviation_scale_floor_rad": {
+            "value": 0.05,
+            "status": "conditional_on_RQ009_target_IPV_noise_scale_documentation",
+            "fallback": "PI freezes a documented replacement before prediction consumption"
+        },
+        "phase3_gate_G1": "RQ009 freezes M3 AND explicitly clears downstream consumption after the M3-vs-M4 pivot"
+    },
+    "phase4_criterion_prereg": {
+        "status": "SUPERSEDED_BY_V4_MOMENT_MONITOR",
+        "version": "v3_broad_interaction_failure",
+        "prior_status": "LOCKED",
+        "superseded_date": "2026-06-29",
+        "superseded_by": "reports/plans/RQ011B_SAP_v4_moment_monitor_locked_20260629.md",
+        "superseded_reason": "Cell-level binary criterion was ill-posed for RQ011B: collision was too sparse, while any-failure was saturated at 285/285 cells. SAP v4 moves the criterion to onset-defined MOMENT/EVENT-level monitor validation.",
+        "pi_approved_date": "2026-06-28",
+        "sap_path": "reports/plans/RQ011B_SAP_v3_broad_interaction_failure_locked_20260628.md",
+        "supersedes_criterion_of": "reports/plans/RQ011B_SAP_v2_interaction_conditioned_locked_20260628.md",
+        "supersede_reason": "SAP v2 collision-centric primary criterion was under-powered at 19 collision events at the pre-model support check; v3 locks the PI-accepted broad interaction-failure composite plus per-category and directional endpoints.",
+        "ultimate_rq": "Can IPV, one socially meaningful and interpretable indicator of deviation from the human cooperative norm, serve as a parsimonious runtime monitor of failed AV interaction behavior, with sign/direction distinguishing aggressive versus passive failure types and LOSO generalization?",
+        "primary_endpoint": "any_interaction_failure = OR over 18 confirmatory included categories in interaction_failure_catalog_v5_1.csv",
+        "confirmatory_categories_count": 18,
+        "direction_classes": [
+            "AGGRESSIVE",
+            "PASSIVE",
+            "SEVERE_UNDIRECTED"
+        ],
+        "analysis_layers": [
+            "composite primary Scheme A parsimony/sufficiency",
+            "per-category secondary analyses with fixed BH-FDR denominator m=18",
+            "directional envelope-anchored inverted-U with aggressive/passive per-tail rule"
+        ],
+        "scheme_defaults": {
+            "A": "closing K=5 PRIMARY",
+            "B": "proximity K=5 robustness only if support passes",
+            "C": "E02/E09 active K=1 descriptive where overlapping",
+            "D": "closing+decel K=3 descriptive where overlapping",
+            "E": "peak closing/distance/decel K=1 descriptive where overlapping"
+        },
+        "gate_defaults": {
+            "gate1": {
+                "binary_R2": "Tjur coefficient of discrimination",
+                "continuous_R2": "OLS partial-R2 over scenario/null",
+                "tau_physics": 0.03,
+                "tau_ratio": 0.60,
+                "bootstrap": "two-way team x scenario blocked wild bootstrap, B=10000, seed=20260625"
+            },
+            "gate2": {
+                "required_controls": [
+                    "shuffled_ipv",
+                    "wrong-cell/wrong-envelope",
+                    "sign_flip",
+                    "IPV_removed"
+                ],
+                "confirmatory_controls": [
+                    "shuffled_ipv",
+                    "wrong-cell/wrong-envelope",
+                    "sign_flip",
+                    "IPV_removed"
+                ],
+                "descriptive_controls": [
+                    "counterpart_swap"
+                ],
+                "delta_beta": 0.05,
+                "delta_R2": 0.01,
+                "permutation": "max-statistic permutation, B_perm=10000, seed=20260625"
+            },
+            "gate3": "LOSO 14-train/1-holdout; pass 12/15 folds for direction and positive held-out skill; single-scenario positive-skill contribution <=40%"
+        },
+        "sparse_event_tiering": ">=20 events and >=20 non-events full gates; smaller class 10-19 M3-only exact/permutation or descriptive summaries; <10, all-event, or all-none no inferential claim",
+        "scheme_endpoint_rule": "Exposure schemes A/B may pair with broad, per-category, and directional endpoints using exposure-conditioned language and overlap diagnostics; event/marker-conditioned schemes C/D/E are descriptive-only for overlapping endpoints/groups/composites; official-only endpoints remain allowed for all schemes.",
+        "outcome_touching": false,
+        "audit_chain": "v4 -> W1 pre-model support under-power (19 collisions) -> v5 broad -> review -> v5.1 -> re-review PASS -> PI accepted 2026-06-28",
+        "audit_pointers": {
+            "accepted_prereg": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/04_criterion_consequence/prereg_v5_1_draft/prereg_v5_1.md",
+            "catalog": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/04_criterion_consequence/prereg_v5_1_draft/interaction_failure_catalog_v5_1.csv",
+            "scheme_pairings": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/04_criterion_consequence/prereg_v5_1_draft/scheme_endpoint_pairings_v5_1.csv",
+            "rereview_pass": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/04_criterion_consequence/prereg_v5_1_rereview/prereg_v5_1_rereview.md",
+            "pi_acceptance_brief": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/04_criterion_consequence/prereg_v5_1_rereview/pi_acceptance_brief_v5_1.md"
+        },
+        "next_gate": "superseded by moment-level monitor pre-registration; see phase5_moment_monitor_prereg"
+    },
+    "phase5_moment_monitor_prereg": {
+        "status": "LOCKED",
+        "version": "v4_moment_monitor",
+        "pi_approved_date": "2026-06-29",
+        "sap_path": "reports/plans/RQ011B_SAP_v4_moment_monitor_locked_20260629.md",
+        "supersedes_criterion_of": [
+            "reports/plans/RQ011B_SAP_v2_interaction_conditioned_locked_20260628.md",
+            "reports/plans/RQ011B_SAP_v3_broad_interaction_failure_locked_20260628.md"
+        ],
+        "supersede_reason": "Cell-level binary criterion was ill-posed: collision too sparse, any-failure saturated 285/285. The locked criterion is now onset-defined MOMENT/EVENT-level monitor validation.",
+        "ultimate_rq": "IPV as a parsimonious interpretable directional runtime monitor of interaction failure.",
+        "primary_unit": "one timestamped, onset-defined failure event occurrence from the 18 confirmatory categories",
+        "primary_pre_window": "[t_onset - 2.0s, t_onset - 0.5s]",
+        "secondary_at_moment": "closest valid scored frame <= t_fail within 0.25s; coincident descriptive context only",
+        "primary_contrast": "any_failure_moment vs C1 within-interaction matched controls",
+        "primary_predictor": "local_abs_pre over onset-safe W_pre",
+        "control_constructions": {
+            "C1": "within-interaction matched controls; primary confirmatory",
+            "C2": "all-non-failure baseline; runtime false-alarm sensitivity",
+            "C3": "exposure-matched non-failure controls; exposure sensitivity",
+            "C4": "seeded random non-failure controls; reproducibility sensitivity"
+        },
+        "control_exclusion": "all C1-C4 controls exclude every failure event interval plus guard [event_onset - 3.0s, event_resolution + 3.0s]; control scoring interval [t_control - 2.0s, t_control] must be disjoint from every forbidden interval",
+        "per_frame_defaults": {
+            "primary_current_ipv_column": "ipv_ego_hw10",
+            "primary_envelope": "90%",
+            "deviation_scale_floor": 0.05,
+            "M3": "frozen RQ009 M3 scorer",
+            "M2": "frozen RQ009 M2/context-only scorer",
+            "IPV_removed": "frozen RQ009 IPV-removed tier with counterpart-IPV channel zeroed",
+            "build_firewall": "materialize and hash per-frame deviations before reading failure timestamps or constructing controls"
+        },
+        "parsimony_defaults": {
+            "physics_denominator": "closed physics_full",
+            "tau_physics": 0.03,
+            "tau_ratio": 0.60,
+            "bootstrap": "B=10000, seed=20260625"
+        },
+        "monitor_defaults": {
+            "metrics": [
+                "ROC AUC",
+                "PR AUC",
+                "fixed threshold alarm tables",
+                "lead-to-onset",
+                "C2 false alarms per interaction minute"
+            ],
+            "fixed_alarm": "|M3_signed_dev| >= 1.0 for >=0.3s",
+            "thresholds": [
+                0.0,
+                0.5,
+                1.0,
+                2.0
+            ]
+        },
+        "directionality": "aggressive -> below-norm/aggressive tail; passive -> above-norm/passive tail; severe-undirected no sign claim; sign-flip specificity required",
+        "specificity": [
+            "shuffled IPV",
+            "wrong-cell/wrong-envelope",
+            "sign-flip",
+            "M2",
+            "IPV_removed"
+        ],
+        "generalization": {
+            "primary": "LOSO",
+            "secondary": "LOTO when support allows"
+        },
+        "multiplicity": "single primary any_failure_moment vs C1; C2-C4 cannot rescue; per-category BH-FDR denominator m=18",
+        "interpretation_ceiling": "interpretable runtime monitor only; no causal, planner, deployment, legal-fault, or normative-authority claims",
+        "outcome_touching": false,
+        "audit_chain": "cell-level W1 saturation -> moment redesign -> review -> v2 -> re-review PASS -> PI accepted 2026-06-29",
+        "audit_pointers": {
+            "accepted_prereg": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/prereg_moment_v2_draft/prereg_moment_v2.md",
+            "category_timing_table": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/prereg_moment_v2_draft/category_timing_table.csv",
+            "control_constructions": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/prereg_moment_v2_draft/control_constructions_v2.csv",
+            "per_frame_manifest": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/prereg_moment_v2_draft/per_frame_m3_m2_build_manifest.md",
+            "pi_decision_brief": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/prereg_moment_v2_draft/pi_decision_brief_moment_v2.md",
+            "rereview_pass": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/prereg_moment_v2_rereview/prereg_moment_v2_rereview.md",
+            "pi_acceptance_brief": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/prereg_moment_v2_rereview/pi_acceptance_brief_moment.md"
+        },
+        "next_gate": "moment W1 executed; see phase5_moment_monitor_closeout"
+    },
+    "phase5_moment_monitor_closeout": {
+        "status": "CLOSED_OUT",
+        "verdict": "PROVISIONAL_NULL_UNDER_IDENTIFIED_MEASUREMENT_LIMITED",
+        "closeout_date": "2026-06-29",
+        "worker": "RQ011B-P5-closeout-register",
+        "decision_pointer": "reports/knowledge/RQ011_onsite_full_universe_readiness/decision.md#rq011b---moment-level-monitor-validity-close-out",
+        "closeout_summary": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/CLOSEOUT_RQ011B.md",
+        "w1_result": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/05_moment_level/W1_moment/W1_moment_results.md",
+        "locked_sap": "reports/plans/RQ011B_SAP_v4_moment_monitor_locked_20260629.md",
+        "derived_w1_root": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/W1_moment",
+        "perframe_sha256": "417b00783a96893a475f6f03de4145363a622fd24a4aa1743e882a6c14e25cc4",
+        "headline": "Moment-level IPV monitor validity was not demonstrated on OnSite. The result is under-identified/provisional null because the interaction-failure segment retrieval/segmentation is itself inadequate.",
+        "question": "Can IPV deviation from the human cooperative-norm envelope serve as a parsimonious, interpretable, directional runtime monitor of interaction failure, flagging or preceding failure moments, on OnSite competition replay?",
+        "key_numbers": {
+            "supported_frames": 19044,
+            "supported_units": 245,
+            "outside_90_frames": 4243,
+            "above_passive_frames": 2300,
+            "below_aggressive_frames": 1943,
+            "failure_occurrences": 23521,
+            "timestamped_occurrences": 23004,
+            "timestamped_pre_window_ipv_eligible": 780,
+            "c1_controls": 0,
+            "c2_auc": 0.49290712198340886,
+            "c2_eff": 0.00839025357116312,
+            "c3_eff": -0.00006300624355078388,
+            "c4_eff": 0.008428533603583421,
+            "fixed_alarm_false_alarms_per_interaction_minute": 54.2096,
+            "fixed_alarm_recall": 0.20
+        },
+        "decision_details": {
+            "primary_contrast": "any_failure_moment vs C1 within-interaction matched controls, onset-safe pre-window",
+            "primary_status": "UNDER_IDENTIFIED_NO_CONTROLS",
+            "gate_pass": false,
+            "directional_label": "NON_DIRECTIONAL",
+            "specificity": "UNDER_IDENTIFIED",
+            "loso": "UNDER_IDENTIFIED",
+            "per_category_bh_m18": "no BH-significant category"
+        },
+        "critical_caveat": "The bottleneck is interaction-failure segment retrieval/segmentation. Collision-only was too sparse, broad any-failure was saturated, and moment-level within-interaction controls vanished because failure markers are too dense or ill-posed. The null is provisional and measurement-limited, not a clean refutation of IPV-based monitoring.",
+        "future_pointer": "A separate future RQ should study proper interaction-failure-segment retrieval/segmentation; revisit the RQ011B monitor verdict only after that measurement layer is solved.",
+        "manuscript_role": "No clean accepted/rejected criterion or monitor-validity claim; bounds the claim as not demonstrated on OnSite pending adequate failure-segment retrieval."
+    },
+    "amendments": {
+        "A1": {
+            "date": "2026-06-29",
+            "title": "counterpart_swap demoted to descriptive pre-W1",
+            "pi_approved": true,
+            "timing": "pre-W1, outcome-blind",
+            "standalone_record": "reports/studies/RQ011_onsite_full_universe_readiness/RQ011B_1_matched_scenario_20260625T202454_8331bd49/02_process/04_criterion_consequence/AMENDMENT_A1_counterpart_swap.md",
+            "sap_appendix": "reports/plans/RQ011B_SAP_v3_broad_interaction_failure_locked_20260628.md#amendment-a1-pi-approved-2026-06-29-pre-w1-outcome-blind",
+            "justification": "Full counterpart_swap is compute-prohibitive in the current local workflow (partial run 709.5 s/100 anchors over 35,754, approximately 40-42 h serial and likely requiring HPC) and partially redundant with the four retained structure-preserving controls.",
+            "gate2_confirmatory_controls": [
+                "shuffled_ipv",
+                "wrong-cell/wrong-envelope",
+                "sign_flip",
+                "IPV_removed"
+            ],
+            "gate2_descriptive_controls": [
+                "counterpart_swap"
+            ],
+            "gate2_margins": {
+                "delta_beta": 0.05,
+                "delta_R2": 0.01,
+                "permutation": "max-statistic permutation, B_perm=10000, seed=20260625"
+            },
+            "honesty_note": "Decided and recorded before any W1 outcome relationship was estimated; counterpart_swap will be reported descriptively on available coverage."
+        }
+    },
+    "phase4_interaction_conditioned_prereg": {
+        "status": "SUPERSEDED_BY_V3_BROAD_FAILURE",
+        "superseded_date": "2026-06-28",
+        "superseded_by": "reports/plans/RQ011B_SAP_v3_broad_interaction_failure_locked_20260628.md",
+        "superseded_reason": "Collision-centric v2 primary criterion was under-powered at 19 collision events at the pre-model support check; v3 broad interaction-failure composite + per-category + directional criterion is now current.",
+        "prior_status": "LOCKED",
+        "pi_approved_date": "2026-06-28",
+        "sap_path": "reports/plans/RQ011B_SAP_v2_interaction_conditioned_locked_20260628.md",
+        "amends": "reports/plans/RQ011B_SAP_v1_locked_20260625.md",
+        "thesis": "IPV norm-deviation is a parsimonious socially meaningful official-harm monitor that should capture a predeclared fraction of the full physics ensemble signal; not incremental-over-physics, causal, planner-benefit, normative, or independent-from-physics.",
+        "primary_endpoint": "official_harm_flag = collision_flag_score0 OR collision_pdf_deduction > 0 OR safety_intervention > 0; no E02/E09 in primary",
+        "schemes": {
+            "A": "PRIMARY closing K=5 PASS 247 cells",
+            "B": "ROBUSTNESS distance<=10m K=5 UNDER_IDENTIFIED",
+            "C": "ROBUSTNESS causal E02/E09 active K=1 UNDER_IDENTIFIED",
+            "D": "ROBUSTNESS closing+counterpart_accel<=-0.5 K=3 PASS",
+            "E": "ROBUSTNESS peak K=1 PASS"
+        },
+        "gate1_defaults": {
+            "model": "logistic GLM with scenario fixed effects; scenario random-intercept fallback",
+            "pseudo_R2": "Tjur coefficient of discrimination",
+            "eff_S": "DeltaR2_ipv_only / DeltaR2_physics_full",
+            "tau_physics": 0.03,
+            "tau_ratio": 0.60,
+            "eff_gate": "point estimate with mandatory CI reporting",
+            "denominator_rule": "denominator negative, zero, nonfinite, or < tau_physics => UNDER_IDENTIFIED_MOOT_PHYSICS; no clamping",
+            "bootstrap": "two-way team x scenario blocked wild bootstrap, B=10000, seed=20260625"
+        },
+        "gate2_defaults": {
+            "required_controls": [
+                "shuffled_ipv",
+                "counterpart_swap",
+                "wrong-cell/wrong-envelope",
+                "sign_flip",
+                "IPV_removed"
+            ],
+            "reported_only_not_gate": "kinematics_only",
+            "delta_beta": 0.05,
+            "delta_R2": 0.01,
+            "stochastic_controls": "max-statistic permutation, B_perm=10000, seed=20260625"
+        },
+        "gate3_defaults": "LOSO 14-train/1-holdout; pass 12/15 folds for direction and positive held-out skill; single-scenario influence <=40%",
+        "scheme_endpoint_rule": "automatic-event endpoints are descriptive-only where scheme conditioning overlaps; C/D x E02/E09 and A/B x E09 are not confirmatory",
+        "decision_labels": [
+            "SUPPORTED_PARSIMONIOUS_MONITOR",
+            "NON_PARSIMONIOUS",
+            "NON_SPECIFIC",
+            "NON_GENERALIZING",
+            "UNDER_IDENTIFIED"
+        ],
+        "outcome_touching": false
+    },
+    "phase4_diagnostic_chain_headline": "single-anchor 95.5% zero was a sampling artifact; interaction-conditioned signal recovered; parsimony reframe; |IPV|-closing r=0.535 to be handled by structure-preserving controls; v2 collision-centric primary under-powered at 19 collision events and criterion superseded by v3 broad interaction-failure composite + per-category + directional lock",
+    "next_gate": "Current RQ011B run is closed out as PROVISIONAL_NULL / UNDER_IDENTIFIED and measurement-limited; future work should be a separate failure-segment retrieval/segmentation RQ before revisiting monitor validity.",
+    "phase3plus": "BLOCKED_PAUSED",
+    "phase3plus_remaining_blockers": [
+        "G1"
+    ],
+    "resume_gates": [
+        {
+            "gate_id": "G1",
+            "status": "PENDING",
+            "description": "RQ009 freezes M3 AND its decision explicitly clears downstream consumption after the M3-vs-M4 pivot (per B005 / Wave-B)."
+        },
+        {
+            "gate_id": "G2",
+            "status": "RESOLVED: SAP locked + PI-approved 2026-06-25 (reports/plans/RQ011B_SAP_v1_locked_20260625.md)",
+            "description": "A locked statistical analysis plan + expanded denylist + operationalized negative controls + pre-registered falsifiable PASS/FAIL thresholds (B001-B004), PI-approved, re-reviewed."
+        }
+  ]
+}

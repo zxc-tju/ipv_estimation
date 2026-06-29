@@ -27,6 +27,9 @@ Prompt index: `prompts/README.md`.
 | RQ012B | OnSite automatic-event harm (no human labels) | approved | `RQ012B_plan_v0_onsite_automatic_event_harm_20260624.md` |
 
 Locked addendum: RQ011B SAP v1 (PI-approved 2026-06-25) is `RQ011B_SAP_v1_locked_20260625.md`.
+Locked amendment: RQ011B SAP v2 interaction-conditioned parsimony pre-registration (PI-approved 2026-06-28) is `RQ011B_SAP_v2_interaction_conditioned_locked_20260628.md`.
+Locked amendment: RQ011B SAP v3 broad interaction-failure parsimony + per-category + directional pre-registration (PI-approved 2026-06-28; supersedes the SAP v2 criterion) is `RQ011B_SAP_v3_broad_interaction_failure_locked_20260628.md`.
+Locked amendment: RQ011B SAP v4 moment/event-level runtime-monitor pre-registration (PI-approved 2026-06-29; supersedes the cell-level criterion approach of SAP v2/v3) is `RQ011B_SAP_v4_moment_monitor_locked_20260629.md`.
 
 Coordination + sequencing + the M3-vs-M4 pivot gate: `WAVE_B_launch_plan_20260624.md`.
 Each Wave B plan needs an independent plan review before `approved -> running`.

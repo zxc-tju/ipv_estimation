@@ -1,6 +1,6 @@
 # RQ Research Program Progress Dashboard
 
-Last synchronized: **2026-06-24**  
+Last synchronized: **2026-06-29**
 Scope: `PAPER001/PAPER002` and `RQ001–RQ013`  
 Machine-readable registry: [`rq_progress_registry.csv`](rq_progress_registry.csv)  
 Central plan index: [`../plans/README.md`](../plans/README.md)
@@ -53,6 +53,7 @@ or a reviewed execution artifact.
 | `done` | Research and paper handoff are complete. |
 | `archived-review` | Preserved as robustness/history, not an active headline result. |
 | `blocked` | A hard data, design, access, or evidence gate prevents progress. |
+| `closed-out` | Result is registered and governance-closed for the current run, without necessarily accepting a frozen manuscript claim. |
 
 | Stage | Meaning |
 |---|---|
@@ -82,7 +83,8 @@ or a reviewed execution artifact.
 | **RQ008** | InterHub temporal IPV discovery | `accepted` | S7 | P2 | Negative discovery boundary frozen: 0/24 directional structures survived controls | PI decision: do not run RQ008B now; confirmation remains unopened | Do not use discovery motifs in RQ009; no further action unless PI later reopens RQ008B |
 | **RQ009** | Estimability-aware dynamic counterpart-conditioned human envelope | `approved` | S1 | **P0** | PI authorized launch; plan and Claude→Codex prompt created. M3 is primary, M4 self-history is ablation; RQ008 motifs excluded | Independent plan review required; RQ007 sealed data unavailable until a separate authorization | Start plan review and pre-sealed implementation; stop at `READY_FOR_SEALED_TEST` until PI authorizes opening |
 | **RQ010** | WOD-E2E tracking feasibility and human preference validity | `accepted` | S2 | P1 | Feasibility decision frozen: `T2_FULL_TRACKING_REQUIRED`; Route 4 preferred, Route 5 fallback | PI authorizes signed-in access/pilot in principle, but user must personally sign in/accept licence and make data available; exact scale/HPC remains unknown | Obtain signed-in manifest/size, then run ratings-blind pilot; do not block RQ009 or OnSite |
-| **RQ011** | OnSite full-universe and run-level readiness | `accepted` | S7 | **P0** | `READY_WITH_FROZEN_EXCLUSIONS`; full_300 outcomes, clean_285 replay/IPV, T19 replay-only exclusion | No repeated runs/run-level/causal claims; moderate replay-selection caveat | OnSite is first external priority after RQ009 freezes its inference package; launch RQ011B then |
+| **RQ011** | OnSite full-universe and run-level readiness | `accepted` | S7 | **P0** | `READY_WITH_FROZEN_EXCLUSIONS`; full_300 outcomes, clean_285 replay/IPV, T19 replay-only exclusion | No repeated runs/run-level/causal claims; moderate replay-selection caveat | Use as the OnSite universe/scope decision; RQ011B moment-monitor close-out is registered separately below |
+| **RQ011B** | OnSite moment-level IPV monitor validity | `closed-out` | S7 | **P0** | **PROVISIONAL_NULL / UNDER_IDENTIFIED, measurement-limited.** Locked SAP v4 W1 moment run: outcome-blind M3 deviation built on 19,044 supported frames / 245 units; primary C1 any-failure vs within-interaction matched contrast has 0 controls; C2 AUC=0.493 and eff=0.0084; fixed alarm false alarms=54.2/interaction-min with recall=0.20; direction `NON_DIRECTIONAL`; no BH-significant category | **Critical limitation:** interaction-failure segment retrieval/segmentation is inadequate (collision-only sparse, any-failure saturated, moment C1 controls vanish). This is not a clean refutation and not a frozen manuscript monitor-validity claim | Future separate RQ should solve interaction-failure segment retrieval/segmentation, then revisit the RQ011B monitor verdict |
 | **RQ012** | OnSite automatic-event harm (scope revised 2026-06-24: automatic events + official outcomes; human labels deprecated) | `accepted` | S7 | **P0** | **RQ012B COMPLETE.** W0 extractor-health done (`RQ012B_1_…38f47437`); deviation→harm done (`RQ012B_2_…8454ad93`): across the full behavioural interaction-failure battery (9 events + groupings + 4 official subscores; kinematic baseline; cluster-aware permutation; label/placebo/M2/exposure controls; BH-FDR) **no channel is IPV-specifically SUPPORTED** — abrupt/comfort NULL; near-miss context-explained (fails M2); only too-passive→deadlock (E16) survives all controls but UNDERPOWERED + BH-edge (bounded hint). 5-role validated; bilingual report `…/RQ012B_2_…/00_entry/index.html` | none (RQ012B complete; bounded/null) | Feed RQ013 as bounded/null prior; passivity→deadlock as a future powered test |
 | **RQ013** | Beyond-safety incremental validity | `planning` | S0 | P2 | RQ003 provides a negative/boundary prior | Requires frozen RQ009 and independent external outcomes; human-label route is currently deferred | Draft after RQ009 and initial OnSite results; WOD may add human-preference evidence later |
 
@@ -112,7 +114,7 @@ or a reviewed execution artifact.
 
 ### After RQ009 freezes
 
-1. **OnSite first:** RQ011B matched `algorithm × scenario` analysis using full_300 outcomes and clean_285 replay/IPV with the T19 caveat.
+1. **OnSite:** RQ011B moment-level monitor close-out is registered as `PROVISIONAL_NULL / UNDER_IDENTIFIED` and measurement-limited; revisit only after a separate future failure-segment retrieval/segmentation RQ.
 2. **WOD in parallel:** tracker pilot and quality gate; formal preference analysis only after tracking and RQ009 gates pass.
 3. **RQ013 later:** baseline-relative incremental validity using available external outcomes.
 
@@ -186,7 +188,7 @@ Rules:
 - RQ009 has PI authorization but has not yet passed independent plan review or reached its pre-opening freeze.
 - RQ007 held-out confirmation remains sealed by design.
 - RQ010 signed-in access, official data volume, tracker quality, and final HPC decision remain unresolved.
-- RQ011B waits for the frozen RQ009 inference package.
+- RQ011B moment-monitor validity is closed out as measurement-limited; the unresolved blocker for any revisit is inadequate interaction-failure segment retrieval/segmentation, to be scoped as a separate future RQ.
 - RQ012 substantive behavioural evidence is deferred because the PI has paused two-human annotation.
 - RQ013 waits for RQ009 and external outcomes.
 
@@ -198,3 +200,4 @@ Rules:
 | 2026-06-23 | Registered RQ012A readiness as `BLOCKED_FOR_HUMAN_LABELS`. |
 | 2026-06-24 | Froze knowledge decisions for RQ007, RQ008, RQ010, RQ011, and RQ012. |
 | 2026-06-24 | Recorded PI decisions: defer human annotation; launch RQ009; do not run RQ008B; keep RQ007 sealed until RQ009 pre-opening freeze; authorize WOD signed-in pilot in principle; prioritize OnSite; verify paper `main` at `c6783577` as v4.1 baseline. Added RQ009 plan and orchestration prompt. |
+| 2026-06-29 | Registered RQ011B moment-level monitor close-out as `PROVISIONAL_NULL / UNDER_IDENTIFIED` and measurement-limited; prominent caveat: interaction-failure segment retrieval/segmentation is inadequate and requires a separate future RQ before revisiting the monitor verdict. |
