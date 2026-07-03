@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RQ010B — 候选轨迹的隐含 IPV 能否预测人类偏好?(WOD-E2E)</title>
+<style>
+ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;line-height:1.7;color:#1a1a1a;max-width:960px;margin:0 auto;padding:28px 20px 80px}
+ h1{font-size:1.55rem;margin:.2em 0}h2{font-size:1.18rem;border-bottom:2px solid #0072B2;padding-bottom:4px;margin-top:1.8em}
+ h3{font-size:1.02rem;margin-top:1.3em}
+ .lang{float:right;font-size:.85rem}.tldr{background:#f4f8fc;border-left:4px solid #0072B2;padding:12px 16px;border-radius:4px}
+ .verdict{background:#fdf3ef;border-left:4px solid #D55E00;padding:12px 16px;border-radius:4px;font-weight:600}
+ table{border-collapse:collapse;width:100%;font-size:.9rem;margin:.6em 0}th,td{border:1px solid #ccc;padding:5px 8px;text-align:left}th{background:#eef3f7}
+ figure{margin:1.2em 0;text-align:center}img{max-width:100%;border:1px solid #ddd;border-radius:4px}figcaption{font-size:.85rem;color:#555;margin-top:6px}
+ code{background:#f0f0f0;padding:1px 4px;border-radius:3px;font-size:.85em}.muted{color:#666;font-size:.85rem}
+ .ok{color:#009E73;font-weight:600}
+</style></head>
+<body>
+<div class="lang"><a href="index.html">EN</a></div>
+<h1>RQ010B — 候选轨迹的隐含 IPV 能否预测人类偏好?</h1>
+<p class="muted">Waymo 端到端相机数据集(WOD-E2E)· 重构后的预注册分析 · Run <code>RQ010B_1_tracking_preference_20260625T201647+0800_695fa83f</code> · 2026-07-03 · 状态:<b>完成(有界 null)</b></p>
+
+<div class="tldr"><b>一句话结论。</b> 在 WOD-E2E 上,对每个场景被人评的 3 条候选未来轨迹,候选的<b>隐含 IPV(社会偏好值)</b>及其相对人类规范的偏离,<b>不能预测人类偏好哪条候选</b>,并且<b>连"与弱物理量相当"都没达到</b>。这个 null 是严谨的:真实观测的对手未来、两种独立操作化、强制的 IPV-specificity 对照、5000 次 wild cluster bootstrap + max-statistic permutation、分数在最终检验前全程封存;并通过了独立审查、对抗性红队、clean-room 复现。</div>
+
+<h2>1. 研究问题与分析单元</h2>
+<p>重构目标(PI):ego IPV 能否作为一个单一、<em>可解释</em>的变量来解释人类对驾驶的评判——门槛只需"<em>与物理量相当</em>"(不必更强)?每个被评场景在决策帧 t* 有 <b>3 条候选 5 秒未来轨迹</b>,各由人类评 0–10 分。<b>单位=候选;分组=场景(每场景 3 候选)。</b> 分数在最终段内检验前全程封存。</p>
+
+<h2>2. 数据(数据集原生)</h2>
+<p>WOD-E2E 只给 8 路相机图像——<b>无 LiDAR、无对手轨迹、无高精地图</b>。每个被评场景(t* 处自车坐标系):自车 <code>past_states</code>(16,~4s)+ <code>future_states</code>(20,真实实开)@~4Hz;3 条候选未来(21 个 xy 点,仅位置)各带 1 个 <code>preference_score</code>;5 路前向相机 @10Hz。<b>环境车(对手)轨迹数据集不提供</b>——由自建的纯相机 3D 检测器 + 多帧追踪器恢复(StreamPETR 在 Waymo 上微调;前向弧;~1.2m 位置误差)。</p>
+
+<h2>3. M3 人类规范包络不迁移</h2>
+<p>预注册计划本欲用 RQ009 冻结的 <b>M3 情境化人类规范包络</b>给候选 IPV 算偏离。M3 在自身数据上能加载、能精确复现,但<b>不迁移到 WOD-E2E</b>:其支撑门键于类别情境(几何 × 右行权 × agent 类型),而 WOD-E2E 提供不了(无右行权标注;只有 AV-vs-交通)。即便用概念上正确的纯 HV-HV 编码(类别支撑 684/684)并修完所有构造 artifact,<b>数值运动学分布仍 OOD</b>(≤15% in-support),且预测的规范中心<b>近似常数</b>(图 2)。替代人类规范 = 按路径类型切的纯 HV IPV 分布:<b>各几何下中心≈中性(0)</b>,范围随几何变。偏离 = |候选 IPV| 按人类范围归一。</p>
+<figure><img src="figures/Fig2_m3_nontransfer.png" alt="M3 不迁移">
+<figcaption><b>图 2.</b> InterHub 的 M3 人类规范包络不迁移到 WOD-E2E。(A) M3 in-support 比例修完也 ≤15%。(B) M3 预测的规范中心近似常数(sd≈0.06)→ 无真正情境条件化。(C) 人类(HV-HV)IPV 规范在各路径几何 {CP, HO, MP, F} 下都≈中性(0)。</figcaption></figure>
+
+<h2>4. 两种操作化(方案)</h2>
+<table><tr><th>方案</th><th>IPV 窗口</th><th>N</th><th>说明</th></tr>
+<tr><td><b>① 未来窗</b></td><td>[t*, t*+w] 真实候选未来 × 真实对手未来</td><td>75 段 / 218 候选</td><td>需观测到对手未来(≥2s)</td></tr>
+<tr><td><b>② 历史+未来</b></td><td>交集窗(自车真实过去 ++ 候选未来)×(对手真实过去 ++ 未来),≥1s 未来</td><td>98 段 / 294 候选</td><td>历史锚定估计;逐候选判别力仅来自未来段</td></tr></table>
+<p class="muted">逐候选判别力根本上需要对手 t* 后的观测(图 3);若没有,3 个候选 IPV 塌成相同。历史窗看似能救回"349 段"对逐候选偏好检验是幻觉。N 上限 ≈ 75–98;真正能拉高的只有 360° 相机追踪(未做)。</p>
+
+<h2>5. 结果 —— 有界 null</h2>
+<figure><img src="figures/Fig1_main_null.png" alt="主 null">
+<figcaption><b>图 1.</b>(A,B)两方案的段内 IPV-偏离 vs 人类评分——无关系。(C)效应强度:IPV/偏离基本加不了东西;最强的信号是弱物理量(min-TTC、曲率、jerk)。两方案 max-statistic permutation p=1.0:IPV 打不赢任何对照。</figcaption></figure>
+<table><tr><th>方案</th><th>|偏离|↔评分 Spearman ρ(95%CI, p)</th><th>raw IPV ρ</th><th>IPV 打赢对照?</th><th>裁决</th></tr>
+<tr><td>① 未来窗(n=75)</td><td>+0.148 [-0.02, 0.31], p=0.10(符号与假设相反)</td><td>-0.02</td><td><b>否</b>(最佳对照 min-TTC 0.165;max-stat p=1.0)</td><td>FAIL / null</td></tr>
+<tr><td>② 历史+未来 ≥1s(n=98)</td><td>+0.031 [-0.11, 0.18], p=0.69</td><td>+0.07</td><td><b>否</b>(最佳对照 曲率 0.255;max-stat p=1.0)</td><td>FAIL / null</td></tr>
+<tr><td>② 稳健性 ≥2s(n=66)</td><td>0.000, p=1.0</td><td>—</td><td><b>否</b>(最佳对照 jerk 0.24)</td><td>FAIL / null</td></tr></table>
+<div class="verdict">预注册裁决:<b>FAIL —— 有界 null。</b> 候选 IPV 不能解释人类在候选间的偏好,且未达到"与物理量相当"(物理量 ρ≈0.16–0.26,IPV 强度=0)。重构设的"相当即可"门槛未过。注:连最好的物理量也只是弱预测——这些人类评分本就难用所考察的任何交互特征解释。</div>
+<figure><img src="figures/Fig3_discrimination_vs_future.png" alt="判别力随未来" style="max-width:520px">
+<figcaption><b>图 3(补充).</b> 方案②的逐候选判别力(3 候选 IPV 离散度)需要对手 t* 后的未来重叠;没有时≈0。</figcaption></figure>
+
+<h2>6. 验证</h2>
+<p><span class="ok">独立审查 PASS</span>(ratings-blind 守住;分数对齐 1428/1428;统计正确;关键数重算)。<span class="ok">红队:null ROBUST</span>(10 个攻击向量——开环偏置、差分噪声、rating 泄漏、估计性误用、聚类、检测噪声在最干净/最强交互子集上的衰减、替代操作化——没一个把 null 翻掉;最佳对抗性替代强度 0.082、打不赢任何对照)。<span class="ok">clean-room 复现:精确</span>(ρ 逐位复现、裁决复现)。唯一残留:真实欠功效——n=98 下 |ρ|≈0.28 以下的中等效应可能被藏住。</p>
+
+<h2>7. 局限(随结论走)</h2>
+<ul>
+<li>N 上限 ~75–98(对手受限于前向相机弧;小效应欠功效)。</li>
+<li>对手轨迹是相机检测估计(~1.2m),非真值。</li>
+<li>候选条件 IPV,基于<b>开环</b> opportunity 结构(冻结的对手未来=它对"实开轨迹"的反应)——非闭环因果、非真实 harm。</li>
+<li>IPV 在 4Hz 估计;原操作化为 10Hz(已标注:任何最终验证指标应插值到 ~10Hz 复算)。</li>
+<li>这是<em>此操作化在 WOD-E2E 上</em>的 null,并非"IPV 永远与偏好无关"的证明。</li>
+</ul>
+
+<h2>8. 结论</h2>
+<p>在一个大、独立、真实、带人类偏好标注的相机数据集上,候选轨迹的隐含 IPV 不能解释人类偏好,且不及物理量。这界定了 IPV 验证器在 WOD-E2E 人类对齐上的外部效度边界,并与项目一贯模式一致(RQ009 counterpart-IPV null;RQ003 先验 null;RQ012B 偏差→harm null)。一个有独立价值的方法学副产品:在 WOD-E2E 上跑通了纯相机 3D 检测器+多帧追踪器,并发现 InterHub 的 M3 人类规范包络不迁移到相机估计的 WOD-E2E 交互。</p>
+<p class="muted">预注册:<code>02_process/04_reframed_preference_prereg/PREREGISTRATION_20260630.md</code>。结果件:<code>02_process/05_reframed_preference_results/</code>。完整管线(阶段 0–8)在 HPC <code>/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/</code>。图用 matplotlib 出版级样式绘制(本会话首选的 nature skill 不可用)。</p>
+</body></html>

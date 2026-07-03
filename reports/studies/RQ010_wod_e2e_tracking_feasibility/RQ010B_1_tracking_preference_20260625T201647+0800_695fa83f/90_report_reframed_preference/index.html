@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RQ010B — Does candidate IPV predict human preference? (WOD-E2E)</title>
+<style>
+ body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;line-height:1.55;color:#1a1a1a;max-width:960px;margin:0 auto;padding:28px 20px 80px}
+ h1{font-size:1.6rem;margin:.2em 0}h2{font-size:1.2rem;border-bottom:2px solid #0072B2;padding-bottom:4px;margin-top:1.8em}
+ h3{font-size:1.02rem;margin-top:1.3em}
+ .lang{float:right;font-size:.85rem}.tldr{background:#f4f8fc;border-left:4px solid #0072B2;padding:12px 16px;border-radius:4px}
+ .verdict{background:#fdf3ef;border-left:4px solid #D55E00;padding:12px 16px;border-radius:4px;font-weight:600}
+ table{border-collapse:collapse;width:100%;font-size:.9rem;margin:.6em 0}th,td{border:1px solid #ccc;padding:5px 8px;text-align:left}th{background:#eef3f7}
+ figure{margin:1.2em 0;text-align:center}img{max-width:100%;border:1px solid #ddd;border-radius:4px}figcaption{font-size:.85rem;color:#555;margin-top:6px}
+ code{background:#f0f0f0;padding:1px 4px;border-radius:3px;font-size:.85em}.muted{color:#666;font-size:.85rem}
+ .ok{color:#009E73;font-weight:600}
+</style></head>
+<body>
+<div class="lang"><a href="index.zh.html">中文</a></div>
+<h1>RQ010B — Does a candidate trajectory's implied IPV predict human preference?</h1>
+<p class="muted">Waymo Open Dataset — End-to-End (WOD-E2E) · Reframed pre-registered analysis · Run <code>RQ010B_1_tracking_preference_20260625T201647+0800_695fa83f</code> · 2026-07-03 · Status: <b>COMPLETE (bounded null)</b></p>
+
+<div class="tldr"><b>TL;DR.</b> On WOD-E2E, among the three human-rated candidate future trajectories per scene, the candidate's <b>implied IPV (social-preference value)</b> — and its deviation from a human norm — <b>does not predict which candidate humans prefer</b>, and does <b>not even reach parity with weak physical features</b>. The null is rigorous: real observed counterpart futures, two independent operationalizations, mandatory IPV-specificity controls, 5000-iteration wild-cluster bootstrap + max-statistic permutation, ratings-blind until the final test, and it survived independent review, adversarial red-team, and clean-room replication.</p>
+
+<h2>1. Question &amp; unit of analysis</h2>
+<p>Reframed goal (PI): can ego IPV serve as a single, <em>interpretable</em> variable that explains human judgement of driving, needing only to be <em>comparable</em> to physical features (not superior)? Each rated WOD-E2E scene has one decision frame t* with <b>3 candidate 5 s future trajectories</b>, each scored 0–10 by human raters. <b>Unit = candidate; group = segment (3 candidates/segment).</b> Ratings were sealed until the final within-segment test.</p>
+
+<h2>2. Data (dataset-origin)</h2>
+<p>WOD-E2E gives 8-camera imagery only — <b>no LiDAR, no actor tracks, no HD map</b>. Per rated segment (ego-centric frame at t*): ego <code>past_states</code> (16, ~4 s) + <code>future_states</code> (20, actual driven) at ~4 Hz; three candidate futures (21 xy points, position-only) + one <code>preference_score</code> each; 5 forward cameras @ 10 Hz. The <b>surrounding (counterpart) vehicle trajectory is not provided</b> — it was recovered by a purpose-built camera-only 3D detector + multi-frame tracker (StreamPETR fine-tuned on Waymo; forward-arc; ~1.2 m position error).</p>
+
+<h2>3. The M3 human-norm envelope does not transfer</h2>
+<p>The pre-registered plan intended to score each candidate's IPV against the frozen RQ009 <b>M3 context-conditioned human-norm envelope</b>. M3 loads and reproduces exactly on its own data, but <b>does not transfer to WOD-E2E</b>: its support gate keys on categorical context (geometry × right-of-way × agent-type) that WOD-E2E cannot supply (no right-of-way label; AV-vs-traffic only). Even after the conceptually-correct pure-HV-HV encoding (categorical support 684/684) and fixing all construction artifacts, the <b>numeric kinematic distribution stays out-of-distribution</b> (≤ 15 % in-support) and the predicted norm center is <b>near-constant</b> (Fig. 2). Replacement human norm = the path-type-conditioned pure-HV IPV distribution: <b>center ≈ neutral (0) across all geometries</b>, spread varies. Deviation = |candidate IPV| normalized by the human spread.</p>
+<figure><img src="figures/Fig2_m3_nontransfer.png" alt="M3 non-transfer">
+<figcaption><b>Figure 2.</b> The InterHub M3 human-norm envelope does not transfer to WOD-E2E. (A) M3 in-support fraction stays ≤ 15 % across fixes. (B) M3's predicted norm center is near-constant (sd ≈ 0.06) → no real context-conditioning. (C) The human (HV-HV) IPV norm is ≈ neutral (0) across path geometries {CP, HO, MP, F}.</figcaption></figure>
+
+<h2>4. Two operationalizations (schemes)</h2>
+<table><tr><th>Scheme</th><th>IPV window</th><th>N</th><th>Notes</th></tr>
+<tr><td><b>1 — future-only</b></td><td>[t*, t*+w] real candidate future × real counterpart future</td><td>75 seg / 218 cand</td><td>needs observed counterpart future (≥2 s)</td></tr>
+<tr><td><b>2 — history+future</b></td><td>intersection window (ego real past ++ candidate future) × (counterpart real past ++ future), ≥1 s future</td><td>98 seg / 294 cand</td><td>history anchors the estimate; per-candidate discrimination comes only from the future portion</td></tr></table>
+<p class="muted">Candidate discrimination fundamentally requires the counterpart's post-t* observation (Fig. 3); with none, the 3 candidate IPVs collapse to identical. The apparent "349-segment" recovery from the history window is illusory for the per-candidate preference test. N ceiling ≈ 75–98; the only real lever to raise it is 360° camera tracking (not done).</p>
+
+<h2>5. Result — bounded null</h2>
+<figure><img src="figures/Fig1_main_null.png" alt="main null">
+<figcaption><b>Figure 1.</b> (A,B) Within-segment IPV-deviation vs human rating for both schemes — no relationship. (C) Effect strength: IPV/deviation adds essentially nothing; the strongest signals are weak physical features (min-TTC, curvature, jerk). Max-statistic permutation p = 1.0 in both schemes: IPV beats no control.</figcaption></figure>
+<table><tr><th>Scheme</th><th>|dev|↔rating Spearman ρ (95% CI, p)</th><th>raw IPV ρ</th><th>IPV beats controls?</th><th>Verdict</th></tr>
+<tr><td>1 future-only (n=75)</td><td>+0.148 [-0.02, 0.31], p=0.10 (sign opposite to H1)</td><td>-0.02</td><td><b>No</b> (best control min-TTC 0.165; max-stat p=1.0)</td><td>FAIL / null</td></tr>
+<tr><td>2 history+future ≥1 s (n=98)</td><td>+0.031 [-0.11, 0.18], p=0.69</td><td>+0.07</td><td><b>No</b> (best control curvature 0.255; max-stat p=1.0)</td><td>FAIL / null</td></tr>
+<tr><td>2 robustness ≥2 s (n=66)</td><td>0.000, p=1.0</td><td>—</td><td><b>No</b> (best control jerk 0.24)</td><td>FAIL / null</td></tr></table>
+<div class="verdict">Pre-registered verdict: <b>FAIL — bounded null.</b> Candidate IPV does not explain human preference among candidates and does not reach parity with physical features (physics ρ ≈ 0.16–0.26, IPV strength = 0). The reframed "comparable to physics" bar is not met. Note: even the best physical feature is a weak predictor — these human ratings are hard to explain from any interaction feature examined.</div>
+<figure><img src="figures/Fig3_discrimination_vs_future.png" alt="discrimination vs future" style="max-width:520px">
+<figcaption><b>Figure 3 (supplementary).</b> Scheme 2 candidate discrimination (3-candidate IPV spread) requires counterpart post-t* future overlap; with none it is ≈ 0.</figcaption></figure>
+
+<h2>6. Validation</h2>
+<p><span class="ok">Independent review PASS</span> (ratings-blind held; 1428/1428 rating alignment; statistics correct; key numbers recomputed). <span class="ok">Red-team: null ROBUST</span> (10 attack vectors — open-loop bias, finite-diff noise, rating leakage, estimability misuse, clustering, detector-noise attenuation on clean/strong subsets, alternative operationalizations — none flips the null; best adversarial alternative strength 0.082, beats no control). <span class="ok">Clean-room replication: exact</span> (ρ reproduced to full precision, verdict reproduces). Only residual: real underpower — a moderate effect below |ρ|≈0.28 could be hidden at n=98.</p>
+
+<h2>7. Caveats (carry with any use)</h2>
+<ul>
+<li>N ceiling ~75–98 (counterpart limited to the forward-camera arc; underpowered for small effects).</li>
+<li>Counterpart trajectories are camera-detector-derived (~1.2 m), not ground truth.</li>
+<li>Candidate-conditioned IPV over an <b>open-loop</b> opportunity structure (frozen counterpart future = its reaction to the actually-driven trajectory) — not closed-loop causal, not real harm.</li>
+<li>IPV estimated at 4 Hz; the original operationalization is 10 Hz (flagged to revisit by interpolation for any final validation metric).</li>
+<li>This is a null for <em>this executed operationalization on WOD-E2E</em>, not proof that IPV can never relate to preference.</li>
+</ul>
+
+<h2>8. Conclusion</h2>
+<p>On a large, independent, real-world camera dataset with human preference labels, a candidate trajectory's implied IPV does not explain human preference and is not comparable to physical features. This bounds the external / human-alignment validity of the IPV verifier on WOD-E2E and is consistent with the project's recurring pattern (RQ009 counterpart-IPV null; RQ003 prior null; RQ012B deviation→harm null). A methodological by-product of independent value: a working camera-only 3D detector + multi-frame tracker on WOD-E2E, and the finding that the InterHub M3 human-norm envelope does not transfer to camera-derived WOD-E2E interactions.</p>
+<p class="muted">Pre-registration: <code>02_process/04_reframed_preference_prereg/PREREGISTRATION_20260630.md</code>. Result artifacts: <code>02_process/05_reframed_preference_results/</code>. Full pipeline (phases 0–8) on HPC <code>/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/</code>. Figures drawn with matplotlib (publication style; the preferred <em>nature</em> skill was unavailable this session).</p>
+</body></html>
