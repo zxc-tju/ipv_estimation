@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-06-28.
+Last reviewed: 2026-07-03.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -8,6 +8,21 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
+- **RQ010B COMPLETE (2026-07-03; 10Hz sensitivity closed 2026-07-04) = bounded NULL.** Reframed WOD-E2E human-preference
+  validity: candidate IPV does NOT predict human preference and is not comparable to
+  physics (Scheme 1 future-only n=75 rho=0.148 p=0.10; Scheme 2 history+future >=1s
+  n=98 rho=0.031 p=0.69; max-stat permutation p=1.0 both). M3 does NOT transfer to
+  WOD-E2E (<=15% in-support) -> path-type HV norm. Review PASS, red-team null ROBUST,
+  replication exact. Report `reports/studies/RQ010_wod_e2e_tracking_feasibility/RQ010B_1_tracking_preference_20260625T201647+0800_695fa83f/90_report_reframed_preference/index.html` (+`.zh.html`);
+  decision `reports/knowledge/RQ010_wod_e2e_tracking_feasibility/decision.md`. Full
+  pipeline on HPC `/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/` (retained). The PI-flagged
+  4Hz->10Hz caveat is now checked under
+  `/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase_10hz_sensitivity/`: re-estimated
+  candidate IPV at dt=0.1 with no counterpart extrapolation and joined ratings only for
+  the final test. Null holds at 10Hz (Scheme 1 n=75 rho=0.165 p=0.0626; Scheme 2 10Hz
+  effective n=47 rho=0.128 p=0.241; max-stat p=1.0 both; IPV-vs-4Hz Spearman 0.308/0.289).
+  Deliverables: `candidate_ipv_10hz.csv` and `tenhz_sensitivity_report.md`. No active
+  RQ010B compute; token relay stopped.
 - RQ012B Stage 4/5 deviation-to-harm association and negative-control battery is
   complete for the expanded all-valid frozen-M3 OnSite deviation table. Analysis
   set is the pre-registered gate-passing units: `n=245` units across 19 teams;
@@ -242,10 +257,10 @@ question index in `STUDIES.md`.
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_route4_detector_quality_best50732_20260627_summary.json`,
   `_metrics_by_class_range.csv`, `_error_model.json`, and `_error_model.csv`.
 - RQ010B improved StreamPETR Waymo Perception 256-train/16-val finetune is
-  resumed/running as train-only 4-L40 DDP Slurm job `1712698` on partition
-  `L40` (`RUNNING` on `gpu4011` at final handoff check on 2026-06-28;
-  `--time=24:00:00`, max allocated 96 L40 GPU-h; do not wait for completion in
-  ordinary launch handoffs). Previous jobs failed only in in-loop distributed
+  complete. Train-only 4-L40 DDP Slurm job `1712698` completed on `gpu4011`
+  in `20:27:18` (about 81.8 allocated L40 GPU-h) and saved all 12 raw-equivalent
+  epoch checkpoints through `iter_152124.pth` (`latest.pth -> iter_152124.pth`).
+  Previous jobs failed only in in-loop distributed
   evaluation: `1712416` on `gpu4009` failed after epoch-1 eval with NCCL
   watchdog timeout, and `1712590` on `gpu4025` saved `iter_25354.pth` then
   failed at DistEvalHook with `TypeError: 'NoneType' object is not iterable` in
@@ -258,7 +273,8 @@ question index in `STUDIES.md`.
   `max_keep_ckpts=-1`; `projects/mmdet3d_plugin/core/apis/mmdet_train.py`
   skips eval-hook registration when `evaluation is None`; the resume sbatch
   also passes `--no-validate` and resumes explicitly from `iter_25354.pth`.
-  Evaluate saved checkpoints separately on 1 GPU. Config:
+  Saved checkpoints must still be evaluated separately on 1 GPU because the
+  DDP eval path has the known `NoneType` bug. Config:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/StreamPETR/projects/configs/StreamPETR/stream_petr_r50_flash_704_waymo_5cam_finetune256_balanced_warminit.py`;
   warm-init checkpoint:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/checkpoints/stream_petr_waymo3_warminit_nusc_car_ped_bicycle.pth`.
@@ -287,11 +303,11 @@ question index in `STUDIES.md`.
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/scripts/streampetr_waymo_finetune256_balanced_warminit_ddp4_20260628.sbatch`;
   failed timeout-fix resume sbatch:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/scripts/streampetr_waymo_finetune256_balanced_warminit_ddp4_resume_timeoutfix_20260628.sbatch`;
-  active no-eval resume sbatch:
+  completed no-eval resume sbatch:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/scripts/streampetr_waymo_finetune256_balanced_warminit_ddp4_resume_noeval_20260628.sbatch`;
-  resume checkpoint:
+  original resume checkpoint:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/work_dirs/streampetr_waymo_finetune256_balanced_warminit_ddp4_20260628/iter_25354.pth`
-  (`latest.pth -> iter_25354.pth`);
+  (`latest.pth` now points to final `iter_152124.pth`);
   work dir:
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/work_dirs/streampetr_waymo_finetune256_balanced_warminit_ddp4_20260628/`;
   Slurm logs:
@@ -300,7 +316,166 @@ question index in `STUDIES.md`.
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/streampetr_waymo_finetune256_ddp4_resume_1712590.out`
   and `.err` for the failed eval-resume job, and
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/streampetr_waymo_finetune256_ddp4_resume_noeval_1712698.out`
-  and `.err` for the active train-only resume job.
+  and `.err` for the completed train-only resume job. Separate single-GPU
+  detector-quality Slurm job `1745613` (`zxc-rq010b-eval256`) evaluated
+  checkpoints `iter_76062`, `iter_101416`, `iter_126770`, and `iter_152124`
+  on the 16 Perception validation segments in `01:42:26` (about 1.71 allocated
+  L40 GPU-h; script runtime sum about 1.64 GPU-h). Best by mean AP over the
+  9 class x range cells is ep12 `iter_152124`: `mAP_9=0.08454`, pooled
+  center-distance AP `0.10835`, overall recall `0.21916`, precision `0.23675`
+  at score threshold `0.225`. Class all-range matched-TP recall/precision:
+  Vehicle `0.24363`/`0.23469`, Pedestrian `0.14515`/`0.24725`, Cyclist
+  `0.05644`/`0.40000`. Pedestrian and Cyclist are nonzero, so warm init plus
+  class balance worked enough to clear the zero-class failure; `grad_norm:nan`
+  during training was benign for detector output. The detector is now adequate
+  to proceed to tracker + HOTA/AMOTA QA on the 16-val pilot, while still weak
+  at 50+ m and not yet a final detector-quality solution. Best outputs:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_route4_detector_quality_256_balwarm_ep12_iter_152124_20260629_summary.json`,
+  `_metrics_by_class_range.csv`, `_error_model.json`, `_error_model.csv`,
+  `_matched_tp_errors.csv`, `_threshold_sweep.csv`, and `_post_nms_records.pkl`;
+  checkpoint ranking summary:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_route4_detector_quality_256_balwarm_20260629_checkpoint_summary.{json,csv}`.
+- RQ010B WOD-E2E IPV-rating pilot degeneracy investigation/fix is complete on
+  Tongji HPC. The original
+  `results/rq010b_wod_e2e_ipv_rating_pilot_20260629/` IPV-rating result is
+  invalid for IPV conclusions: WOD-E2E state sequences were sampled at
+  `dt=0.25` s while the legacy IPV estimator still integrated with global
+  `dt=0.1` s; probability-space trajectory likelihoods underflowed to all-zero
+  candidate weights and forced the uniform `ego_ipv=0.0` fallback; and the
+  adapter used each evaluated candidate as its own reference line instead of
+  the RQ010B §6 scene-level route reference. The patched HPC adapter is
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/rq010b_ipv_rating_pilot_20260629/analyze_wod_e2e_ipv_rating_pilot.py`
+  with backup `.bak_20260629_dtfix`; it sets estimator `dt=0.25`, uses
+  log-domain trajectory-likelihood normalization, and builds the §6
+  past-pose-plus-routing constant-curvature ego reference. Final fixed outputs:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_routefix_20260629T124941/`.
+  Distribution is now finite and varied but still partially uninformative:
+  `n=33`, range `[-1.1781, 1.1781]`, 17/33 `abs(ego_ipv)>1e-6`,
+  16 rounded-distinct IPV values, and 4 uniform-fallback rows. Re-run
+  IPV-rating association remains weak/null: pooled Spearman `rho=0.123`,
+  95% bootstrap CI `[-0.224, 0.452]`, `p=0.495`; mean within-scene Spearman
+  `-0.0787` over 11 usable scenes; IPV single-feature R2 `0.0110`, below the
+  best physics feature `driven_ade_m` R2 `0.0634`. Reproducer artifacts:
+  `debug_reproducer_dt_route_log_20260629.{md,json}` in the final result dir.
+  Applicability caveat remains: this is an exploratory one-frame StreamPETR
+  velocity-extrapolated counterpart pilot, not the full RQ010B validated
+  tracker/M3 preference test.
+- RQ010B WOD-E2E multi-frame ceiling investigation is complete on Tongji HPC
+  and overturns the four-shard hard-ceiling interpretation. A single
+  `E2EDFrame` contains one timestamp's 8 camera JPEGs, one per surround camera,
+  not an internal recent-frame sequence; ego `past_states`/`future_states` are
+  16/20 samples at 4 Hz. The sparse four-shard finding is an interleaved
+  shard-access artifact: adding four CRC-clean validation probe shards (`00004`,
+  `00005`, `00007`, `00010`) increased unique pre-t* frame coverage for all 12
+  rated pilot segments (min/median/max `2/6/9` -> `6/12/16`). The 8 clean
+  shards still did not reconstruct a 10-frame contiguous run ending at t*
+  (end-contiguous max 2; best pre-t* contiguous max 3), so the concrete next
+  path is full/targeted validation shard indexing over
+  `val_202504211843.tfrecord-00000..00092-of-00093`. Four attempted extra probe
+  shards (`00006`, `00008`, `00009`, `00011`) were excluded after CRC failures
+  from an interrupted transfer. Artifacts:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/wod_e2e_temporal_ceiling_probe_20260629/{rated_record_structure_probe.json,shard_growth_probe_clean_extra.json,shard_growth_probe_contiguous_clean_extra.json}`
+  and manifest
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/manifests/validation_probe_00004_00011.tsv`.
+- RQ010B full WOD-E2E validation rated479 streaming ingest/extract is complete
+  on Tongji HPC. Slurm job `1746449` (`zxc-rq010b-full93`, `amd`, `cpua277`)
+  completed with exit `0:0` in `11:47:32`; it was not cancelled. The apparent
+  post-loop hang was useful finalizer work: after `all-shard loop complete
+  receipts_ok=93/93` at 2026-06-30 04:37 CST, the job wrote sorted
+  per-segment `frames.tfrecord` and `frames.index.tsv`, logged
+  `segments_finalized=479`, and exited at 05:11. The buggy final summarize
+  left `manifests/rated479_segment_counts.tsv` at 0 bytes; it was regenerated
+  atomically from the independent readiness table and is now nonzero.
+  Extracted data is under
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/data/rated479_segments/<segment_key>/`
+  with exactly 479 rated segment directories and zero leftover raw validation
+  shards. The stray 480th directory was empty `_tmp` and was removed; the stale
+  GCS token at
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/secrets/gcs_token` was deleted
+  after finalization.
+  Readiness artifacts:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/manifests/rated479_segment_readiness.tsv`
+  and `.json`. Gate result: 479/479 segments have at least 10 strict
+  contiguous pre-t* frames; min/median/max pre-t* contiguous history is
+  91/228/229 frames, histogram `50-99:3`, `100-199:100`, `>=200:376`, and
+  there are no short/abstain-worthy segments. All 479 segments have the five
+  forward-arc cameras/calibrations (`FRONT`, `FRONT_LEFT`, `FRONT_RIGHT`,
+  `SIDE_LEFT`, `SIDE_RIGHT`) on every indexed frame. Native cadence is 10 Hz
+  from adjacent `context_step` deltas (`mode=1` for all segments). Current
+  directory size is about 354.8 GB apparent / 330.5 GiB because final
+  tracker-facing TFRecords and shard TFRecords are both retained; the
+  tracker-facing final `frames.tfrecord` set is 177.4 GB / 165.2 GiB, median
+  374,013,480 bytes (356.7 MiB) per segment. Downstream tracker should read
+  each segment through `frames.index.tsv` sorted by `context_step`, then stream
+  the matching records from `frames.tfrecord`; each E2EDFrame contains the
+  pruned five-camera images/calibrations plus ego past/future states and
+  preference trajectories. Shard archives remain under `shards/` for audit or
+  rebuild only.
+- RQ010B WOD-E2E 12-segment dense multiframe tracking -> IPV counterpart
+  selection repair is complete on Tongji HPC, using cached detections/tracks
+  from
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_pilot_20260630T053507/`
+  and the fixed IPV adapter under
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/rq010b_ipv_rating_pilot_20260629/`.
+  The active selector code is
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/rq010b_multiframe_tracking_ipv_20260630/analyze_multiframe_tracking_ipv.py`
+  with backups `.bak_counterpart_gates_20260630T0603` and
+  `.bak_vehicle_class_gate_20260630T0610`; focused regression tests are in
+  `test_counterpart_selection_gates.py` and pass (`4 passed`). Final cached
+  L40 Slurm rerun `1751326` (`zxc-rq010b-cp-gates`) completed with exit `0:0`
+  in `00:01:58`, writing
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_pilot_counterpart_gates_20260630T060925/`.
+  Gates now require vehicle class, >=10 hits, >=1.0 s span, <=0.5 s stale,
+  >=2.0 m displacement, >=0.5 m/s path speed, jitter ratio <=4, step p95
+  <=1.75 m, observation gap <=0.5 s, history coverage >=0.4, current distance
+  <=35 m, and predicted ego-path conflict gap <=8 m / TTC <=6 s or compatible
+  crossing/leading/opposing geometry. Retained interaction rate on the 12 pilot
+  segments is 8/12 vehicle counterparts (24 candidate IPV rows) and 4
+  abstentions: two no quality-passing tracks, one no interacting vehicle after
+  conflict gate, and one pedestrian-only/conflict-gate case after the vehicle
+  class gate. Selected vehicle tracks are all moving/interacting
+  (displacement 2.51-6.36 m, 14-48 observed points, min predicted gap
+  0.221-7.71 m, geometries crossing/opposing/leading-or-merging). Ego IPV on
+  retained candidates is finite with range `[-1.17810, 1.14898]`, median `0`,
+  13/24 nonzero above 1e-6, and pooled rating association remains small/null
+  (Spearman rho `0.1269`, 95% bootstrap CI `[-0.3147, 0.5425]`, p `0.5547`).
+  This pilot gate has now been scaled to all 479; use the audited full-run
+  result below for current RQ010B operating facts.
+- RQ010B WOD-E2E full479 scored-target multiframe tracking -> gated
+  counterpart -> fixed ego-IPV audit is complete under Tongji HPC `/ZXC`
+  boundaries, status `audited_not_frozen` pending review. Canonical result dir:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_full479_scored_audited_20260630T063600/`.
+  Detector array `1751377_[0-7]` used one L40 per shard on
+  `gpu4006/gpu4008/gpu4010` and completed cleanly; CPU job `1751378` wrote the
+  full analysis artifacts then failed only in posthoc audit markdown formatting,
+  which was patched and rerun successfully on the completed CSV/JSON outputs.
+  Frozen gates retained 302/479 scenes and abstained 177/479. Abstention
+  reasons: no interacting track after conflict gate 92, no track after motion
+  gate 36, no track after quality filter 34, no track after history-coverage
+  gate 9, no track after smoothness gate 4, and 2 data-level target abstentions
+  with no scored preference frame plus 50-frame history. Selected counterparts
+  are all `Vehicle`, all pass real-moving gates, and all pass interaction gates;
+  selected-track displacement median 3.34 m, mean speed median 1.75 m/s, and
+  predicted min-gap median 3.37 m. Ego IPV distribution over 906 retained
+  candidate rows has mean 0.00799, median 0, q25/q75 -0.0938/0.1041, and range
+  [-1.1781, 1.1781]. Primary IPV-rating association is weak/null: all-retained
+  pooled Spearman rho -0.0384, 95% CI [-0.1016, 0.0256], p=0.2477; fresh
+  confirmatory subset excluding the 12 pilot segments has 294 scenes / 882 rows,
+  pooled Spearman rho -0.0445, 95% CI [-0.1078, 0.0183], p=0.1872. Within-scene
+  rank correlations are also weak (fresh mean Spearman -0.0678, p=0.1198;
+  mean Kendall -0.0554, p=0.1590). Shape check is only suggestive: quadratic
+  term is negative but not conventionally significant (fresh quadratic p=0.0623,
+  delta R2=0.00394). Comparability verdict: IPV is not comparable to the best
+  single physical feature in this audited run; `driven_fde_m` is best with fresh
+  R2=0.02085 and Spearman -0.2461, while ego IPV has fresh R2=0.00265 and
+  Spearman -0.0445. Open-loop/closed-loop bias summary: driven trajectory is
+  closest to the top-rated candidate in 181/302 retained scenes (59.9%) and
+  driven IPV lies inside the candidate IPV range in 214/302 scenes (70.9%).
+  Main audit table:
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_full479_scored_audited_20260630T063600/rq010b_wod_e2e_multiframe_tracking_ipv_full479_audited_selected_counterpart_summary.csv`;
+  audit summary JSON/MD:
+  `rq010b_wod_e2e_multiframe_tracking_ipv_full479_audited_audit_summary.{json,md}`
+  in the same result directory.
 - RQ009 Phase 3 features gate is now PASS. The hw=4 target source remains
   the verified frame-level `sigma01_hw4_ipv_timeseries.csv` with 3,695,981
   data rows, exact key overlap with sigma01, SHA-256
@@ -652,7 +827,7 @@ Each execution must create a unique atomically locked RUN_ID/RUN_ROOT.
   `rq010b_route4_detector_quality_best50732_20260627`, especially
   `_summary.json`, `_metrics_by_class_range.csv`, `_error_model.json`,
   `_error_model.csv`, `_matched_tp_errors.csv`, and `_threshold_sweep.csv`.
-  Latest improved recipe config/smoke/launch artifacts are
+  Latest improved recipe config/smoke/train/eval artifacts are
   `projects/configs/StreamPETR/stream_petr_r50_flash_704_waymo_5cam_finetune256_balanced_warminit.py`,
   warm-init checkpoint
   `checkpoints/stream_petr_waymo3_warminit_nusc_car_ped_bicycle.pth`,
@@ -664,12 +839,17 @@ Each execution must create a unique atomically locked RUN_ID/RUN_ROOT.
   `tools/waymo_perception/make_waymo_warminit_checkpoint.py`, and
   `tools/waymo_perception/smoke_train_waymo_ddp.py`, DDP smoke logs
   `logs/streampetr_waymo_finetune256_ddp_smoke_1712408.log`/`.jsonl`,
-  failed Slurm jobs `1712416` and `1712590`, active train-only resume Slurm
-  job `1712698`, no-eval resume sbatch
+  failed Slurm jobs `1712416` and `1712590`, completed train-only resume Slurm
+  job `1712698`, single-GPU detector-quality eval job `1745613`, no-eval resume sbatch
   `scripts/streampetr_waymo_finetune256_balanced_warminit_ddp4_resume_noeval_20260628.sbatch`,
   work dir
   `work_dirs/streampetr_waymo_finetune256_balanced_warminit_ddp4_20260628/`,
-  resume checkpoint `latest.pth -> iter_25354.pth`, and Slurm logs
+  final checkpoint `latest.pth -> iter_152124.pth`, checkpoint ranking outputs
+  `results/rq010b_route4_detector_quality_256_balwarm_20260629_checkpoint_summary.{json,csv}`,
+  best detector-quality/error-model outputs under prefix
+  `results/rq010b_route4_detector_quality_256_balwarm_ep12_iter_152124_20260629`,
+  single-GPU eval sbatch
+  `scripts/run_rq010b_detector_quality_256_eval.sbatch`, and Slurm logs
   `logs/streampetr_waymo_finetune256_ddp4_resume_noeval_1712698.out`/`.err`
   (failed run logs remain
   `logs/streampetr_waymo_finetune256_ddp4_1712416.out`/`.err` and
@@ -835,9 +1015,12 @@ These review packets are evidence-boundary reviews, not accepted
   quality on 16 Perception validation segments has overall 2 m center-distance
   AP `0.00328`, recall `0.08034`, precision `0.03276`, and zero
   Pedestrian/Cyclist detections at the selected operating point. The improved
-  balanced/warm-init recipe now parses, smokes, and has a first-epoch
-  checkpoint (`iter_12677.pth`) from the 256-seg run, but no completed improved
-  detector-quality gate exists yet.
+  256-seg balanced/warm-init checkpoint ep12 `iter_152124` is the current best
+  Route 4 pilot detector and is tracker-QA-ready for the 16-val pilot:
+  `mAP_9=0.08454`, pooled AP `0.10835`, recall `0.21916`, precision `0.23675`,
+  with nonzero Pedestrian and Cyclist detections. Remaining weak spots are
+  far-range quality, small Cyclist sample size, and the fact that this is still
+  a 16-val pilot rather than a final full-data detector validation.
 - RQ011 supports full_300 outcomes and clean_285 replay/IPV with T19 replay-only exclusion;
   run-level/repeated-run/causal claims are unavailable.
 - RQ012 is readiness-only and human annotation is deferred.
