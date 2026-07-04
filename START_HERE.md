@@ -8,15 +8,21 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
-- **RQ010B COMPLETE (2026-07-03) = bounded NULL.** Reframed WOD-E2E human-preference
+- **RQ010B COMPLETE (2026-07-03; 10Hz sensitivity closed 2026-07-04) = bounded NULL.** Reframed WOD-E2E human-preference
   validity: candidate IPV does NOT predict human preference and is not comparable to
   physics (Scheme 1 future-only n=75 rho=0.148 p=0.10; Scheme 2 history+future >=1s
   n=98 rho=0.031 p=0.69; max-stat permutation p=1.0 both). M3 does NOT transfer to
   WOD-E2E (<=15% in-support) -> path-type HV norm. Review PASS, red-team null ROBUST,
   replication exact. Report `reports/studies/RQ010_wod_e2e_tracking_feasibility/RQ010B_1_tracking_preference_20260625T201647+0800_695fa83f/90_report_reframed_preference/index.html` (+`.zh.html`);
   decision `reports/knowledge/RQ010_wod_e2e_tracking_feasibility/decision.md`. Full
-  pipeline on HPC `/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/` (retained). No active
-  RQ010B compute; token relay stopped. OPEN: 4Hz->10Hz final-metric recompute pending.
+  pipeline on HPC `/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/` (retained). The PI-flagged
+  4Hz->10Hz caveat is now checked under
+  `/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase_10hz_sensitivity/`: re-estimated
+  candidate IPV at dt=0.1 with no counterpart extrapolation and joined ratings only for
+  the final test. Null holds at 10Hz (Scheme 1 n=75 rho=0.165 p=0.0626; Scheme 2 10Hz
+  effective n=47 rho=0.128 p=0.241; max-stat p=1.0 both; IPV-vs-4Hz Spearman 0.308/0.289).
+  Deliverables: `candidate_ipv_10hz.csv` and `tenhz_sensitivity_report.md`. No active
+  RQ010B compute; token relay stopped.
 - RQ012B Stage 4/5 deviation-to-harm association and negative-control battery is
   complete for the expanded all-valid frozen-M3 OnSite deviation table. Analysis
   set is the pre-registered gate-passing units: `n=245` units across 19 teams;
