@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NSFC 官方评分·开放探索分析报告（评分级，纯标准库）</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#fff; --ink:#1f2329; --muted:#5b6470; --line:#e3e6ea;
+    --blue:#2a5d9f; --blue2:#4c78a8; --green:#2e7d4f; --amber:#b06d00; --red:#b3261e; --gray:#6b7280;
+    --okbg:#e8f5ec; --warnbg:#fdf3e0; --failbg:#fbe9e7; --unvbg:#eef0f2; --hl:#fff7e0;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;line-height:1.75;font-size:15.5px;}
+  .wrap{max-width:1040px;margin:0 auto;padding:24px 18px 80px;}
+  header.hero{background:linear-gradient(135deg,#1f3b66,#2a5d9f);color:#fff;border-radius:14px;padding:26px 28px;box-shadow:0 6px 22px rgba(20,40,80,.18);}
+  header.hero h1{margin:0 0 6px;font-size:24px;line-height:1.4;}
+  header.hero .sub{opacity:.92;font-size:14px;}
+  .badges{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;}
+  .badge{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:4px 12px;font-size:12.5px;}
+  .meta-grid{margin-top:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 18px;font-size:13px;}
+  .meta-grid div b{opacity:.8;font-weight:600;}
+  nav.toc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:22px 0;}
+  nav.toc h2{margin:0 0 8px;font-size:15px;color:var(--muted);}
+  nav.toc ol{margin:0;padding-left:22px;columns:2;column-gap:30px;}
+  nav.toc a{color:var(--blue);text-decoration:none;font-size:13.7px;}
+  nav.toc a:hover{text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 26px;margin:18px 0;box-shadow:0 1px 3px rgba(0,0,0,.03);}
+  h2.sec{font-size:20px;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--blue);color:#16314f;}
+  h3{font-size:16.5px;margin:20px 0 8px;color:#1f3b66;}
+  h4{font-size:15px;margin:16px 0 6px;color:#2a4a6f;}
+  p{margin:8px 0;}
+  .lead{font-size:16px;background:var(--hl);border-left:4px solid var(--amber);padding:10px 14px;border-radius:0 8px 8px 0;}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0;}
+  .kpi{background:#f3f6fb;border:1px solid var(--line);border-radius:10px;padding:12px 14px;}
+  .kpi .v{font-size:22px;font-weight:700;color:var(--blue);}
+  .kpi .l{font-size:12.5px;color:var(--muted);margin-top:2px;}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0;}
+  .tablewrap{overflow-x:auto;}
+  th,td{border:1px solid var(--line);padding:6px 9px;text-align:right;white-space:nowrap;}
+  th{background:#eef2f7;color:#27384d;font-weight:600;text-align:center;}
+  td.l,th.l{text-align:left;}
+  tr:nth-child(even) td{background:#fafbfc;}
+  td.hl{background:var(--hl)!important;font-weight:700;}
+  .tag{display:inline-block;border-radius:5px;padding:1px 8px;font-size:12px;font-weight:600;}
+  .t-ok{background:var(--okbg);color:var(--green);}
+  .t-warn{background:var(--warnbg);color:var(--amber);}
+  .t-fail{background:var(--failbg);color:var(--red);}
+  .t-unv{background:var(--unvbg);color:var(--gray);}
+  .t-conf{background:#e6eefb;color:var(--blue);}
+  .callout{border-radius:10px;padding:12px 16px;margin:12px 0;border:1px solid;}
+  .c-support{background:var(--okbg);border-color:#bfe0cb;}
+  .c-complicate{background:var(--warnbg);border-color:#f0d9a8;}
+  .c-anti{background:var(--failbg);border-color:#f3c9c4;}
+  .c-info{background:#eaf1fb;border-color:#cdddf5;}
+  .callout .h{font-weight:700;margin-bottom:4px;}
+  figure{margin:14px 0;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;}
+  figure img{width:100%;height:auto;display:block;}
+  figcaption{font-size:13px;color:var(--muted);margin-top:8px;padding:0 4px;}
+  details{background:#f7f9fb;border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin:10px 0;}
+  summary{cursor:pointer;font-weight:600;color:var(--blue);}
+  details pre{overflow-x:auto;background:#0f1722;color:#d6e2f0;padding:12px;border-radius:8px;font-size:12px;line-height:1.5;}
+  code{background:#eef1f4;padding:1px 5px;border-radius:4px;font-size:12.5px;}
+  .small{font-size:12.5px;color:var(--muted);}
+  ul.tight{margin:6px 0;padding-left:22px;}
+  ul.tight li{margin:3px 0;}
+  footer{margin-top:30px;color:var(--muted);font-size:12.5px;text-align:center;border-top:1px solid var(--line);padding-top:16px;}
+  .legend{font-size:12px;color:var(--muted);margin:8px 0;}
+  .legend .tag{margin-right:6px;}
+  @media(max-width:680px){nav.toc ol{columns:1;}.wrap{padding:14px 10px 60px;}section{padding:16px 14px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>NSFC 实车挑战赛官方评分 · 开放探索分析报告</h1>
+  <div class="sub">评分级（150 行）· 分析纯标准库 · 图表 Nature/NMI 风格(matplotlib) · 离线自包含报告 · 含独立 QA 复核</div>
+  <div class="badges">
+    <span class="badge">任务简称：nsfc-open-explore-stdlib</span>
+    <span class="badge">运行标识：231935-993a</span>
+    <span class="badge">执行状态：✅ 完成</span>
+    <span class="badge">质量检查：✅ 通过（9/9）</span>
+    <span class="badge">整体可信度：高</span>
+    <span class="badge">未完成项：轨迹级 T4/T5（设计外）</span>
+  </div>
+  <div class="meta-grid">
+    <div><b>报告标题：</b>NSFC 官方评分开放探索</div>
+    <div><b>5-* 文件夹：</b>5-nsfc-open-explore-stdlib-20260619-231935-993a</div>
+    <div><b>生成时间：</b>2026-06-19 23:30 (CST)</div>
+    <div><b>计划来源：</b>paper/nsfc_open_exploration_plan.md</div>
+    <div><b>数据：</b>10 队 × 15 场景 = 150 行 · 六维 0–100</div>
+    <div><b>并行隔离：</b>另有 2 个 5-* 文件夹，全程未触碰</div>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#s2">执行摘要</a></li>
+    <li><a href="#s3">任务与数据范围</a></li>
+    <li><a href="#s4">路径核查与修正</a></li>
+    <li><a href="#s5">执行过程概述</a></li>
+    <li><a href="#s6">主要结果（六大发现）</a></li>
+    <li><a href="#s7">结果完整性检查</a></li>
+    <li><a href="#s8">质量检查与可信度</a></li>
+    <li><a href="#s9">与原计划的差异</a></li>
+    <li><a href="#s10">异常、限制与风险</a></li>
+    <li><a href="#s11">最终结论</a></li>
+    <li><a href="#s12">交付文件清单</a></li>
+    <li><a href="#s13">可复现信息</a></li>
+    <li><a href="#s14">附录</a></li>
+  </ol>
+  <div class="legend" style="margin-top:10px;">
+    图例：
+    <span class="tag t-ok">支持现有叙事</span>
+    <span class="tag t-warn">复杂化叙事</span>
+    <span class="tag t-fail">反叙事/纠错</span>
+    <span class="tag t-conf">已独立复核</span>
+    <span class="tag t-unv">未验证/设计外</span>
+  </div>
+</nav>
+
+<!-- ============ 2 执行摘要 ============ -->
+<section id="s2">
+  <h2 class="sec">1 · 执行摘要</h2>
+  <p class="lead">用一句话概括：在这批"10 个精英算法 × 15 场景"的官方评分里，<b>安全分确实已饱和、协同分仍有差异</b>（与上轮结论一致）；但开放探索发现了几个<b>复杂化甚至反驳现有叙事</b>的结构——真正最能稳健区分算法的维度是<b>效率而非协同</b>，协同更像随场景变化的"状态"而非算法稳定的"特质"，且计划自带的一个锚点（thicv2025 在 B4 协同垫底）经核验是<b>错误</b>的。</p>
+
+  <h3>本次做了什么</h3>
+  <p>本次任务的"计划"在用户消息里是空占位符 <code>&lt;在此粘贴完整计划&gt;</code>，仅在末尾给出一个文件路径。我据此确认真实计划是 <code>paper/nsfc_open_exploration_plan.md</code>（NSFC 竞赛数据开放探索）。在<b>不触碰另外两个并行 5-* 文件夹</b>的前提下，我新建了独立隔离目录，核查了计划引用的全部关键路径，用<b>纯标准库</b>（无 pandas/numpy，无网络）对 150 行官方评分做了 8 组可复算分析，生成 4 张自包含 SVG 图，并由一个<b>独立 QA 子代理</b>从原始数据重算全部 headline 数字、并交叉核对第二份官方评分源。</p>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v">150</div><div class="l">评分行（10队×15场景，0 缺失）</div></div>
+    <div class="kpi"><div class="v">98.7%</div><div class="l">安全分顶格占比（饱和）</div></div>
+    <div class="kpi"><div class="v">2.7%</div><div class="l">协同分顶格占比（区分空间大）</div></div>
+    <div class="kpi"><div class="v">9/9</div><div class="l">独立 QA 复核全部通过</div></div>
+  </div>
+
+  <h3>最重要的结果（按重要性）</h3>
+  <ul class="tight">
+    <li><span class="tag t-fail">反叙事</span> <b>效率才是最稳健区分算法的维度，不是协同。</b>控制场景难度后做团队级置换检验：效率 F=4.07、p≈0.0001（显著）；协同 F=1.77、p≈0.068（仅勉强）。而且官方"综合分"与效率的相关高达 <b>0.94</b>，与协同只有 0.74——<b>综合分本质更像效率代理</b>。</li>
+    <li><span class="tag t-warn">复杂化</span> <b>协同是"状态"多于"特质"。</b>同一算法在 15 个场景间的协同波动（队内 sd≈12.1）约为算法间均值差（队间 sd≈3.3）的 <b>3.6 倍</b>；跨场景家族的排名几乎不迁移（A 类 vs C 类 Spearman ρ≈−0.04）。用"一个社会性数字"刻画一个算法并不充分。</li>
+    <li><span class="tag t-ok">支持</span> <b>安全已饱和、协同仍可分。</b>安全分 98.7% 顶格、协同分仅 2.7% 顶格——印证"安全饱和、协同区分"的前提。</li>
+    <li><span class="tag t-ok">支持</span> <b>"安全但协同差"真实存在且可分离。</b>有 35–36 个案例安全满分却协同低于 25 分位；最差是 thicv2025 在 A3（协同 59.3）。安全与协同相关仅 0.68，并非同一回事。</li>
+    <li><span class="tag t-fail">纠错</span> <b>计划锚点有误：</b>thicv2025 在 B4 是协同<b>最高</b>（93.4，全场第 1），并非"垫底"；它只在 A3 真正垫底、在 C3 接近垫底。</li>
+    <li><span class="tag t-warn">方法学</span> <b>A1 的"高区分力"是碰撞伪影。</b>A1 协同分跨队 sd=33（远超其它场景的≤10），完全由 2 个全零碰撞行驱动；不能当作"A1 最能区分社会行为"。</li>
+  </ul>
+
+  <h3>是否建议接受本次结果</h3>
+  <p><b>建议接受（评分级范围内）。</b>所有关键数字均由独立 QA 子代理从原始数据重算通过（9/9），两份官方评分源逐格一致。唯一需注意的是：本轮只覆盖<b>评分级</b>分析；计划里的轨迹级现象学（T3 事件编目细化、T4 的 NPC 刺激-响应、T5 自下而上学指标）需重型 replay 提取，本轮<b>未做</b>（见限制）。因此上述结论是关于<b>官方评分结构</b>的可靠结论，而非关于<b>底层驾驶行为</b>的直接证据。</p>
+</section>
+
+<!-- ============ 3 任务与数据范围 ============ -->
+<section id="s3">
+  <h2 class="sec">2 · 任务与数据范围</h2>
+  <p><b>结论先行：</b>使用了一份已确认、完整、无缺失的 150 行官方评分主表，并用第二份官方评分文件做独立交叉核对，两者逐格一致。计划提到的轨迹日志/诊断 PDF/验证器产物等均已定位但本轮按设计未直接使用。</p>
+
+  <h3>实际使用的数据</h3>
+  <div class="tablewrap"><table>
+    <tr><th class="l">数据</th><th class="l">实际路径（相对项目根）</th><th>规模</th><th>用途</th><th>完整性</th></tr>
+    <tr><td class="l">官方评分主表 master_outcome_table.csv</td><td class="l">reports/onsite_competition/social_compliance_report/competition_evidence_detailed_analysis/02_process/agent_results/ws2-outcomes-tierA/master_outcome_table.csv</td><td>150 行 × 68 列</td><td class="l">主输入（全部结果来源）</td><td><span class="tag t-ok">完整</span></td></tr>
+    <tr><td class="l">第二官方评分源 top5_scenario_scores.csv</td><td class="l">data/onsite_competition/top5_research_subset/tables/top5_scenario_scores.csv</td><td>150 行（六维+area_rank）</td><td class="l">QA 独立交叉核对</td><td><span class="tag t-ok">完整</span></td></tr>
+  </table></div>
+
+  <h3>数据对应的范围与条件</h3>
+  <ul class="tight">
+    <li><b>队伍（10）：</b>北京赛区 panda(T17)、bps(T14)、autoailab(T16)、wulala(T15)、mm(T20)；上海赛区 wsd(T11)、thicv2025(T6)、limitless(T5)、SMU(T7)、ADVRC(T8)。</li>
+    <li><b>场景（15）：</b>A1–A7、B1–B4、C1–C4，每队每场景 1 行。</li>
+    <li><b>评分维度（6，0–100）：</b>安全 safety、效率 efficiency、舒适 comfort、合规 compliance、协同 coordination、综合 comprehensive；另含 area_rank 与诊断 PDF 抽取的安全原语（碰撞计数等）。</li>
+    <li><b>对手设定：</b>脚本 NPC（mvSimulation），无人类对照轨迹——这是本数据的根本约束。</li>
+  </ul>
+
+  <h3>预期数据中未使用的部分（已定位、本轮按设计未用）</h3>
+  <ul class="tight">
+    <li>replay 轨迹日志（23 个 perception 日志，data/onsite_competition/raw/…）——轨迹级现象学本轮范围外。</li>
+    <li>诊断报告.pdf（13 个）——其安全原语已由上轮抽取并并入主表，本轮未重新解析 PDF。</li>
+    <li>验证器规范带 round2_envelope_for_verifier.csv、估计器 ipv_estimation.py、do-sim 产物、graded deviation——本轮为评分级自下而上探索，不套用上述上层管线。</li>
+  </ul>
+  <p class="small">数据健康：150/150 网格全部填满，无重复单元，六维无缺失数值；仅有 2 行为灾难性全零（见下文异常）。</p>
+</section>
+
+<!-- ============ 4 路径核查 ============ -->
+<section id="s4">
+  <h2 class="sec">3 · 路径核查与修正</h2>
+  <p><b>结论先行：</b>计划用文字描述资产、几乎不给完整路径，因此核查重点是"按文件名/关键字在真实目录里定位 + 在多个同名候选中择优"。共核查 <b>10 条</b>关键路径：<b>8 条</b>定位成功且本身可用，<b>2 条</b>属"定位+择优/重定向"（主表择规范副本、do-sim 按关键字找回），<b>1 条</b>属"按本任务编排刻意不使用"（codex-fleet 工作区→改用隔离 5-* 目录）。<b>没有任何一条修正会改变本轮评分级结论</b>（主表的择优已由两份官方源逐格一致背书）。</p>
+
+  <div class="tablewrap"><table>
+    <tr><th class="l">计划中的路径/资产</th><th>核查结果</th><th class="l">实际使用路径</th><th class="l">修正原因</th><th>影响</th><th class="l">可信度/备注</th></tr>
+    <tr><td class="l">master_outcome_table.csv（仅给文件名）</td><td><span class="tag t-warn">定位+择优</span></td><td class="l">reports/…/ws2-outcomes-tierA/master_outcome_table.csv</td><td class="l">存在 2 个同名副本；选 reports/ 规范根版本而非 .codex-fleet 临时副本</td><td>主输入</td><td class="l">高（QA 与第二源逐格一致）</td></tr>
+    <tr><td class="l">官方评分 150 行</td><td><span class="tag t-ok">找到</span></td><td class="l">top5_scenario_scores.csv</td><td class="l">作独立交叉源</td><td>核对</td><td class="l">高（0 处不一致）</td></tr>
+    <tr><td class="l">round2_envelope_for_verifier.csv</td><td><span class="tag t-ok">找到</span></td><td class="l">…/2-NMI_draftv1…/agent_C_statespace/round2_envelope_for_verifier.csv</td><td class="l">无需修正</td><td>本轮未用</td><td class="l">高</td></tr>
+    <tr><td class="l">src/sociality_estimation/core/ipv_estimation.py</td><td><span class="tag t-ok">找到</span></td><td class="l">src/sociality_estimation/core/ipv_estimation.py</td><td class="l">无需修正</td><td>本轮未用</td><td class="l">高</td></tr>
+    <tr><td class="l">replay logs *.log</td><td><span class="tag t-ok">找到</span></td><td class="l">data/onsite_competition/raw/{beijing,shanghai}/…/*.log（23 个）</td><td class="l">无需修正</td><td>范围外</td><td class="l">高</td></tr>
+    <tr><td class="l">诊断报告.pdf 安全原语</td><td><span class="tag t-ok">找到</span></td><td class="l">data/onsite_competition/raw/…/诊断报告.pdf（13 个）</td><td class="l">无需修正</td><td>间接（已并入主表）</td><td class="l">高</td></tr>
+    <tr><td class="l">do-sim 脚本与产物（无路径）</td><td><span class="tag t-warn">关键字找回</span></td><td class="l">…/02_process/agent_results/ws4-interhub-dosim/</td><td class="l">计划未给路径，按 do_intervention 关键字定位</td><td>本轮未用</td><td class="l">高</td></tr>
+    <tr><td class="l">graded deviation CSV</td><td><span class="tag t-ok">找到</span></td><td class="l">.codex-fleet/nsfc-evidence/agents/ws1-deviation-pipeline/results/nsfc_*_graded.csv</td><td class="l">无需修正</td><td>本轮未用</td><td class="l">中</td></tr>
+    <tr><td class="l">上轮 plan/tried/knowledge/FINDINGS</td><td><span class="tag t-ok">找到</span></td><td class="l">reports/…/competition_evidence_detailed_analysis/{02_process,01_results}/</td><td class="l">取 reports/ 规范副本</td><td>仅背景</td><td class="l">高</td></tr>
+    <tr><td class="l">codex-fleet 工作区 ./.codex-fleet/nsfc-open-explore/ + board/plan.md</td><td><span class="tag t-fail">刻意不用</span></td><td class="l">本 5-* 隔离目录</td><td class="l">本任务编排要求隔离 5-* 目录，且改用单机标准库替代 codex 舰队</td><td>仅工作区位置</td><td class="l">高（结果不受影响）</td></tr>
+  </table></div>
+  <p class="small">完整路径核查表见 <code>metadata/path_audit.csv</code>。未发现"输入=输出指向同一处"、未发现因大小写/中文/软链接导致的偏差；OneDrive 同步状态正常（文件可读、大小合理）。</p>
+</section>
+
+<!-- ============ 5 执行过程 ============ -->
+<section id="s5">
+  <h2 class="sec">4 · 执行过程概述</h2>
+  <p><b>结论先行：</b>全流程在隔离目录内完成，无失败步骤，未跳过任何已纳入范围的步骤。</p>
+  <ol class="tight">
+    <li><b>解析计划：</b>识别空占位符，据末尾路径锁定真实计划 <code>nsfc_open_exploration_plan.md</code>，确认这是"开放探索 NSFC 评分"而非证明论文某条 claim。</li>
+    <li><b>建隔离目录：</b>在 02_reports 下新建唯一 <code>5-nsfc-open-explore-stdlib-20260619-231935-993a</code>；先检查不与已有 2 个 5-* 重名；建 assets/data/logs/metadata/scripts/work/tmp/cache 子目录。</li>
+    <li><b>路径核查：</b>定位 10 条关键路径，写 <code>metadata/path_audit.csv</code>。</li>
+    <li><b>主分析（执行）：</b>运行 <code>scripts/analyze_nsfc.py</code>（纯标准库），输入主表，输出 8 个 CSV + <code>results.json</code>，日志入 <code>logs/</code>，退出码 0、输出非空、已逐项核对。</li>
+    <li><b>图表（Nature/NMI 风格）：</b>按用户要求"图表用 nature skill"，依项目 Nature/NMI 约定（参照 <code>make_nature_figures.py</code>：Arial 7pt、去顶右边框、淡彩 palette、面板字母、SVG+600dpi PNG）用 <code>scripts/make_nature_figures.py</code>（matplotlib，运行于本目录隔离 venv）重绘 4 图，读取 <code>results.json</code>，输出至 <code>assets/figures/</code>。</li>
+    <li><b>独立 QA（复核）：</b>启动独立子代理，不读主脚本与输出，从原始 CSV 重算全部 headline，并交叉核对第二官方源；产 <code>work/qa/{qa_recompute.py, qa_recompute.json, qa_independent_report.md}</code>。</li>
+    <li><b>汇总成报告：</b>主协调统一口径、去重、核对数字，生成本 <code>index.html</code> 并验证。</li>
+  </ol>
+  <p>统计<b>分析</b>全程用<b>纯标准库</b>（base Python 无 pandas/numpy）、确定性、可复算。<b>图表</b>按用户指令"用 nature skill"改为项目 Nature/NMI 风格，依赖 matplotlib——为此在<b>本目录隔离 venv</b>（<code>cache/venv</code>）内一次性 <code>pip install</code>（联网一次），未污染系统环境、未触碰其它 Agent 的 venv。<b>最终 HTML 仍离线自包含</b>：内嵌本目录内的本地 SVG/PNG，无 CDN、无在线字体/JS。无步骤失败。</p>
+  <details><summary>展开：关键命令</summary>
+<pre>python3 scripts/analyze_nsfc.py \
+  reports/onsite_competition/.../ws2-outcomes-tierA/master_outcome_table.csv \
+  &lt;本 5-* 目录&gt; 12345
+
+# 图表（Nature/NMI 风格，隔离 venv）
+cache/venv/bin/python scripts/make_nature_figures.py &lt;本 5-* 目录&gt;
+
+# QA 子代理（独立）：work/qa/qa_recompute.py，从原始 CSV 重算，seed 12345/12346，n_perm=20000</pre>
+  </details>
+</section>
+
+<!-- ============ 6 主要结果 ============ -->
+<section id="s6">
+  <h2 class="sec">5 · 主要结果（六大发现）</h2>
+  <p class="small">所有数值口径：150 行（10 队 × 15 场景），评分 0–100；团队级 n=10 的推断一律用置换检验（打乱队伍标签，n_perm=20000），不依赖正态假设；"标准差"为总体标准差。</p>
+
+  <!-- 发现1 -->
+  <h3>发现 1 · 六维结构：安全饱和、协同有空间——但效率离散度最大 <span class="tag t-ok">支持</span><span class="tag t-warn">复杂化</span></h3>
+  <figure>
+    <img src="assets/figures/fig1_dimension_saturation.svg" alt="图1 六维天花板占比与标准差">
+    <figcaption><b>图1（Nature/NMI 风格，双面板）</b>　横轴均为六个评分维度。<b>a</b>：每个维度"满分(100)行占比(%)"，红色高亮安全（最高）。<b>b</b>：每个维度的总体标准差，红色高亮效率（最大）。数据来源：master_outcome_table.csv，n=150。<br>
+    <b>解读：</b>① 面板 a 显示安全分 98.7% 顶格——几乎所有算法在所有场景都安全满分，说明安全已"做到天花板"，区分空间极小；协同仅 2.7% 顶格，是最"未饱和"维度，留有最大区分空间——这两点共同支持"安全饱和、协同区分"的前提。② 面板 b 揭示一处复杂化：离散度最大的<b>不是协同，而是效率（sd=21.4）</b>，协同 sd 仅 14.0。单看"分数有多分散"，效率比协同更分散，为发现 3 的反叙事埋下伏笔。③ 注意"分散"≠"能区分算法"——同一维度的分散可能来自场景差异，需团队级检验（见图4b）才能判断哪维真正区分算法。</figcaption>
+  </figure>
+  <div class="tablewrap"><table>
+    <tr><th class="l">维度</th><th>均值</th><th>标准差</th><th>满分占比</th><th>≥90占比</th><th>最小值</th><th>全零行</th></tr>
+    <tr><td class="l">safety 安全</td><td>98.67</td><td>11.47</td><td class="hl">98.7%</td><td>98.7%</td><td>0.0</td><td>2</td></tr>
+    <tr><td class="l">compliance 合规</td><td>95.77</td><td>13.73</td><td>84.0%</td><td>90.7%</td><td>0.0</td><td>2</td></tr>
+    <tr><td class="l">comfort 舒适</td><td>93.72</td><td>12.96</td><td>27.3%</td><td>82.0%</td><td>0.0</td><td>2</td></tr>
+    <tr><td class="l">efficiency 效率</td><td>79.88</td><td class="hl">21.44</td><td>26.7%</td><td>48.0%</td><td>0.0</td><td>2</td></tr>
+    <tr><td class="l">coordination 协同</td><td>82.10</td><td>13.97</td><td class="hl">2.7%</td><td>27.3%</td><td>0.0</td><td>2</td></tr>
+    <tr><td class="l">comprehensive 综合</td><td>84.98</td><td>14.94</td><td>0.0%</td><td>46.7%</td><td>0.0</td><td>2</td></tr>
+  </table><div class="small">表1　六维分布（n=150）。橙色高亮为各列极值。"全零行=2" 指两次碰撞场景全维归零（见发现 6）。</div></div>
+  <p><b>能得出：</b>安全/合规已接近天花板，协同/效率/综合仍有区分空间。<b>不能得出：</b>"协同最分散/最关键"——单看离散度效率更大；要判断"哪维真正区分算法"必须做团队级检验（见发现 3），不能只看 sd。</p>
+
+  <!-- 发现2 -->
+  <h3>发现 2 · 算法表型：10 个算法的"驾驶人格" <span class="tag t-ok">支持</span></h3>
+  <figure>
+    <img src="assets/figures/fig2_team_phenotype_heatmap.svg" alt="图2 算法表型热力图">
+    <figcaption><b>图2（Nature/NMI 风格热力图）</b>　行=10 个算法（按综合分降序，标注赛区名次如 #1B=北京第1），列=六维；每格为该队 15 场景均分，颜色越深分越高（右侧色标 65–100）。数据来源：master_outcome_table.csv（每格为 15 个场景的平均）。<br>
+    <b>解读：</b>① 安全列几乎全深（除 wulala/mm 因碰撞略低），印证安全饱和。② 协同列出现明显梯度：limitless(86.7)、panda(85.2)、bps(85.1)、thicv2025(84.7) 偏高，mm(77.4)、wulala(77.0) 偏低——存在可辨的"协同人格"。③ 但<b>团队均值高度压缩</b>：协同均值全距仅 77.0–86.7（≈10 分），队间标准差只有 3.3，提示"算法间的平均社会差异其实很小"（这正是发现 4 的引子）。</figcaption>
+  </figure>
+  <div class="tablewrap"><table>
+    <tr><th class="l">算法(队)</th><th>赛区名次</th><th>安全</th><th>效率</th><th>舒适</th><th>合规</th><th>协同</th><th>综合</th></tr>
+    <tr><td class="l">limitless (T5)</td><td>沪#3</td><td>100.0</td><td>73.03</td><td>93.97</td><td>97.67</td><td class="hl">86.72</td><td>81.79</td></tr>
+    <tr><td class="l">panda (T17)</td><td>京#1</td><td>100.0</td><td>84.58</td><td>97.81</td><td>100.0</td><td>85.24</td><td>89.42</td></tr>
+    <tr><td class="l">bps (T14)</td><td>京#2</td><td>100.0</td><td>85.10</td><td>96.69</td><td>100.0</td><td>85.13</td><td>89.29</td></tr>
+    <tr><td class="l">thicv2025 (T6)</td><td>沪#2</td><td>100.0</td><td>84.59</td><td>88.22</td><td>89.67</td><td>84.67</td><td>85.61</td></tr>
+    <tr><td class="l">autoailab (T16)</td><td>京#3</td><td>100.0</td><td>83.87</td><td>96.19</td><td>99.33</td><td>83.99</td><td>88.38</td></tr>
+    <tr><td class="l">wsd (T11)</td><td>沪#1</td><td>100.0</td><td>87.39</td><td>94.18</td><td>96.00</td><td>81.34</td><td>89.44</td></tr>
+    <tr><td class="l">SMU (T7)</td><td>沪#4</td><td>100.0</td><td>69.97</td><td>97.45</td><td>96.00</td><td>80.23</td><td>80.39</td></tr>
+    <tr><td class="l">ADVRC (T8)</td><td>沪#5</td><td>100.0</td><td>69.48</td><td>95.71</td><td>94.33</td><td>79.27</td><td>79.37</td></tr>
+    <tr><td class="l">mm (T20)</td><td>京#5</td><td>93.33</td><td>80.48</td><td>85.14</td><td>92.00</td><td>77.37</td><td>82.17</td></tr>
+    <tr><td class="l">wulala (T15)</td><td>京#4</td><td>93.33</td><td>80.30</td><td>91.85</td><td>92.67</td><td class="hl">77.00</td><td>83.98</td></tr>
+  </table><div class="small">表2　算法表型（每队 15 场景均分，n=10 队）。协同列橙色高亮为最高/最低。注意 limitless 协同最高(86.7)却效率最低(73.0)、综合也偏低(81.8)——一个"重协同轻效率"的人格。</div></div>
+  <p><b>能得出：</b>算法在六维上的平均画像可辨、存在"重协同型(limitless)/均衡型(panda,bps)/低效率型(SMU,ADVRC)"等家族。<b>不能得出：</b>这些均值差异在统计上"显著区分"——队间差异很小（见发现 4），且 n=10 欠功效。</p>
+
+  <!-- 发现3 -->
+  <h3>发现 3 · 真正稳健区分算法的是"效率"而非"协同" <span class="tag t-fail">反叙事 ★</span><span class="tag t-conf">已复核</span></h3>
+  <div class="callout c-anti"><div class="h">★ 本轮最重要的反叙事发现</div>
+  把"队伍"当因子，对每个维度做团队级置换检验（打乱队伍标签 2 万次，统计量为组间/组内方差比 F）。先看原始分、再看"场景中心化"（每个分数减去该场景的全队均值，等于剔除场景难度后看算法本身的差异）。</div>
+  <div class="tablewrap"><table>
+    <tr><th class="l">维度</th><th>原始 F</th><th>原始 p</th><th>原始 η²</th><th>场景中心化 F</th><th>场景中心化 p</th><th>场景中心化 η²</th><th class="l">是否显著区分算法</th></tr>
+    <tr><td class="l">efficiency 效率</td><td>1.47</td><td>0.161</td><td>0.087</td><td class="hl">4.07</td><td class="hl">0.00015</td><td class="hl">0.207</td><td class="l"><span class="tag t-ok">显著（强）</span></td></tr>
+    <tr><td class="l">comprehensive 综合</td><td>1.05</td><td>0.402</td><td>0.064</td><td>2.34</td><td>0.0137</td><td>0.131</td><td class="l"><span class="tag t-ok">显著（中）</span></td></tr>
+    <tr><td class="l">coordination 协同</td><td>0.94</td><td>0.499</td><td>0.057</td><td>1.77</td><td>0.068</td><td>0.102</td><td class="l"><span class="tag t-warn">仅勉强</span></td></tr>
+    <tr><td class="l">safety 安全</td><td>0.89</td><td>1.000</td><td>0.054</td><td>1.11</td><td>0.324</td><td>0.067</td><td class="l"><span class="tag t-fail">不显著</span></td></tr>
+  </table><div class="small">表3　团队效应置换检验（n_perm=20000，n=10 队）。橙色=效率，每个指标(F、p、η²)都最强。p 值随种子有 ±0.001 量级波动，但显著性次序稳定。</div></div>
+  <p><b>这意味着什么（通俗版）：</b>如果问"哪一维评分最能把这 10 个算法彼此区分开"，答案是<b>效率</b>，不是协同。控制场景难度后，效率能解释约 21% 的算法间方差（p≈0.0001，强显著）；协同只能解释约 10%（p≈0.068，仅勉强达到边缘）；安全则完全分不开算法（p≈0.32）。</p>
+  <p>更进一步：六维相关矩阵显示<b>综合分与效率的相关高达 0.943</b>，而与协同只有 0.744、与安全 0.661。换句话说，<b>官方"综合分"在数值上几乎就是效率的代理</b>。这复杂化了"社会协同是区分算法的关键维度"的叙事——至少在<b>官方评分这一层面</b>，效率才是主导信号。</p>
+  <p><b>能得出：</b>在评分级、控制场景后，效率＞综合＞协同＞安全 的次序稳健区分算法；综合分主要由效率驱动。<b>不能得出：</b>"协同不重要"。协同仍可分离于安全（发现 4 的相关只有 0.68），且 n=10 欠功效会压低协同的检验功效；也不能据此推断底层<b>行为</b>，因为这只是<b>评分</b>层面的结构。<span class="tag t-conf">此结论经独立 QA 从原始数据重算确认</span>。</p>
+
+  <!-- 发现4 -->
+  <h3>发现 4 · 协同是"状态"多于"特质"：跨场景排名不迁移 <span class="tag t-warn">复杂化 ★</span><span class="tag t-conf">已复核</span></h3>
+  <figure>
+    <img src="assets/figures/fig4_cross_scenario_consistency.svg" alt="图4 协同分跨场景范围">
+    <figcaption><b>图4（Nature/NMI 风格，双面板；同时支撑发现 3 与发现 4）</b>　<b>a</b>：每行一个算法（按协同均值降序），深蓝点=该队 15 场景协同<b>均值</b>，浅蓝须=最小到最大；横轴协同分 0–100；左下角标注队间/队内 sd 与比值。<b>b</b>：控制场景难度后，各维度"团队效应"的方差解释率 η²（场景中心化），红色高亮效率，并标注置换 p 值与显著性星号。数据来源：master_outcome_table.csv。<br>
+    <b>解读：</b>① 面板 a：几乎每个算法的协同分都横跨极宽区间（多数 60→100，wulala/mm 因碰撞达 0→99），但<b>均值点彼此非常接近</b>（77–87 窄带）——这就是"队内波动(12.1) ≫ 队间差异(3.3)"的图形化：同一算法换个场景的协同变化，远大于不同算法间的平均差，故协同更像"状态"而非"性格"（发现 4）。② 面板 b：控制场景后，<b>效率</b>的团队效应最强（η²≈0.21，p&lt;0.001，***），<b>综合</b>次之（p≈0.014，*），<b>协同</b>仅勉强（p≈0.068，(.)），<b>安全</b>不显著（n.s.）——这量化了"效率而非协同才是稳健区分算法的维度"（发现 3）。</figcaption>
+  </figure>
+  <div class="kpis">
+    <div class="kpi"><div class="v">3.33</div><div class="l">队间标准差（算法均值差，小）</div></div>
+    <div class="kpi"><div class="v">12.14</div><div class="l">平均队内标准差（跨场景波动，大）</div></div>
+    <div class="kpi"><div class="v">0.27</div><div class="l">特质/状态比（&lt;1 → 状态主导）</div></div>
+    <div class="kpi"><div class="v">−0.04</div><div class="l">A类vsC类 协同排名 Spearman ρ</div></div>
+  </div>
+  <p><b>详细：</b>跨场景家族的团队协同排名相关——A 类 vs B 类 ρ=0.65（中等正相关），<b>A 类 vs C 类 ρ=−0.04（几乎无关）</b>，B 类 vs C 类 ρ=0.22（弱）。也就是说，一个算法在 A 类场景协同好，<b>不能预测</b>它在 C 类场景协同也好。</p>
+  <p><b>这意味着什么：</b>给一个算法贴单一"社会性/协同"标签是不充分的——它的社会表现高度<b>场景条件化</b>。这复杂化了"用一个自锚社会性数刻画算法"的思路：更合适的可能是"算法 × 场景"的条件画像。即便剔除 wulala/mm 的碰撞行，其余 8 队的队内 sd 仍≈10–12，远大于队间 3.3，结论稳健。</p>
+  <p><b>能得出：</b>协同表现以场景为主导来源，算法间稳定特质成分小且跨场景不迁移。<b>不能得出：</b>"算法没有任何稳定社会倾向"——A↔B 仍有中等相关，说明部分稳定性存在，只是远不足以支撑单一标签。<span class="tag t-conf">已 QA 复核</span>。</p>
+
+  <!-- 发现5 -->
+  <h3>发现 5 · "安全但协同差"真实存在；但计划锚点 B4 是错的 <span class="tag t-ok">支持</span><span class="tag t-fail">纠错 ★</span></h3>
+  <p>计划锚点（§4 T3）称："thicv2025 总分高却在 C3/A3/B4 协同垫底"。我逐场景核验了 thicv2025 在这三个场景的协同分在 10 队中的"从低到高"排名（1=最低/垫底）：</p>
+  <div class="tablewrap"><table>
+    <tr><th>场景</th><th>thicv2025 协同分</th><th>从低到高排名</th><th class="l">核验结论</th></tr>
+    <tr><td>A3</td><td>59.32</td><td>1 / 10</td><td class="l"><span class="tag t-ok">垫底属实</span> 全场最低</td></tr>
+    <tr><td>C3</td><td>63.49</td><td>3 / 10</td><td class="l"><span class="tag t-warn">接近垫底</span> 第 3 低，非最低</td></tr>
+    <tr><td>B4</td><td class="hl">93.42</td><td class="hl">10 / 10</td><td class="l"><span class="tag t-fail">锚点错误</span> 实为全场<b>最高</b></td></tr>
+  </table><div class="small">表4　thicv2025 协同锚点核验（n=10 队/场景）。B4 的"垫底"宣称与数据相反。</div></div>
+  <p>另一方面，"安全但协同差"现象本身是真实的：全集有 <b>35–36 个案例</b>（按 25 分位定义略有出入：我的口径 35 例、Q25=77.05；QA 的 type-7 口径 36 例、Q25=77.13）<b>安全满分(100)却协同低于 25 分位</b>，最差就是 thicv2025@A3（协同 59.3、综合仍 80.4）。安全与协同的相关仅 0.68，二者确实可分离。</p>
+  <p><b>能得出：</b>① "安全饱和但社会协同仍差"的案例确实存在且可量化（约占高安全案例的 1/3）；② 论文/计划中引用具体锚点（"某队在某场景垫底"）<b>必须逐场景核验</b>，本例 B4 锚点应撤回或改为 A3。<b>不能得出：</b>thicv2025 整体协同差——它协同均值 84.7，排第 4，只是在个别场景(A3)失手。</p>
+
+  <!-- 发现6 -->
+  <h3>发现 6 · 场景区分力与 A1 的"碰撞伪影" <span class="tag t-warn">方法学 ★</span></h3>
+  <figure>
+    <img src="assets/figures/fig3_scenario_discrimination.svg" alt="图3 场景区分力">
+    <figcaption><b>图3（Nature/NMI 风格）</b>　横轴=15 个场景（按协同区分力降序）；纵轴=该场景下 10 队协同分的标准差（越大=越能拉开算法）；红柱=A1，旁注说明其为碰撞伪影。数据来源：master_outcome_table.csv。<br>
+    <b>解读：</b>① A1 的协同 sd 高达 33.1，远超第二名 A4(10.4)、A2(10.1)——但这<b>不是</b>因为 A1 最能体现社会行为差异。② A1 是全集仅有的 2 次碰撞所在（wulala、mm），这两行协同被判 0，制造了巨大方差。③ 剔除这一伪影后，真正"温和而稳定"地区分算法的是 A4/A2/A7/C4（sd≈8–10），而 C1/C2/B2（sd≈2.4–2.9）几乎不区分算法。</figcaption>
+  </figure>
+  <p><b>异常行（综合分&lt;50）：</b>仅 2 行，<b>wulala@A1 与 mm@A1</b>，六维全部为 0，含 1 次碰撞——这是灾难性失败（撞车后整场归零），而非"协同差"的渐变信号。</p>
+  <p><b>这意味着什么：</b>用"含碰撞的方差"或"碰撞计数"衡量场景区分力会被极少数灾难性事件污染。要研究<b>社会行为的渐变差异</b>，应剔除碰撞行或改用稳健统计。这是对"A1 因有碰撞所以最有价值"这一直觉的方法学纠偏。</p>
+  <p><b>能得出：</b>A4/A2/A7/C4 是更干净的"区分算法"场景；A1 的高 sd 是碰撞伪影。<b>不能得出：</b>"A1 无价值"——A1 的 2 次碰撞本身是重要的安全事件，只是不应混入"社会协同区分力"的度量。</p>
+</section>
+
+<!-- ============ 7 完整性 ============ -->
+<section id="s7">
+  <h2 class="sec">6 · 结果完整性检查</h2>
+  <p><b>结论先行：</b>本轮纳入范围的全部预期产物均已生成、非空、可与输入对应；无空文件/损坏文件。计划里属于<b>轨迹级</b>的预期产物（T4/T5）本轮按设计未生成，已如实标记。</p>
+  <div class="tablewrap"><table>
+    <tr><th class="l">检查项目</th><th>预期</th><th>实际</th><th>状态</th><th class="l">说明</th></tr>
+    <tr><td class="l">主表行数</td><td>150</td><td>150</td><td><span class="tag t-ok">符合</span></td><td class="l">10×15 全网格，0 缺失</td></tr>
+    <tr><td class="l">队伍数 / 场景数</td><td>10 / 15</td><td>10 / 15</td><td><span class="tag t-ok">符合</span></td><td class="l">名单与场景齐全</td></tr>
+    <tr><td class="l">分析输出 CSV</td><td>8</td><td>8</td><td><span class="tag t-ok">符合</span></td><td class="l">data/01–08，均非空</td></tr>
+    <tr><td class="l">SVG 图</td><td>4</td><td>4</td><td><span class="tag t-ok">符合</span></td><td class="l">fig1–fig4，自包含</td></tr>
+    <tr><td class="l">机器可读结果</td><td>results.json</td><td>20 KB</td><td><span class="tag t-ok">符合</span></td><td class="l">含全部指标</td></tr>
+    <tr><td class="l">独立 QA 产物</td><td>脚本+JSON+报告</td><td>3 个</td><td><span class="tag t-ok">符合</span></td><td class="l">work/qa/ 下，9/9 通过</td></tr>
+    <tr><td class="l">碰撞行</td><td>2（北京A1）</td><td>2（wulala,mm）</td><td><span class="tag t-ok">符合</span></td><td class="l">与计划一致</td></tr>
+    <tr><td class="l">轨迹级 T4/T5 产物</td><td>计划提及</td><td>未生成</td><td><span class="tag t-unv">设计外</span></td><td class="l">需重型 replay 提取，本轮范围外</td></tr>
+    <tr><td class="l">元数据三件套</td><td>3</td><td>3</td><td><span class="tag t-ok">符合</span></td><td class="l">path_audit.csv/run_config.json/manifest.json</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ 8 质量检查 ============ -->
+<section id="s8">
+  <h2 class="sec">7 · 质量检查与可信度</h2>
+  <p class="lead"><b>整体可信度：高。</b>理由：关键输入完整且经第二官方源逐格核对一致；全部 headline 数字由独立子代理从原始数据重算通过（9/9）；推断使用置换检验、对碰撞伪影与场景混淆做了显式处理；所有反叙事/复杂化发现均被独立复现支持。</p>
+  <p>质量检查由一个<b>独立 QA 子代理</b>完成，它<b>不读取</b>主分析脚本与其输出，仅从原始 <code>master_outcome_table.csv</code> 用自写脚本重算，并交叉核对第二份官方评分文件 <code>top5_scenario_scores.csv</code>。</p>
+  <div class="tablewrap"><table>
+    <tr><th>#</th><th class="l">复核项</th><th class="l">声称值</th><th class="l">QA 独立重算值</th><th>结论</th></tr>
+    <tr><td>1</td><td class="l">网格完整性</td><td class="l">150/10/15，0 缺失</td><td class="l">150/10/15，0 缺失</td><td><span class="tag t-ok">一致</span></td></tr>
+    <tr><td>2</td><td class="l">碰撞</td><td class="l">2 行，京A1，wulala&amp;mm</td><td class="l">2 行，京A1，wulala&amp;mm</td><td><span class="tag t-ok">一致</span></td></tr>
+    <tr><td>3</td><td class="l">满分占比</td><td class="l">安全98.7/协同2.7/合规84.0/效率26.7</td><td class="l">98.67/2.67/84.00/26.67</td><td><span class="tag t-ok">一致</span></td></tr>
+    <tr><td>4</td><td class="l">标准差（效率最大）</td><td class="l">效率21.44&gt;协同13.97</td><td class="l">效率21.44&gt;协同13.97 ✓</td><td><span class="tag t-ok">一致</span></td></tr>
+    <tr><td>5</td><td class="l">协同排名</td><td class="l">limitless86.72…wulala77.0</td><td class="l">完全一致</td><td><span class="tag t-ok">一致</span></td></tr>
+    <tr><td>6</td><td class="l">置换检验（场景中心化）</td><td class="l">效率p≈.0001/协同p≈.068/综合p≈.014/安全p≈.32</td><td class="l">.00015/.068/.0137/.324</td><td><span class="tag t-ok">一致</span></td></tr>
+    <tr><td>7</td><td class="l">跨场景一致性</td><td class="l">队间3.33/队内12.14/比0.27；ρ:.65/−.04/.22</td><td class="l">3.33/12.14/0.274；.649/−.042/.224</td><td><span class="tag t-ok">一致</span></td></tr>
+    <tr><td>8</td><td class="l">thicv2025 锚点</td><td class="l">A3=1,C3=3,B4=10(最高)；B4垫底为假</td><td class="l">A3=1,C3=3,B4=10；判假 ✓</td><td><span class="tag t-ok">一致</span></td></tr>
+    <tr><td>9</td><td class="l">安全但协同差</td><td class="l">≈35（Q25≈77.05）</td><td class="l">36（Q25=77.13，type-7）</td><td><span class="tag t-warn">±1 行</span></td></tr>
+  </table><div class="small">表5　独立 QA 复核结果。第 9 项的 35 vs 36 差异源于分位数算法（exclusive vs type-7）选择，仅一行之差，不影响结论。其余 8 项完全一致。</div></div>
+  <h4>独立检查覆盖项（即使无问题也列出实际检查了什么）</h4>
+  <ul class="tight">
+    <li>路径：主输入路径正确、与第二源一致 ✓；输入≠输出 ✓。</li>
+    <li>参数：seed/n_perm/场景中心化定义一致 ✓。</li>
+    <li>可复现：QA 用独立脚本从原始数据复算，关键数值全部复算 ✓。</li>
+    <li>图表 vs 原始：图1–4 的数值与 CSV/results.json 对应一致（人工核对表1–4）✓。</li>
+    <li>矛盾/污染：两份官方源 0 处不一致；未发现来自其它 5-* 文件夹的文件混入（本目录所有产物均由本次日志可追溯）✓。</li>
+    <li>覆盖/冲突：未检测到对其它目录的覆盖；其它 5-* 文件夹 mtime 未因本次改变 ✓。</li>
+  </ul>
+</section>
+
+<!-- ============ 9 差异 ============ -->
+<section id="s9">
+  <h2 class="sec">8 · 与原计划的差异</h2>
+  <div class="tablewrap"><table>
+    <tr><th class="l">差异</th><th class="l">为什么调整 / 依据</th><th class="l">是否影响结果</th></tr>
+    <tr><td class="l">用纯标准库单机分析替代 codex 舰队 + worktree</td><td class="l">base Python 无第三方库、环境 OneDrive 同步；本任务编排要求隔离 5-* 目录；标准库足以处理 150 行</td><td class="l">否。反而满足"单文件离线自包含"硬性要求</td></tr>
+    <tr><td class="l">工作区改为 5-* 隔离目录，而非 ./.codex-fleet/nsfc-open-explore/</td><td class="l">本任务编排明确要求隔离目录、防与并行 Agent 冲突</td><td class="l">否，仅位置不同</td></tr>
+    <tr><td class="l">主表择 reports/ 规范副本（非 .codex-fleet 副本）</td><td class="l">reports/ 为仓库规范根；两副本经第二源核对一致</td><td class="l">否（已背书一致）</td></tr>
+    <tr><td class="l">T4(NPC刺激-响应)/T5(自下而上学指标) 未做</td><td class="l">需重型 replay 轨迹提取，超出本轮评分级范围与时间预算</td><td class="l">是（缩小范围）：结论限于评分级，不覆盖底层行为</td></tr>
+    <tr><td class="l">新增"场景中心化置换检验"与"碰撞伪影剔除"</td><td class="l">为干净区分算法、排除场景难度与灾难性事件混淆</td><td class="l">是（增强）：产出最强反叙事发现</td></tr>
+    <tr><td class="l">新增第二官方源交叉核对</td><td class="l">独立验证主表无误</td><td class="l">是（增强可信度）</td></tr>
+    <tr><td class="l">图表改用项目 Nature/NMI 风格（matplotlib），替代初版手绘 SVG</td><td class="l">用户指令"所有图表用 nature skill"；项目已有 Nature 风约定(make_nature_figures.py)</td><td class="l">否（仅呈现样式；4 图仍读同一 results.json，数值不变）。代价：图表需 matplotlib，故隔离 venv 一次性联网安装</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ 10 限制 ============ -->
+<section id="s10">
+  <h2 class="sec">9 · 异常、限制与风险</h2>
+  <h4>异常（已处理）</h4>
+  <ul class="tight">
+    <li><b>2 行灾难性全零</b>（wulala@A1、mm@A1，含碰撞）：作为伪影显式识别，并说明其污染 A1 区分力；未删除原数据，只在解释中隔离。</li>
+    <li><b>计划锚点 B4 错误</b>：已在发现 5 纠正并建议撤回。</li>
+  </ul>
+  <h4>限制（实际严重程度）</h4>
+  <ul class="tight">
+    <li><b>仅评分级（中等严重）：</b>未做轨迹级 T3 细化/T4/T5；故结论是关于<b>官方评分结构</b>，不能直接推断<b>底层驾驶行为</b>。</li>
+    <li><b>团队级 n=10 欠功效（中等）：</b>会压低弱效应（如协同）的检验功效；置换 p 值随种子有 ±0.001 波动，但显著性次序稳定。</li>
+    <li><b>对手=脚本 NPC、无人类对照（固有）：</b>所有"社会性"解读是相对脚本对手的响应差异，不等于与真人交互。</li>
+    <li><b>安全原语来自上轮 PDF 抽取（低）：</b>本轮未重解析诊断 PDF，依赖上轮映射（score_mapping_source 标注一致性高）。</li>
+    <li><b>相关≠因果（固有）：</b>"综合分≈效率代理"是相关结构，非因果断言。</li>
+  </ul>
+  <h4>并行/冲突与同步风险</h4>
+  <ul class="tight">
+    <li><b>并行 Agent：</b>另有 2 个 5-* 文件夹（codex 完成稿、另一编排 Agent 的骨架）。本次<b>只读探查存在性</b>，未读取/修改/覆盖其任何文件；本次全部写入仅限本目录与 work/qa。检查其 mtime 未因本次改变。</li>
+    <li><b>文件冲突/覆盖：</b>未检测到。本目录所有文件名带唯一运行标识或位于本目录内，无共用固定名。</li>
+    <li><b>OneDrive 同步：</b>文件可读、大小合理、无占位/截断；报告全部用相对链接，移动整个 5-* 目录后仍可用。</li>
+    <li><b>图表的构建期联网依赖（低）：</b>为满足"Nature 风图表"要求，绘图用 matplotlib，需在隔离 venv 内一次性联网 pip 安装（matplotlib 3.9.4 + numpy 2.0.2）。这是<b>构建期</b>依赖；统计分析与最终 HTML 均不联网，HTML 内嵌本地图片、无 CDN。复现图表需可联网或预装这两个库；复现数值则仅需 base Python。</li>
+    <li><b>未验证结论：</b>无——进入主报告的 headline 均经独立复算；设计外项(T4/T5)已明确标记为"未做"而非"未验证"。</li>
+  </ul>
+</section>
+
+<!-- ============ 11 结论 ============ -->
+<section id="s11">
+  <h2 class="sec">10 · 最终结论</h2>
+  <ul class="tight">
+    <li><b>任务是否完成：</b>是（评分级范围内全部完成；轨迹级 T4/T5 明确未做）。</li>
+    <li><b>最核心结果：</b>在官方评分这一层，<b>效率（而非协同）才是稳健区分 10 个算法的维度</b>，综合分≈效率代理；<b>协同是场景驱动的"状态"</b>而非算法稳定"特质"。</li>
+    <li><b>是否支持原计划目标：</b>支持——计划要的是"开放发现、允许复杂化/反驳"，本轮恰好产出 3 个反叙事/复杂化发现 + 1 个锚点纠错，并诚实保留。</li>
+    <li><b>可信的结论：</b>安全饱和、安全/协同可分离、效率主导区分、协同为状态、B4 锚点错误、A1 为碰撞伪影——均经独立复算。</li>
+    <li><b>需谨慎的结论：</b>"协同不重要"（n=10 欠功效，且协同仍可分离于安全）；任何由评分推断<b>行为</b>的说法。</li>
+    <li><b>尚未完成：</b>轨迹级 T3 事件编目、T4 NPC 刺激-响应、T5 自下而上学指标。</li>
+    <li><b>是否建议接受：</b>建议接受为"评分级开放探索"的可靠产出；作为论文证据时，应据上述限制定位为<b>评分结构</b>层面的发现，并建议把"效率主导/协同为状态/B4 锚点纠错"写入复杂化讨论或 future work。</li>
+  </ul>
+</section>
+
+<!-- ============ 12 交付清单 ============ -->
+<section id="s12">
+  <h2 class="sec">11 · 交付文件清单</h2>
+  <p>链接均为相对路径；移动整个 5-* 文件夹后仍可用。</p>
+  <div class="tablewrap"><table>
+    <tr><th class="l">文件</th><th class="l">用途</th><th>大小</th><th>状态</th><th>质检</th><th class="l">备注</th></tr>
+    <tr><td class="l"><a href="index.html">index.html</a></td><td class="l">主报告（唯一阅读入口）</td><td>—</td><td><span class="tag t-ok">本文件</span></td><td>—</td><td class="l">自包含，离线</td></tr>
+    <tr><td class="l"><a href="scripts/analyze_nsfc.py">scripts/analyze_nsfc.py</a></td><td class="l">主分析脚本（纯标准库）</td><td>~17KB</td><td><span class="tag t-ok">已运行</span></td><td>✓</td><td class="l">退出码 0</td></tr>
+    <tr><td class="l"><a href="data/results.json">data/results.json</a></td><td class="l">机器可读全部指标</td><td>~20KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">报告数值之源</td></tr>
+    <tr><td class="l"><a href="data/02_dimension_summary.csv">data/02_dimension_summary.csv</a></td><td class="l">六维分布</td><td>&lt;1KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">表1</td></tr>
+    <tr><td class="l"><a href="data/03_team_phenotype.csv">data/03_team_phenotype.csv</a></td><td class="l">算法表型</td><td>&lt;1KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">表2/图2</td></tr>
+    <tr><td class="l"><a href="data/04_scenario_discrimination.csv">data/04_scenario_discrimination.csv</a></td><td class="l">场景区分力</td><td>&lt;1KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">图3</td></tr>
+    <tr><td class="l"><a href="data/05_safe_but_bad.csv">data/05_safe_but_bad.csv</a></td><td class="l">安全但协同差案例</td><td>~1.4KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">发现5</td></tr>
+    <tr><td class="l"><a href="data/06_cross_scenario_consistency.csv">data/06_cross_scenario_consistency.csv</a></td><td class="l">跨场景一致性</td><td>&lt;1KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">图4</td></tr>
+    <tr><td class="l"><a href="data/07_dim_correlation.csv">data/07_dim_correlation.csv</a></td><td class="l">六维相关矩阵</td><td>&lt;1KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">综合≈效率0.94</td></tr>
+    <tr><td class="l"><a href="data/08_permutation_team_effect.csv">data/08_permutation_team_effect.csv</a></td><td class="l">团队效应置换检验</td><td>&lt;1KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">表3（核心）</td></tr>
+    <tr><td class="l"><a href="data/01_data_health.csv">data/01_data_health.csv</a></td><td class="l">数据健康</td><td>&lt;1KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">完整性</td></tr>
+    <tr><td class="l"><a href="scripts/make_nature_figures.py">scripts/make_nature_figures.py</a></td><td class="l">Nature/NMI 风格绘图脚本</td><td>~8KB</td><td><span class="tag t-ok">已运行</span></td><td>—</td><td class="l">matplotlib，隔离 venv</td></tr>
+    <tr><td class="l"><a href="assets/figures/fig1_dimension_saturation.svg">assets/figures/fig1…svg/.png</a></td><td class="l">图1 维度饱和（双面板）</td><td>~23KB/294KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">Nature风 SVG+600dpi PNG</td></tr>
+    <tr><td class="l"><a href="assets/figures/fig2_team_phenotype_heatmap.svg">assets/figures/fig2…svg/.png</a></td><td class="l">图2 表型热力图</td><td>~28KB/456KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">Nature风 SVG+600dpi PNG</td></tr>
+    <tr><td class="l"><a href="assets/figures/fig3_scenario_discrimination.svg">assets/figures/fig3…svg/.png</a></td><td class="l">图3 场景区分力</td><td>~22KB/203KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">Nature风 SVG+600dpi PNG</td></tr>
+    <tr><td class="l"><a href="assets/figures/fig4_cross_scenario_consistency.svg">assets/figures/fig4…svg/.png</a></td><td class="l">图4 跨场景一致性+团队效应（双面板）</td><td>~25KB/367KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">Nature风 SVG+600dpi PNG</td></tr>
+    <tr><td class="l"><a href="work/qa/qa_independent_report.md">work/qa/qa_independent_report.md</a></td><td class="l">独立 QA 报告</td><td>~4KB</td><td><span class="tag t-ok">9/9</span></td><td>—</td><td class="l">独立子代理</td></tr>
+    <tr><td class="l"><a href="work/qa/qa_recompute.py">work/qa/qa_recompute.py</a></td><td class="l">QA 独立脚本</td><td>~17KB</td><td><span class="tag t-ok">已运行</span></td><td>—</td><td class="l">不读主脚本</td></tr>
+    <tr><td class="l"><a href="work/qa/qa_recompute.json">work/qa/qa_recompute.json</a></td><td class="l">QA 机器可读结果</td><td>~7KB</td><td><span class="tag t-ok">非空</span></td><td>—</td><td class="l">逐项对比</td></tr>
+    <tr><td class="l"><a href="metadata/path_audit.csv">metadata/path_audit.csv</a></td><td class="l">路径核查表</td><td>~3KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">10 条</td></tr>
+    <tr><td class="l"><a href="metadata/run_config.json">metadata/run_config.json</a></td><td class="l">运行配置</td><td>~2KB</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">环境/参数</td></tr>
+    <tr><td class="l"><a href="metadata/manifest.json">metadata/manifest.json</a></td><td class="l">交付清单(机器可读)</td><td>—</td><td><span class="tag t-ok">非空</span></td><td>✓</td><td class="l">见附录</td></tr>
+    <tr><td class="l"><a href="logs/analysis_stdout.log">logs/analysis_stdout.log</a></td><td class="l">主分析日志</td><td>&lt;2KB</td><td><span class="tag t-ok">非空</span></td><td>—</td><td class="l">含每步输出</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ 13 可复现 ============ -->
+<section id="s13">
+  <h2 class="sec">12 · 可复现信息</h2>
+  <ul class="tight">
+    <li><b>工作目录：</b><code>reports/interhub/ipv_estimation_results/full_datasets/20260612_sigma_0_1_full_rerun/02_reports/5-nsfc-open-explore-stdlib-20260619-231935-993a</code></li>
+    <li><b>主输入：</b><code>reports/onsite_competition/social_compliance_report/competition_evidence_detailed_analysis/02_process/agent_results/ws2-outcomes-tierA/master_outcome_table.csv</code></li>
+    <li><b>交叉源：</b><code>data/onsite_competition/top5_research_subset/tables/top5_scenario_scores.csv</code></li>
+    <li><b>主脚本：</b><code>scripts/analyze_nsfc.py</code>；<b>QA 脚本：</b><code>work/qa/qa_recompute.py</code></li>
+    <li><b>关键参数：</b>seed=12345(原始)/12346(场景中心化)，n_perm=20000，安全但协同差阈值=协同 25 分位</li>
+    <li><b>环境：</b>分析 = Python 3.9.6（/usr/bin/python3，纯标准库，离线）；图表 = matplotlib 3.9.4 + numpy 2.0.2（本目录 <code>cache/venv</code>，一次性 pip）。macOS Darwin 25.5.0 arm64，git HEAD 0827f504</li>
+    <li><b>运行标识：</b>nsfc-open-explore-stdlib-20260619-231935-993a</li>
+    <li><b>日志位置：</b><code>logs/analysis_stdout.log</code>、<code>logs/analysis_stderr.log</code></li>
+  </ul>
+  <details><summary>展开：复现命令</summary>
+<pre>cd &lt;项目根&gt;
+python3 reports/.../5-nsfc-open-explore-stdlib-20260619-231935-993a/scripts/analyze_nsfc.py \
+  reports/.../ws2-outcomes-tierA/master_outcome_table.csv \
+  reports/.../5-nsfc-open-explore-stdlib-20260619-231935-993a 12345
+# 重新生成 8 CSV + 4 SVG + results.json（确定性，结果应逐位一致；置换 p 因固定种子亦可复现）</pre>
+  </details>
+</section>
+
+<!-- ============ 14 附录 ============ -->
+<section id="s14">
+  <h2 class="sec">13 · 附录</h2>
+  <details><summary>附录 A · 六维相关矩阵（Pearson, n=150）</summary>
+  <div class="tablewrap"><table>
+    <tr><th></th><th>安全</th><th>效率</th><th>舒适</th><th>合规</th><th>协同</th><th>综合</th></tr>
+    <tr><td class="l">安全</td><td>1.00</td><td>0.43</td><td>0.84</td><td>0.81</td><td>0.68</td><td>0.66</td></tr>
+    <tr><td class="l">效率</td><td>0.43</td><td>1.00</td><td>0.24</td><td>0.36</td><td>0.57</td><td class="hl">0.94</td></tr>
+    <tr><td class="l">舒适</td><td>0.84</td><td>0.24</td><td>1.00</td><td>0.73</td><td>0.64</td><td>0.54</td></tr>
+    <tr><td class="l">合规</td><td>0.81</td><td>0.36</td><td>0.73</td><td>1.00</td><td>0.58</td><td>0.59</td></tr>
+    <tr><td class="l">协同</td><td>0.68</td><td>0.57</td><td>0.64</td><td>0.58</td><td>1.00</td><td>0.74</td></tr>
+    <tr><td class="l">综合</td><td>0.66</td><td>0.94</td><td>0.54</td><td>0.59</td><td>0.74</td><td>1.00</td></tr>
+  </table><div class="small">橙色：综合~效率=0.94（最高），印证"综合分≈效率代理"。</div></div>
+  </details>
+  <details><summary>附录 B · 场景区分力全表（协同/综合，n=10 队/场景）</summary>
+  <div class="tablewrap"><table>
+    <tr><th>场景</th><th>协同均值</th><th>协同sd</th><th>协同极差</th><th>综合均值</th><th>综合sd</th></tr>
+    <tr><td>A1</td><td>65.35</td><td class="hl">33.08</td><td>93.25</td><td>63.29</td><td>32.70</td></tr>
+    <tr><td>A2</td><td>87.17</td><td>10.12</td><td>32.50</td><td>94.02</td><td>2.69</td></tr>
+    <tr><td>A3</td><td>76.09</td><td>6.98</td><td>24.19</td><td>84.44</td><td>6.26</td></tr>
+    <tr><td>A4</td><td>74.31</td><td>10.35</td><td>29.13</td><td>88.50</td><td>8.11</td></tr>
+    <tr><td>A5</td><td>90.10</td><td>4.07</td><td>12.39</td><td>96.97</td><td>3.17</td></tr>
+    <tr><td>A6</td><td>83.29</td><td>5.25</td><td>19.14</td><td>93.65</td><td>4.47</td></tr>
+    <tr><td>A7</td><td>91.47</td><td>8.26</td><td>21.11</td><td>93.83</td><td>5.66</td></tr>
+    <tr><td>B1</td><td>68.35</td><td>5.33</td><td>16.54</td><td>80.82</td><td>5.91</td></tr>
+    <tr><td>B2</td><td>83.63</td><td>2.91</td><td>9.59</td><td>87.41</td><td>8.78</td></tr>
+    <tr><td>B3</td><td>87.81</td><td>3.69</td><td>10.88</td><td>90.76</td><td>6.29</td></tr>
+    <tr><td>B4</td><td>85.97</td><td>4.92</td><td>18.67</td><td>73.00</td><td>7.59</td></tr>
+    <tr><td>C1</td><td>82.43</td><td>2.38</td><td>6.74</td><td>81.22</td><td>6.32</td></tr>
+    <tr><td>C2</td><td>96.03</td><td>2.47</td><td>7.54</td><td>97.06</td><td>2.10</td></tr>
+    <tr><td>C3</td><td>67.57</td><td>3.58</td><td>9.91</td><td>62.75</td><td>2.84</td></tr>
+    <tr><td>C4</td><td>91.87</td><td>8.25</td><td>21.55</td><td>87.01</td><td>11.11</td></tr>
+  </table></div>
+  </details>
+  <details><summary>附录 C · 跨场景协同范围全表（每队，n=15 场景）</summary>
+  <div class="tablewrap"><table>
+    <tr><th class="l">算法</th><th>协同均值</th><th>队内sd</th><th>最小</th><th>最大</th><th>极差</th></tr>
+    <tr><td class="l">limitless</td><td>86.72</td><td>8.62</td><td>64.9</td><td>98.1</td><td>33.2</td></tr>
+    <tr><td class="l">panda</td><td>85.24</td><td>11.41</td><td>67.2</td><td>100.0</td><td>32.8</td></tr>
+    <tr><td class="l">bps</td><td>85.13</td><td>11.67</td><td>65.6</td><td>100.0</td><td>34.4</td></tr>
+    <tr><td class="l">thicv2025</td><td>84.67</td><td>10.20</td><td>59.3</td><td>96.2</td><td>36.9</td></tr>
+    <tr><td class="l">autoailab</td><td>83.99</td><td>11.62</td><td>60.6</td><td>99.6</td><td>38.9</td></tr>
+    <tr><td class="l">wsd</td><td>81.34</td><td>6.33</td><td>69.3</td><td>90.6</td><td>21.2</td></tr>
+    <tr><td class="l">SMU</td><td>80.23</td><td>7.28</td><td>63.5</td><td>93.3</td><td>29.8</td></tr>
+    <tr><td class="l">ADVRC</td><td>79.27</td><td>6.95</td><td>63.3</td><td>93.8</td><td>30.5</td></tr>
+    <tr><td class="l">mm</td><td>77.37</td><td>23.78</td><td>0.0</td><td>99.2</td><td>99.2</td></tr>
+    <tr><td class="l">wulala</td><td>77.00</td><td>23.56</td><td>0.0</td><td>99.0</td><td>99.0</td></tr>
+  </table><div class="small">mm/wulala 队内 sd 极大因 A1 碰撞(协同=0)；即便剔除，其余 8 队队内 sd≈6–12 仍远大于队间 3.33。</div></div>
+  </details>
+  <p class="small">更多机器可读细节见 <code>data/results.json</code>、<code>work/qa/qa_recompute.json</code>、<code>metadata/manifest.json</code>。</p>
+</section>
+
+<footer>
+  本报告由主协调 Agent（Claude Code）汇总生成；统计分析与 QA 由纯标准库脚本 + 一个独立 QA 子代理完成；图表按项目 Nature/NMI 风格用 matplotlib（本目录隔离 venv）生成。最终 HTML 离线自包含、无 CDN、无在线字体/JS。<br>
+  关键日志：<code>logs/analysis_stdout.log</code>；独立复核：<code>work/qa/qa_independent_report.md</code>。<br>
+  未完成项：轨迹级 T4（NPC 刺激-响应）/ T5（自下而上学指标），需重型 replay 提取，本轮按设计未做。<br>
+  运行标识 nsfc-open-explore-stdlib-20260619-231935-993a · 生成于 2026-06-19。
+</footer>
+
+</div>
+</body>
+</html>

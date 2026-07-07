@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ012B W0 Extractor-Health Round</title>
+  <style>
+    :root{--ink:#1f2933;--muted:#5d6773;--line:#d8dee7;--soft:#f5f7fa;--warn-bg:#fff3d9;--warn-line:#b7791f;--accent:#275d8c;--block:#8b2f28;--pass:#23644f}
+    *{box-sizing:border-box}body{margin:0;color:var(--ink);background:#fff;font:16px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}.banner{border-bottom:3px solid var(--warn-line);background:var(--warn-bg);color:#3d2b08;padding:16px 24px;font-weight:800}.wrap{width:min(1100px,calc(100% - 36px));margin:0 auto;padding:28px 0 42px}header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:24px}h1,h2,h3{line-height:1.22;margin:0 0 12px}h1{font-size:clamp(2rem,4vw,3rem)}h2{font-size:1.55rem;padding-top:18px;border-top:1px solid var(--line);margin-top:30px}h3{font-size:1.16rem;margin-top:22px}p{margin:0 0 14px}.lede{font-size:1.08rem;color:var(--muted);max-width:920px}a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.chip{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:5px 10px;font-size:.9rem;font-weight:700;color:#344454}.chip.blocked{color:var(--block);border-color:#e4b4aa;background:#fff0ed}.chip.pass{color:var(--pass);border-color:#afd8c6;background:#edf8f3}.toc{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:22px 0 24px}.toc strong{display:block;margin-bottom:8px}.toc ol{margin:0;padding-left:22px;columns:2;column-gap:36px}.toc li{break-inside:avoid;margin:3px 0}.notice{border-left:5px solid var(--block);background:#fff6f5;padding:14px 16px;margin:18px 0;font-weight:700}table{width:100%;border-collapse:collapse;margin:14px 0 22px;font-size:.95rem}th,td{border:1px solid var(--line);padding:8px 10px;vertical-align:top;text-align:left}th{background:#edf1f5;font-weight:800}.num{text-align:right;font-variant-numeric:tabular-nums}figure{margin:22px 0 28px}figure img{display:block;width:100%;height:auto;border:1px solid var(--line);background:#fff}figcaption{margin-top:10px;color:#3d4650;font-size:.95rem}.caption-title{font-weight:800;color:var(--ink)}code{background:#eef2f6;border:1px solid #d7dde5;border-radius:4px;padding:1px 4px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}.source-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:12px 0 20px}.source-grid a{display:block;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fbfcfe}footer{border-top:2px solid var(--line);margin-top:36px;padding-top:18px;color:var(--muted);font-size:.92rem}@media(max-width:760px){.wrap{width:min(100% - 24px,1100px);padding-top:22px}.toc ol{columns:1}table{font-size:.88rem}th,td{padding:7px 8px}}
+  </style>
+</head>
+<body>
+  <div class="banner">SCIENTIFIC ENDPOINT NOT RUN — BLOCKED_PENDING_M3 (RQ009 M3 not frozen). This round = M3-independent extractor-health slice only. Automatic-event counts are extractor evidence, never outcomes.</div>
+  <main class="wrap">
+    <header>
+      <h1>RQ012B W0 Extractor-Health Round</h1>
+      <p class="lede">Bilingual reader report for the OnSite automatic-event harm-analysis readiness round. This page renders the PI-authored synthesis backbone and supporting stage reports without rerunning analysis or adding scientific endpoint claims.</p>
+      <div class="meta">
+        <span class="chip">RUN_ID: RQ012B_1_event_harm_20260625T202307+0800_38f47437</span>
+        <span class="chip blocked">Harm association: NOT RUN</span>
+        <span class="chip blocked">M3 frozen: no</span>
+        <span class="chip pass">W0 extractor-health slice: complete</span>
+        <a class="chip" href="./index.zh.html">中文版本</a>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="Table of contents">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#framing">Round framing</a></li>
+        <li><a href="#eh1">EH-1 Computability and guards</a></li>
+        <li><a href="#eh2">EH-2 Sampling sensitivity</a></li>
+        <li><a href="#eh3">EH-3 Count convention</a></li>
+        <li><a href="#health">Data-health and negative checks</a></li>
+        <li><a href="#reviews">Review, red-team, replication</a></li>
+        <li><a href="#blocked">Blocked work and carried conditions</a></li>
+        <li><a href="#sources">Sources and provenance</a></li>
+      </ol>
+    </nav>
+
+    <section id="framing">
+      <h2>1. Round Framing</h2>
+      <div class="notice">The scientific endpoint, M3 IPV-deviation to automatic-event / official-harm association, did not run. Plan stages 3, 4, and 5 are <code>BLOCKED_PENDING_M3</code> because upstream RQ009 M3 is not frozen.</div>
+      <p>RQ012B asks whether automatic event extraction can support an OnSite harm-analysis workflow without human labels. In this round, by PI and user decision on 2026-06-25, only the M3-independent slice was executed: stage 1 plan review, stage 2 / W0 frozen-extractor health on <code>clean_285</code>, independent review, adversarial red-team review, independent replication, and this bilingual report.</p>
+      <p>No automatic-event count, and nothing in this report, is a scientific outcome. Counts are extractor-health and provenance evidence only.</p>
+      <table>
+        <thead><tr><th>Field</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>RQ</td><td>RQ012B - OnSite automatic-event harm analysis, no human labels</td></tr>
+          <tr><td>Scientific endpoint</td><td><code>NOT RUN</code> (<code>BLOCKED_PENDING_M3</code>)</td></tr>
+          <tr><td>Executed scope</td><td>M3-independent W0 extractor-health slice only</td></tr>
+          <tr><td>Universe</td><td>RQ011 frozen replay universe: <code>clean_285</code>; outcomes remain <code>full_300</code> and did not enter W0</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="eh1">
+      <h2>2. EH-1 - Computability and Guard Health</h2>
+      <p><strong>Conclusion EH-1.</strong> The frozen 9-event extractor is computable on <code>clean_285</code>, and its guards behave as designed.</p>
+      <table>
+        <thead><tr><th>Health quantity</th><th class="num">Value</th><th>Interpretation</th></tr></thead>
+        <tbody>
+          <tr><td>Computability</td><td class="num">280/285 = 98.25%</td><td>Five misses are honest data-availability failures: MissingCaseWindow=3 and MissingEgoRows=2, retained in the denominator.</td></tr>
+          <tr><td>Precedence suppression</td><td class="num">549/20,663 = 2.66%</td><td>All suppressed intervals are E09 intervals suppressed by E15; suppression is small and interpretable.</td></tr>
+          <tr><td>Identity guard</td><td class="num">20,663/20,663 = 100%</td><td>All raw intervals have unambiguous, guard-consistent actor/pair identity.</td></tr>
+          <tr><td>E01 counterpart hard braking</td><td class="num">0 intervals</td><td>Zero by design because the frozen spec defines no counterpart relation; all 8,071 world units are booked as attribution/missing accounting.</td></tr>
+        </tbody>
+      </table>
+      <table>
+        <thead><tr><th>Event</th><th>Frozen label</th><th class="num">Raw intervals</th><th class="num">Primary intervals</th><th class="num">Suppressed</th></tr></thead>
+        <tbody>
+          <tr><td>E01</td><td>Counterpart hard braking</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+          <tr><td>E02</td><td>High deceleration</td><td class="num">7,622</td><td class="num">7,622</td><td class="num">0</td></tr>
+          <tr><td>E03</td><td>High jerk</td><td class="num">7,144</td><td class="num">7,144</td><td class="num">0</td></tr>
+          <tr><td>E06</td><td>Repeated stop-go</td><td class="num">732</td><td class="num">732</td><td class="num">0</td></tr>
+          <tr><td>E09</td><td>Near miss</td><td class="num">4,489</td><td class="num">3,940</td><td class="num">549</td></tr>
+          <tr><td>E15</td><td>Collision/contact geometric candidate</td><td class="num">554</td><td class="num">554</td><td class="num">0</td></tr>
+          <tr><td>E16</td><td>No-progress timeout</td><td class="num">92</td><td class="num">92</td><td class="num">0</td></tr>
+          <tr><td>E18</td><td>Kinematic emergency-stop candidate</td><td class="num">3</td><td class="num">3</td><td class="num">0</td></tr>
+          <tr><td>E19</td><td>Abrupt lateral comfort events</td><td class="num">27</td><td class="num">27</td><td class="num">0</td></tr>
+          <tr><th>Overall</th><th>All frozen automatic events</th><th class="num">20,663</th><th class="num">20,114</th><th class="num">549</th></tr>
+        </tbody>
+      </table>
+      <figure>
+        <img src="./assets/fig1_extractor_health.png" alt="Figure 1, frozen extractor computability and guard health on clean_285">
+        <figcaption><span class="caption-title">Figure 1. Frozen extractor computability and guard health on clean_285.</span> Units are scenario cells for computability (n=285 attempted; 280 succeeded; MissingCaseWindow=3; MissingEgoRows=2) and event intervals/counts for guards (n=20,663 raw candidate intervals; 20,114 primary survivors; 549 precedence-suppressed; 20,663/20,663 identity-unambiguous). The figure shows computability, the primary-event histogram, precedence accounting, and identity stability. One-line conclusion: on clean_285, the frozen extractor is mostly computable and its precedence and identity guards have transparent accounting.</figcaption>
+      </figure>
+    </section>
+
+    <section id="eh2">
+      <h2>3. EH-2 - Sampling-Rate Sensitivity</h2>
+      <p><strong>Conclusion EH-2.</strong> The frozen extractor is sampling-rate sensitive; downstream event extraction must be pinned to the native rate.</p>
+      <table>
+        <thead><tr><th>Path</th><th>Rate comparison</th><th class="num">Native primary count</th><th class="num">Perturbed primary count</th><th class="num">Relative delta</th><th>Attribution</th></tr></thead>
+        <tbody>
+          <tr><td>Original wrapper decimate</td><td>~10 Hz to 5 Hz</td><td class="num">20,114</td><td class="num">41,904</td><td class="num">+108.33%</td><td>Runs through the frozen extractor's own <code>extract_all_events(decimate_factor=2)</code>; real extractor rate-dependence.</td></tr>
+          <tr><td>Original wrapper interpolate</td><td>~10 Hz to 20 Hz</td><td class="num">20,114</td><td class="num">15,573</td><td class="num">-22.58%</td><td>Wrapper-only synthetic-midpoint perturbation; magnitude is method-limited.</td></tr>
+          <tr><td>Independent physical-time resampling</td><td>native to 5 Hz</td><td class="num">20,078</td><td class="num">37,761</td><td class="num">+88.07%</td><td>Principled uniform-grid resampling reproduces coarse-rate instability.</td></tr>
+          <tr><td>Independent physical-time resampling</td><td>native to 20 Hz</td><td class="num">20,078</td><td class="num">13,971</td><td class="num">-30.42%</td><td>Principled upsampling also reproduces finer-rate instability.</td></tr>
+        </tbody>
+      </table>
+      <p>The mechanism is constructional: triggers use frame-difference jerk, rolling-median acceleration, and frame-spacing-estimated durations. E03 and E09 dominate the observed sensitivity. The carried condition is therefore binding: all post-M3 event extraction feeding stages 3-5 must use one frozen native rate, approximately 10 Hz median ego dt. Event definitions are not rate-invariant.</p>
+      <figure>
+        <img src="./assets/fig2_sampling_sensitivity.png" alt="Figure 2, sampling-rate sensitivity of frozen extractor counts">
+        <figcaption><span class="caption-title">Figure 2. Sampling-rate sensitivity of frozen extractor counts.</span> Units are primary automatic-event counts and relative deltas; n=280 successful scenarios are compared for the original wrapper perturbations, and the independent replication uses the same computability denominator of 280/285 with native total 20,078. The figure shows overall and per-event count shifts at 5 Hz and 20 Hz for the original perturbation path and the independent physical-time resampling path. One-line conclusion: coarser and denser sampling materially perturb frozen extractor primary-event counts, and the effect persists under independent physical-time resampling.</figcaption>
+      </figure>
+    </section>
+
+    <section id="eh3">
+      <h2>4. EH-3 - Count Convention Dependence</h2>
+      <p><strong>Conclusion EH-3.</strong> Absolute event counts are extraction-convention dependent and are evidence only.</p>
+      <table>
+        <thead><tr><th>Metric</th><th class="num">Original</th><th class="num">Replication</th><th class="num">Delta</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>E01</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td>AGREE</td></tr>
+          <tr><td>E18</td><td class="num">3</td><td class="num">3</td><td class="num">0</td><td>AGREE</td></tr>
+          <tr><td>Computability</td><td class="num">280/285</td><td class="num">280/285</td><td class="num"></td><td>AGREE</td></tr>
+          <tr><td>Raw intervals</td><td class="num">20,663</td><td class="num">20,620</td><td class="num">-43</td><td>DIVERGE</td></tr>
+          <tr><td>Primary intervals</td><td class="num">20,114</td><td class="num">20,078</td><td class="num">-36</td><td>DIVERGE</td></tr>
+          <tr><td>E09</td><td class="num">3,940</td><td class="num">3,749</td><td class="num">-191</td><td>DIVERGE</td></tr>
+        </tbody>
+      </table>
+      <p>The native replication agrees on the health conclusion and direction, but diverges by roughly 1-5% on other totals. The documented explanation is scenario-unit/windowing convention: per-unit case windows versus unique replay logs. The canonical convention for this round is the RQ011 frozen universe's 285 case-window cells.</p>
+      <p>Implication: event counts must never be used as outcomes. They are convention-sensitive extractor evidence, exactly as the plan requires.</p>
+    </section>
+
+    <section id="health">
+      <h2>5. Data-Health and Negative Checks</h2>
+      <table>
+        <thead><tr><th>Check</th><th>Result</th><th>Evidence boundary</th></tr></thead>
+        <tbody>
+          <tr><td>Leakage firewall</td><td>PASS</td><td>Metadata was read through neutral <code>usecols</code> only (area, team_id, scenario_id, scenario_name); thresholds are constants; no derived CSV header contains outcome, score, deduction, collision, IPV, rank, PET, harm, or deviation fields.</td></tr>
+          <tr><td>Universe mask</td><td>PASS</td><td><code>corrected_clean_mask.csv</code> contains 285 unique replay rows; T19 has 15 rows and 0 clean rows, matching RQ011.</td></tr>
+          <tr><td>Computability accounting</td><td>PASS</td><td>285 attempted; 280 succeeded; 5 retained failures with explicit causes; no duplicate unit keys.</td></tr>
+          <tr><td>No silent caps</td><td>PASS</td><td>No head/sample/limit/truncate behavior in the runner; derived intervals, status, and counts reconcile.</td></tr>
+          <tr><td>Outcome/IPV abstention</td><td>PASS</td><td>W0 did not compute outcome joins, team ranking, IPV, deviation, PET online signal, or harm association.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="reviews">
+      <h2>6. Independent Review, Red-Team, and Replication Verdicts</h2>
+      <table>
+        <thead><tr><th>Review role</th><th>Verdict</th><th>Conditions or findings carried into this report</th></tr></thead>
+        <tbody>
+          <tr><td>Stage 1 independent plan review</td><td>PROCEED-WITH-CONDITIONS for the M3-independent slice</td><td>Do not enter stages 3-5 before frozen M3; keep W0 outcome/IPV-free; record plan, extractor, config, and universe hashes; use corrected clean_285; report counts only as extractor evidence.</td></tr>
+          <tr><td>Stage 7 adversarial red-team</td><td>CLEAR: no blocker; 1 major framing issue accepted</td><td>Sampling must be framed as both real frozen-extractor rate-dependence at 5 Hz and method-limited original wrapper interpolation at 20 Hz, with independent replication showing both-direction instability.</td></tr>
+          <tr><td>Stage 8 blind replication</td><td>AGREE on extractor health and direction</td><td>Computability 280/285 agrees; E01=0 and E18=3 agree; native counts reproduce within about 1-5% under a convention-explained difference; 5 Hz and 20 Hz sensitivity reproduce under physical-time resampling.</td></tr>
+        </tbody>
+      </table>
+      <table>
+        <thead><tr><th>Status field</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>M3_FROZEN</td><td>no</td></tr>
+          <tr><td>HARM_ASSOCIATION_RESULT</td><td>NOT RUN (<code>BLOCKED_PENDING_M3</code>)</td></tr>
+          <tr><td>IPV_SPECIFIC</td><td>n/a this round; no association computed</td></tr>
+          <tr><td>RED_TEAM_STATUS</td><td>CLEAR; no blocker; one major framing issue accepted</td></tr>
+          <tr><td>REPLICATION_STATUS</td><td>AGREE on extractor health and direction; native counts within about 1-5%, convention-explained</td></tr>
+          <tr><td>OVERALL_STATUS</td><td>M3-independent slice COMPLETE; scientific endpoint deferred to post-M3 RQ012B run</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="blocked">
+      <h2>7. Blocked Work and Carried Conditions</h2>
+      <table>
+        <thead><tr><th>Item</th><th>Decision for the future post-M3 run</th></tr></thead>
+        <tbody>
+          <tr><td>Blocked stages</td><td>Stages 3 (event to deviation), 4 (harm association), and 5 (negative controls) remain <code>BLOCKED_PENDING_M3</code> until RQ009 M3 is frozen with a decision record.</td></tr>
+          <tr><td>Native-rate pinning</td><td>All future event extraction feeding stages 3-5 must run at the single frozen native rate, approximately 10 Hz median ego dt.</td></tr>
+          <tr><td>Count semantics</td><td>Automatic-event counts are convention-dependent extractor evidence. They are never outcomes and must not be interpreted as labels, rankings, IPV, harm, or deviation effects.</td></tr>
+          <tr><td>Canonical unit convention</td><td>Use the RQ011 frozen universe's 285 case-window cells for canonical W0 accounting.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sources">
+      <h2>8. Sources and Provenance</h2>
+      <h3>Linked source reports and tables</h3>
+      <div class="source-grid">
+        <a href="../02_process/09_report/CONCLUSIONS.md">PI synthesis backbone: CONCLUSIONS.md</a>
+        <a href="../02_process/01_plan_review/plan_review.md">Stage 1 plan review</a>
+        <a href="../02_process/02_provenance_extractor/extractor_health_report.md">Frozen extractor health report</a>
+        <a href="../02_process/02_provenance_extractor/computability.csv">Computability CSV</a>
+        <a href="../02_process/02_provenance_extractor/event_type_histogram.csv">Event histogram CSV</a>
+        <a href="../02_process/02_provenance_extractor/precedence_suppression.csv">Precedence suppression CSV</a>
+        <a href="../02_process/02_provenance_extractor/identity_stability.csv">Identity stability CSV</a>
+        <a href="../02_process/02_provenance_extractor/sampling_sensitivity.csv">Original sampling sensitivity CSV</a>
+        <a href="../02_process/07_red_team/red_team_findings.md">Adversarial red-team findings</a>
+        <a href="../02_process/08_replication/replication_report.md">Blind replication report</a>
+        <a href="../02_process/08_replication/native_vs_original_comparison.csv">Replication native comparison CSV</a>
+        <a href="../02_process/08_replication/sampling_sensitivity.csv">Replication sampling sensitivity CSV</a>
+        <a href="../01_results/figures/figure_manifest.md">Figure manifest</a>
+      </div>
+      <h3>Provenance footer</h3>
+      <table>
+        <tbody>
+          <tr><th>RUN_ID</th><td><code>RQ012B_1_event_harm_20260625T202307+0800_38f47437</code></td></tr>
+          <tr><th>GIT_HEAD</th><td><code>4aef4d22bb639bf003c48094607c970e55445d5f</code></td></tr>
+          <tr><th>PLAN_SHA256</th><td><code>3634181f5b8bbdc2b0c41ed17bf22cedc49957d3f2154a99c6df72966c050899</code></td></tr>
+          <tr><th>Frozen extractor SHA256</th><td><code>f0da56b48ee167c3b19545f64a3eb77d5cbb7e095d458e8423758b0270a56cef</code></td></tr>
+          <tr><th>Extractor config SHA256</th><td><code>035c2cdfb170bcf9111f279eae4937c4488b7f8c541cff32a9bbe8732be82ca5</code></td></tr>
+          <tr><th>Universe mask SHA256</th><td><code>fdb055fc22550a350c90e3a653c59a8a425e6ca5aada6efda4baa491a78f6ab3</code></td></tr>
+          <tr><th>Environment</th><td>Python 3.9.6; pandas 2.3.3; numpy 2.0.2</td></tr>
+          <tr><th>NATURE_SKILL_STATUS</th><td><code>USED</code> (as recorded by the figure manifest backend)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      Offline report package. CSS is inline; figures are local PNG assets at <code>./assets/fig1_extractor_health.png</code> and <code>./assets/fig2_sampling_sensitivity.png</code>. No external network resources are required.
+    </footer>
+  </main>
+</body>
+</html>

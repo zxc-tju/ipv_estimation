@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ008A Temporal IPV Discovery - Full Offline Report</title>
+  <style>
+    :root {
+      --ink: #1f262b;
+      --muted: #5e686f;
+      --line: #d7dde2;
+      --soft: #f5f7f8;
+      --accent: #b53622;
+      --blue: #245a7a;
+      --green: #2f6f58;
+      --amber: #8a5b12;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.58;
+      font-size: 16px;
+    }
+    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    code {
+      font-family: Consolas, Menlo, Monaco, monospace;
+      font-size: 0.92em;
+      background: #eef1f3;
+      padding: 0.08rem 0.22rem;
+      border-radius: 4px;
+    }
+    .wrap {
+      width: min(1180px, calc(100% - 34px));
+      margin: 0 auto;
+    }
+    header {
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(#fff, #f8fafb);
+    }
+    .hero {
+      padding: 34px 0 28px;
+    }
+    .banner {
+      display: inline-block;
+      margin-bottom: 16px;
+      padding: 6px 10px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2.1rem, 5.2vw, 5.2rem);
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 42px 0 12px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      font-size: clamp(1.45rem, 2.2vw, 2.1rem);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 24px 0 8px;
+      font-size: 1.08rem;
+    }
+    p { margin: 0 0 12px; }
+    ul { margin-top: 8px; padding-left: 1.2rem; }
+    li { margin: 5px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 18px;
+      font-size: 0.92rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 9px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th { background: var(--soft); }
+    .lead {
+      max-width: 900px;
+      font-size: clamp(1.14rem, 1.7vw, 1.42rem);
+      color: #303a40;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .meta-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      min-height: 92px;
+    }
+    .meta-card b {
+      display: block;
+      color: var(--accent);
+      font-size: 1.35rem;
+      line-height: 1.1;
+    }
+    .meta-card span {
+      display: block;
+      color: var(--muted);
+      margin-top: 5px;
+      font-size: 0.88rem;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.97);
+      border-bottom: 1px solid var(--line);
+    }
+    nav .wrap {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 9px 0;
+      white-space: nowrap;
+      font-size: 0.9rem;
+    }
+    main { padding: 18px 0 54px; }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #fff7f5;
+      padding: 13px 15px;
+      margin: 16px 0;
+    }
+    .callout.green {
+      border-left-color: var(--green);
+      background: #f4f8f6;
+    }
+    .callout.amber {
+      border-left-color: var(--amber);
+      background: #fffaf0;
+    }
+    figure {
+      margin: 18px 0 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    figure.hero-figure {
+      border-color: #c9d1d7;
+      box-shadow: 0 8px 28px rgba(31, 38, 43, 0.08);
+    }
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+    }
+    figcaption {
+      border-top: 1px solid var(--line);
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .fig-links {
+      display: inline-flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-left: 4px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: #eef1f3;
+      color: #374149;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .tag.fail { background: #f8dfda; color: var(--accent); }
+    .tag.pass { background: #dff0e8; color: var(--green); }
+    .artifact-table td:first-child { width: 18%; }
+    .artifact-table td:nth-child(2) { width: 48%; }
+    .small { color: var(--muted); font-size: 0.9rem; }
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 860px) {
+      .meta-grid, .two-col { grid-template-columns: 1fr; }
+      table { font-size: 0.86rem; }
+      th, td { padding: 7px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div class="banner">Exploratory discovery - confirmation hold-out NOT opened</div>
+      <h1>RQ008A Temporal IPV Discovery</h1>
+      <p class="lead"><strong>Headline conclusion:</strong> 0/24 candidate temporal structures survived controls. This is a negative discovery/freeze/validation package for directional temporal IPV dynamics, not evidence for a positive temporal law.</p>
+      <div class="meta-grid" aria-label="Run metadata">
+        <div class="meta-card"><b>RUN_ID</b><span><code>RQ008_1_temporal_ipv_discovery_20260622T234914+0800_3e3e776a</code></span></div>
+        <div class="meta-card"><b>GIT_HEAD</b><span><code>38063a2f</code> full: <code>38063a2ff9cdc717098cf3f821c2bb162a0ac1d9</code></span></div>
+        <div class="meta-card"><b>PLAN_SHA256</b><span><code>3a94986587c3c30afa18b7a7c2151e272ac1382b24c43f8cbbf9a06b015f77db</code></span></div>
+        <div class="meta-card"><b>Wave B</b><span>confirmation hold-out not opened; gated on explicit user authorization</span></div>
+      </div>
+    </div>
+  </header>
+
+  <nav aria-label="Report sections">
+    <div class="wrap">
+      <a href="../00_entry/index.html">Landing</a>
+      <a href="#executive-summary">Summary</a>
+      <a href="#controls">Controls</a>
+      <a href="#data-split">Split</a>
+      <a href="#atlas">Atlas</a>
+      <a href="#alignment">Alignment</a>
+      <a href="#role-phase">Role/Phase</a>
+      <a href="#motifs">Motifs</a>
+      <a href="#freeze">Freeze</a>
+      <a href="#red-team">Red team</a>
+      <a href="#replication">Replication</a>
+      <a href="#reproducibility">Reproducibility</a>
+      <a href="#artifact-index">Artifacts</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="executive-summary">
+      <h2>Executive Summary</h2>
+      <div class="callout">
+        <p><strong>Negative result:</strong> Phase-7 controls eliminated all 24 fixed discovery candidates: 18 motifs, 2 alignments, 3 role/phase candidates, and 1 uncertainty/estimability candidate. The correct headline is therefore <strong>0/24 survive</strong>.</p>
+      </div>
+      <p>The discovery phase did find descriptive atlas shapes, alignment concentrations, role/phase summaries, and motif labels. None should be carried forward as a positive claim because the matched controls killed them. The package supports a bounded null: no directional temporal IPV dynamics survived mechanical, compositional, uncertainty, and source-balance checks in Wave A.</p>
+      <p>Uncertainty declines early in the descriptive atlas, but the explicit uncertainty candidate failed `pseudo_pair`, `duration_matched_null`, and `estimability_matched_controls`. It remains separate from IPV-mean dynamics and does not rescue any behavioral temporal claim.</p>
+      <p>Confirmation is not run here. The held-out `confirmation_PROTECTED` data remain closed until a separate Wave-B authorization, fixed-code review, and the pre-Wave-B amendments in <a href="../02_process/09_hypothesis_freeze/pre_wave_b_amendments.md">`pre_wave_b_amendments.md`</a>.</p>
+    </section>
+
+    <section id="controls">
+      <h2>Negative Controls: Hero Result</h2>
+      <figure class="hero-figure">
+        <img src="../01_results/figures/publication/fig2_control_survival_matrix.png" alt="Figure 2 control survival matrix showing zero of twenty-four candidates survive controls">
+        <figcaption>
+          <strong>Fig 2. Control survival matrix.</strong> Phase-7 controls report 0/24 surviving structures. Motifs are mostly killed by `reversed_time`; alignments are killed by `source_balancing` and `uncertainty_only_clustering`.
+          <span class="fig-links"><a href="../01_results/figures/publication/fig2_control_survival_matrix.svg">SVG</a><a href="../01_results/figures/publication/fig2_control_survival_matrix.pdf">PDF</a><a href="../01_results/tables/survival_summary.csv">source table</a></span>
+        </figcaption>
+      </figure>
+      <table>
+        <thead><tr><th>Family</th><th>Candidate count</th><th>Survivors</th><th>Main killing controls</th></tr></thead>
+        <tbody>
+          <tr><td>Motifs</td><td>18</td><td><span class="tag fail">0</span></td><td>Mostly `reversed_time`; several also fail `time_shuffle`, `random_alignment`, `pseudo_pair`, or `uncertainty_only_clustering`.</td></tr>
+          <tr><td>Alignments</td><td>2</td><td><span class="tag fail">0</span></td><td>`source_balancing` and `uncertainty_only_clustering` eliminate both `baseline_tau` and `conflict_point_progress`.</td></tr>
+          <tr><td>Role/phase</td><td>3</td><td><span class="tag fail">0</span></td><td>Multiple nulls including `time_shuffle`, `reversed_time`, `pseudo_pair`, `duration_matched_null`, and `random_alignment`.</td></tr>
+          <tr><td>Uncertainty/estimability</td><td>1</td><td><span class="tag fail">0</span></td><td>`pseudo_pair`, `duration_matched_null`, and `estimability_matched_controls`.</td></tr>
+        </tbody>
+      </table>
+      <p>The control gate used eight families: `time_shuffle`, `reversed_time`, `pseudo_pair`, `duration_matched_null`, `random_alignment`, `source_balancing`, `uncertainty_only_clustering`, and `estimability_matched_controls`. A candidate was disqualified if any relevant control failed.</p>
+    </section>
+
+    <section id="data-split">
+      <h2>Data And Protected Split</h2>
+      <p>Gate 008-0 closed the Phase-1 blocker F001 by materializing a discovery-only extract and a physically separate protected confirmation hold-out. Discovery workers were instructed to consume only the discovery extract plus outcome-free split metadata.</p>
+      <table>
+        <thead><tr><th>Item</th><th>Value</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td>Total complete cases</td><td>38,228</td><td><a href="../02_process/02_split/split_manifest.json">split manifest</a></td></tr>
+          <tr><td>Discovery split</td><td>22,937 cases; 2,218,410 frames</td><td><a href="../02_process/02_split/balance_report.md">balance report</a></td></tr>
+          <tr><td>Confirmation split</td><td>15,291 cases; 1,477,571 frames</td><td>metadata only; hold-out not opened</td></tr>
+          <tr><td>Seed and scheme</td><td>Seed 8; complete-case stratified split by `dataset` x `path_category` with duration-balanced confirmation sampling</td><td><a href="../02_process/02_split/split_manifest.json">split manifest</a></td></tr>
+          <tr><td>Leakage audit</td><td>ALL_PASS; case intersection 0; confirmation cases in discovery 0</td><td><a href="../02_process/02_split/leakage_audit.md">leakage audit</a></td></tr>
+          <tr><td>Primary hash</td><td><code>a60404fb1cad14a2eb49a9a5e6d7dee6a4038234d18e1567733c023e42ab2df6</code></td><td><a href="../02_process/00_meta/input_manifest.csv">input manifest</a></td></tr>
+          <tr><td>Discovery extract hash</td><td><code>84033e05d8e28896b3e0672c058be65bfdf292ef87305dfbc406b6567e7ff7d5</code></td><td><a href="../02_process/02_split/split_manifest.json">split manifest</a></td></tr>
+          <tr><td>Atlas substrate hash</td><td><code>c229798295f974da0a704cf1b6fcfe85b05390b7514a46f9497b4724cfa74765</code></td><td><a href="../02_process/03_atlas/atlas_report.md">atlas report</a></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="atlas">
+      <h2>Temporal Atlas And Data Health</h2>
+      <figure>
+        <img src="../01_results/figures/publication/fig1_temporal_atlas.png" alt="Figure 1 temporal atlas of IPV and uncertainty over normalized progress">
+        <figcaption>
+          <strong>Fig 1. Temporal atlas.</strong> Descriptive IPV mean and estimator-error trajectories on the discovery split. These curves are exploratory; confidence bands are descriptive across discovery cases.
+          <span class="fig-links"><a href="../01_results/figures/publication/fig1_temporal_atlas.svg">SVG</a><a href="../01_results/figures/publication/fig1_temporal_atlas.pdf">PDF</a><a href="../01_results/atlases/source_curve_by_overall.csv">overall source CSV</a></span>
+        </figcaption>
+      </figure>
+      <div class="two-col">
+        <div>
+          <h3>Health Flags</h3>
+          <ul>
+            <li>Discovery rows: 2,218,410; cases: 22,937.</li>
+            <li>Source imbalance: `waymo_train` contributes 13,931 cases, 60.7% of discovery.</li>
+            <li>Geometry imbalance: `MP` contributes 20,719 cases, 90.3% of discovery.</li>
+            <li>PET and intensity are case-level constants in the normalized substrate; they are not valid time-varying risk signals here.</li>
+            <li>Intensity has an extreme maximum of about 5.7e9 (`5,695,005,657`), so risk interpretation must avoid raw intensity as a dynamic curve.</li>
+            <li>IPV observed native range is bounded at `-1.178097245` to `1.178097245`, equivalent to `+/-3pi/8` rad.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Descriptive Observations</h3>
+          <ul>
+            <li>Overall role-resolved IPV end-minus-start changes are small: ego 0.05422, counterpart 0.04482 in stored units.</li>
+            <li>Ego uncertainty/error is highest near tau 0 in the descriptive atlas.</li>
+            <li>These shapes become candidate-generating context only; they are not confirmatory because Phase-7 controls eliminate the candidate set.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="alignment">
+      <h2>Temporal Alignments</h2>
+      <figure>
+        <img src="../01_results/figures/publication/fig3_alignment_concentration.png" alt="Figure 3 alignment concentration ranking">
+        <figcaption>
+          <strong>Fig 3. Alignment concentration.</strong> The top concentrator, `estimability_onset_proxy`, is circular because it uses the uncertainty signal being plotted. Independent references sit near the baseline range; `offline_oracle_phase` is fenced as discovery-only/no-deploy.
+          <span class="fig-links"><a href="../01_results/figures/publication/fig3_alignment_concentration.svg">SVG</a><a href="../01_results/figures/publication/fig3_alignment_concentration.pdf">PDF</a><a href="../01_results/tables/alignment_concentration.csv">source table</a></span>
+        </figcaption>
+      </figure>
+      <table>
+        <thead><tr><th>Alignment</th><th>Combined FVE mean shape</th><th>Risk label</th><th>Report interpretation</th></tr></thead>
+        <tbody>
+          <tr><td>`estimability_onset_proxy`</td><td>0.12227</td><td>circular, uncertainty signal proxy</td><td>Top concentration but not confirmation evidence.</td></tr>
+          <tr><td>`baseline_tau`</td><td>0.084996</td><td>independent temporal index</td><td>Closest independent baseline; fails source balancing and uncertainty-only controls.</td></tr>
+          <tr><td>`conflict_point_progress`</td><td>0.082198</td><td>independent full-window kinematic geometry</td><td>Close to baseline; also fails controls.</td></tr>
+          <tr><td>`offline_oracle_phase`</td><td>0.0006569</td><td>offline IPV oracle</td><td>Fenced as discovery-only and not deployable because it uses full-window IPV/future values.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="role-phase">
+      <h2>Role And Phase Dynamics</h2>
+      <p>Role/phase findings are mostly null, gradual, or modest, and the three non-null candidates that entered Phase 7 failed controls.</p>
+      <table>
+        <thead><tr><th>Question</th><th>Observed discovery summary</th><th>Interpretation</th></tr></thead>
+        <tbody>
+          <tr><td>Risk-IPV co-movement</td><td>Median corr(delta risk, delta |IPV|) = -0.000856847, 95% CI [-0.00401439, 0.00215401]</td><td>Null.</td></tr>
+          <tr><td>Ego/counterpart lead-lag</td><td>Median best lag = 0; median absolute best lag = 0.1 tau</td><td>Null/descriptive only; interpolation can induce apparent lags.</td></tr>
+          <tr><td>Asymmetry</td><td>Asymmetric response rate = 0.486842</td><td>Near chance; fails multiple controls.</td></tr>
+          <tr><td>Role formation</td><td>Priority stable by tau &lt;= 0.20 = 0.0659673; time-to-stabilization median 0.8 tau</td><td>Gradual, not early stable assignment.</td></tr>
+          <tr><td>Hysteresis</td><td>Median normalized loop area = 0.144329</td><td>Modest and control-rejected.</td></tr>
+          <tr><td>Post-resolution ambiguity</td><td>Post ambiguity rate = 0.652338</td><td>Common descriptively, but control-rejected.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="motifs">
+      <h2>Motifs And Null Attempts</h2>
+      <p>Phase 6 attempted six motif methods and retained failures, fallbacks, and qualified rows instead of hiding them. The catalogue has 18 exploratory motif rows; 16/18 passed within-source screens before the stricter Phase-7 control gate eliminated all 18.</p>
+      <ul>
+        <li>PCA/fPCA top variance explained: PC1 = 20.7% (about 21%), PC2 = 10.9%, PC3 = 6.4%. No dominant single shape controls the trajectory space.</li>
+        <li>Methods attempted: shape k-means, joint sequence k-means, change-point bins, observed-state HMM-style surrogate, DTW k-medoids, and PCA/fPCA axes.</li>
+        <li>The HMM result is explicitly an observed-state Markov/HMM-style surrogate because full latent HMM fitting was unavailable without `hmmlearn`/`scipy`.</li>
+        <li>Red-team reseeding found only moderate label stability: selected shape k=6 mean ARI 0.492; joint sequence k=3 mean ARI 0.691.</li>
+        <li>Negative attempts retained in `tried.md`: missing dependency fallbacks, source/path artifact caveats, change-point sensitivity, DTW subsample limits, and candidate rows failing within-source screens.</li>
+      </ul>
+    </section>
+
+    <section id="freeze">
+      <h2>Frozen Confirmation Protocol</h2>
+      <p>The Phase-9/10 freeze is a negative-primary protocol, not a positive candidate freeze. `confirmation_protocol.yaml` has `freeze_status: FROZEN_RQ008A` after independent review ratification.</p>
+      <table>
+        <thead><tr><th>Frozen candidate</th><th>Type</th><th>Purpose</th><th>Origin</th></tr></thead>
+        <tbody>
+          <tr><td>`NULL-PRIMARY-NO_SURVIVORS`</td><td>null primary</td><td>Held-out confirmation should again produce zero fixed catalogue rows surviving all required controls and Holm correction.</td><td>Phase-7 controls: 0/24 survivors.</td></tr>
+          <tr><td>`FALS-MOTIF-008-JOINT_UPWARD`</td><td>falsification</td><td>Fixed joint-sequence motif can falsify the null only if every required control, source check, material threshold, and Holm rule passes.</td><td>Best near-miss motif, killed by `reversed_time`.</td></tr>
+          <tr><td>`FALS-UNCERTAINTY-EARLY_DECLINE`</td><td>falsification</td><td>Separate uncertainty endpoint; cannot confirm IPV-mean dynamics.</td><td>Only explicit uncertainty candidate; killed by matched controls.</td></tr>
+        </tbody>
+      </table>
+      <div class="callout green">
+        <p><strong>Independent review:</strong> 8/8 checklist items passed and the decision was `RATIFY`, yielding `FROZEN_RQ008A`. The reviewer found no confirmation read, no oracle leakage into frozen candidates, and no selective positive reporting.</p>
+      </div>
+      <p>Wave B remains unauthorized. Opening `confirmation_PROTECTED` requires explicit user authorization after fixed-code review and the amendment below.</p>
+    </section>
+
+    <section id="red-team">
+      <h2>Red Team And Required Amendment</h2>
+      <p>Red-team status was <span class="tag pass">PASS_WITH_FIXES</span> with 10 attacks addressed, 5 findings, and 0 blocking findings. The most important nonblocking issue is Attack 10.</p>
+      <div class="callout amber">
+        <p><strong>Attack 10 finding:</strong> the reversed-time gate is direction-insensitive when paired with the separation SNR motif statistic. `MOTIF-008` observed SNR and reversed-time SNR were identical in the largest-source retest, so the 0/24 negative result is best scoped to <strong>directional</strong> temporal structure.</p>
+      </div>
+      <p>The required pre-Wave-B amendment is recorded in <a href="../02_process/09_hypothesis_freeze/pre_wave_b_amendments.md">`02_process/09_hypothesis_freeze/pre_wave_b_amendments.md`</a>. Before any confirmation opening, either add/pre-ratify a direction-sensitive motif statistic or explicitly keep the primary null scoped to directional structure that must exceed reverse-invariant shape.</p>
+    </section>
+
+    <section id="replication">
+      <h2>Independent Replication</h2>
+      <figure>
+        <img src="../01_results/figures/publication/fig4_replication_agreement.png" alt="Figure 4 replication agreement showing four of five checks agree and one change-point divergence">
+        <figcaption>
+          <strong>Fig 4. Replication agreement.</strong> Independent replication agreed on 4/5 checks. The discovery/confirmation split reproduced exactly; change-point bins diverged and are treated as implementation-sensitive.
+          <span class="fig-links"><a href="../01_results/figures/publication/fig4_replication_agreement.svg">SVG</a><a href="../01_results/figures/publication/fig4_replication_agreement.pdf">PDF</a><a href="../01_results/tables/replication_compare.csv">source table</a></span>
+        </figcaption>
+      </figure>
+      <table>
+        <thead><tr><th>Check</th><th>Verdict</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td>Atlas core curves overall/per-source</td><td><span class="tag pass">AGREE</span></td><td>Max mean/CI/count differences near numerical zero.</td></tr>
+          <tr><td>Priority stable by tau &lt;= 0.20</td><td><span class="tag pass">AGREE</span></td><td>Original 0.0659673; replicated 0.065967283.</td></tr>
+          <tr><td>Change-point bins</td><td><span class="tag fail">DIVERGENCE</span></td><td>Counts `2662|3261|5246|11768` vs `2710|2710|5624|11893`; relative divergence about 2.4%.</td></tr>
+          <tr><td>MOTIF-010 reversed-time negative control</td><td><span class="tag pass">AGREE</span></td><td>Both routes retain FAIL/sign agreement.</td></tr>
+          <tr><td>Discovery/confirmation split</td><td><span class="tag pass">AGREE</span></td><td>Discovery 22,937, confirmation 15,291, mismatches 0, leakage 0.</td></tr>
+        </tbody>
+      </table>
+      <p>The change-point divergence is a limitation, not a conclusion change. Those candidates were already rejected by the Phase-7 controls and are not used to inflate the report.</p>
+    </section>
+
+    <section id="limitations">
+      <h2>Limitations</h2>
+      <ul>
+        <li>Strong source and geometry imbalance: `waymo_train` is 60.7% of discovery cases and `MP` geometry is 90.3%.</li>
+        <li>Single sigma setting: this package uses sigma 0.1 outputs and does not establish sigma robustness.</li>
+        <li>Proxy estimability: no frozen RQ007 estimability contract was available; estimability fields are proxy/error-based.</li>
+        <li>Change-point implementation sensitivity: independent replication found about 2.4% divergence in change-point bins.</li>
+        <li>Reversed-time/SNR scoping: the current motif SNR can be reverse-invariant; the null should be scoped to directional temporal structure unless amended before Wave B.</li>
+        <li>Exploratory status: all figures and findings are discovery-side. Confirmation hold-out was not opened.</li>
+      </ul>
+    </section>
+
+    <section id="reproducibility">
+      <h2>Reproducibility</h2>
+      <h3>Input Hashes</h3>
+      <table>
+        <thead><tr><th>Input</th><th>SHA-256</th></tr></thead>
+        <tbody>
+          <tr><td>Primary data</td><td><code>a60404fb1cad14a2eb49a9a5e6d7dee6a4038234d18e1567733c023e42ab2df6</code></td></tr>
+          <tr><td>Discovery extract</td><td><code>84033e05d8e28896b3e0672c058be65bfdf292ef87305dfbc406b6567e7ff7d5</code></td></tr>
+          <tr><td>Atlas substrate</td><td><code>c229798295f974da0a704cf1b6fcfe85b05390b7514a46f9497b4724cfa74765</code></td></tr>
+          <tr><td>Controls survival summary</td><td><code>3c58e7eb14a16c207241cfd25dbe228a3182fa50828b1c0c2c9ccbf9a9b01324</code></td></tr>
+          <tr><td>Controls full results</td><td><code>28eb19e9ceaf4e272ff3225be4f3aa575cc425c629655805cf0900d4c90056bc</code></td></tr>
+        </tbody>
+      </table>
+      <h3>Rebuild Commands And Scripts</h3>
+      <table>
+        <thead><tr><th>Phase</th><th>Command or artifact</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>0 bootstrap</td><td><code>02_process/00_meta/run_manifest.json</code></td><td>Manifest and hashes; no analysis run.</td></tr>
+          <tr><td>1 plan review</td><td><code>02_process/01_plan_review/plan_review.md</code></td><td>Independent review artifact.</td></tr>
+          <tr><td>2 split</td><td><code>python 02_process/02_split/run_gate0080_split.py</code></td><td>Creates discovery extract and protected holdout; do not open holdout in Wave A.</td></tr>
+          <tr><td>3 atlas</td><td><code>python 02_process/03_atlas/build_temporal_atlas.py</code></td><td>Uses discovery extract only.</td></tr>
+          <tr><td>4 alignment</td><td><code>python 02_process/04_alignment/run_alignment_discovery.py</code></td><td>Seven alignment references; circular references fenced.</td></tr>
+          <tr><td>5 role/phase</td><td><code>python 02_process/05_role/run_role_dynamics.py</code></td><td>Kinematic risk proxy and role-resolved metrics.</td></tr>
+          <tr><td>6 motifs</td><td><code>python 02_process/06_motifs/run_motif_discovery.py</code></td><td>NumPy/stdlib fallbacks; HMM-style surrogate labeled.</td></tr>
+          <tr><td>8 controls</td><td><code>python 02_process/08_controls/run_controls.py</code></td><td>Eight control families; yields 0/24 survivors.</td></tr>
+          <tr><td>9 freeze</td><td><code>02_process/09_hypothesis_freeze/confirmation_protocol.yaml</code></td><td>Frozen negative-primary protocol; no confirmation run.</td></tr>
+          <tr><td>10 review</td><td><code>02_process/10_review/ratification_decision.md</code></td><td>8/8 PASS, RATIFY.</td></tr>
+          <tr><td>11 red team</td><td><code>python 02_process/11_red_team/run_red_team_checks.py</code></td><td>PASS_WITH_FIXES, 0 blocking findings.</td></tr>
+          <tr><td>12 replication</td><td><code>python 02_process/12_replication/run_independent_replication.py</code></td><td>4/5 agree; split exact; change-point limitation.</td></tr>
+          <tr><td>Publication figures</td><td><code>python 01_results/figures/render_figures_nature_skill.py</code></td><td>Figures were already rendered via the Nature figure skill and are embedded here without regeneration.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="artifact-index">
+      <h2>Artifact Index</h2>
+      <p>All links below are relative and offline. The confirmation hold-out is intentionally not linked for opening; only metadata and guardrail artifacts are linked.</p>
+      <table class="artifact-table">
+        <thead><tr><th>Category</th><th>Artifact</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>Entry</td><td><a href="../00_entry/index.html">00_entry/index.html</a></td><td>Concise landing page.</td></tr>
+          <tr><td>Report</td><td><a href="index.html">90_report/index.html</a></td><td>This full offline report.</td></tr>
+          <tr><td>Run meta</td><td><a href="../02_process/00_meta/run_manifest.json">02_process/00_meta/run_manifest.json</a></td><td>RUN_ID, Git head, plan hash, primary data hash.</td></tr>
+          <tr><td>Run meta</td><td><a href="../02_process/00_meta/input_manifest.csv">02_process/00_meta/input_manifest.csv</a></td><td>Primary input and plan hashes.</td></tr>
+          <tr><td>Run meta</td><td><a href="../02_process/00_meta/tried.md">02_process/00_meta/tried.md</a></td><td>Attempt log including atlas and alignment tries.</td></tr>
+          <tr><td>Split</td><td><a href="../02_process/02_split/split_manifest.json">02_process/02_split/split_manifest.json</a></td><td>Gate 008-0 split manifest and hashes.</td></tr>
+          <tr><td>Split</td><td><a href="../02_process/02_split/balance_report.md">02_process/02_split/balance_report.md</a></td><td>Discovery/confirmation balance.</td></tr>
+          <tr><td>Split</td><td><a href="../02_process/02_split/leakage_audit.md">02_process/02_split/leakage_audit.md</a></td><td>Zero-leakage audit.</td></tr>
+          <tr><td>Split</td><td><a href="../02_process/02_split/access_control.md">02_process/02_split/access_control.md</a></td><td>F001 closure and protected holdout guardrail.</td></tr>
+          <tr><td>Atlas</td><td><a href="../02_process/03_atlas/atlas_report.md">02_process/03_atlas/atlas_report.md</a></td><td>Temporal atlas methods and observations.</td></tr>
+          <tr><td>Atlas</td><td><a href="../02_process/03_atlas/data_health.md">02_process/03_atlas/data_health.md</a></td><td>Data health and missingness summary.</td></tr>
+          <tr><td>Atlas</td><td><a href="../02_process/03_atlas/value_ranges.csv">02_process/03_atlas/value_ranges.csv</a></td><td>IPV, uncertainty, PET, and intensity ranges.</td></tr>
+          <tr><td>Atlas</td><td><a href="../01_results/atlases/source_curve_by_overall.csv">01_results/atlases/source_curve_by_overall.csv</a></td><td>Figure 1 overall source data.</td></tr>
+          <tr><td>Atlas</td><td><a href="../01_results/atlases/source_curve_by_dataset.csv">01_results/atlases/source_curve_by_dataset.csv</a></td><td>Figure 1 per-source data.</td></tr>
+          <tr><td>Alignment</td><td><a href="../02_process/04_alignment/alignment_report.md">02_process/04_alignment/alignment_report.md</a></td><td>Seven alignment references and guardrails.</td></tr>
+          <tr><td>Alignment</td><td><a href="../01_results/tables/alignment_concentration.csv">01_results/tables/alignment_concentration.csv</a></td><td>Figure 3 source data.</td></tr>
+          <tr><td>Alignment</td><td><a href="../01_results/tables/alignment_circularity_risk.csv">01_results/tables/alignment_circularity_risk.csv</a></td><td>Circularity and deployability labels.</td></tr>
+          <tr><td>Role</td><td><a href="../02_process/05_role/role_dynamics_report.md">02_process/05_role/role_dynamics_report.md</a></td><td>Role/phase dynamics report.</td></tr>
+          <tr><td>Role</td><td><a href="../01_results/tables/role_dynamics_topline.csv">01_results/tables/role_dynamics_topline.csv</a></td><td>Six-line topline role summary.</td></tr>
+          <tr><td>Motifs</td><td><a href="../02_process/06_motifs/motifs_report.md">02_process/06_motifs/motifs_report.md</a></td><td>Six-method motif report.</td></tr>
+          <tr><td>Motifs</td><td><a href="../02_process/06_motifs/motif_catalogue.csv">02_process/06_motifs/motif_catalogue.csv</a></td><td>18-row exploratory motif catalogue.</td></tr>
+          <tr><td>Motifs</td><td><a href="../02_process/06_motifs/tried.md">02_process/06_motifs/tried.md</a></td><td>Motif failures, fallbacks, and null attempts.</td></tr>
+          <tr><td>Controls</td><td><a href="../02_process/08_controls/controls_report.md">02_process/08_controls/controls_report.md</a></td><td>Phase-7 control report.</td></tr>
+          <tr><td>Controls</td><td><a href="../01_results/tables/survival_summary.csv">01_results/tables/survival_summary.csv</a></td><td>0/24 candidate survival summary.</td></tr>
+          <tr><td>Controls</td><td><a href="../01_results/tables/control_results.csv">01_results/tables/control_results.csv</a></td><td>192 candidate-control rows.</td></tr>
+          <tr><td>Freeze</td><td><a href="../02_process/09_hypothesis_freeze/freeze_synthesis.md">02_process/09_hypothesis_freeze/freeze_synthesis.md</a></td><td>Freeze rationale.</td></tr>
+          <tr><td>Freeze</td><td><a href="../02_process/09_hypothesis_freeze/confirmation_protocol.yaml">02_process/09_hypothesis_freeze/confirmation_protocol.yaml</a></td><td>Frozen RQ008A protocol.</td></tr>
+          <tr><td>Freeze</td><td><a href="../02_process/09_hypothesis_freeze/freeze_register.csv">02_process/09_hypothesis_freeze/freeze_register.csv</a></td><td>Three frozen candidates.</td></tr>
+          <tr><td>Freeze</td><td><a href="../02_process/09_hypothesis_freeze/pre_wave_b_amendments.md">02_process/09_hypothesis_freeze/pre_wave_b_amendments.md</a></td><td>Required Attack-10 and replication amendments before Wave B.</td></tr>
+          <tr><td>Review</td><td><a href="../02_process/10_review/discovery_review.md">02_process/10_review/discovery_review.md</a></td><td>Independent 8/8 PASS review.</td></tr>
+          <tr><td>Review</td><td><a href="../02_process/10_review/ratification_decision.md">02_process/10_review/ratification_decision.md</a></td><td>RATIFY decision and protocol hashes.</td></tr>
+          <tr><td>Red team</td><td><a href="../02_process/11_red_team/red_team_report.md">02_process/11_red_team/red_team_report.md</a></td><td>PASS_WITH_FIXES report.</td></tr>
+          <tr><td>Red team</td><td><a href="../02_process/11_red_team/red_team_findings.csv">02_process/11_red_team/red_team_findings.csv</a></td><td>Nonblocking findings, including Attack 10.</td></tr>
+          <tr><td>Red team</td><td><a href="../02_process/11_red_team/false_negative_risk.csv">02_process/11_red_team/false_negative_risk.csv</a></td><td>Near-miss false-negative risk table.</td></tr>
+          <tr><td>Replication</td><td><a href="../02_process/12_replication/replication_report.md">02_process/12_replication/replication_report.md</a></td><td>Independent replication report.</td></tr>
+          <tr><td>Replication</td><td><a href="../01_results/tables/replication_compare.csv">01_results/tables/replication_compare.csv</a></td><td>Figure 4 source data.</td></tr>
+          <tr><td>Figures</td><td><a href="../01_results/figures/FIGURE_PROVENANCE.md">01_results/figures/FIGURE_PROVENANCE.md</a></td><td>Nature figure skill provenance.</td></tr>
+          <tr><td>Figures</td><td><a href="../01_results/figures/figure_manifest.csv">01_results/figures/figure_manifest.csv</a></td><td>Figure source-data hashes.</td></tr>
+          <tr><td>Figure 1</td><td><a href="../01_results/figures/publication/fig1_temporal_atlas.png">PNG</a> | <a href="../01_results/figures/publication/fig1_temporal_atlas.svg">SVG</a> | <a href="../01_results/figures/publication/fig1_temporal_atlas.pdf">PDF</a></td><td>Temporal atlas publication figure.</td></tr>
+          <tr><td>Figure 2</td><td><a href="../01_results/figures/publication/fig2_control_survival_matrix.png">PNG</a> | <a href="../01_results/figures/publication/fig2_control_survival_matrix.svg">SVG</a> | <a href="../01_results/figures/publication/fig2_control_survival_matrix.pdf">PDF</a></td><td>Control survival matrix.</td></tr>
+          <tr><td>Figure 3</td><td><a href="../01_results/figures/publication/fig3_alignment_concentration.png">PNG</a> | <a href="../01_results/figures/publication/fig3_alignment_concentration.svg">SVG</a> | <a href="../01_results/figures/publication/fig3_alignment_concentration.pdf">PDF</a></td><td>Alignment concentration.</td></tr>
+          <tr><td>Figure 4</td><td><a href="../01_results/figures/publication/fig4_replication_agreement.png">PNG</a> | <a href="../01_results/figures/publication/fig4_replication_agreement.svg">SVG</a> | <a href="../01_results/figures/publication/fig4_replication_agreement.pdf">PDF</a></td><td>Replication agreement.</td></tr>
+          <tr><td>Status</td><td><a href="../execution_status.json">execution_status.json</a></td><td>Run-level status updated by this report assembly.</td></tr>
+          <tr><td>Traceability</td><td><a href="../TRACEABILITY.md">TRACEABILITY.md</a></td><td>Run-level artifact traceability.</td></tr>
+        </tbody>
+      </table>
+      <p class="small">All report links are relative. No external CDN, font, JavaScript, or stylesheet is required.</p>
+    </section>
+  </main>
+</body>
+</html>

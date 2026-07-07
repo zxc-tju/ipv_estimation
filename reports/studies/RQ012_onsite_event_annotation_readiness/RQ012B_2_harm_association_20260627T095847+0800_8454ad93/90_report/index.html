@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ012B full behavioural battery deviation-to-harm report</title>
+  <style>
+:root {
+  --ink: #1f2933;
+  --muted: #52606d;
+  --line: #d9e2ec;
+  --panel: #f7f9fb;
+  --panel-2: #eef4f8;
+  --accent: #7b2d26;
+  --accent-bg: #fff2ef;
+  --link: #0b5cad;
+  --ok: #176b4d;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  line-height: 1.6;
+}
+main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 20px 58px;
+}
+header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 22px;
+  margin-bottom: 24px;
+}
+h1, h2, h3 { line-height: 1.22; margin: 0 0 12px; letter-spacing: 0; }
+h1 { font-size: clamp(2rem, 4vw, 3.1rem); max-width: 1020px; }
+h2 { font-size: 1.45rem; margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1.08rem; margin-top: 22px; }
+p { margin: 0 0 12px; }
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.kicker {
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .78rem;
+  margin-bottom: 8px;
+}
+.lead { font-size: 1.08rem; max-width: 950px; }
+.banner {
+  margin: 18px 0 12px;
+  padding: 16px 18px;
+  border: 2px solid var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.banner .translation {
+  display: block;
+  margin-top: 7px;
+  color: #5f241f;
+  font-weight: 700;
+}
+.toc {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 16px 18px;
+  margin: 24px 0;
+}
+.toc strong { display: block; margin-bottom: 8px; }
+.toc ol { margin: 0; padding-left: 22px; }
+.summary-grid, .journey, .validation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0 18px;
+}
+.summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.validation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.tile {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 14px;
+  min-height: 112px;
+}
+.tile b { display: block; margin-bottom: 6px; color: #243b53; }
+.note { color: var(--muted); font-size: .96rem; }
+.callout {
+  border-left: 4px solid var(--accent);
+  background: var(--panel);
+  padding: 14px 16px;
+  margin: 16px 0;
+}
+figure {
+  margin: 18px 0 30px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+figure.lead-figure { border-width: 2px; border-color: #b96a60; }
+figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+figcaption {
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+  padding: 12px 14px;
+  font-size: .95rem;
+  color: #334e68;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 22px;
+  font-size: .93rem;
+}
+th, td {
+  border: 1px solid var(--line);
+  padding: 9px 10px;
+  vertical-align: top;
+  text-align: left;
+}
+th { background: var(--panel-2); font-weight: 700; }
+.status-ok { color: var(--ok); font-weight: 700; }
+.status-null { color: var(--accent); font-weight: 800; }
+.nowrap { white-space: nowrap; }
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .92em;
+  background: #f1f5f8;
+  padding: 1px 4px;
+}
+footer {
+  margin-top: 34px;
+  padding-top: 18px;
+  border-top: 2px solid var(--line);
+  color: var(--muted);
+  font-size: .93rem;
+}
+@media (max-width: 900px) {
+  main { padding: 22px 14px 42px; }
+  .summary-grid, .journey, .validation-grid { grid-template-columns: 1fr; }
+  table { font-size: .86rem; }
+  th, td { padding: 7px; }
+}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="kicker">RQ012B Stage 3-5 · Full behavioural battery · Offline report · English</div>
+    <h1>Full behavioural battery bounds the deviation-to-harm claim on OnSite</h1>
+    <div class="banner">RQ012B deviation→harm = BOUNDED/NULL across the full behavioural interaction-failure battery — weak, consistent direction (more un-human → worse) but no robustly IPV-specific channel; too-passive worse than too-aggressive; passivity→deadlock is an unconfirmed hypothesis.</div>
+    <p class="lead">
+      RQ012B tests whether an OnSite autonomous algorithm's deviation from the frozen RQ009 M3 human-IPV envelope predicts realised interaction-failure harm. The definitive result is bounded/null across the expanded behavioural battery: weak worse-direction associations appear, but no channel is robustly IPV-specific, BH-reliable, and adequately powered.
+    </p>
+  </header>
+
+  <nav class="toc" aria-label="Table of contents">
+    <strong>Contents</strong>
+    <ol>
+      <li><a href="#framing">Framing and banner</a></li>
+      <li><a href="#plain-result">Plain-language full-battery result</a></li>
+      <li><a href="#matrix">Deviation-consequence matrix</a></li>
+      <li><a href="#journey">Validated journey to the test</a></li>
+      <li><a href="#formal">Formal verdict and precise wording</a></li>
+      <li><a href="#safety-only">Safety-only first pass</a></li>
+      <li><a href="#limits">Honesty notes and limits</a></li>
+      <li><a href="#validation">Validation chain</a></li>
+      <li><a href="#provenance">Provenance</a></li>
+    </ol>
+  </nav>
+
+  <section id="framing">
+    <h2>Framing and Banner</h2>
+    <p>
+      The source of truth is the PI-authored synthesis at
+      <a href="../02_process/09_report/CONCLUSIONS.md">02_process/09_report/CONCLUSIONS.md</a>.
+      The analysis unit is the AV-perspective clean_285 replay unit with gate-passing M3 anchors; the analysis set is <b>245 units across 19 teams</b>. The outcome side includes automatic behavioural interaction-failure events, behavioural groupings, and official subscores. This is an associational consequence test, not a causal or normative claim.
+    </p>
+    <div class="summary-grid" aria-label="Headline status">
+      <div class="tile"><b>Overall</b><span class="status-null">BOUNDED/NULL</span>; 0 supported endpoints across the full family.</div>
+      <div class="tile"><b>Direction</b>40/40 powered cells and 59/64 full-family cells point toward worse outcomes as deviation increases.</div>
+      <div class="tile"><b>Specificity</b>No robust IPV-specific channel; near-miss is context-explained, and E16 is underpowered at the BH edge.</div>
+    </div>
+  </section>
+
+  <section id="plain-result">
+    <h2>Plain-Language Result</h2>
+    <p>
+      In intuitive terms, more "un-human" driving weakly links to more interaction failures and worse official score deficits. The signs are unusually consistent, but the magnitudes are small and the formal controls do not support a robust IPV-specific effect. The clearest displayed patterns are near-miss/contact, deadlock/hesitation, and efficiency; hard-braking, jerk, comfort, and coordination are close to null. Too-passive deviation is usually worse than too-aggressive deviation, with contact as the main displayed exception.
+    </p>
+    <figure class="lead-figure">
+      <img src="assets/fig4_deviation_vs_failures_intuitive.png" alt="Figure 4 intuitive deviation versus interaction failures">
+      <figcaption>
+        <b>Fig. 4 | Lead consequence view.</b> Exposure-controlled partial Spearman correlations connect deviation from the human IPV envelope to event rates and official score deficits. The figure is intuitive, not a support declaration: event outcomes use count per gate-passing anchor; official outcomes use <code>100 - score</code>; all point estimates in the displayed set are worse-direction but weak.
+      </figcaption>
+    </figure>
+    <table>
+      <thead>
+        <tr><th>Displayed consequence</th><th>Any out-of-envelope partial r</th><th>Too-passive r</th><th>Too-aggressive r</th><th>Plain reading</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Contact (E15)</td><td>0.169</td><td>0.057</td><td>0.149</td><td>Main exception: aggressive tail is larger here.</td></tr>
+        <tr><td>Stop-go cycles (E06)</td><td>0.160</td><td>0.130</td><td>0.105</td><td>Weak worse-direction association.</td></tr>
+        <tr><td>Official efficiency deficit</td><td>0.158</td><td>0.132</td><td>0.077</td><td>Efficiency loss is one of the clearer intuitive patterns.</td></tr>
+        <tr><td>Deadlock/no progress (E16)</td><td>0.135</td><td>0.091</td><td>0.081</td><td>Coherent passivity signal, but underpowered.</td></tr>
+        <tr><td>Hard braking (E02)</td><td>0.121</td><td>0.136</td><td>0.091</td><td>Weak and not formally supported.</td></tr>
+        <tr><td>Near-miss (E09)</td><td>0.120</td><td>0.167</td><td>0.005</td><td>Direction is mostly passive, but context explains the formal near-miss signal.</td></tr>
+        <tr><td>Official safety deficit</td><td>0.120</td><td>0.160</td><td>0.027</td><td>Weak safety-deficit direction; safety-only controls fail.</td></tr>
+        <tr><td>Jerk (E03)</td><td>0.083</td><td>0.101</td><td>0.076</td><td>Close to null.</td></tr>
+        <tr><td>Official comfort deficit</td><td>0.057</td><td>0.068</td><td>0.062</td><td>Approximately null.</td></tr>
+        <tr><td>Official coordination deficit</td><td>0.034</td><td>0.057</td><td>0.022</td><td>Approximately null.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="matrix">
+    <h2>Deviation-Consequence Matrix</h2>
+    <p>
+      The compact matrix below is drawn from
+      <a href="../../../../../data/derived/onsite_competition/RQ012B_event_harm/stage4b/full_battery/deviation_consequence_matrix.csv">deviation_consequence_matrix.csv</a>
+      and the full-battery endpoint summary. It keeps the key distinction between a directional signal and a supported, IPV-specific channel.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Consequence family</th><th>Matrix readout</th><th>Control/BH result</th><th>Report verdict</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Full family</td><td>64 predictor×endpoint rows; 59/64 worse-direction. The 5 exceptions are confined to ultra-sparse E18/E19 rows.</td><td>Minimum BH q = 0.05119; supported rows = 0.</td><td><span class="status-null">BOUNDED/NULL</span></td></tr>
+        <tr><td>Near-miss/contact</td><td>NEAR-MISS/CONTACT max-exceedance IRR 1.2239 [1.0314, 1.3450], p=0.0018; E09 max-exceedance IRR 1.2329 [0.9981, 1.3546], p=0.0018.</td><td>Both sit at q=0.05119; near-miss/contact fails M2, and E09 fails placebo plus M2.</td><td>Context-explained, not IPV-specific.</td></tr>
+        <tr><td>Deadlock/no progress</td><td>E16 too-passive lower-tail IRR 1.4967 [1.0628, 1.9741], p=0.002599.</td><td>Beats label, placebo, M2, and exposure-only, but n=52 units with E16&gt;0 and q=0.05119.</td><td>Bounded hint; passivity→deadlock remains unconfirmed.</td></tr>
+        <tr><td>Abrupt/discomfort</td><td>E02 hard-deceleration any-outside IRR 1.0888 [1.0098, 1.2084], p=0.06539; ABRUPT max-exceedance IRR 1.0890 [1.0289, 1.1807], p=0.07658.</td><td>Fails label/placebo checks or BH reliability; shared kinematics caveat applies.</td><td>NULL for abrupt-braking/jerk/comfort.</td></tr>
+        <tr><td>Official subscores</td><td>Efficiency has the clearest intuitive displayed r=0.158; official_efficiency upper-tail dR2 0.0122 [0.000667, 0.0332], p=0.09118.</td><td>No official comfort, efficiency, coordination, or safety row clears BH/control requirements.</td><td>Weak direction only.</td></tr>
+        <tr><td>Total friction</td><td>Total-friction max-exceedance IRR 1.1173 [1.0455, 1.1990], p=0.008598.</td><td>q=0.1101 and fails M2.</td><td>Not supported.</td></tr>
+        <tr><td>Ultra-sparse events</td><td>E18 has 2 nonzero units; E19 has 14 nonzero units.</td><td>Signs are unstable and underpowered.</td><td>Noise; not interpretable as exceptions to the powered direction.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="journey">
+    <h2>Validated Journey To The Test</h2>
+    <div class="journey">
+      <div class="tile"><b>M3 parity-perfect</b>RQ009 frozen M3 scorer was reconstructed with max absolute prediction difference 0.0 and saved coverage 0.816/0.899/0.950.</div>
+      <div class="tile"><b>Pinned estimator</b>IPV estimator git <code>5edd2810</code> was fetched from Tongji HPC and byte-identical to the M3 training ruler.</div>
+      <div class="tile"><b>OnSite IPV on HPC</b>ProcessPool run on 192 cores produced 67,861 anchors for 267 units in about 42 minutes.</div>
+      <div class="tile"><b>OOD gate</b>19,044/67,861 moments were in M3 support; 245/267 units retained at least one in-support moment.</div>
+    </div>
+    <figure>
+      <img src="assets/fig1_ood_limited.png" alt="Figure 1 OOD-limited InterHub to OnSite transfer">
+      <figcaption>
+        <b>Fig. 1 | OOD-limited transfer.</b> Only 19,044/67,861 OnSite moments (28%) fall inside frozen M3 support; the other 72% abstain, mainly because k=25 distance exceeds the support threshold. The unit-level test remains possible because 245/267 units have at least one gate-passing anchor.
+      </figcaption>
+    </figure>
+    <figure>
+      <img src="assets/fig2_deviation_signal.png" alt="Figure 2 exposure-aware deviation signal">
+      <figcaption>
+        <b>Fig. 2 | A real deviation signal exists.</b> In the in-support moments, 840 anchors fall outside the human 90% band across 149/245 units: 333 too-aggressive and 507 too-passive. The earlier single-anchor screen with zero out-of-band units was a sampling artifact corrected by full-moment extraction.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="formal">
+    <h2>Formal Verdict And Precise Wording</h2>
+    <p>
+      The accepted formal wording is: deviation from the human IPV envelope does <b>not</b> robustly or IPV-specifically predict realised interaction-failure harm on OnSite across the full behavioural battery. The direction is consistent in powered cells, but the battery does not produce a supported channel.
+    </p>
+    <table>
+      <tbody>
+        <tr><th>Uniform direction</th><td>40/40 powered predictor×endpoint cells are worse-direction; the full 64-row family is 59/64 positive, with exceptions only in ultra-sparse E18/E19.</td></tr>
+        <tr><th>Magnitude</th><td>Small. Full-family max partial r ≈ 0.205 at NEAR-MISS/CONTACT; most displayed simple-rank associations are ≲0.17.</td></tr>
+        <tr><th>Near-miss</th><td>Nominal IRR≈1.22, p=0.0018, q=0.051, but it fails M2/context-only control; the signal is context-explained rather than robustly M3/IPV-specific.</td></tr>
+        <tr><th>E16 deadlock</th><td>Too-passive lower-tail IRR≈1.50 [1.06, 1.97], p=0.0026, q=0.051, survives all controls, but is underpowered with 52/243 units&gt;0 and remains a bounded hypothesis.</td></tr>
+        <tr><th>Too-passive vs too-aggressive</th><td>Too-passive is at least as large as too-aggressive in 14/16 full-battery channels and 9/10 displayed consequences; contact is the main displayed exception.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="safety-only">
+    <h2>Safety-Only First Pass As A Sub-Result</h2>
+    <p>
+      The earlier safety-only pass is retained as a narrower sub-result and is superseded as the headline by HA-4. It tested rare official_safety and collision/intervention endpoints. Official_safety had a directionally sensible raw Spearman r≈−0.12 (p≈0.06-0.08, n=245), but the pre-registered model did not support an IPV-specific association: frac_outside_90 increment 1.1595e-05, 95% CI [9.728e-08, 0.0013195], permutation p=0.7429, q=0.999; max_abs_exceedance_90 increment 0.0001303, 95% CI [6.687e-07, 0.0013279], p=0.6485, q=0.9947. Collision/intervention increments were effectively zero with p=0.3845/0.6941 and q=0.9422/0.999.
+    </p>
+    <figure>
+      <img src="assets/fig3_deviation_harm_power_limited_null.png" alt="Figure 3 safety-only power-limited null">
+      <figcaption>
+        <b>Fig. 3 | Safety-only first pass.</b> No IPV-specific, baseline-incremental association is supported for official safety or collision/intervention. This remains useful as the rare-safety sub-result, but the definitive report headline is the full behavioural battery in Fig. 4.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="limits">
+    <h2>Honesty Notes And Limits</h2>
+    <table>
+      <tbody>
+        <tr><th>Power</th><td>Rare hard harms limit the safety-only pass: 17/245 units have safety&lt;100 and 16/245 have collision/intervention; team-effective n is about 19. The red team estimated raw MDE |r|≈0.18 at n=245 but ≈0.60 under clustering.</td></tr>
+        <tr><th>OOD transfer</th><td>InterHub→OnSite transfer is heavily OOD-limited: 72% of moments abstain, so the result applies to the in-support OnSite slice.</td></tr>
+        <tr><th>Context-dominant envelope</th><td>RQ009's counterpart-IPV channel is null, so M3 behaves close to a context-dominant envelope. Failure to beat M2 means a signal cannot be claimed as M3/IPV-specific.</td></tr>
+        <tr><th>Association only</th><td>No causal, counterpart-conditioning, team-ranking, or normative driving claim follows from this battery. Automatic-event counts are consequence evidence only when interpreted with controls and limits.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="validation">
+    <h2>Validation Chain</h2>
+    <div class="validation-grid">
+      <div class="tile"><b>Pre-registration + amendment</b><a href="../02_process/04_harm_association/PRE_REGISTRATION.md">PRE_REGISTRATION.md</a> locked the first pass before outcome join. The 2026-06-28 PI amendment elevated the event/comfort/efficiency consequence battery and signed tails.</div>
+      <div class="tile"><b>Full-battery runner</b><a href="../02_process/04_harm_association/harm_association_full_battery_report.md">harm_association_full_battery_report.md</a> reports BOUNDED, 0 supported endpoints, 4 bounded endpoints, 5,000 team-block permutations, and 300 team-cluster bootstraps.</div>
+      <div class="tile"><b>Red team</b><a href="../02_process/07_red_team/harm_red_team_findings.md">POWER-LIMITED-NULL</a>: join/coding/controls OK; the null is credible as no detectable robust effect, not as proof of zero.</div>
+      <div class="tile"><b>Safety replication</b><a href="../02_process/08_replication/harm_replication_report.md">AGREE</a>: independent route reproduced the safety null in all 4 endpoint×predictor cells.</div>
+      <div class="tile"><b>Full-battery recheck</b><a href="../02_process/08_replication/full_battery_recheck_report.md">AGREE_WITH_CAVEATS</a>: orientation correct; E16 reproduced but underpowered/BH-edge; near-miss confirmed as M2/context-explained.</div>
+      <div class="tile"><b>Final review</b><a href="../02_process/10_final_review/final_review.md">PASS</a> for the assembled safety-null report. This refresh adopts the later HA-4 PI synthesis and independent full-battery recheck caveats.</div>
+    </div>
+  </section>
+
+  <footer id="provenance">
+    <h2>Provenance</h2>
+    <p>
+      RUN_ID <code>RQ012B_2_harm_association_20260627T095847+0800_8454ad93</code>; M3_FROZEN yes; M3 scorer parity max abs diff 0.0; estimator sha family <code>30b9fd…7dfe</code>/<code>8c5c63…3d08</code>/<code>0a0860…b334d</code> from HPC git <code>5edd2810</code>; OnSite anchors 67,861 / 267 units; analysis n=245 / 19 teams; seed 20260628; venv sklearn 1.6.1. Supporting machine record:
+      <a href="../02_process/04_harm_association/results_full_battery.json">results_full_battery.json</a>.
+    </p>
+  </footer>
+</main>
+</body>
+</html>
