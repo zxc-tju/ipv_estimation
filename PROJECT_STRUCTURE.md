@@ -19,6 +19,11 @@
 │  ├─ core/
 │  │  ├─ agent.py              # 核心智能体：规划、博弈、IPV 估计
 │  │  └─ ipv_estimation.py     # 面向数据管线/在线调用的 IPV 估计封装
+│  ├─ verifier/
+│  │  ├─ model.py              # 冻结 M3 quantile/CQR/OOD 推理对象
+│  │  ├─ scorer.py             # 便携 scorer 加载、校验与推理入口
+│  │  ├─ deviation.py          # 规范化前的原始 envelope exceedance
+│  │  └─ features.py           # RQ009/RQ012 共用因果特征公式
 │  └─ planning/
 │     ├─ utility.py            # 几何、平滑、运动学通用工具
 │     ├─ lattice_planner.py    # Lattice 规划入口封装
@@ -34,6 +39,9 @@
 │  ├─ studies/                 # 执行层：RQ/执行版本/report package
 │  └─ knowledge/               # 判断层：review、synthesis、decision
 ├─ data/                       # 数据入口：README/manifest 可跟踪，raw payload 被忽略
+├─ models/rq009_m3/            # Git 同步的冻结 M3 scorer、contract 与 SHA manifest
+├─ configs/                    # 版本化实验参数 profile
+├─ environments/               # estimator/verifier 分离环境锁
 ├─ archived/
 │  ├─ compat_wrappers_20260619 # 已归档的旧根入口/旧 tools 兼容层
 │  └─ legacy_scripts/          # 旧版数据脚本归档
@@ -119,7 +127,17 @@ from sociality_estimation.planning.Lattice import TrajPoint
 python pipelines/interhub/process_interhub.py --csv <input.csv> --pkl-root <pkl_dir>
 ```
 
-### 3.4 仿真层
+### 3.4 IPV verifier 层
+
+- `sociality_estimation.verifier.score_anchors(...)`：输出七个 quantile、
+  80/90/95% CQR envelope 与 OOD/support abstention。
+- `sociality_estimation.verifier.score_verifier(...)`：在 envelope 基础上输出
+  规范的 raw signed/absolute exceedance。
+- 默认 scorer bundle 位于 `models/rq009_m3/`；加载前按 `manifest.json`
+  校验 SHA-256。模型类使用稳定包路径，不再依赖研究报告目录或本机绝对路径。
+- IPV 生成与 verifier 使用隔离环境；见 `environments/README.md`。
+
+### 3.5 仿真层
 
 - `pipelines/simulation/simulator.py`
   - `Scenario`

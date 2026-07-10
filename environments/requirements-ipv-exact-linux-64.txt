@@ -1,0 +1,8 @@
+# Frozen Linux/HPC IPV-generation runtime. Do not add verifier dependencies here.
+numpy==1.21.6
+scipy==1.7.3
+pandas==1.4.4
+Shapely==1.8.4
+matplotlib==3.4.3
+tqdm==4.62.3
+openpyxl==3.0.9
