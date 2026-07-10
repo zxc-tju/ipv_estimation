@@ -73,3 +73,9 @@ ssh tongji-hpc 'cd /share/home/u25310231/ZXC/sociality_estimation/code/repo && \
   sbatch scripts/hpc/install_exact_env.sbatch && \
   sbatch scripts/hpc/install_verifier_env.sbatch'
 ```
+
+The exact-environment job clones the retained, verified sigma01-generation
+binary environment without modifying it. It exports both a conda explicit spec
+and `pip freeze`, then runs `scripts/verify_ipv_estimator_fixture.py`. Matching
+only NumPy/SciPy version strings is insufficient because Python and BLAS builds
+can change SLSQP output.

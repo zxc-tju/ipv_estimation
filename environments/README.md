@@ -2,9 +2,10 @@
 
 The pipeline intentionally uses two isolated Python environments.
 
-- `requirements-ipv-exact-linux-64.txt` reproduces the Linux/HPC IPV-generation
-  ABI. Formal sigma01-compatible IPV is computed on Linux because SLSQP is
-  platform-sensitive.
+- `requirements-ipv-exact-linux-64.txt` records the direct Linux/HPC
+  IPV-generation packages. Formal sigma01-compatible IPV is computed from a
+  clone of the verified HPC binary environment because SLSQP also depends on
+  the Python/BLAS build. The install job exports a reusable conda explicit spec.
 - `requirements-ipv-verifier.txt` reproduces the frozen RQ009/RQ012 M3 scorer
   ABI. It performs quantile, conformal, OOD-gate, and deviation inference.
 
