@@ -12,5 +12,10 @@ Do not install the verifier stack into the legacy
 `/share/home/u25310231/ZXC/ipv_estimation` environment. Create a separate
 environment below `/share/home/u25310231/ZXC/sociality_estimation/envs/`.
 
+On Tongji HPC, submit `scripts/hpc/install_exact_env.sbatch` and
+`scripts/hpc/install_verifier_env.sbatch`. Each job records the fully resolved
+`pip freeze` under the durable deployment root's `manifests/` directory before
+running its role-specific regression test.
+
 Every durable run records the Git commit, requirements-file SHA-256, profile
 SHA-256, model-manifest SHA-256, input checksums, and output checksums.

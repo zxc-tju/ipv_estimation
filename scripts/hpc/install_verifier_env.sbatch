@@ -22,5 +22,6 @@ source /share/apps/miniconda3/etc/profile.d/conda.sh
 conda create --yes --prefix "$ENV" python=3.9.6 pip
 "$ENV/bin/python" -m pip install --upgrade pip
 "$ENV/bin/python" -m pip install -r "$REPO/environments/requirements-ipv-verifier.txt"
+"$ENV/bin/python" -m pip freeze > "$BASE/manifests/ipv-verifier-freeze.txt"
 SOCIALITY_M3_SCORER="$MODEL" PYTHONPATH="$REPO/src" "$ENV/bin/python" -m pytest -q \
   "$REPO/tests/test_verifier_runtime.py"

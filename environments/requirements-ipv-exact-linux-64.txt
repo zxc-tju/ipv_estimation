@@ -6,3 +6,4 @@ Shapely==1.8.4
 matplotlib==3.4.3
 tqdm==4.62.3
 openpyxl==3.0.9
+pytest==8.4.2
