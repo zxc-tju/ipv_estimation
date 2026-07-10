@@ -19,9 +19,13 @@ test -d "$REPO/.git"
 test -f "$MODEL"
 cd "$REPO"
 source /share/apps/miniconda3/etc/profile.d/conda.sh
-conda create --yes --prefix "$ENV" python=3.9.6 pip
+if [[ ! -x "$ENV/bin/python" ]]; then
+  conda create --yes --prefix "$ENV" python=3.9.6 pip
+fi
 "$ENV/bin/python" -m pip install --upgrade pip
 "$ENV/bin/python" -m pip install -r "$REPO/environments/requirements-ipv-verifier.txt"
+conda list --prefix "$ENV" --explicit > \
+  "$BASE/manifests/ipv-verifier-conda-explicit-linux-64.txt"
 "$ENV/bin/python" -m pip freeze > "$BASE/manifests/ipv-verifier-freeze.txt"
 SOCIALITY_M3_SCORER="$MODEL" PYTHONPATH="$REPO/src" "$ENV/bin/python" -m pytest -q \
   "$REPO/tests/test_verifier_runtime.py"

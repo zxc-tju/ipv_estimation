@@ -18,5 +18,15 @@ On Tongji HPC, submit `scripts/hpc/install_exact_env.sbatch` and
 `pip freeze` under the durable deployment root's `manifests/` directory before
 running its role-specific regression test.
 
+Tracked deployment locks are:
+
+- `ipv-exact-conda-explicit-linux-64.txt` for the complete sigma01 binary ABI;
+- `ipv-verifier-conda-explicit-linux-64.txt` for Python and system libraries;
+- `ipv-verifier-freeze.txt` for the complete verifier Python package set.
+
+The exact environment's `pip freeze` is retained only as an HPC audit artifact
+because conda packages render as non-portable local build paths; its conda
+explicit file is the reproducible lock.
+
 Every durable run records the Git commit, requirements-file SHA-256, profile
 SHA-256, model-manifest SHA-256, input checksums, and output checksums.
