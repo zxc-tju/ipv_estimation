@@ -79,3 +79,8 @@ binary environment without modifying it. It exports both a conda explicit spec
 and `pip freeze`, then runs `scripts/verify_ipv_estimator_fixture.py`. Matching
 only NumPy/SciPy version strings is insufficient because Python and BLAS builds
 can change SLSQP output.
+
+The release gate requires `exact` to match sigma01 within `1e-12`. The
+non-canonical vectorized `fast` backend is reported separately and must remain
+within `0.002` of `exact` on the frozen fixture; formal profiles always select
+`exact`.

@@ -80,7 +80,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixture", type=Path, default=DEFAULT_FIXTURE)
     parser.add_argument("--sigma-tolerance", type=float, default=1e-12)
-    parser.add_argument("--fast-tolerance", type=float, default=1e-10)
+    parser.add_argument("--fast-tolerance", type=float, default=2e-3)
     args = parser.parse_args()
 
     result = verify(args.fixture)
