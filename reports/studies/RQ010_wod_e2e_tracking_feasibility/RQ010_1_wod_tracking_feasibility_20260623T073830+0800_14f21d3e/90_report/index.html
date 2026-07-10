@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ010A WOD-E2E Feasibility Report</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #56616f;
+      --line: #d7dee8;
+      --paper: #ffffff;
+      --wash: #f5f7fa;
+      --accent: #0b5cad;
+      --accent-2: #8a5a00;
+      --pass: #0f766e;
+      --warn: #9a3412;
+      --blocked: #7c2d12;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      line-height: 1.55;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 24px 72px;
+    }
+    h1, h2, h3 {
+      line-height: 1.2;
+      letter-spacing: 0;
+      margin: 0;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-size: 1.35rem;
+      margin-top: 42px;
+      padding-top: 18px;
+      border-top: 2px solid var(--line);
+    }
+    h3 {
+      font-size: 1.02rem;
+      margin-top: 22px;
+    }
+    p {
+      margin: 10px 0;
+    }
+    a {
+      color: var(--accent);
+      text-decoration-thickness: 0.08em;
+      text-underline-offset: 0.16em;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      background: #eef2f7;
+      padding: 0.12rem 0.28rem;
+      border-radius: 4px;
+    }
+    .eyebrow {
+      color: var(--muted);
+      font-size: 0.92rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+    .lede {
+      max-width: 980px;
+      font-size: 1.04rem;
+      color: #26313d;
+    }
+    .run-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      margin: 22px 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--wash);
+    }
+    .run-meta div {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .run-meta span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .summary {
+      margin: 18px 0 28px;
+      padding: 18px 20px;
+      border: 2px solid #b6c8df;
+      background: #f1f6fc;
+    }
+    .summary strong {
+      color: #0a3868;
+    }
+    .summary ol {
+      margin: 10px 0 0 22px;
+      padding: 0;
+    }
+    .summary li {
+      margin: 7px 0;
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0 8px;
+    }
+    .status {
+      border: 1px solid var(--line);
+      padding: 12px;
+      background: #fbfcfe;
+    }
+    .status b {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .pass {
+      color: var(--pass);
+    }
+    .blocked {
+      color: var(--blocked);
+    }
+    .warn {
+      color: var(--warn);
+    }
+    figure {
+      margin: 24px 0;
+      border: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+    figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+    figcaption {
+      padding: 12px 14px 14px;
+      color: #26313d;
+      font-size: 0.94rem;
+    }
+    .figure-links {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+    }
+    .figure-links a {
+      margin-right: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 0.92rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #edf2f8;
+      color: #27394d;
+    }
+    tbody tr:nth-child(even) {
+      background: #fafbfd;
+    }
+    .callout {
+      border-left: 4px solid var(--accent-2);
+      background: #fff8ed;
+      padding: 12px 14px;
+      margin: 16px 0;
+    }
+    .compact-list {
+      margin: 10px 0 0 18px;
+      padding: 0;
+    }
+    .compact-list li {
+      margin: 5px 0;
+    }
+    .artifact-table code {
+      background: transparent;
+      padding: 0;
+    }
+    @media (max-width: 760px) {
+      main {
+        padding: 22px 14px 48px;
+      }
+      h1 {
+        font-size: 1.55rem;
+      }
+      .run-meta,
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+      table {
+        font-size: 0.86rem;
+      }
+      th, td {
+        padding: 7px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Online Sociality Verification for AV - RQ010A</div>
+    <h1>WOD-E2E Counterpart-Conditioned M3 Feasibility Report</h1>
+    <p class="lede">
+      This offline report assembles the validated Phase 2-11 feasibility package for WOD-E2E
+      tracking readiness. It embeds the three existing Nature-format figures and does not
+      regenerate or replace any figure.
+    </p>
+    <div class="run-meta" aria-label="Run identity">
+      <div><span>RUN_ID</span><code>RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e</code></div>
+      <div><span>GIT_HEAD</span><code>38063a2ff9cdc717098cf3f821c2bb162a0ac1d9</code></div>
+      <div><span>PLAN_SHA256</span><code>d9988309a803dc443cfd2c9bcde2f75e078c8cd87e57a036828f0a13e1778d87</code></div>
+      <div><span>Report date</span><code>2026-06-23</code></div>
+    </div>
+    <section class="summary" aria-label="Executive summary">
+      <strong>Executive summary</strong>
+      <ol>
+        <li>WOD-E2E public release evidence supports ego states, candidate ego futures, cameras/calibration, and per-candidate preference-score metadata, but not direct surrounding-actor tracks, map/route geometry, or a verified WOMD/WOD crosswalk.</li>
+        <li>The counterpart-conditioned <code>M3</code> verifier is therefore <strong>not directly runnable</strong>; the selected tracking tier is <code>T2_FULL_TRACKING_REQUIRED</code>.</li>
+        <li>Gate 010-0 is <strong class="pass">PASS</strong>: non-commercial research is permitted under the verified access/licence path, with sign-in and licence acceptance still required before data access.</li>
+        <li>The preferred technical path is Route 4, adapting an existing multi-camera 3D/BEV tracker; Route 5, a custom perception-to-tracking pipeline, is the fallback.</li>
+        <li>The compute/HPC label remains <strong class="blocked">BLOCKED_PENDING_ACCESS</strong>; independent review was <code>PASS_WITH_FIXES</code>, and red team is <strong class="pass">CLEAR</strong> after the Phase 11b fixes. <code>rq009_interface_status=provisional_contract</code>.</li>
+      </ol>
+    </section>
+    <div class="status-grid" aria-label="Headline statuses">
+      <div class="status"><b>Tracking tier</b><code>T2_FULL_TRACKING_REQUIRED</code></div>
+      <div class="status"><b>Gate 010-0</b><span class="pass">PASS</span></div>
+      <div class="status"><b>Compute/HPC</b><span class="blocked">BLOCKED_PENDING_ACCESS</span></div>
+      <div class="status"><b>Red team</b><span class="pass">CLEAR after fix</span></div>
+    </div>
+  </header>
+
+  <section id="context">
+    <h2>1. Research Context</h2>
+    <p>
+      The project's verifier estimates Interaction Preference Value (IPV) from motion and checks
+      whether the implied behavior lies inside a human-normative envelope. The current downstream
+      target is the counterpart-conditioned <code>M3</code> verifier, not a context-only
+      <code>M2</code> substitution.
+    </p>
+    <p>
+      M3 requires the current and recent motion state of the relevant surrounding counterpart actor.
+      Without counterpart tracks, IDs, histories, timing, and coordinate alignment, the verifier cannot
+      estimate the counterpart-conditioned state needed for RQ010B. RQ010B is the later, rating-authorized
+      candidate-preference validation task; this RQ010A report only decides whether the required data and
+      infrastructure path exist.
+    </p>
+  </section>
+
+  <section id="sources">
+    <h2>2. Official Sources And Evidence Discipline</h2>
+    <p>
+      The source spine is the local official-source inventory and source findings:
+      <a href="../01_results/tables/official_source_inventory.csv">official_source_inventory.csv</a>
+      and <a href="../02_process/02_sources/source_findings.md">source_findings.md</a>.
+      Load-bearing field, access, licence, timing, calibration, crosswalk, and scale claims are tied to
+      official documents, release schemas, or official repository code. Primary-paper prose is retained
+      only for context and benchmark-proxy discussion, not as the sole basis for release-field availability.
+    </p>
+    <p>
+      This discipline matters because the main negative finding is schema-level: the public E2ED schema
+      documents camera/calibration, timestamp, ego state, and candidate-future fields, while it does not
+      expose surrounding-actor trajectories or map geometry.
+    </p>
+  </section>
+
+  <section id="access">
+    <h2>3. Access And Licence</h2>
+    <p>
+      Gate 010-0 is <strong class="pass">PASS</strong>. The audited Waymo terms create a
+      licence-compatible path for non-commercial research, scientific publication, teaching, personal
+      experimentation, and publication benchmarking, subject to attribution, non-redistribution,
+      privacy, production-use, and institutional-authority restrictions.
+    </p>
+    <p>
+      The access path is still operationally gated: a human operator must sign in, agree to the licence
+      when authorized, inspect the signed-in manifest, and record object sizes, shard counts, checksums,
+      and download method before any payload download. Official compressed size, exact bucket/object
+      paths, and minimum pilot pull granularity remain unavailable from the public unauthenticated pages.
+    </p>
+    <p>
+      Supporting files: <a href="../02_process/03_access_license/data_access_and_license_audit.md">data_access_and_license_audit.md</a>
+      and <a href="../02_process/03_access_license/acquisition_checklist.md">acquisition_checklist.md</a>.
+    </p>
+  </section>
+
+  <section id="schema">
+    <h2>4. Schema And Field Availability</h2>
+    <figure>
+      <img src="../01_results/figures/fig1_field_availability_matrix.png" alt="Figure 1 field availability matrix showing available ego and candidate fields and missing or tracking-required counterpart and map fields">
+      <figcaption>
+        <strong>Fig 1 |</strong> WOD-E2E exposes ego trajectory, candidate-future, camera/calibration, timestamp, and candidate-score metadata, while counterpart actor states and map/reference geometry are missing or require tracking/alignment.
+        <span class="figure-links">
+          <a href="../01_results/figures/fig1_field_availability_matrix.svg">SVG</a>
+          <a href="../01_results/figures/fig1_field_availability_matrix.pdf">PDF</a>
+          <a href="../01_results/tables/field_availability_crosswalk.csv">source CSV</a>
+        </span>
+      </figcaption>
+    </figure>
+    <p>
+      The requirements table and crosswalk show the asymmetry. Ego position, velocity, sampling, units,
+      coordinate frame, history, candidate x/y futures, candidate horizon, candidate-to-score identity,
+      and missing-label metadata are available or derivable from release-schema evidence. Counterpart
+      actor ID, x/y, velocity, heading, history, validity, class, extent, visibility, route/reference,
+      target path, selection identity, and current IPV require tracking. Map conflict geometry and
+      route/reference lines are missing in the public E2ED schema.
+    </p>
+    <p>
+      The critical-frame current timestamp is available, but the original-run critical-frame index is
+      <code>requires_access_verification</code>. Rater-level metadata is missing from the public schema.
+      The feasibility result is therefore relative to <code>rq009_interface_status=provisional_contract</code>.
+    </p>
+  </section>
+
+  <section id="tracking">
+    <h2>5. Tracking-Need Decision</h2>
+    <figure>
+      <img src="../01_results/figures/fig2_tracking_decision_tree.png" alt="Figure 2 tracking decision tree selecting T2 full tracking required">
+      <figcaption>
+        <strong>Fig 2 |</strong> Direct M3 execution is rejected because actor tracks are absent; T1 is rejected because no official crosswalk or official E2E-aligned perception output is verified; the selected tier is <code>T2_FULL_TRACKING_REQUIRED</code>.
+        <span class="figure-links">
+          <a href="../01_results/figures/fig2_tracking_decision_tree.svg">SVG</a>
+          <a href="../01_results/figures/fig2_tracking_decision_tree.pdf">PDF</a>
+          <a href="../01_results/tables/tracking_options_comparison.csv">source CSV</a>
+          <a href="../02_process/04_schema/tracking_need_decision.json">decision JSON</a>
+        </span>
+      </figcaption>
+    </figure>
+    <p>
+      The selected tier is <code>T2_FULL_TRACKING_REQUIRED</code>. <code>T0_NO_TRACKING_NEEDED</code>
+      is rejected because public WOD-E2E release evidence does not expose surrounding-actor tracks,
+      IDs, histories, classes, extents, validity, visibility, or uncertainty. <code>T1_LIGHT_AUGMENTATION</code>
+      is rejected because no official E2E-to-WOMD/WOD crosswalk, official actor-track source, or
+      E2E-aligned official perception output was verified.
+    </p>
+    <p>
+      <code>T3_BLOCKED</code> is not selected at this schema-decision stage because access/licence,
+      timestamp, camera images, calibration, ego state, and released candidate-to-score identity are
+      sufficient to define a T2 recovery path. It remains a real downstream risk if sequence grouping,
+      calibration, critical-frame anchoring, map/reference requirements, or quality-gate criteria fail.
+    </p>
+    <p>
+      Route 4, adapting an existing multi-camera 3D/BEV tracker, is preferred because it uses the
+      released camera/calibration/timestamp fields directly and is more reproducible than building the
+      whole perception stack first. Route 5, a custom detection-association-BEV-tracking-map-uncertainty
+      pipeline, is reserved as the fallback if Route 4 cannot ingest WOD-E2E, emit the M3 state contract,
+      satisfy licence/provenance requirements, or pass the frozen blind gate.
+    </p>
+  </section>
+
+  <section id="quality-gate">
+    <h2>6. Tracking Quality Gate</h2>
+    <p>
+      The tracking gate is outcome-blind. It sets <code>ratings_read_allowed=false</code>, forbids rating,
+      IPV, deviation, and RQ010B outcome fields from sampling, thresholds, tracker tuning, QA, and
+      adjudication, and uses the canonical pass/fail QA seed <code>2026062306</code>. The previous P8 seed
+      conflict was fixed before any manifest draw, payload access, tracker run, QA scoring, rating read,
+      or outcome inspection.
+    </p>
+    <p>
+      Phase 11b added a concrete independent reference-annotation protocol:
+      <code>RQ010A_P11b_rating_blind_3d_bev_reference_v1</code>. It requires a local/offline calibrated
+      multi-view 3D/BEV annotation process, per-frame actor BEV centers, extents, class, visibility,
+      persistent IDs, identity-switch timelines, continuity timelines, critical-frame counterpart
+      consensus, reference covariance, and derived velocity from pre-critical BEV positions and verified
+      timestamps. If the independent reference is absent, circular, rating-exposed, too uncertain, or
+      reliability-failed, the affected hard metric is <code>BLOCKED</code>, never <code>PASS</code>.
+    </p>
+    <p>
+      Hard gates cover actor recall, BEV position error, velocity error, ID switches, continuity,
+      critical-frame actor coverage, available pre-critical history, occlusion, conditional map/lane
+      association, counterpart-selection agreement, and uncertainty calibration. MOTA, IDF1, and HOTA
+      are report-only comparability metrics and cannot override a hard M3 failure.
+    </p>
+  </section>
+
+  <section id="compute">
+    <h2>7. Compute, Storage, And HPC</h2>
+    <figure>
+      <img src="../01_results/figures/fig3_compute_budget_ranges.png" alt="Figure 3 compute budget ranges showing wide Route 4 storage and GPU-hour uncertainty and HPC label blocked pending access">
+      <figcaption>
+        <strong>Fig 3 |</strong> Route 4 planning ranges are wide because official WOD-E2E size and WOD-E2E tracker throughput are sign-in-gated or unmeasured; the only defensible current HPC label is <code>BLOCKED_PENDING_ACCESS</code>.
+        <span class="figure-links">
+          <a href="../01_results/figures/fig3_compute_budget_ranges.svg">SVG</a>
+          <a href="../01_results/figures/fig3_compute_budget_ranges.pdf">PDF</a>
+          <a href="../01_results/figures/fig3_compute_ranges_source.csv">source CSV</a>
+          <a href="../01_results/tables/compute_storage_budget.csv">budget CSV</a>
+        </span>
+      </figcaption>
+    </figure>
+    <p>
+      Phase 7 applies the FIX B3 decision matrix and returns <code>BLOCKED_PENDING_ACCESS</code>. The
+      public evidence supports only derived logical planning ranges: full WOD-E2E compressed input about
+      0.15-17 TB, Route 4 decoded-image equivalent about 0.45-340 TB if materialized, intermediate
+      storage about 0.5-120 TB, and full-run GPU demand about 20-4500 GPU-hours. These are not official
+      manifest sizes and are not WOD-E2E measured throughput.
+    </p>
+    <p>
+      The conditional infrastructure expectation is that a small pilot may fit a single workstation GPU
+      if shard access is modest and the model fits memory. A full run could become <code>HPC_RECOMMENDED</code>
+      or <code>HPC_REQUIRED</code> after signed-in manifest and pilot benchmarks, but that is not the
+      current label.
+    </p>
+  </section>
+
+  <section id="pilot">
+    <h2>8. Pilot Benchmark Plan</h2>
+    <p>
+      The pilot is plan-only and requires explicit user authorization before sign-in, licence acceptance,
+      manifest inspection, payload download, parser execution, tracker execution, IPV estimation, rating
+      read, or quality-gate scoring. The pass/fail benchmark minimum is <code>N=80</code> scenes, with a
+      target of <code>N=120</code> only if signed-in manifest sizes make the extra pull modest.
+    </p>
+    <p>
+      Sampling is rating-blind and uses seed <code>2026062306</code> with deterministic sorting by a
+      SHA-256 key over the scene/frame identifier. The eligible manifest may include only allowed
+      non-preference strata such as split, non-preference tags, ego intent, image/timestamp/calibration
+      presence, sequence length, and hash decile. Human preference scores, score-derived order, rater
+      metadata, IPV, deviation, tracker error after QA, and RQ010B outcomes are forbidden.
+    </p>
+    <p>
+      The pilot must measure official object sizes, pull granularity, sequence grouping, camera order,
+      timestamps, calibration, parse/decode throughput, Route 4 GPU memory/FPS, intermediate storage,
+      retry/abstention overhead, local versus HPC wall time, and the Phase 6 quality gates.
+    </p>
+  </section>
+
+  <section id="candidate-protocol">
+    <h2>9. Candidate-Future Actor Protocol</h2>
+    <p>
+      The primary downstream protocol is a shared open-loop opportunity structure. For each scene, the
+      same selected counterpart, same pre-critical counterpart history, same forecast or opportunity
+      structure, same uncertainty representation, and same map/reference boundary are applied to all
+      released ego candidate futures. This isolates the candidate ego geometry comparison instead of
+      mixing candidate-specific simulated reactions into the primary test.
+    </p>
+    <p>
+      Candidate-conditioned actor forecasts are allowed only as a sensitivity analysis after the primary
+      route is implemented and blind gates pass. Any actor predictor must be rating-free, have fixed
+      provenance, carry explicit uncertainty, and must not use candidate scores, score-derived order,
+      IPV deviations, or human feedback. Open-loop predicted actor response is not realised harm and
+      must not be described as an actual actor reaction or causal safety outcome.
+    </p>
+    <p>
+      The N4 alignment table anchors all inputs at <code>E2EDFrame.frame.timestamp_micros</code>, treats
+      the first candidate waypoint as after the current frame, cuts actor history at or before the
+      critical frame, and requires camera-to-ego-to-M3 coordinate validation. If map/reference geometry
+      is required by frozen RQ009 and cannot be supplied or bounded, M3 remains blocked.
+    </p>
+  </section>
+
+  <section id="review">
+    <h2>10. Independent Review And Red Team</h2>
+    <p>
+      The Phase 10 independent review returned <code>GATE_010_3_INTERMEDIATE: PASS_WITH_FIXES</code>.
+      It found no blocking defects in the source-to-tier chain, access/licence logic, route selection,
+      quality-gate intent, compute label, pilot plan, actor protocol, or M3 boundary. It requested
+      fixes for the P6/P8 seed conflict, requirements-table evidence columns, and later status metadata.
+    </p>
+    <p>
+      The Phase 11 red team initially returned <code>FIX_REQUIRED</code>. RT-01 found that the quality
+      gate needed an executable independent reference-annotation protocol; RT-02 found the QA seed
+      conflict; RT-03 noted stale run-level status/traceability metadata as a Phase 13 process item.
+      Phase 11b fixed RT-01 and RT-02 without changing the T2 conclusion, Route 4/5 decision, HPC label,
+      leak-safety controls, or scientific conclusions. Phase 11c re-verified the package as
+      <strong class="pass">CLEAR</strong>.
+    </p>
+  </section>
+
+  <section id="limitations">
+    <h2>11. Limitations And Boundaries</h2>
+    <div class="callout">
+      The core feasibility conclusion is bounded, not a direct M3 validation result. RQ010A did not
+      download WOD-E2E, run a tracker, compute IPV, read ratings, or test preference association.
+    </div>
+    <ul class="compact-list">
+      <li><strong>Map geometry missing:</strong> public E2ED schema does not expose map conflict geometry, lane centerlines, or route/reference polylines. This is a serious M3 boundary because IPV estimation relies on lane/reference context where required.</li>
+      <li><strong>Critical-frame original-run index unverified:</strong> the current timestamp exists, but the original 20-second run index or sequence mapping must be verified after authorized access.</li>
+      <li><strong>Rater-level metadata missing:</strong> the public schema exposes per-candidate preference-score metadata, not rater IDs or per-rater lists.</li>
+      <li><strong>RQ009 interface provisional:</strong> all feasibility statements are relative to <code>rq009_interface_status=provisional_contract</code> and must be rechecked against the frozen interface.</li>
+      <li><strong>Size and throughput derived:</strong> official WOD-E2E sizes, shard granularity, and Route 4 throughput remain sign-in-gated or unmeasured; current ranges are planning bounds only.</li>
+      <li><strong>No M2 downgrade:</strong> a context-only M2 fallback may be reported only as a separate bounded analysis, not as full counterpart-conditioned M3 validation.</li>
+    </ul>
+  </section>
+
+  <section id="artifact-index">
+    <h2>12. Artifact Index</h2>
+    <p>
+      All links below are local relative links inside the run package. The report deliberately avoids
+      external network references so it can be opened offline.
+    </p>
+    <table class="artifact-table">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Artifact</th>
+          <th>Path</th>
+          <th>Role in report</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Meta</td><td>Mission brief</td><td><a href="../02_process/00_meta/mission_brief.md"><code>02_process/00_meta/mission_brief.md</code></a></td><td>Shared RQ010A scope, rules, and Phase 12 constraints.</td></tr>
+        <tr><td>P1</td><td>Plan-review addendum</td><td><a href="../02_process/01_plan_review/PLAN_REVIEW_ADDENDUM.md"><code>02_process/01_plan_review/PLAN_REVIEW_ADDENDUM.md</code></a></td><td>Binding B1-B3/N1-N7 execution rules.</td></tr>
+        <tr><td>P2</td><td>Official source inventory</td><td><a href="../01_results/tables/official_source_inventory.csv"><code>01_results/tables/official_source_inventory.csv</code></a></td><td>Official-source evidence catalogue.</td></tr>
+        <tr><td>P2</td><td>Source findings</td><td><a href="../02_process/02_sources/source_findings.md"><code>02_process/02_sources/source_findings.md</code></a></td><td>Official-source synthesis and B1 evidence flags.</td></tr>
+        <tr><td>P3</td><td>Access and licence audit</td><td><a href="../02_process/03_access_license/data_access_and_license_audit.md"><code>02_process/03_access_license/data_access_and_license_audit.md</code></a></td><td>Gate 010-0 PASS and licence/access boundaries.</td></tr>
+        <tr><td>P3</td><td>Acquisition checklist</td><td><a href="../02_process/03_access_license/acquisition_checklist.md"><code>02_process/03_access_license/acquisition_checklist.md</code></a></td><td>Authorized future access/download steps.</td></tr>
+        <tr><td>P4</td><td>Schema requirements</td><td><a href="../01_results/tables/wod_schema_requirements.csv"><code>01_results/tables/wod_schema_requirements.csv</code></a></td><td>M3/RQ010B field contract with evidence columns.</td></tr>
+        <tr><td>P4</td><td>Field availability crosswalk</td><td><a href="../01_results/tables/field_availability_crosswalk.csv"><code>01_results/tables/field_availability_crosswalk.csv</code></a></td><td>Field-level available/missing/requires-tracking matrix.</td></tr>
+        <tr><td>P4</td><td>Tracking decision JSON</td><td><a href="../02_process/04_schema/tracking_need_decision.json"><code>02_process/04_schema/tracking_need_decision.json</code></a></td><td>Selected tier, rejected tiers, decisive failures, and T3 risks.</td></tr>
+        <tr><td>P4</td><td>Crosswalk reasoning</td><td><a href="../02_process/04_schema/crosswalk_reasoning.md"><code>02_process/04_schema/crosswalk_reasoning.md</code></a></td><td>Narrative support for T2 and M2 downgrade guard.</td></tr>
+        <tr><td>P5</td><td>Tracking options comparison</td><td><a href="../01_results/tables/tracking_options_comparison.csv"><code>01_results/tables/tracking_options_comparison.csv</code></a></td><td>Route 1-5 comparison and Route 4/5 decision input.</td></tr>
+        <tr><td>P5</td><td>Route analysis</td><td><a href="../02_process/05_tracking_options/route_analysis.md"><code>02_process/05_tracking_options/route_analysis.md</code></a></td><td>Preferred Route 4 and fallback Route 5 rationale.</td></tr>
+        <tr><td>P6</td><td>Quality gate proposal</td><td><a href="../01_results/exports/tracking_quality_gate_proposal.yaml"><code>01_results/exports/tracking_quality_gate_proposal.yaml</code></a></td><td>Outcome-blind tracking gate and reference annotation protocol.</td></tr>
+        <tr><td>P6</td><td>Quality gate notes</td><td><a href="../02_process/05_tracking_options/quality_gate_notes.md"><code>02_process/05_tracking_options/quality_gate_notes.md</code></a></td><td>Gate rationale, seed decision, and no-reference blocking rule.</td></tr>
+        <tr><td>P7</td><td>Compute/storage budget</td><td><a href="../01_results/tables/compute_storage_budget.csv"><code>01_results/tables/compute_storage_budget.csv</code></a></td><td>Scenario ranges and Route 4 planning envelope.</td></tr>
+        <tr><td>P7</td><td>HPC decision</td><td><a href="../02_process/06_compute_budget/hpc_decision.md"><code>02_process/06_compute_budget/hpc_decision.md</code></a></td><td>FIX B3 matrix and BLOCKED_PENDING_ACCESS rule.</td></tr>
+        <tr><td>P8</td><td>Pilot benchmark plan</td><td><a href="../02_process/07_pilot_plan/pilot_benchmark_plan.md"><code>02_process/07_pilot_plan/pilot_benchmark_plan.md</code></a></td><td>N=80 minimum, rating-blind pilot and measurements to unblock access.</td></tr>
+        <tr><td>P9</td><td>Candidate-future actor protocol</td><td><a href="../01_results/exports/candidate_future_actor_protocol.md"><code>01_results/exports/candidate_future_actor_protocol.md</code></a></td><td>Shared open-loop primary protocol and sensitivity boundary.</td></tr>
+        <tr><td>P10</td><td>Independent review</td><td><a href="../02_process/08_review/independent_review.md"><code>02_process/08_review/independent_review.md</code></a></td><td>PASS_WITH_FIXES intermediate review.</td></tr>
+        <tr><td>P11</td><td>Red-team findings</td><td><a href="../02_process/09_red_team/red_team_findings.md"><code>02_process/09_red_team/red_team_findings.md</code></a></td><td>Initial FIX_REQUIRED adversarial review.</td></tr>
+        <tr><td>P11b</td><td>Fix log</td><td><a href="../02_process/09_red_team/fix_log.md"><code>02_process/09_red_team/fix_log.md</code></a></td><td>RT-01 and RT-02 fixes, including reference protocol and seed resolution.</td></tr>
+        <tr><td>P11c</td><td>Red-team re-verification</td><td><a href="../02_process/09_red_team/reverify_findings.md"><code>02_process/09_red_team/reverify_findings.md</code></a></td><td>CLEAR after fixes.</td></tr>
+        <tr><td>P12</td><td>Figure manifest</td><td><a href="../01_results/figures/figure_manifest.json"><code>01_results/figures/figure_manifest.json</code></a></td><td>Existing Nature figure package metadata.</td></tr>
+        <tr><td>P12</td><td>Figure 1 PNG</td><td><a href="../01_results/figures/fig1_field_availability_matrix.png"><code>01_results/figures/fig1_field_availability_matrix.png</code></a></td><td>Embedded field availability figure.</td></tr>
+        <tr><td>P12</td><td>Figure 1 SVG</td><td><a href="../01_results/figures/fig1_field_availability_matrix.svg"><code>01_results/figures/fig1_field_availability_matrix.svg</code></a></td><td>Editable vector export for Fig 1.</td></tr>
+        <tr><td>P12</td><td>Figure 1 PDF</td><td><a href="../01_results/figures/fig1_field_availability_matrix.pdf"><code>01_results/figures/fig1_field_availability_matrix.pdf</code></a></td><td>Publication-editable Fig 1 export.</td></tr>
+        <tr><td>P12</td><td>Figure 2 PNG</td><td><a href="../01_results/figures/fig2_tracking_decision_tree.png"><code>01_results/figures/fig2_tracking_decision_tree.png</code></a></td><td>Embedded tracking decision figure.</td></tr>
+        <tr><td>P12</td><td>Figure 2 SVG</td><td><a href="../01_results/figures/fig2_tracking_decision_tree.svg"><code>01_results/figures/fig2_tracking_decision_tree.svg</code></a></td><td>Editable vector export for Fig 2.</td></tr>
+        <tr><td>P12</td><td>Figure 2 PDF</td><td><a href="../01_results/figures/fig2_tracking_decision_tree.pdf"><code>01_results/figures/fig2_tracking_decision_tree.pdf</code></a></td><td>Publication-editable Fig 2 export.</td></tr>
+        <tr><td>P12</td><td>Figure 3 PNG</td><td><a href="../01_results/figures/fig3_compute_budget_ranges.png"><code>01_results/figures/fig3_compute_budget_ranges.png</code></a></td><td>Embedded compute budget figure.</td></tr>
+        <tr><td>P12</td><td>Figure 3 SVG</td><td><a href="../01_results/figures/fig3_compute_budget_ranges.svg"><code>01_results/figures/fig3_compute_budget_ranges.svg</code></a></td><td>Editable vector export for Fig 3.</td></tr>
+        <tr><td>P12</td><td>Figure 3 PDF</td><td><a href="../01_results/figures/fig3_compute_budget_ranges.pdf"><code>01_results/figures/fig3_compute_budget_ranges.pdf</code></a></td><td>Publication-editable Fig 3 export.</td></tr>
+        <tr><td>P12</td><td>Figure 3 source CSV</td><td><a href="../01_results/figures/fig3_compute_ranges_source.csv"><code>01_results/figures/fig3_compute_ranges_source.csv</code></a></td><td>Native source CSV for compute figure.</td></tr>
+        <tr><td>Run</td><td>Evidence table</td><td><a href="../evidence.csv"><code>evidence.csv</code></a></td><td>Run-level evidence rows from upstream phases.</td></tr>
+        <tr><td>P12b</td><td>Entry page</td><td><a href="../00_entry/index.html"><code>00_entry/index.html</code></a></td><td>Offline landing page.</td></tr>
+        <tr><td>P12b</td><td>Canonical full report</td><td><a href="../90_report/index.html"><code>90_report/index.html</code></a></td><td>This offline reader-facing report.</td></tr>
+        <tr><td>P12b</td><td>Report alias</td><td><a href="../01_results/exports/wod_feasibility_report.html"><code>01_results/exports/wod_feasibility_report.html</code></a></td><td>N5 alias/copy of the canonical full report.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="final-verdict">
+    <h2>13. Final Feasibility Statement For Phase 12b</h2>
+    <p>
+      WOD-E2E is licence-compatible for non-commercial research and provides enough public release
+      evidence to plan an M3 feasibility path, but it does not directly provide the counterpart-track
+      and map/reference inputs needed for the primary counterpart-conditioned verifier. The direct
+      M3 verifier is therefore not runnable from the public WOD-E2E release schema alone. The honest
+      feasibility state is T2 with Route 4 preferred, Route 5 fallback, a frozen rating-blind quality
+      gate, and a blocked-pending-access compute label until authorized manifest and pilot evidence
+      replace the current derived ranges.
+    </p>
+    <p>
+      Phase 13 should perform final review and registration, refresh stale run status/traceability
+      metadata, and keep the same boundaries visible: critical-frame original-run index unverified,
+      map geometry missing, rater-level metadata missing, and RQ009 interface still provisional.
+    </p>
+  </section>
+</main>
+</body>
+</html>

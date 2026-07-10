@@ -42,9 +42,13 @@ DEFAULT_PKL_ROOT = RAW_ROOT / "pkl"
 DEFAULT_OUTPUT_ROOT = (
     THIS_DIR / "reports" / "interhub" / "ipv_estimation_results" / "subsets_for_yiru"
 )
+DEFAULT_EXECUTION_PROFILE = PROJECT_ROOT / "configs" / "ipv_sigma01_exact.json"
 
 HISTORY_WINDOW = 10
 MIN_OBSERVATION = 4
+REFERENCE_CLIP_MARGIN_M = 60.0
+REFERENCE_MAX_POINTS = 40
+REFERENCE_SMOOTH_POINTS = 40
 HEADING_THRESHOLD_DEG = 12.0
 WORKER_CANDIDATES = [1, 2, 4, 8, 12, 16]
 BENCHMARK_SAMPLE_SIZE = 48
@@ -103,9 +107,9 @@ class CaseTask:
     solver_preset: Optional[str] = None
     save_plots: bool = True
     case_timeout_seconds: int = 0
-    reference_clip_margin_m: float = 0.0
-    reference_max_points: int = 0
-    reference_smooth_points: int = 0
+    reference_clip_margin_m: float = REFERENCE_CLIP_MARGIN_M
+    reference_max_points: int = REFERENCE_MAX_POINTS
+    reference_smooth_points: int = REFERENCE_SMOOTH_POINTS
 
 
 class CaseTimeoutError(TimeoutError):
@@ -1282,9 +1286,9 @@ def _build_tasks(
     solver_preset: Optional[str] = None,
     save_plots: bool = True,
     case_timeout_seconds: int = 0,
-    reference_clip_margin_m: float = 0.0,
-    reference_max_points: int = 0,
-    reference_smooth_points: int = 0,
+    reference_clip_margin_m: float = REFERENCE_CLIP_MARGIN_M,
+    reference_max_points: int = REFERENCE_MAX_POINTS,
+    reference_smooth_points: int = REFERENCE_SMOOTH_POINTS,
     limit: Optional[int] = None,
 ) -> Tuple[List[CaseTask], Dict[int, Dict[str, object]]]:
     tasks: List[CaseTask] = []
@@ -1629,9 +1633,9 @@ def run_worker_benchmark(
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
     case_timeout_seconds: int = 0,
-    reference_clip_margin_m: float = 0.0,
-    reference_max_points: int = 0,
-    reference_smooth_points: int = 0,
+    reference_clip_margin_m: float = REFERENCE_CLIP_MARGIN_M,
+    reference_max_points: int = REFERENCE_MAX_POINTS,
+    reference_smooth_points: int = REFERENCE_SMOOTH_POINTS,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     df, exclude_summary = exclude_csv_rows(df, exclude_csv_path)
@@ -1723,9 +1727,9 @@ def _resolve_workers(
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
     case_timeout_seconds: int = 0,
-    reference_clip_margin_m: float = 0.0,
-    reference_max_points: int = 0,
-    reference_smooth_points: int = 0,
+    reference_clip_margin_m: float = REFERENCE_CLIP_MARGIN_M,
+    reference_max_points: int = REFERENCE_MAX_POINTS,
+    reference_smooth_points: int = REFERENCE_SMOOTH_POINTS,
 ) -> int:
     if workers_arg != "auto":
         return max(1, min(int(workers_arg), max_workers))
@@ -1770,9 +1774,9 @@ def run_processing(
     exclude_csv_path: Optional[Path] = None,
     mp_start_method: str = "auto",
     case_timeout_seconds: int = 0,
-    reference_clip_margin_m: float = 0.0,
-    reference_max_points: int = 0,
-    reference_smooth_points: int = 0,
+    reference_clip_margin_m: float = REFERENCE_CLIP_MARGIN_M,
+    reference_max_points: int = REFERENCE_MAX_POINTS,
+    reference_smooth_points: int = REFERENCE_SMOOTH_POINTS,
 ) -> Dict[str, object]:
     df = pd.read_csv(csv_path)
     source_rows = len(df)
@@ -1892,6 +1896,12 @@ def _append_workflow_log(summary: Mapping[str, object], *, task_name: str) -> No
 
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--execution-profile",
+        type=Path,
+        default=DEFAULT_EXECUTION_PROFILE,
+        help="Versioned estimator contract; conflicting command-line values fail closed.",
+    )
     parser.add_argument("--csv", type=Path, default=DEFAULT_CSV_PATH)
     parser.add_argument("--pkl-root", type=Path, default=DEFAULT_PKL_ROOT)
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
@@ -1924,22 +1934,22 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--reference-clip-margin-m",
         type=float,
-        default=0.0,
+        default=REFERENCE_CLIP_MARGIN_M,
         help="Clip each lane reference to the key agent observed-motion bounding box plus this margin in meters.",
     )
     parser.add_argument(
         "--reference-max-points",
         type=int,
-        default=0,
+        default=REFERENCE_MAX_POINTS,
         help="After optional clipping, uniformly downsample each reference to at most this many points.",
     )
     parser.add_argument(
         "--reference-smooth-points",
         type=int,
-        default=0,
+        default=REFERENCE_SMOOTH_POINTS,
         help=(
             "If >0, pre-smooth each clipped reference to this many points before IPV optimization. "
-            "Default 0 preserves the legacy smoother resolution."
+            "The default 40 is the frozen sigma01/RQ009 production setting."
         ),
     )
     parser.add_argument(
@@ -1981,10 +1991,65 @@ def build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def load_and_validate_execution_profile(
+    path: Path,
+    args: argparse.Namespace,
+) -> Dict[str, object]:
+    profile_path = path.resolve()
+    profile = json.loads(profile_path.read_text(encoding="utf-8"))
+    estimator = profile["estimator"]
+    windows = profile["windows"]
+    sampling = profile["sampling"]
+    expected = {
+        "solver_mode": str(estimator["solver_mode"]),
+        "min_observation": int(estimator["min_observation"]),
+        "reference_clip_margin_m": float(estimator["reference_clip_margin_m"]),
+        "reference_max_points": int(estimator["reference_max_points"]),
+        "reference_smooth_points": int(estimator["reference_smooth_points"]),
+        "history_window": int(windows["current_ipv_history_window"]),
+    }
+    observed = {key: getattr(args, key) for key in expected}
+    conflicts = {
+        key: {"expected": expected[key], "observed": observed[key]}
+        for key in expected
+        if observed[key] != expected[key]
+    }
+    if int(sampling["nuplan_downsample_factor"]) != DATASET_DOWNSAMPLE_FACTORS["nuplan_train"]:
+        conflicts["nuplan_downsample_factor"] = {
+            "expected": int(sampling["nuplan_downsample_factor"]),
+            "observed": DATASET_DOWNSAMPLE_FACTORS["nuplan_train"],
+        }
+    from sociality_estimation.core import agent as agent_module
+
+    if float(estimator["sigma"]) != float(agent_module.sigma):
+        conflicts["sigma"] = {
+            "expected": float(estimator["sigma"]),
+            "observed": float(agent_module.sigma),
+        }
+    if conflicts:
+        raise ValueError(
+            "Command/code conflicts with execution profile: "
+            + json.dumps(conflicts, sort_keys=True)
+        )
+    digest = hashlib.sha256(profile_path.read_bytes()).hexdigest()
+    return {
+        "path": str(profile_path),
+        "sha256": digest,
+        "profile": profile["profile"],
+        "schema_version": int(profile["schema_version"]),
+    }
+
+
 def main(argv: Optional[Sequence[str]] = None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     parser = build_arg_parser()
     args = parser.parse_args(argv)
+    try:
+        profile_metadata = load_and_validate_execution_profile(
+            args.execution_profile, args
+        )
+    except (KeyError, OSError, ValueError, json.JSONDecodeError) as exc:
+        parser.error(str(exc))
     args.output_root.mkdir(parents=True, exist_ok=True)
 
     if args.preflight_only and args.skip_preflight:
@@ -2008,6 +2073,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             preflight["unmatched_rows"],
         )
         if args.preflight_only:
+            preflight["execution_profile"] = profile_metadata
             print(json.dumps(preflight, indent=2, ensure_ascii=False, default=_json_default))
             return
     elif args.preflight_only:
@@ -2023,6 +2089,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             only_incomplete=args.only_incomplete,
             exclude_csv_path=args.exclude_csv,
         )
+        summary["execution_profile"] = profile_metadata
         if args.log_workflow:
             _append_workflow_log(summary, task_name="Merge subsets_for_yiru key-agent IPV shards")
         print(json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default))
@@ -2051,6 +2118,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                 for key, value in completion_df["reason"].value_counts(dropna=False).items()
             },
             "scan_csv": str(scan_csv),
+            "execution_profile": profile_metadata,
         }
         scan_json.write_text(
             json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default),
@@ -2076,6 +2144,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
             reference_max_points=args.reference_max_points,
             reference_smooth_points=args.reference_smooth_points,
         )
+        benchmark["execution_profile"] = profile_metadata
         print(json.dumps(benchmark, indent=2, ensure_ascii=False, default=_json_default))
         return
 
@@ -2118,6 +2187,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         reference_max_points=args.reference_max_points,
         reference_smooth_points=args.reference_smooth_points,
     )
+    summary["execution_profile"] = profile_metadata
     if args.log_workflow:
         _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")
     print(json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default))

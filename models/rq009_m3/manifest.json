@@ -1,0 +1,75 @@
+{
+  "artifact": {
+    "compression": "joblib-lzma-3",
+    "legacy_sha256": "bf9a0c7ae41ba9efcb2ad997aaac1b7881d7788cf8dadd01252c17ed7a6b0ba5",
+    "path": "m3_scorer.joblib",
+    "sha256": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253",
+    "size_bytes": 88306301
+  },
+  "build_environment": {
+    "joblib": "1.5.3",
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "platform": "macOS-26.5.1-arm64-arm-64bit",
+    "pyarrow": "21.0.0",
+    "python": "3.9.6",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.13.1"
+  },
+  "bundle": "rq009_m3",
+  "feature_contract": {
+    "legacy_path": "legacy_feature_spec_contract.json",
+    "legacy_sha256": "cc69467f8134fcdb297220b34a70ab2b40f2bc25b1074714ac29831f82a15fbb",
+    "path": "feature_spec_contract.json",
+    "sha256": "3ad8ba8ab4c51422a7b2ef208683b7552b68f9e949f0087542ba208065677cce"
+  },
+  "frozen_parameters": {
+    "gate_k": 25,
+    "gate_threshold": 1.6072176694869995,
+    "gate_train_reference_rows": 2557510,
+    "quantile_levels": [
+      0.025,
+      0.05,
+      0.1,
+      0.5,
+      0.9,
+      0.95,
+      0.975
+    ],
+    "radii": {
+      "80": {
+        "alpha": 0.2,
+        "c_alpha": -0.004199429880827665,
+        "calibration_n": 1205609,
+        "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score",
+        "nominal": 0.8,
+        "rank": 964488
+      },
+      "90": {
+        "alpha": 0.1,
+        "c_alpha": -0.008091142401099205,
+        "calibration_n": 1205609,
+        "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score",
+        "nominal": 0.9,
+        "rank": 1085049
+      },
+      "95": {
+        "alpha": 0.05,
+        "c_alpha": -0.005418300628662109,
+        "calibration_n": 1205609,
+        "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score",
+        "nominal": 0.95,
+        "rank": 1145330
+      }
+    },
+    "random_state": 20260626
+  },
+  "rq009_run_id": "RQ009_1_dynamic_envelope_20260625T121905Z_98c433de",
+  "schema_version": 1,
+  "source_shas": {
+    "calibration_py": "d8e1048bb4b0109d3c0b428cc879cb3b04610758103d6eb17643a181a9e942f6",
+    "conformal_radii": "25591b5042e11a57208727944945ab62e1c66aa75282a77d02fda35da86a883a",
+    "hyperparameter_tuning": "0646b87bbff3c5704f72b7836643fa6a6155775b8dbe13284e51c800bd9a8b70",
+    "ood_gate": "5357708c1a585eed6f35d8a3714cff1b7c57eb9b70ab2232aecf4a856ac137b1"
+  }
+}

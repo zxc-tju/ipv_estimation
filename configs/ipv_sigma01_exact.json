@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "profile": "ipv_sigma01_exact",
+  "estimator": {
+    "solver_mode": "exact",
+    "sigma": 0.1,
+    "min_observation": 4,
+    "reference_clip_margin_m": 60.0,
+    "reference_max_points": 40,
+    "reference_smooth_points": 40
+  },
+  "windows": {
+    "current_ipv_history_window": 10,
+    "future_target_history_window": 4,
+    "future_target_final_offset": 6
+  },
+  "sampling": {
+    "nuplan_source_hz": 20,
+    "nuplan_estimator_hz": 10,
+    "nuplan_downsample_factor": 2
+  },
+  "legacy_reference": {
+    "git_commit": "5edd28104bf5989e2dc258c9405ce897d7523cc4",
+    "hpc_path": "/share/home/u25310231/ZXC/ipv_estimation"
+  }
+}

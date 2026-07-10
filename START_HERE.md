@@ -488,19 +488,34 @@ question index in `STUDIES.md`.
   case-split no-bleed, max numeric M3 feature-target |corr| `0.1146074993`,
   and leakage-probe test R2 `0.2811922275`; report:
   `reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/03_features/matrix_audit.md`.
-- RQ009 IPV estimator divergence investigation (`INV-ipv-code-diff`, 2026-06-27)
-  found genuine local logic drift from the sigma01-generation estimator. The
-  package refactor was `0827f504` on 2026-06-19, but the post-sigma01 numeric
-  drift was introduced by `a0fee535` on 2026-06-15 in the vectorized
-  `cal_individual_cost`/`cal_group_cost` objective helpers. Matched-parameter
-  direct A/B on 4 real parity cases gave `max_abs_diff=0.2811681005`; restoring
-  the legacy loop helpers reproduced the pinned legacy diagnostic exactly.
-  Follow-up `INV-ipv-accel-hyperparam` tested solver/grid accuracy knobs and
-  found no config-only high-accuracy setting restores sigma01 parity
-  (`parallel_accurate` is speed-only; strict SLSQP and denser IPV grids still
-  differ). Use the pinned HPC legacy estimator for sigma01-compatible IPV.
-  Notes: `reports/knowledge/ipv_estimator_divergence_investigation.md` and
-  `reports/knowledge/ipv_accel_hyperparam_finding.md`.
+- The 2026-06-27 `INV-ipv-code-diff` finding describes the pre-fix state after
+  `a0fee535`: the first vectorized cost helpers drifted from the pinned
+  sigma01-generation estimator. Commit `67f4c543` later restored the legacy
+  loop backend as default `solver_mode="exact"` and repaired the vectorized
+  `fast` backend. Current local estimator/profile tests pass (`6 passed`, one
+  Linux-only strict check skipped), and verifier tests pass `8/8`. Final HPC job
+  `1912947` reproduces sigma01 with `exact` at `max_abs_diff=4.44e-16`; the
+  non-canonical `fast` backend differs from `exact` by `0.0016531` on that ABI.
+  Cross-platform SLSQP still moves local exact output by about `0.0587`, so
+  formal production uses the cloned sigma01 binary ABI and `solver_mode=exact`.
+  Reproduction preserves `sigma=0.1`, `history_window`, `min_observation=4`,
+  reference clip/max/smooth `60/40/40`, NuPlan 20-to-10 Hz downsampling, and the
+  tracked `configs/ipv_sigma01_exact.json`; InterHub CLI reference defaults are
+  now aligned to `60/40/40`.
+- Git-based HPC deployment is active at
+  `/share/home/u25310231/ZXC/sociality_estimation/code/repo` as a clean detached
+  checkout of `codex/unify-ipv-pipeline`; runtime and lock content was validated
+  at `a5af68d2`. Exact and verifier environments are isolated under
+  `envs/ipv-exact-sigma01` (Python 3.9.24) and
+  `envs/ipv-verifier` (Python 3.9.6); their conda/pip locks are tracked under
+  `environments/`. Portable private scorer SHA-256
+  `b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253`
+  is checksum-bound at `checkpoints/rq009_m3/`; final verifier job `1912948`
+  passed `8/8`. The historical `/share/home/u25310231/ZXC/ipv_estimation`
+  checkout remains untouched at `5edd2810`. Deployment guide:
+  `docs/reproducible_ipv_pipeline.md`. Historical investigation notes:
+  `reports/knowledge/_analysis/ipv_estimator_divergence_investigation.md` and
+  `reports/knowledge/_analysis/ipv_accel_hyperparam_finding.md`.
 - RQ009 Phase 4 calibration and independent Phase 4.5 calibration-integrity
   audit are now PASS. M3 test coverage reproduces at 80=`0.8162154701`,
   90=`0.8986657101`, and 95=`0.9496345436`; M3 conformal radii reproduce
