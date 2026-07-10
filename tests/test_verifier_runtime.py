@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -115,9 +116,12 @@ def test_standardized_history_builds_complete_m3_input() -> None:
 
 
 def test_portable_bundle_integrity_and_stable_classes() -> None:
-    model_dir = ROOT / "models/rq009_m3"
-    manifest = json.loads((model_dir / "manifest.json").read_text())
-    scorer_path = model_dir / manifest["artifact"]["path"]
+    scorer_path = Path(
+        os.environ.get(
+            "SOCIALITY_M3_SCORER", ROOT / "models/rq009_m3/m3_scorer.joblib"
+        )
+    )
+    manifest = json.loads((scorer_path.parent / "manifest.json").read_text())
     assert scorer_path.stat().st_size == manifest["artifact"]["size_bytes"]
     assert sha256_file(scorer_path) == manifest["artifact"]["sha256"]
     scorer = load_scorer(scorer_path)
