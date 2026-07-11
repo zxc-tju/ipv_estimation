@@ -14,4 +14,5 @@ BASE="${HPC_SOCIALITY_ROOT:-/share/home/u25310231/ZXC/sociality_estimation}"
 REPO="$BASE/code/repo"
 test -d "$REPO/.git"
 cd "$REPO"
-bash scripts/hpc/migrate_legacy_payloads.sh
+VERIFY_WORKERS="${SLURM_CPUS_PER_TASK:-8}" \
+  bash scripts/hpc/migrate_legacy_payloads.sh

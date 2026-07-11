@@ -18,6 +18,8 @@ RESULTS_SNAPSHOT="$RESULTS_PARENT/$SNAPSHOT_ID"
 RAW_QUARANTINE="$LEGACY/interhub_traj_lane/0_raw_data.quarantine_$SNAPSHOT_ID"
 RESULTS_QUARANTINE="$LEGACY/interhub_traj_lane/1_ipv_estimation_results.quarantine_$SNAPSHOT_ID"
 NEW_RAW_LINK="$BASE/data/interhub/raw"
+RESUME_MIGRATION="${RESUME_MIGRATION:-0}"
+VERIFY_WORKERS="${VERIFY_WORKERS:-8}"
 
 test -e "$OUT/COMPLETE"
 test -d "$RAW_SOURCE"
@@ -26,10 +28,13 @@ test -d "$RESULTS_SOURCE"
 test ! -L "$RESULTS_SOURCE"
 test -L "$NEW_RAW_LINK"
 test "$(readlink -f "$NEW_RAW_LINK")" = "$(readlink -f "$RAW_SOURCE")"
-for path in "$RAW_INCOMING" "$RESULTS_INCOMING" "$RAW_SNAPSHOT" \
-  "$RESULTS_SNAPSHOT" "$RAW_QUARANTINE" "$RESULTS_QUARANTINE"; do
+for path in "$RAW_SNAPSHOT" "$RESULTS_SNAPSHOT" "$RAW_QUARANTINE" "$RESULTS_QUARANTINE"; do
   test ! -e "$path"
 done
+if [[ "$RESUME_MIGRATION" != 1 ]]; then
+  test ! -e "$RAW_INCOMING"
+  test ! -e "$RESULTS_INCOMING"
+fi
 
 mkdir -p "$RAW_PARENT" "$RESULTS_PARENT"
 rsync -aH --links "$RAW_SOURCE/" "$RAW_INCOMING/"
@@ -37,8 +42,15 @@ rsync -aH --links "$RESULTS_SOURCE/" "$RESULTS_INCOMING/"
 
 sed "s#  $RAW_SOURCE/#  $RAW_INCOMING/#" "$OUT/raw_sha256.txt" \
   | sha256sum -c - > "$OUT/raw_copy_verify.txt"
+VERIFY_DIR="$OUT/results_verify_chunks"
+rm -rf "$VERIFY_DIR"
+mkdir "$VERIFY_DIR"
 sed "s#  $RESULTS_SOURCE/#  $RESULTS_INCOMING/#" "$OUT/results_sha256.txt" \
-  | sha256sum -c - > "$OUT/results_copy_verify.txt"
+  | split -n "l/$VERIFY_WORKERS" - "$VERIFY_DIR/chunk_"
+find "$VERIFY_DIR" -type f -print0 \
+  | xargs -0 -r -n 1 -P "$VERIFY_WORKERS" sha256sum -c \
+  > "$OUT/results_copy_verify.txt"
+rm -rf "$VERIFY_DIR"
 test "$(grep -c ': OK$' "$OUT/raw_copy_verify.txt")" -eq "$(wc -l < "$OUT/raw_sha256.txt")"
 test "$(grep -c ': OK$' "$OUT/results_copy_verify.txt")" -eq "$(wc -l < "$OUT/results_sha256.txt")"
 
