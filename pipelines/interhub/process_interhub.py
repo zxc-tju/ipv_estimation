@@ -1867,8 +1867,14 @@ def run_processing(
     return summary
 
 
-def _append_workflow_log(summary: Mapping[str, object], *, task_name: str) -> None:
-    log_path = THIS_DIR / "main_workflow.log"
+def _append_workflow_log(
+    summary: Mapping[str, object],
+    *,
+    task_name: str,
+    log_path: Optional[Path] = None,
+) -> None:
+    log_path = Path(log_path or (THIS_DIR / "main_workflow.log"))
+    log_path.parent.mkdir(parents=True, exist_ok=True)
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     status_counts = summary.get("status_counts", {})
     entry = (
@@ -1988,7 +1994,42 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--log-workflow", action="store_true")
+    parser.add_argument("--workflow-log-path", type=Path, default=None)
     return parser
+
+
+def production_workflow_log_path(args: argparse.Namespace) -> Optional[Path]:
+    """Validate production output isolation and return the approved log path."""
+    run_root_text = os.environ.get("SOCIALITY_PRODUCTION_RUN_ROOT")
+    if not run_root_text:
+        return args.workflow_log_path
+
+    run_root = Path(run_root_text).resolve()
+    output_root = args.output_root.resolve()
+    repo_root = PROJECT_ROOT.resolve()
+    try:
+        output_root.relative_to(run_root)
+    except ValueError as exc:
+        raise ValueError(f"Production output must be inside run root: {run_root}") from exc
+    try:
+        output_root.relative_to(repo_root)
+    except ValueError:
+        pass
+    else:
+        raise ValueError("Production output must not be inside the Git checkout")
+
+    if not args.log_workflow:
+        return None
+    log_path = (args.workflow_log_path or (run_root / "logs" / "workflow.log")).resolve()
+    try:
+        log_path.relative_to(run_root)
+    except ValueError as exc:
+        raise ValueError(f"Production workflow log must be inside run root: {run_root}") from exc
+    try:
+        log_path.relative_to(repo_root)
+    except ValueError:
+        return log_path
+    raise ValueError("Production workflow log must not be inside the Git checkout")
 
 
 def load_and_validate_execution_profile(
@@ -2045,6 +2086,10 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     parser = build_arg_parser()
     args = parser.parse_args(argv)
     try:
+        workflow_log_path = production_workflow_log_path(args)
+    except ValueError as exc:
+        parser.error(str(exc))
+    try:
         profile_metadata = load_and_validate_execution_profile(
             args.execution_profile, args
         )
@@ -2091,7 +2136,11 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         )
         summary["execution_profile"] = profile_metadata
         if args.log_workflow:
-            _append_workflow_log(summary, task_name="Merge subsets_for_yiru key-agent IPV shards")
+            _append_workflow_log(
+                summary,
+                task_name="Merge subsets_for_yiru key-agent IPV shards",
+                log_path=workflow_log_path,
+            )
         print(json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default))
         return
 
@@ -2189,7 +2238,11 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     )
     summary["execution_profile"] = profile_metadata
     if args.log_workflow:
-        _append_workflow_log(summary, task_name="Run subsets_for_yiru key-agent IPV processing")
+        _append_workflow_log(
+            summary,
+            task_name="Run subsets_for_yiru key-agent IPV processing",
+            log_path=workflow_log_path,
+        )
     print(json.dumps(summary, indent=2, ensure_ascii=False, default=_json_default))
 
 

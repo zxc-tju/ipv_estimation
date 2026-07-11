@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "authorizations": {
+    "INFRA": {
+      "allowed_operations": [
+        "interhub_preflight",
+        "interhub_parity_fixture"
+      ]
+    },
+    "RQ014": {
+      "allowed_operations": []
+    }
+  }
+}
