@@ -121,7 +121,7 @@ test -d "$RAW_SNAPSHOT"
 test ! -L "$RAW_SNAPSHOT"
 test -d "$RESULTS_SNAPSHOT"
 test ! -L "$RESULTS_SNAPSHOT"
-test -z "$(find "$RAW_SNAPSHOT" "$RESULTS_SNAPSHOT" -perm /222 -print -quit)"
+test -z "$(find "$RAW_SNAPSHOT" "$RESULTS_SNAPSHOT" ! -type l -perm /222 -print -quit)"
 
 while IFS='|' read -r job_id job_name work_dir state; do
   [[ -n "$job_id" ]] || continue

@@ -163,7 +163,11 @@ def main() -> int:
         if not snapshot.is_dir() or snapshot.is_symlink():
             raise RuntimeError(f"Snapshot is not a real directory: {snapshot}")
         writable = subprocess.check_output(
-            ["find", str(snapshot), "-perm", "/222", "-print", "-quit"], text=True
+            [
+                "find", str(snapshot), "!", "-type", "l", "-perm", "/222",
+                "-print", "-quit",
+            ],
+            text=True,
         ).strip()
         if writable:
             raise RuntimeError(f"Writable path found in immutable snapshot: {writable}")

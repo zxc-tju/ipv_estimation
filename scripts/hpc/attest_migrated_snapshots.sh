@@ -70,7 +70,7 @@ test "$(grep -c ': OK$' "$VERIFY_INCOMING/raw_snapshot_verify.txt")" \
   -eq "$raw_count"
 test "$(grep -c ': OK$' "$VERIFY_INCOMING/results_snapshot_verify.txt")" \
   -eq "$results_count"
-test -z "$(find "$RAW_SNAPSHOT" "$RESULTS_SNAPSHOT" -perm /222 -print -quit)"
+test -z "$(find "$RAW_SNAPSHOT" "$RESULTS_SNAPSHOT" ! -type l -perm /222 -print -quit)"
 
 python3 - "$OUT/SWITCH_COMPLETE" "$OUT/raw_sha256.txt" \
   "$OUT/results_sha256.txt" "$VERIFY_INCOMING/raw_snapshot_verify.txt" \
