@@ -52,8 +52,9 @@ VERIFY_DIR="$OUT/results_verify_chunks"
 rm -rf "$VERIFY_DIR"
 mkdir "$VERIFY_DIR"
 sed "s#  $RESULTS_SOURCE/#  $RESULTS_INCOMING/#" "$OUT/results_sha256.txt" \
-  | split -n "l/$VERIFY_WORKERS" - "$VERIFY_DIR/chunk_"
-find "$VERIFY_DIR" -type f -print0 \
+  > "$VERIFY_DIR/relocated_sha256.txt"
+split -n "l/$VERIFY_WORKERS" "$VERIFY_DIR/relocated_sha256.txt" "$VERIFY_DIR/chunk_"
+find "$VERIFY_DIR" -type f -name 'chunk_*' -print0 \
   | xargs -0 -r -n 1 -P "$VERIFY_WORKERS" sha256sum -c \
   > "$OUT/results_copy_verify.txt"
 rm -rf "$VERIFY_DIR"
