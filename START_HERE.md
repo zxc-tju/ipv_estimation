@@ -503,16 +503,22 @@ question index in `STUDIES.md`.
   tracked `configs/ipv_sigma01_exact.json`; InterHub CLI reference defaults are
   now aligned to `60/40/40`.
 - Git-based HPC deployment is active at
-  `/share/home/u25310231/ZXC/sociality_estimation/code/repo` as a clean detached
-  checkout of `codex/unify-ipv-pipeline`; runtime and lock content was validated
-  at `a5af68d2`. Exact and verifier environments are isolated under
+  `/share/home/u25310231/ZXC/sociality_estimation/code/repo`; the 2026-07-11/12
+  root-cure cutover was validated at `47f79685`, and deployment follows
+  published `main` commits. Exact and verifier environments are isolated under
   `envs/ipv-exact-sigma01` (Python 3.9.24) and
   `envs/ipv-verifier` (Python 3.9.6); their conda/pip locks are tracked under
   `environments/`. Portable private scorer SHA-256
   `b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253`
   is checksum-bound at `checkpoints/rq009_m3/`; final verifier job `1912948`
   passed `8/8`. The historical `/share/home/u25310231/ZXC/ipv_estimation`
-  checkout remains untouched at `5edd2810`. Deployment guide:
+  execution surface is retired: it contains only a tombstone and raw/results
+  compatibility links. Its Git bundle, dirty patch, source/tests/tools, and
+  manifests are checksum-archived under
+  `/share/home/u25310231/ZXC/sociality_estimation/archives/legacy-code/`.
+  InterHub raw/results are immutable snapshots registered by 51 and 173,034
+  fresh SHA-256 checks respectively; managed post-switch preflight jobs
+  `1915718` and `1915764` both matched all 7,500 CSV/PKL events. Deployment guide:
   `docs/reproducible_ipv_pipeline.md`. Historical investigation notes:
   `reports/knowledge/_analysis/ipv_estimator_divergence_investigation.md` and
   `reports/knowledge/_analysis/ipv_accel_hyperparam_finding.md`.

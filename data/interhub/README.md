@@ -14,23 +14,28 @@ Generated InterHub results and reports live under
 The managed HPC deployment root is
 `/share/home/u25310231/ZXC/sociality_estimation`.  Its
 `data/interhub/raw` path is a compatibility symlink to the retained historical
-raw-data root:
+immutable raw-data snapshot:
 
 ```text
 /share/home/u25310231/ZXC/sociality_estimation/data/interhub/raw
-  -> /share/home/u25310231/ZXC/ipv_estimation/interhub_traj_lane/0_raw_data
+  -> /share/home/u25310231/ZXC/sociality_estimation/data/interhub/snapshots/interhub_legacy_20260711_v1
 ```
 
+The retired legacy path contains a compatibility link to the same snapshot;
+it is not an alternate data owner. Historical results are frozen under
+`archives/historical-results/interhub_legacy_20260711_v1/`. The migration was
+verified against 51 raw and 173,034 result SHA-256 entries before switching,
+then reverified against the final snapshot paths.
+
 This preserves the default subset CLI paths and full-dataset paths without a
-second large copy.  Create or verify this mapping only with:
+second active copy. Before the one-time migration, the mapping was created or
+verified with:
 
 ```bash
 bash scripts/hpc/ensure_interhub_data_topology.sh
 ```
 
-The script is fail-closed: it refuses to replace a real directory or a link to
-a different target.  A symlink does not enforce read-only permissions: until
-the immutable snapshot migration is complete, production launchers must treat
-the target as input-only and verify its registered manifest.  The legacy
-payload is historical input data, not an alternate code checkout; new derived
-outputs belong under the managed project root.
+The script is fail-closed and is retained only for provenance; do not use it to
+point the managed path back at the retired legacy root. Production launchers
+verify the registered raw manifest and write only under per-run managed work
+directories. New derived outputs belong under the managed project root.

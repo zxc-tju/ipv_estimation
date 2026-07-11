@@ -2,17 +2,26 @@
 
 ## Canonical roles
 
-The frozen legacy checkout at
-`/share/home/u25310231/ZXC/ipv_estimation` remains an immutable historical
-reference at Git commit `5edd2810`. New work uses the Git-managed checkout at
-`/share/home/u25310231/ZXC/sociality_estimation/code/repo`.
+The only executable project checkout is the Git-managed repository at
+`/share/home/u25310231/ZXC/sociality_estimation/code/repo`. The former flat
+checkout `/share/home/u25310231/ZXC/ipv_estimation` is a retired stub containing
+only `TOMBSTONE.md` and raw/results compatibility links. Commit `5edd2810`, its
+dirty patch, source/tests/tools, and inventories are preserved in the verified
+legacy-code archive under the managed root.
 
-Formal deployment is commit-addressed rather than branch-addressed. The HPC
-checkout is detached at an exact commit and must stay clean. Data, logs,
+Formal deployment is commit-addressed rather than branch-addressed. Each run
+uses a clean detached worktree at an exact commit published on `origin/main`.
+The shared managed checkout must also stay clean. Data, logs,
 environments, checkpoints, and outputs live beside `code/repo`, never inside it.
 Git tracks the scorer contract and checksum manifest, but not the fitted
 2.56-million-row OOD reference tree. The private model bundle is copied through
 SSH with `scripts/hpc/sync_private_m3_bundle.sh` and verified before activation.
+
+InterHub raw data and historical results are immutable snapshots under
+`data/interhub/snapshots/` and `archives/historical-results/`. Production runs
+must go through `scripts/hpc/submit_research_run.sh`; its authorization, commit,
+data/model checksum, isolated output-root, and shared maintenance-lock checks
+fail closed.
 
 ## Pipeline contract
 
@@ -36,10 +45,10 @@ canonical verifier output.
 Publish a reviewed commit locally, then deploy exactly that commit:
 
 ```bash
-git push -u origin codex/unify-ipv-pipeline
+git push origin main
 COMMIT=$(git rev-parse HEAD)
 ssh tongji-hpc \
-  "BRANCH=codex/unify-ipv-pipeline COMMIT=$COMMIT bash -s" \
+  "BRANCH=main COMMIT=$COMMIT bash -s" \
   < scripts/hpc/sync_tongji_checkout.sh
 ```
 
@@ -51,11 +60,11 @@ then point the same sync script at the remote bundle. The resulting checkout is
 still a normal Git repository whose `origin` is GitHub:
 
 ```bash
-git bundle create /tmp/sociality-estimation.bundle codex/unify-ipv-pipeline
+git bundle create /tmp/sociality-estimation.bundle main
 scp /tmp/sociality-estimation.bundle \
   tongji-hpc:/share/home/u25310231/ZXC/sociality_estimation/manifests/
 ssh tongji-hpc \
-  "BRANCH=codex/unify-ipv-pipeline COMMIT=$COMMIT \
+  "BRANCH=main COMMIT=$COMMIT \
    BOOTSTRAP_BUNDLE=/share/home/u25310231/ZXC/sociality_estimation/manifests/sociality-estimation.bundle \
    bash -s" < scripts/hpc/sync_tongji_checkout.sh
 ```
