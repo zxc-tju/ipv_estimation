@@ -22,6 +22,12 @@ RESUME_MIGRATION="${RESUME_MIGRATION:-0}"
 VERIFY_WORKERS="${VERIFY_WORKERS:-8}"
 
 test -e "$OUT/COMPLETE"
+command -v flock >/dev/null
+exec 9>"$OUT/migration.lock"
+flock -n 9 || {
+  printf 'Another legacy payload migration is already running: %s\n' "$OUT/migration.lock" >&2
+  exit 4
+}
 test -d "$RAW_SOURCE"
 test ! -L "$RAW_SOURCE"
 test -d "$RESULTS_SOURCE"
