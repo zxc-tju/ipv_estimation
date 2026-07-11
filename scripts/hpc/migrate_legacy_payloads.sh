@@ -22,11 +22,18 @@ RESUME_MIGRATION="${RESUME_MIGRATION:-0}"
 VERIFY_WORKERS="${VERIFY_WORKERS:-8}"
 
 test -e "$OUT/COMPLETE"
+test ! -e "$OUT/SWITCH_COMPLETE"
 command -v flock >/dev/null
 exec 9>"$OUT/migration.lock"
 flock -n 9 || {
   printf 'Another legacy payload migration is already running: %s\n' "$OUT/migration.lock" >&2
   exit 4
+}
+exec 8>"$BASE/manifests/runtime_maintenance.lock"
+flock -x -n 8 || {
+  printf 'A research run or maintenance operation is active: %s\n' \
+    "$BASE/manifests/runtime_maintenance.lock" >&2
+  exit 5
 }
 test -d "$RAW_SOURCE"
 test ! -L "$RAW_SOURCE"
@@ -71,21 +78,36 @@ mv "$RAW_INCOMING" "$RAW_SNAPSHOT"
 mv "$RESULTS_INCOMING" "$RESULTS_SNAPSHOT"
 
 rollback() {
+  status=$?
+  trap - EXIT INT TERM
+  if [[ -e "$OUT/SWITCH_COMPLETE" ]]; then
+    exit "$status"
+  fi
   set +e
-  if [[ -L "$RAW_SOURCE" && -d "$RAW_QUARANTINE" ]]; then
-    rm "$RAW_SOURCE"
+  if [[ -L "$RAW_SOURCE" && "$(readlink -f "$RAW_SOURCE")" = "$RAW_SNAPSHOT" ]]; then
+    rm -- "$RAW_SOURCE"
+  fi
+  if [[ ! -e "$RAW_SOURCE" && -d "$RAW_QUARANTINE" ]]; then
     mv "$RAW_QUARANTINE" "$RAW_SOURCE"
   fi
-  if [[ -L "$RESULTS_SOURCE" && -d "$RESULTS_QUARANTINE" ]]; then
-    rm "$RESULTS_SOURCE"
+  if [[ -L "$RESULTS_SOURCE" && "$(readlink -f "$RESULTS_SOURCE")" = "$RESULTS_SNAPSHOT" ]]; then
+    rm -- "$RESULTS_SOURCE"
+  fi
+  if [[ ! -e "$RESULTS_SOURCE" && -d "$RESULTS_QUARANTINE" ]]; then
     mv "$RESULTS_QUARANTINE" "$RESULTS_SOURCE"
   fi
-  if [[ ! -L "$NEW_RAW_LINK" || "$(readlink -f "$NEW_RAW_LINK" 2>/dev/null)" != "$(readlink -f "$RAW_SOURCE" 2>/dev/null)" ]]; then
-    rm -f "$NEW_RAW_LINK"
+  if [[ -L "$NEW_RAW_LINK" ]]; then
+    rm -- "$NEW_RAW_LINK"
+  fi
+  if [[ ! -e "$NEW_RAW_LINK" && -d "$RAW_SOURCE" ]]; then
     ln -s "$RAW_SOURCE" "$NEW_RAW_LINK"
   fi
+  rm -f -- "$OUT/SWITCH_COMPLETE.incoming.${SLURM_JOB_ID:-$$}"
+  exit "$status"
 }
-trap rollback ERR
+trap rollback EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 rm "$NEW_RAW_LINK"
 mv "$RAW_SOURCE" "$RAW_QUARANTINE"
@@ -100,8 +122,8 @@ test "$(readlink -f "$RAW_SOURCE")" = "$RAW_SNAPSHOT"
 test "$(readlink -f "$RESULTS_SOURCE")" = "$RESULTS_SNAPSHOT"
 test -d "$RAW_QUARANTINE"
 test -d "$RESULTS_QUARANTINE"
-trap - ERR
 
+switch_incoming="$OUT/SWITCH_COMPLETE.incoming.${SLURM_JOB_ID:-$$}"
 {
   printf 'snapshot_id=%s\n' "$SNAPSHOT_ID"
   printf 'raw_snapshot=%s\n' "$RAW_SNAPSHOT"
@@ -109,5 +131,9 @@ trap - ERR
   printf 'raw_quarantine=%s\n' "$RAW_QUARANTINE"
   printf 'results_quarantine=%s\n' "$RESULTS_QUARANTINE"
   printf 'switched_at=%s\n' "$(date --iso-8601=seconds)"
-} > "$OUT/SWITCH_COMPLETE"
+  printf 'raw_copy_verify_sha256=%s\n' "$(sha256sum "$OUT/raw_copy_verify.txt" | awk '{print $1}')"
+  printf 'results_copy_verify_sha256=%s\n' "$(sha256sum "$OUT/results_copy_verify.txt" | awk '{print $1}')"
+} > "$switch_incoming"
+mv "$switch_incoming" "$OUT/SWITCH_COMPLETE"
+trap - EXIT INT TERM
 printf 'Legacy payload migration complete: %s\n' "$SNAPSHOT_ID"

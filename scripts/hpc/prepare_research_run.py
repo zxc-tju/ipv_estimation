@@ -159,6 +159,8 @@ def prepare_and_submit(spec: dict, validated: dict, *, base: Path, repo: Path) -
         f"test \"$(sha256sum {shlex.quote(validated['model_path'])} | awk '{{print $1}}')\" = {MODEL_SHA256}\n"
         f"test \"$(sha256sum {shlex.quote(validated['model_manifest_path'])} | awk '{{print $1}}')\" = {validated['model_manifest_sha256']}\n"
         f"test \"$(sha256sum {shlex.quote(validated['model_contract_path'])} | awk '{{print $1}}')\" = {validated['model_contract_sha256']}\n"
+        f"exec 8>{shlex.quote(str(base / 'manifests' / 'runtime_maintenance.lock'))}\n"
+        "flock -s 8\n"
         f"export SOCIALITY_PRODUCTION_RUN_ROOT={shlex.quote(str(run_root))}\n"
         f"export SOCIALITY_M3_SCORER={shlex.quote(validated['model_path'])}\n"
         f"export PYTHONPATH={shlex.quote(str(code / 'src'))}\n"

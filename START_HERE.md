@@ -531,8 +531,11 @@ question index in `STUDIES.md`.
   RQ009 calibration code, refits only M3 per-quantile HGB models with the
   frozen selected hyperparameters and seed `20260626`, uses saved M3 conformal
   radii and saved OOD gate threshold/support parameters, and touches no OnSite
-  outcomes. Serialized scorer/helper/contract:
-  `data/derived/onsite_competition/RQ012B_event_harm/stage3plus/m3_scorer/`.
+  outcomes. The original serialized scorer/helper/contract are provenance-only
+  and were moved out of the active derived topology to
+  `data/derived/_provenance_archive/rq009_m3_legacy_source_20260711/`.
+  Runtime code must use the manifest-verified portable bundle under
+  `models/rq009_m3/` locally or `checkpoints/rq009_m3/` on HPC.
   Refit/parity/provenance:
   `reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/m3_refit/`.
   Saved RQ009 M3 calibration+test prediction parity is exact for materialized

@@ -17,7 +17,7 @@ deserialization.
 The original ignored scorer remains the provenance source with SHA-256
 `bf9a0c7ae41ba9efcb2ad997aaac1b7881d7788cf8dadd01252c17ed7a6b0ba5`.
 It is retained only at
-`data/derived/onsite_competition/RQ012B_event_harm/stage3plus/m3_scorer/m3_scorer.joblib`
+`data/derived/_provenance_archive/rq009_m3_legacy_source_20260711/m3_scorer.joblib`
 to rebuild and audit this portable bundle.  It is **not** a deployment model:
 do not point `SOCIALITY_M3_SCORER` at it or copy it to HPC.  The only supported
 runtime artifact is this directory's manifest-verified portable scorer.
