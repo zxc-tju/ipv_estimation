@@ -388,6 +388,7 @@ else
   verify_archive
 fi
 
+mkdir -p "$(dirname "$ROOT_QUARANTINE")"
 rollback_retirement() {
   status=$?
   trap - EXIT INT TERM
