@@ -1,0 +1,13 @@
+figure,panel,question,source_csv,note
+fig1_verifier_mechanism,a,一条记录如何得到带内/超出/弃权？,source_data/fig1_onsite_case.csv,机制示意；参数来自冻结 M3 合同
+fig1_verifier_mechanism,b,真实车辆如何交互？,source_data/fig1_onsite_case.csv,OnSite 外部应用；单场景
+fig1_verifier_mechanism,c,动态包络如何随时间变化？,source_data/fig1_onsite_case.csv,observed 为 target_ipv_future；不是人工意图标签
+fig1_verifier_mechanism,d,为何某些时刻弃权？,source_data/fig1_onsite_case.csv,25-NN 平均距离与冻结阈值
+fig2_reference_data,a,各折有多少行真正进入参考或判定？,source_data/fig2_gate_flow.csv,perspective-anchor rows
+fig2_reference_data,b,训练参考来自哪些数据集？,source_data/fig2_train_composition.csv,训练折精确聚合
+fig2_reference_data,c,训练情境是否均衡？,source_data/fig2_train_composition.csv,训练折精确聚合
+fig2_reference_data,d,哪些联合情境被支持？,source_data/fig2_joint_support.csv,anchors>=50 且 unique cases>=10
+fig3_evidence_and_limits,a,门后边际覆盖是否接近标称？,source_data/fig3_m3_coverage.csv,held-out gate-passing rows
+fig3_evidence_and_limits,b,情境化包络是否更有信息？,source_data/fig3_context_gain.csv,M0 global 与 M3 frozen context
+fig3_evidence_and_limits,c,测试弃权是否因子组而异？,source_data/fig3_test_abstention.csv,冻结测试折
+fig3_evidence_and_limits,d,跨来源外推是否稳定？,source_data/fig3_lodo_m3.csv,leave-one-dataset-out

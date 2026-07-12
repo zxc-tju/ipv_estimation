@@ -1,0 +1,8 @@
+panel,tier,nominal,alpha_label,coverage,coverage_delta_pp,n_rows,n_cases,abstention,coverage_within_3pp,bin_left,bin_right,count,quantile,width
+m3_width_quantile_90,M3,0.9,,,,1209857,,,,,,,0.1,0.1299568265676498
+m3_width_quantile_90,M3,0.9,,,,1209857,,,,,,,0.25,0.4858018159866333
+m3_width_quantile_90,M3,0.9,,,,1209857,,,,,,,0.5,1.0158008337020874
+m3_width_quantile_90,M3,0.9,,,,1209857,,,,,,,0.75,1.570260524749756
+m3_width_quantile_90,M3,0.9,,,,1209857,,,,,,,0.9,1.836265015602112
+m3_width_quantile_90,M3,0.9,,,,1209857,,,,,,,0.95,1.9619028568267816
+m3_width_quantile_90,M3,0.9,,,,1209857,,,,,,,0.99,2.1192880630493156

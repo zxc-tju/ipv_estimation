@@ -15,6 +15,7 @@ These are interpretation-layer notes. Raw machine artifacts (`.json`) ideally be
 | `ipv_accel_hyperparam.json` + `ipv_accel_hyperparam_finding.md` | IPV acceleration hyperparameter finding | 1 |
 | `ipv_estimator_api_map.json` + `ipv_estimator_api_map.md` | IPV estimator API surface map | none — **orphan**; confirm whether to keep or archive |
 | `ipv_estimator_divergence.json` + `ipv_estimator_divergence_investigation.md` | IPV estimator divergence investigation | 1 |
+| `PROGRAM_REVIEW_20260707_claude.md` | Program-level progress review + prioritized recommendations (Claude, 2026-07-07); synthesis only, no new claims | new (2026-07-07) |
 
 "Inbound refs" counts only references from other files under `reports/knowledge/`; a file
 may still be referenced elsewhere in the repo. Orphans are retained pending a keep-or-archive

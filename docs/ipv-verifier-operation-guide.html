@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="用论文式机制图和真实数据可视化解释冻结 RQ009 M3 IPV verifier 的运行逻辑、数据基础、验证证据与适用边界。">
+  <title>IPV Verifier：先判能不能比，再判偏离多少</title>
+  <style>
+    :root {
+      --paper: #f4f1ea;
+      --surface: #fffefa;
+      --ink: #233443;
+      --muted: #647481;
+      --line: #d9dfdf;
+      --blue: #315f9f;
+      --blue-soft: #eaf1f8;
+      --green: #2d927e;
+      --green-soft: #e5f4ef;
+      --red: #c84f43;
+      --red-soft: #faece9;
+      --purple: #7a56a0;
+      --purple-soft: #f0eaf5;
+      --gold: #b78a36;
+      --gold-soft: #f7efd9;
+      --shadow: 0 12px 34px rgba(35, 52, 67, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.72 "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    strong { font-weight: 720; }
+    code {
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: #eef0ef;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9em;
+    }
+    main { width: min(1180px, calc(100% - 34px)); margin: 0 auto; padding: 28px 0 72px; }
+    header {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(28px, 6vw, 66px);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 94% 8%, rgba(49, 95, 159, .12), transparent 28%),
+        linear-gradient(145deg, #fffefa 0%, #f8fafb 100%);
+      box-shadow: var(--shadow);
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 760;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.25; }
+    h1 { max-width: 900px; font-size: clamp(34px, 5.5vw, 62px); letter-spacing: -.045em; }
+    h2 { font-size: clamp(26px, 3.5vw, 38px); letter-spacing: -.025em; }
+    h3 { font-size: 18px; }
+    p { margin: 11px 0; }
+    .lede { max-width: 900px; margin-top: 20px; color: var(--muted); font-size: clamp(17px, 2vw, 21px); }
+    .thesis {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      max-width: 900px;
+      margin-top: 28px;
+      padding: 17px 19px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-soft);
+      border-radius: 0 12px 12px 0;
+    }
+    .thesis .mark { font-size: 25px; font-weight: 800; line-height: 1; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+    nav a {
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .7);
+      font-size: 13px;
+      text-decoration: none;
+    }
+    nav a:hover { border-color: var(--blue); color: var(--blue); }
+    section { margin-top: 68px; scroll-margin-top: 24px; }
+    .section-head { display: grid; grid-template-columns: 64px 1fr; gap: 16px; align-items: start; margin-bottom: 22px; }
+    .section-no {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--ink);
+      color: white;
+      font-size: 19px;
+      font-weight: 760;
+    }
+    .section-intro { max-width: 930px; margin: 8px 0 0; color: var(--muted); font-size: 17px; }
+    .stats, .grid-2, .grid-3, .grid-4 { display: grid; gap: 14px; }
+    .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 22px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card, .stat, .figure-shell, .table-shell, details {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: 0 8px 24px rgba(35, 52, 67, .05);
+    }
+    .card { padding: 19px; border-radius: 14px; }
+    .card p:last-child { margin-bottom: 0; }
+    .stat { padding: 16px 17px; border-radius: 13px; }
+    .stat strong { display: block; font-size: clamp(24px, 3vw, 34px); line-height: 1.1; letter-spacing: -.035em; }
+    .stat span { display: block; margin-top: 7px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .figure-shell { margin: 0; padding: clamp(10px, 2vw, 20px); border-radius: 16px; }
+    .figure-shell img { display: block; width: 100%; height: auto; background: white; }
+    .figure-shell > a { display: block; border-radius: 7px; overflow: hidden; }
+    figcaption { padding: 14px 4px 2px; color: var(--muted); font-size: 13px; }
+    .caption-title { color: var(--ink); font-weight: 720; }
+    .reading-guide { margin-top: 16px; }
+    .reading-guide .card { position: relative; padding-left: 54px; }
+    .reading-guide .tag {
+      position: absolute;
+      left: 17px;
+      top: 18px;
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--blue);
+      color: white;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .time-contract {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 18px;
+      padding: 18px;
+      border: 1px solid #b7cae0;
+      border-radius: 14px;
+      background: var(--blue-soft);
+    }
+    .time-contract .node { text-align: center; }
+    .time-contract .node strong { display: block; }
+    .time-contract .node span { color: var(--muted); font-size: 13px; }
+    .time-contract .arrow { color: var(--blue); font-size: 26px; font-weight: 750; }
+    .table-shell { overflow-x: auto; margin-top: 17px; border-radius: 14px; }
+    table { width: 100%; min-width: 820px; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 11px 13px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f1f4f4; font-size: 13px; }
+    tbody tr:last-child td { border-bottom: 0; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 730; white-space: nowrap; }
+    .badge.pass { color: #126b5c; background: var(--green-soft); }
+    .badge.up { color: #a13a31; background: var(--red-soft); }
+    .badge.down { color: #67428c; background: var(--purple-soft); }
+    .badge.abstain { color: #805f1d; background: var(--gold-soft); }
+    .evidence { border-top: 5px solid var(--blue); }
+    .evidence.good { border-color: var(--green); }
+    .evidence.warn { border-color: var(--gold); }
+    .evidence.limit { border-color: var(--red); }
+    .big { margin: 7px 0 2px; font-size: 30px; font-weight: 760; letter-spacing: -.035em; }
+    .small { color: var(--muted); font-size: 13px; }
+    .logic {
+      margin-top: 18px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      border-radius: 12px;
+      background: #263746;
+      color: #edf4f5;
+      font: 14px/1.8 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre;
+    }
+    .status-card { min-height: 176px; }
+    .status-card.pass { border-top: 5px solid var(--green); }
+    .status-card.up { border-top: 5px solid var(--red); }
+    .status-card.down { border-top: 5px solid var(--purple); }
+    .status-card.abstain { border-top: 5px solid var(--gold); }
+    .warning-list { display: grid; gap: 10px; margin-top: 16px; }
+    .warning {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 12px;
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+    .warning .icon { color: var(--red); font-size: 23px; font-weight: 800; }
+    .warning p { margin: 3px 0 0; color: var(--muted); }
+    details { margin-top: 13px; padding: 16px 18px; border-radius: 12px; }
+    summary { cursor: pointer; font-weight: 720; }
+    details p, details li { color: var(--muted); }
+    .download-list { display: grid; gap: 10px; margin-top: 15px; }
+    .download-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 2fr;
+      gap: 14px;
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+    .download-row span { color: var(--muted); font-size: 13px; }
+    footer { margin-top: 58px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 900px) {
+      .stats, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3 { grid-template-columns: 1fr; }
+      .time-contract { grid-template-columns: 1fr; }
+      .time-contract .arrow { transform: rotate(90deg); text-align: center; }
+    }
+    @media (max-width: 680px) {
+      main { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      header { padding: 26px 20px; border-radius: 15px; }
+      section { margin-top: 52px; }
+      .section-head { grid-template-columns: 45px 1fr; gap: 10px; }
+      .section-no { width: 40px; height: 40px; font-size: 15px; }
+      .stats, .grid-2, .grid-4 { grid-template-columns: 1fr; }
+      .download-row { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; }
+      main { width: 100%; padding: 0; }
+      header, .card, .stat, .figure-shell, .table-shell, details { box-shadow: none; }
+      nav { display: none; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">RQ009 M3 · figure-led explainer · 2026-07-11</p>
+      <h1>IPV Verifier：先判“能不能比”，再判“偏离多少”</h1>
+      <p class="lede">把它想成一个<strong>会拒答的经验裁判</strong>：先根据当前交互情境生成“类似情境下的人类 IPV 范围”，再确认这个情境是否被训练数据充分支持；只有两道门都通过，才比较自车的观测 IPV 与包络。</p>
+      <div class="thesis">
+        <div class="mark">→</div>
+        <div><strong>一句话结论：</strong>它判断的是“当前 IPV 是否偏离同情境人类经验分布”，不是“车辆是否安全”、不是“驾驶是否正确”，也不是“人类真实意图标签”。</div>
+      </div>
+      <nav aria-label="页面目录">
+        <a href="#mechanism">1 机制与真实案例</a>
+        <a href="#data">2 数据基础</a>
+        <a href="#evidence">3 验证证据</a>
+        <a href="#outputs">4 输出怎么读</a>
+        <a href="#limits">5 最容易误读的边界</a>
+        <a href="#downloads">图表与源数据</a>
+      </nav>
+      <div class="stats">
+        <div class="stat"><strong>4</strong><span>人类参考数据来源：Waymo、nuPlan、Lyft、AV2</span></div>
+        <div class="stat"><strong>1,209,857</strong><span>冻结测试折中通过支持门、可用于覆盖验证的记录</span></div>
+        <div class="stat"><strong>89.87%</strong><span>门后 90% 包络的实测覆盖率</span></div>
+        <div class="stat"><strong>4.78%</strong><span>冻结测试折总体弃权率；不同情境差异很大</span></div>
+      </div>
+    </header>
+
+    <section id="mechanism">
+      <div class="section-head">
+        <div class="section-no">01</div>
+        <div>
+          <h2>一条记录究竟怎样变成“带内 / 超出 / 弃权”？</h2>
+          <p class="section-intro">先看上半部的机制，再沿着同一条真实 OnSite 序列看下半部。图中的 ①–④ 在轨迹图、包络图和支持距离图中一一对应。</p>
+        </div>
+      </div>
+      <figure class="figure-shell">
+        <a href="assets/ipv_verifier/fig1_verifier_mechanism.svg" title="打开可编辑 SVG">
+          <img src="assets/ipv_verifier/fig1_verifier_mechanism.png" alt="IPV verifier 运行机制图：从交互情境、条件人类包络、支持门到最终比较，并以真实 OnSite 序列展示带内、上下界超出和弃权。" width="2160" height="1965">
+        </a>
+        <figcaption><span class="caption-title">图 1｜机制总图与真实序列。</span> 上：运行逻辑；左下：真实交互轨迹；右中：动态 90% 人类包络与观测 IPV；右下：25-NN 支持距离。点击图可打开可编辑 SVG。</figcaption>
+      </figure>
+
+      <div class="grid-3 reading-guide">
+        <article class="card"><span class="tag">1</span><h3>情境先进入包络模型</h3><p>模型只使用锚点 <em>t*</em> 及之前的历史：相对运动、冲突几何、角色、主体类型，以及<strong>对手 IPV 的历史通道</strong>。它输出七个条件分位点，经 CQR 校准形成 80% / 90% / 95% 人类包络。</p></article>
+        <article class="card"><span class="tag">2</span><h3>支持门决定“是否可比”</h3><p>第一道门检查路径×角色×主体组合是否有足够锚点和唯一场景；第二道门检查 25 个最近邻的平均距离是否 ≤ 1.6072。任何一道失败都只能<strong>弃权</strong>。</p></article>
+        <article class="card"><span class="tag">3</span><h3>观测值最后才进入</h3><p>观测到的自车窗口 IPV 不参与人类包络的生成，只进入最终比较：在带内记为 0；高于上界给正超出量；低于下界给负超出量。</p></article>
+      </div>
+
+      <div class="time-contract" aria-label="IPV verifier 时间对齐合同">
+        <div class="node"><strong>历史输入</strong><span>仅使用 t ≤ t*；含对手 IPV 历史</span></div>
+        <div class="arrow">→</div>
+        <div class="node"><strong>锚点 t*</strong><span>冻结情境与支持判断</span></div>
+        <div class="arrow">→</div>
+        <div class="node"><strong>未来窗口目标</strong><span>训练/验证合同为 t*+6 附近，约 0.6 s</span></div>
+      </div>
+      <p class="small"><strong>为什么要单独画时间轴？</strong> 如果运行时拿“当前帧 IPV”去对比一个为未来窗口训练的包络，数值即使能算出来，语义也已经错位。外部应用必须保持同一 observed-column 与时间窗口合同。</p>
+
+      <div class="table-shell">
+        <table aria-label="真实 OnSite 案例四个标注时刻">
+          <thead>
+            <tr><th>图中编号</th><th>帧 / 时间</th><th>状态</th><th class="num">观测 IPV</th><th>90% 包络</th><th class="num">支持距离</th><th class="num">有符号超出量</th><th>怎样读</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>①</td><td>63 / 4.003 s</td><td><span class="badge abstain">弃权</span></td><td class="num">−0.0639</td><td>撤回</td><td class="num">1.6152 &gt; 1.6072</td><td class="num">—</td><td>距离略高于阈值；即使保留了原始分位预测，也不能解释为带内。</td></tr>
+            <tr><td>②</td><td>80 / 5.703 s</td><td><span class="badge pass">带内</span></td><td class="num">0.1282</td><td>[−0.6057, 0.8942]</td><td class="num">1.5600</td><td class="num">0</td><td>支持门通过，观测值位于包络内。</td></tr>
+            <tr><td>③</td><td>210 / 18.700 s</td><td><span class="badge up">上界超出</span></td><td class="num">0.6430</td><td>[−0.0021, 0.1026]</td><td class="num">0.7403</td><td class="num">+0.5404</td><td>不是“离中位数多远”，而是超过最近边界 0.5404 rad。</td></tr>
+            <tr><td>④</td><td>246 / 22.299 s</td><td><span class="badge down">下界超出</span></td><td class="num">−0.3926</td><td>[−0.0400, 0.6490]</td><td class="num">0.4056</td><td class="num">−0.3526</td><td>负号仅表示低于下界的方向，不自动等于风险方向。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small">这条真实序列共有 374 个有效锚点：189 个通过支持门、185 个弃权；通过门的锚点中 167 个带内、14 个上界超出、8 个下界超出。它用于展示机制，不代表总体发生率。</p>
+    </section>
+
+    <section id="data">
+      <div class="section-head">
+        <div class="section-no">02</div>
+        <div>
+          <h2>这个“人类范围”到底建立在什么数据上？</h2>
+          <p class="section-intro">这里最重要的不是总量大，而是支持空间是否覆盖当前情境。图 2 同时展示样本流、来源组成、情境不平衡和 24 个联合单元的支持状态。</p>
+        </div>
+      </div>
+      <figure class="figure-shell">
+        <a href="assets/ipv_verifier/fig2_reference_data.svg" title="打开可编辑 SVG">
+          <img src="assets/ipv_verifier/fig2_reference_data.png" alt="冻结 RQ009 M3 的数据基础图：四个数据折通过支持门的记录数、训练来源比例、情境组成与路径角色主体联合支持热图。" width="2160" height="1875">
+        </a>
+        <figcaption><span class="caption-title">图 2｜数据基础与支持空间。</span> 热图每格第一行是锚点记录数，第二行是唯一场景数；斜纹表示不满足“锚点 ≥ 50 且唯一场景 ≥ 10”。</figcaption>
+      </figure>
+
+      <div class="grid-2 reading-guide">
+        <article class="card"><span class="tag">A</span><h3>样本单位不是“场景”</h3><p>6,397,266 是四个数据折中的<strong>视角-锚点记录</strong>总数。同一交互场景可贡献多个时刻和两个观察视角，所以不能把行数当成独立案例数。</p></article>
+        <article class="card"><span class="tag">B</span><h3>四个来源并不均衡</h3><p>训练折中 Waymo 51.95%、nuPlan 27.10%、Lyft 16.22%、AV2 4.73%。来源多样不等于任何新数据域都自动有效。</p></article>
+        <article class="card"><span class="tag">C</span><h3>MP 路径占 91.02%</h3><p>主体类型为 HV–HV 73.18%、AV–HV 26.82%；equal 观察角色只有 1.35%。总体指标天然更接近高频情境。</p></article>
+        <article class="card"><span class="tag">D</span><h3>支持看“数量 + 独立性”</h3><p>例如 CP | equal | AV–HV 有 582 个锚点，但只来自 3 个唯一场景，仍然不支持。24 个联合单元中 19 个支持、4 个稀疏不支持、1 个从未出现。</p></article>
+      </div>
+      <div class="thesis">
+        <div class="mark">≠</div>
+        <div><strong>大样本不等于处处有证据。</strong> verifier 的类别支持门正是为了避免“总样本很多”掩盖某个具体组合只有少量场景这一问题。</div>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="section-head">
+        <div class="section-no">03</div>
+        <div>
+          <h2>我们凭什么相信它，又在哪些地方不能外推？</h2>
+          <p class="section-intro">覆盖率只回答“包络是否包含了约定比例的留出目标”，不回答安全、因果或任意新域的有效性。图 3 把正面证据和失败边界放在同一页。</p>
+        </div>
+      </div>
+      <figure class="figure-shell">
+        <a href="assets/ipv_verifier/fig3_evidence_and_limits.svg" title="打开可编辑 SVG">
+          <img src="assets/ipv_verifier/fig3_evidence_and_limits.png" alt="IPV verifier 验证证据与边界图：门后边际覆盖、情境包络相对全局包络的信息增益、子组弃权率与跨来源留一验证。" width="2160" height="1845">
+        </a>
+        <figcaption><span class="caption-title">图 3｜验证证据与适用边界。</span> 左上是门后覆盖；右上比较情境包络与全局包络；左下展示子组弃权异质性；右下展示跨来源留一验证。</figcaption>
+      </figure>
+
+      <div class="grid-4 reading-guide">
+        <article class="card evidence good"><span class="tag">A</span><h3>门后边际覆盖成立</h3><div class="big">89.87%</div><p>90% 标称包络在 1,209,857 个 gate-passing 测试记录上达到 89.87%，误差 −0.13 个百分点。</p></article>
+        <article class="card evidence good"><span class="tag">B</span><h3>情境化提高信息量</h3><div class="big">−41.9%</div><p>相对全局包络，M3 平均带宽从 1.749 降到 1.016；Winkler 分数降低 35.6%，覆盖率几乎不变。</p></article>
+        <article class="card evidence warn"><span class="tag">C</span><h3>子组差异不能忽略</h3><div class="big">126 / 264</div><p>已报告子组中有 126 个条件覆盖偏离标称值超过 ±3 个百分点；CP 测试弃权率达到 31.68%。</p></article>
+        <article class="card evidence limit"><span class="tag">D</span><h3>跨来源并非无条件成立</h3><div class="big">74.9%</div><p>留一来源验证中，Lyft 的 90% 覆盖只有 74.9%；AV2 虽覆盖 96.4%，但弃权率达 40.4%。</p></article>
+      </div>
+      <div class="thesis">
+        <div class="mark">!</div>
+        <div><strong>分母决定结论。</strong> 89.87% 是“支持门通过记录”上的覆盖率。如果把冻结测试折的 60,709 个弃权记录全部当作未覆盖，总测试折覆盖率是 85.57%。两者回答不同问题，都应报告。</div>
+      </div>
+    </section>
+
+    <section id="outputs">
+      <div class="section-head">
+        <div class="section-no">04</div>
+        <div>
+          <h2>拿到一行输出后，正确阅读顺序是什么？</h2>
+          <p class="section-intro">先看支持门，再看包络，再读超出方向。不要先看 <code>outside=false</code>，因为弃权行也可能以 false 占位，但那一行根本没有可用判定。</p>
+        </div>
+      </div>
+      <div class="grid-4">
+        <article class="card status-card pass"><span class="badge pass">IN BAND</span><h3>带内</h3><p>支持门通过，且 <code>lo ≤ observed ≤ hi</code>。超出量为 0。</p><p class="small">含义：与同情境人类经验包络一致；不是安全证明。</p></article>
+        <article class="card status-card up"><span class="badge up">UPPER</span><h3>上界超出</h3><p>支持门通过，但观测 IPV 高于上界。超出量为正。</p><p class="small">含义：偏离方向向上；符号不自动映射为“更危险”。</p></article>
+        <article class="card status-card down"><span class="badge down">LOWER</span><h3>下界超出</h3><p>支持门通过，但观测 IPV 低于下界。超出量为负。</p><p class="small">含义：偏离方向向下；幅度是到最近边界的距离。</p></article>
+        <article class="card status-card abstain"><span class="badge abstain">ABSTAIN</span><h3>弃权</h3><p>类别组合不支持，或数值 OOD 距离超过阈值。包络与偏离不可用。</p><p class="small">含义：模型说“我没有足够依据比较”，不是“没有异常”。</p></article>
+      </div>
+      <div class="logic">if not support_gate_pass:   ABSTAIN
+elif observed_ipv &lt; lo_90:     LOWER_EXCEEDANCE
+elif observed_ipv &gt; hi_90:     UPPER_EXCEEDANCE
+else:                          IN_BAND</div>
+    </section>
+
+    <section id="limits">
+      <div class="section-head">
+        <div class="section-no">05</div>
+        <div>
+          <h2>五个最容易造成错误结论的误读</h2>
+          <p class="section-intro">这些不是措辞问题，而是会直接改变统计分母、时间语义和论文结论的边界条件。</p>
+        </div>
+      </div>
+      <div class="warning-list">
+        <div class="warning"><div class="icon">1</div><div><strong>“带内”不等于安全，“带外”不等于危险。</strong><p>verifier 描述与人类经验分布的一致性，不提供碰撞风险、法规合规或控制质量的因果判定。</p></div></div>
+        <div class="warning"><div class="icon">2</div><div><strong>“弃权”不等于正常。</strong><p>弃权时必须撤回包络和偏离解释，并单独报告弃权率；不能把 <code>outside=false</code> 计入正常率。</p></div></div>
+        <div class="warning"><div class="icon">3</div><div><strong>边际有效不等于每个子组都有效。</strong><p>总体 90% 覆盖接近标称，但低频路径、角色和跨来源组合可明显偏离；结论必须附带支持空间。</p></div></div>
+        <div class="warning"><div class="icon">4</div><div><strong>外部 OnSite 序列是应用示例，不是 RQ009 的人类留出验证域。</strong><p>它可以展示 verifier 怎样工作，但不能单独证明模型已在 OnSite 域获得同等级别的覆盖保证。</p></div></div>
+        <div class="warning"><div class="icon">5</div><div><strong><code>target_ipv_future</code> 是估计器产生的未来窗口 IPV，不是人工标注的人类意图真值。</strong><p>因此“超出包络”应表述为估计量相对经验包络的偏离，不能升级为对主观意图的事实判断。</p></div></div>
+      </div>
+    </section>
+
+    <section id="downloads">
+      <div class="section-head">
+        <div class="section-no">06</div>
+        <div>
+          <h2>技术细节、可编辑图与图源数据</h2>
+          <p class="section-intro">所有图都同时导出 PNG、PDF 和保留文字对象的 SVG；每个面板对应的源数据也单独保存，便于复核或改图。</p>
+        </div>
+      </div>
+      <details>
+        <summary>展开：冻结 M3 的关键技术合同</summary>
+        <ul>
+          <li>包络模型输入：25 个数值特征 + 7 个类别特征；七个条件分位回归器输出 q02.5、q05、q10、q50、q90、q95、q97.5。</li>
+          <li>支持门：联合类别单元要求锚点 ≥ 50 且唯一场景 ≥ 10；数值门使用 15 个距离特征 + 3 个类别特征的 25-NN 平均距离。</li>
+          <li>冻结数值阈值：<code>d ≤ 1.6072176695</code>。</li>
+          <li>CQR 校准样本：1,205,609 个 gate-passing calibration rows；80% / 90% / 95% 校正常数分别为 −0.00419943、−0.00809114、−0.00541830。</li>
+          <li>默认 90% 超出量：带内为 0；上界超出为 <code>observed − hi</code>；下界超出为 <code>observed − lo</code>。</li>
+        </ul>
+      </details>
+      <div class="download-list">
+        <div class="download-row"><div><strong>图 1｜机制与真实案例</strong></div><div><a href="assets/ipv_verifier/fig1_verifier_mechanism.svg">SVG</a> · <a href="assets/ipv_verifier/fig1_verifier_mechanism.pdf">PDF</a> · <a href="assets/ipv_verifier/fig1_verifier_mechanism.png">PNG</a> · <a href="assets/ipv_verifier/source_data/fig1_onsite_case.csv">源数据 CSV</a></div></div>
+        <div class="download-row"><div><strong>图 2｜数据基础与支持空间</strong></div><div><a href="assets/ipv_verifier/fig2_reference_data.svg">SVG</a> · <a href="assets/ipv_verifier/fig2_reference_data.pdf">PDF</a> · <a href="assets/ipv_verifier/fig2_reference_data.png">PNG</a> · <a href="assets/ipv_verifier/source_data/fig2_gate_flow.csv">数据流</a> · <a href="assets/ipv_verifier/source_data/fig2_train_composition.csv">训练构成</a> · <a href="assets/ipv_verifier/source_data/fig2_joint_support.csv">联合支持</a></div></div>
+        <div class="download-row"><div><strong>图 3｜验证证据与边界</strong></div><div><a href="assets/ipv_verifier/fig3_evidence_and_limits.svg">SVG</a> · <a href="assets/ipv_verifier/fig3_evidence_and_limits.pdf">PDF</a> · <a href="assets/ipv_verifier/fig3_evidence_and_limits.png">PNG</a> · <a href="assets/ipv_verifier/source_data/fig3_m3_coverage.csv">覆盖率</a> · <a href="assets/ipv_verifier/source_data/fig3_test_abstention.csv">子组弃权</a> · <a href="assets/ipv_verifier/source_data/fig3_lodo_m3.csv">LODO</a></div></div>
+        <div class="download-row"><div><strong>复核与重建</strong></div><div><a href="assets/ipv_verifier/figure_manifest.csv">面板-数据清单</a> · <a href="../scripts/build_ipv_verifier_explainer.py">Python 重建脚本</a></div></div>
+      </div>
+    </section>
+
+    <footer>
+      数据与口径来自冻结 RQ009 M3 bundle、RQ009 训练/校准/测试产物和 RQ012B OnSite 外部应用产物。页面中的所有汇总值均由重建脚本直接读取源表并设置断言复核；最后更新：2026-07-11。
+    </footer>
+  </main>
+</body>
+</html>
