@@ -153,13 +153,14 @@ question index in `STUDIES.md`.
   `reports/plans/RQ009_plan_v0_dynamic_counterpart_conditioned_envelope_20260624.md`.
 - RQ009 main-agent prompt:
   `reports/plans/prompts/RQ009_prompt_claude_codex_orchestration_20260624.md`.
-- **RQ014 current execution recovery:** v1.5 is the active candidate on the dedicated
-  `codex/rq014-g2-contract-v1p5` branch. It restores immutable v1.3 bytes, legally closes G0
+- **RQ014 current execution recovery:** v1.5 was merged to `origin/main` by PR #5 at
+  `a738de44715abb118e5571eec42af30d9b1c6786` (contract commit `24be08278adf43371fda14e7ec23a95b986b2fb1`).
+  It restores immutable v1.3 bytes, legally closes G0
   with five PI-waived surfaces represented as `status=INACCESSIBLE`, and replaces ambiguous
   booleans with fail-closed managed operation authorization. Sixth-round fresh statistics and
   execution/governance reviews both returned `NO_BLOCKER`; machine validation accepts
-  `RQ014_formal_G1_v1p5_20260712.yaml` as `FORMAL_G1_PASS`. The exact commit is not yet published
-  on `origin/main`, so no RQ014 production job may run.
+  `RQ014_formal_G1_v1p5_20260712.yaml` as `FORMAL_G1_PASS`. The exact contract is now published;
+  launcher validate-only evidence remains the next gate, so no RQ014 production job may run yet.
 - RQ014 primary science authority is now
   `reports/plans/RQ014_recovery_lane_v2.json`: a fixed 960-cell rating-blind feature grid followed by a
   one-time, separately authorized 2,880-row full-data recovery screen and a clean independent replay of
@@ -179,7 +180,7 @@ question index in `STUDIES.md`.
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
   tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Current
-  final pre-commit result: `194 passed`; broader non-shortcut regression excluding the locally absent
+  final release result: `194 passed`; broader non-shortcut regression excluding the locally absent
   ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
   Python compilation, shell syntax and `git diff --check` also pass. No rating value was read,
   no production run root was created, and no Slurm job was submitted.

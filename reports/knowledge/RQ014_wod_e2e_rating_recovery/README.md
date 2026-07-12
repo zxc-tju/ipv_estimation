@@ -53,8 +53,9 @@ remain separately authorized future operations.
 - HPC source inventory, restricted-unpickle structural audit, and producer data-flow audit are complete;
   476/479 scenes are geometry-available and three remain explicit structural attrition.
 - Formal review, G1, and the 74-row final checksum bundle are complete; bundle SHA-256 is
-  `1ee1e1d121b8d24cef7fdca93f05ddcccfcb3282b70727c606ce03c36984c933`. Remaining launch gates are the
-  dedicated-branch commit, publication/merge to `origin/main`, exact read-only v2 run spec, and launcher
-  validate-only evidence. Current local bytes cannot pass the published-commit gate.
+  `1ee1e1d121b8d24cef7fdca93f05ddcccfcb3282b70727c606ce03c36984c933`. PR #5 merged the exact contract
+  commit `24be08278adf43371fda14e7ec23a95b986b2fb1` to `origin/main` at
+  `a738de44715abb118e5571eec42af30d9b1c6786`. Remaining launch gates are an exact read-only v2 run spec
+  and launcher validate-only evidence; publication is no longer a blocker.
 
 No `decision.md` should be created until empirical evidence reaches the registered claim gates.
