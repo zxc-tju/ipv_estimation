@@ -57,5 +57,14 @@ remain separately authorized future operations.
   commit `24be08278adf43371fda14e7ec23a95b986b2fb1` to `origin/main` at
   `a738de44715abb118e5571eec42af30d9b1c6786`. Remaining launch gates are an exact read-only v2 run spec
   and launcher validate-only evidence; publication is no longer a blocker.
+- The append-only Lead/Sub-Agent execution runbook is
+  `reports/plans/RQ014_plan_v1p6_execution_handoff_20260712.md` (SHA-256
+  `f007c290ea6bb1130b2df1b49c63e482e34cfc7147716f8d68dd4c918e81de0c`). It does not alter
+  v1.5 science or authorization. It freezes Waves 0–8, independent reviewer roles, HPC sync/spec/
+  validate-only/export acceptance, later implementation and 960/2,880-row execution, failure handling,
+  and user decisions D1–D6. No user decision is required before the already authorized export bounded
+  report; D1 is mandatory before enabling contract preflight. Independent execution/HPC and science/
+  governance reviewers returned `NO_BLOCKER_AFTER_REMEDIATION`; review record:
+  `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_execution_handoff_review_20260712.md`.
 
 No `decision.md` should be created until empirical evidence reaches the registered claim gates.
