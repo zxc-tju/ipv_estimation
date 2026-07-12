@@ -1,0 +1,14 @@
+=== RQ014 Mac pass3 Fri Jul 10 21:17:09 CST 2026 ===
+== [A] Sibling projects on external drive ==
+total 48
+drwx------  24 xiaocong  staff    768 Jul 10 20:45 2_sociality_estimation
+-rw-r--r--@  1 xiaocong  staff  10244 Jul  8 10:32 .DS_Store
+drwx------   6 xiaocong  staff    192 Jul  5 19:50 9_overleaf
+drwx------  10 xiaocong  staff    320 Jul  5 19:50 .
+drwx------  46 xiaocong  staff   1472 Jul  5 19:50 achievements_management
+drwx------  13 xiaocong  staff    416 Jul  5 19:35 ..
+drwx------  12 xiaocong  staff    384 Jul  5 19:33 archived
+drwx------   3 xiaocong  staff     96 Jul  5 19:15 envs
+-rwx------@  1 xiaocong  staff   2065 Jun 27 21:06 CLAUDE.md
+-rwx------@  1 xiaocong  staff   6196 Jun 27 20:51 HPC_TONGJI_USAGE_GUIDE.md
+-- preference_score / rater in code outside this repo --

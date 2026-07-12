@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RQ014 v1.1 independent re-review</title>
+  <style>
+    :root{--ink:#17212b;--muted:#5f6c78;--line:#d7dde4;--wash:#f3f6f8;--paper:#fff;--red:#8c2424;--amber:#8a5a00;--green:#226747;--blue:#174d80}
+    *{box-sizing:border-box}body{margin:0;background:var(--wash);color:var(--ink);font:15px/1.64 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+    main{max-width:1120px;margin:34px auto;padding:46px 56px;background:var(--paper);box-shadow:0 8px 32px #17212b12}
+    h1{font-size:31px;line-height:1.25;margin:0 0 8px}h2{font-size:21px;margin:34px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line)}h3{font-size:17px;margin:24px 0 7px}
+    .meta{color:var(--muted);margin-bottom:22px}.verdict{padding:18px 21px;background:#fff0f0;border-left:5px solid var(--red);font-size:18px}.verdict b{color:var(--red)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}.card{border:1px solid var(--line);border-radius:8px;padding:15px;background:#fff}.card b{display:block;font-size:23px;color:var(--blue)}
+    table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid var(--line);padding:9px 10px;vertical-align:top}th{background:#eef3f6;text-align:left}
+    .block{border-left:4px solid var(--red);padding:1px 0 1px 16px}.major{border-left:4px solid var(--amber);padding:1px 0 1px 16px}.good{color:var(--green);font-weight:700}.bad{color:var(--red);font-weight:700}
+    code{background:#edf1f4;padding:2px 5px;border-radius:4px}pre{background:#17212b;color:#edf4f8;padding:14px;border-radius:6px;overflow:auto}a{color:var(--blue)}
+    ul,ol{padding-left:22px}.footer{margin-top:34px;padding-top:17px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}@media(max-width:760px){main{margin:0;padding:25px 19px}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body><main>
+  <h1>RQ014 Plan v1.1 — independent re-review</h1>
+  <div class="meta">2026-07-11 · statistics + registry/measurement + execution/HPC + lead adjudication</div>
+  <div class="verdict"><b>BLOCKED_PENDING_MAJOR_REVISION</b><br>修改方向值得保留，但当前 amendment 仍不是可执行 SAP；不批准 G1 PASS、rating join 或任何计算提交。</div>
+
+  <div class="grid">
+    <div class="card"><b>12 × 3</b>valid configs/readouts 验证通过</div>
+    <div class="card"><b>5/5</b>已列 checksum 当前匹配</div>
+    <div class="card"><b>5 OPEN</b>F05–F08 与 F10 尚未闭环</div>
+  </div>
+
+  <h2>保留的改进</h2>
+  <ul>
+    <li>新增 recovery-extension family 的治理方向正确。</li>
+    <li>把 association、construction validity、parsimony、incrementality 分层的动机成立。</li>
+    <li>三个 registry 仍禁止执行且不共享 scientific promotion。</li>
+    <li>base v1 未被改写，12-config valid grid 保持一致。</li>
+  </ul>
+
+  <h2>阻断项</h2>
+  <div class="block"><h3>B1 · FL05 没有实现注册的完整 CSV</h3><p>计划要求包含 statistic/value/N/unit/config/source/hash/mtime 的 <code>historical_stats_index.csv</code>；脚本只输出带 <code>head</code> 截断的 grep 文本。输入目录不存在时仍 exit 0，形成可验证的 false-success。</p></div>
+  <div class="block"><h3>B2 · Extension 六个 cell 尚不能形成统一 family</h3><p>X02 缺完整 sigma01 scale/conditioning contract；X03 只有 median、没有 L/M/U；X04/X05 未定义实际 quantiles/gates；X06 pooled Spearman 与其余 <code>rho_WS</code> 不应直接进入同一个 within-scene maxT。</p></div>
+  <div class="block"><h3>B3 · Required-cell 仍可能循环</h3><p>“primary-eligible”未定义为 pre-envelope 状态。若 eligibility 依赖 endpoint，而 endpoint 又依赖 envelope，则 required cells 无法盲态物化。</p></div>
+  <div class="block"><h3>B4 · Tier C 把 invariance 当 placebo</h3><p>对近对称 envelope，sign flip 可能与主 deviation 完全相同；role symmetry 也可能是正确性质。应把 correspondence-breaking placebo 与 equivalence/invariance checks 分开。</p></div>
+  <div class="block"><h3>B5 · Tier P 校准了错误的 null</h3><p>global null 下 <code>S_IPV=S_K=0</code> 时，<code>A_P=δ_NI=0.10</code> 已在非劣性备择内。size 必须在 <code>S_IPV-S_K=-δ_NI</code> 边界校准，并覆盖 <code>S_K&gt;0</code>。</p></div>
+  <div class="block"><h3>B6 · Comparator、margin 与 claim 不一致</h3><p>当前 comparator 是一个未恢复公式的 scalar composite，不是七特征模型；YAML 实际只列六个 constituent metrics。<code>δ_NI=0.10</code> 来自 promotion threshold，不是可接受损失标准。</p></div>
+  <div class="block"><h3>B7 · trailing_only 无执行规则</h3><p>四个 valid configs 使用 <code>sequence_mode: trailing_only</code>，但 local-window schema 只定义 future-only/history+future。</p></div>
+  <div class="block"><h3>B8 · G0/G2 仍是硬门</h3><p>F05–F08/F10 为 OPEN，代码/adapter/envelope/input hashes 尚未冻结。当前必须保持 <code>execution_authorized=false</code>。</p></div>
+
+  <h2>Claim–evidence boundary</h2>
+  <table>
+    <tr><th>拟议主张</th><th>现有合同</th><th>裁决</th></tr>
+    <tr><td>Extension closes recovery coverage</td><td>V04 周围六个候选</td><td>方向正确，但 cells/inference 未闭合</td></tr>
+    <tr><td>Construction robust</td><td>四项均要求 IPV 更强</td><td>role/sign 应改为 invariance tests</td></tr>
+    <tr><td>Parsimonious index matches battery</td><td>对一个 scalar composite 做 NI</td><td>主张超出 comparator 与 margin 证据</td></tr>
+    <tr><td>Incremental beyond kinematics</td><td>只控制 frozen composite</td><td>必须收窄为 beyond frozen composite</td></tr>
+    <tr><td>FL05 exhaustive index</td><td>截断 grep 文本</td><td>不成立</td></tr>
+  </table>
+
+  <h2>最短修复路径</h2>
+  <ol>
+    <li>重写 FL05 为 fail-closed、无截断、逐格式解析的结构化 indexer，并关闭 G0。</li>
+    <li>把 X01–X05 写成完整 verifier contracts；X06 独立治理。</li>
+    <li>以 pre-envelope trajectory eligibility 定义 required cells。</li>
+    <li>Tier C 分离 placebo superiority 与 sign/role invariance。</li>
+    <li>Tier P 使用 boundary-null calibration、可辩护 margin、准确 comparator 和 NI power。</li>
+    <li>收窄 Tier I 标签，补 trailing-only rule，重生成全套 checksums 后再复审。</li>
+  </ol>
+
+  <h2>验证</h2>
+  <p><span class="good">PASS：</span>三个 YAML 可解析；12 unique configs × 3 readouts；6 unique extension IDs；5 lookup cells；4 twins；五项 checksum 匹配；FL05 bash syntax 通过。</p>
+  <p><span class="bad">FAIL：</span>FL05 missing-root dry run 仍 exit 0 且无 CSV；G0 有五个 OPEN surfaces。</p>
+
+  <h2>Artifacts</h2>
+  <ul>
+    <li><a href="codex_plan_review_v1p1_20260711.md">完整 Markdown review</a></li>
+    <li><a href="../../../plans/RQ014_plan_v1p1_amendment_20260710.md">v1.1 amendment</a></li>
+    <li><a href="../../../plans/RQ014_config_space_v1p1.yaml">valid registry</a></li>
+    <li><a href="../../../plans/RQ014_recovery_extension_registry_v1p1.yaml">extension registry</a></li>
+    <li><a href="../../../plans/RQ014_forensic_registry_v1p1.yaml">forensic registry</a></li>
+  </ul>
+  <div class="footer">Final status: BLOCKED_PENDING_MAJOR_REVISION / NO_COMPUTE_AUTHORIZED.</div>
+</main></body></html>

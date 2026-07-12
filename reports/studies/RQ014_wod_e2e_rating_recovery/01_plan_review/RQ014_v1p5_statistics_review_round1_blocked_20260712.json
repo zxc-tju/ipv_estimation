@@ -1,0 +1,65 @@
+{
+  "schema_version": "rq014-formal-review-v1p5",
+  "review_role": "statistics",
+  "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p5_review_manifest_20260712.sha256",
+  "reviewed_manifest_sha256": "85bc636f67911b0e383ef048004f78730b1ade6c32abb14d31d7f2368b7d0853",
+  "verdict": "BLOCKED",
+  "unresolved_blockers": 0,
+  "unresolved_majors": 4,
+  "findings": [
+    {
+      "finding_id": "STAT-M01",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The declassification bundle is rating-blind but is not yet a sufficient lossless scientific input for the registered native-rate and reference/path-type search.",
+      "evidence": "RQ014_score_stripped_schema_v1.json emits only candidate/history XYZ, while export_score_stripped_bundle.py validates seven source state fields but discards vel_x, vel_y, accel_x, and accel_y; it also discards future_states, intent, intent_name, and tstar_ego_pose and writes path_type=NA for every available scene. RQ014_recovery_lane_v2.json distinguishes native 4 Hz from recomputed 10 Hz states, requires a frozen WOD route-based reference and path-type-conditioned envelopes, yet does not freeze a derivative/boundary rule or prove that the retained geometry alone reconstructs every needed reference and path type. Because G2 is forbidden from reopening the parent pickle, running the v1 export now can make plausible legacy state, reference, and mapping semantics unrecoverable from the sole allowed G2 input. Resolve by either exporting all safe state/reference/mapping primitives under strict allowlists or freezing and fixture-testing a byte-exact reconstruction that demonstrably uses only retained columns."
+    },
+    {
+      "finding_id": "STAT-M02",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The t*=0 seam and 4-to-10 Hz grid phase are internally inconsistent, so CH, HF, TP, and TF do not yet denote one executable time series.",
+      "evidence": "The exporter always assigns effective candidate samples to +0.25,+0.50,... after optional raw-point-zero removal and assigns the last ego-history sample to 0.0. The inherited sequence contract in RQ014_config_space_v1p5.yaml says history_timestamps_lt_0_plus_candidate_timestamps_ge_0, which omits t*=0 whenever the candidate starts at +0.25. RQ014_recovery_lane_v2.json simultaneously defines intervals that include 0, requires complete windows, says HF includes tau once, and asks R10L to interpolate the candidate inside observed support without fixing whether the 10 Hz grid is t*-anchored or +0.25-anchored. This changes sample counts, boundary states, terminal estimator rows, and potentially eligibility. Freeze history<=0 plus candidate>0 (or another explicit seam), the exact 10 Hz grid phase, interpolation across the seam, derivative endpoint conventions, and golden fixtures for every CH/LF/HF/TP/TF boundary."
+    },
+    {
+      "finding_id": "STAT-M03",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "BM90 and BT90 are not fully defined for the new temporal families, leaving the main deviation denominator and eligibility outcome-dependent on later implementation choices.",
+      "evidence": "RQ014_recovery_lane_v2.json gives high-level BM90/BT90 descriptions but does not freeze how an InterHub episode obtains t*=0 and pseudo-decision anchors for CH, LF, HF, TP, and TF; how episode past/future support is assembled; the BM90 pooling domain and horizon treatment; or the per-family support, degeneracy, and uncertainty gates. The detailed builder in the base plan/config applies to the superseded trailing/future/history family and its old tau cells, and the v1.5 files do not provide an explicit mapping that makes those rules complete for all 16 new feature families. Since envelope membership and half-widths directly define NEX/NMD and cell eligibility, these are scientific choices, not merely implementation details. Freeze a machine-enumerable envelope contract and fixtures for every sampling-by-temporal-by-envelope combination before formal G1 can pass."
+    },
+    {
+      "finding_id": "STAT-M04",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The three association rows lack frozen per-method analysis masks and denominators, making the 2,880-row ranking non-unique.",
+      "evidence": "RQ014_recovery_lane_v2.json defines RWS on informative three-candidate scenes, PSP as pooled candidate Spearman, and PPR as pooled raw-score Pearson, but only states broadly that all rating-complete scenes are used. It does not state whether PSP/PPR use the same within-scene-informative mask as RWS or a broader feature-and-rating-complete mask, how scene/candidate weights are applied in pooled point estimates, or which support defines n_informative_scenes and the fold/leave-one-out compatibility fields for each method. These alternatives can change association values and the lexicographic rank-1 recipe. Freeze an association-specific inclusion predicate, point-estimate weighting, tie/constant policy, denominator fields, and common-versus-varying-support rule before rating access."
+    },
+    {
+      "finding_id": "STAT-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The known-result recovery objective and claim boundary are appropriately separated from hypothesis confirmation.",
+      "evidence": "The recovery authority explicitly sets null_hypothesis_discovery=false, makes p values and prospective power non-gating, labels the full-data search as same-dataset historical specification recovery, forbids causal and independent-replication claims, waits for all rows to become terminal, freezes rank 1 mechanically, and requires a clean same-data replay without falling through to rank 2. The old split/power/Tier C/P/I route is expressly non-gating and its operations remain DENY."
+    },
+    {
+      "finding_id": "STAT-N02",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The planned first operation has an adequate rating-isolation boundary in itself, conditional on resolving scientific sufficiency before export.",
+      "evidence": "The source inventory binds eight structurally audited score-omitting bundles plus readiness and counterpart tables and attests no rating values were read; the exporter uses a restricted unpickler, exact source schemas, recursive rating-semantic rejection, canonical allowlisted outputs, hash receipts, and a validator; raw rated479 TFRecords, scored targets, ratings tables, joins, and empirical statistics are forbidden. Candidate order is explicitly opaque and the geometry hash is the future join key. No evidence in the frozen bytes indicates that this operation reads a human rating value."
+    },
+    {
+      "finding_id": "STAT-N03",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "G0 closure and residual-risk language are statistically honest.",
+      "evidence": "The v1.5 forensic registry uses only legal terminal states, reports FOUND=0, NOT_FOUND_ON_SCANNED_SURFACES=4, INACCESSIBLE=6, OPEN=0, limits negative claims to F01-F04, and carries the PI-waiver and inaccessible-storage residual risks. It does not convert waived surfaces into evidence that the legacy setup was absent."
+    }
+  ],
+  "reviewer_agent": "formal_g1_statistics_v1p5",
+  "fresh_reviewer_attested": true,
+  "rating_values_accessed": false,
+  "hpc_jobs_submitted": false,
+  "reviewed_at_utc": "2026-07-12T01:07:59Z"
+}

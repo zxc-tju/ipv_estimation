@@ -1,0 +1,1084 @@
+schema_version: rq014-valid-scientific-v1p3
+registry_status: DESIGN_REVIEW_PASS_NOT_EXECUTABLE
+registry_kind: valid_scientific
+created_date: '2026-07-11'
+supersedes: reports/plans/RQ014_config_space_v1p2.yaml
+canonical_plan: reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md
+amendment: reports/plans/RQ014_plan_v1p3_amendment_20260711.md
+execution_authorized: false
+authorization_scopes:
+  g0_readonly_forensics_authorized: false
+  g2_ratings_blind_build_authorized: false
+  discovery_rating_join_authorized: false
+  confirmation_rating_join_authorized: false
+  scientific_compute_authorized: false
+  extension_compute_authorized: false
+  forensic_rating_join_authorized: false
+  forensic_compute_authorized: false
+authorization_operation_map:
+  listed_scopes_are_logical_AND: true
+  G2_predictor_envelope_and_X02_build: [g2_ratings_blind_build_authorized]
+  G2_runtime_pilot_and_G2P_pipeline_power_simulation: [g2_ratings_blind_build_authorized,
+                                                       scientific_compute_authorized]
+  G2P_partition_freeze: [g2_ratings_blind_build_authorized]
+  valid_discovery_statistics_and_promotion: [discovery_rating_join_authorized,
+                                             scientific_compute_authorized]
+  post_promotion_pre_confirmation_feature_freeze: [g2_ratings_blind_build_authorized,
+                                                   discovery_rating_join_authorized,
+                                                   scientific_compute_authorized]
+  confirmation_association: [confirmation_rating_join_authorized,
+                             scientific_compute_authorized]
+  G4S_and_specificity_tiers: [confirmation_rating_join_authorized,
+                             scientific_compute_authorized]
+unit: candidate
+group: segment
+primary_scene_rule: exactly_three_complete_candidates
+two_candidate_scenes: support_only
+
+alpha_contract:
+  nominal_one_sided_alpha_all_tests: 0.025
+  interval_convention: one_sided_97p5_lower_or_upper_bounds
+  g2_empirical_size_or_fwer_tolerance: 0.03
+  note: single_coherent_contract_no_unexplained_conservatism
+
+fixed_estimator:
+  solver_mode: exact
+  sigma: 0.1
+  ipv_grid_multipliers_pi_over_8: [-3, -2, -1, 0, 1, 2, 3]
+  reliability_domain: stable_log
+  dt_must_equal_inverse_rate: true
+  estimator_internal_integration_dt_s: equal_to_input_grid_dt_by_contract
+  reference: wod_route_based_constant_curvature
+  smoothing: none
+  core_tree_sha: TO_FREEZE_AT_G2
+  wod_adapter_sha256: TO_FREEZE_AT_G2
+  preprocessing_contract_sha256: TO_FREEZE_AT_G2
+  reference_builder_sha256: TO_FREEZE_AT_G2
+
+counterpart:
+  source: selected_counterpart_tracks_real_observed
+  shared_across_three_candidates: true
+  rating_blind: true
+  interpolation: inside_observed_support_only
+  extrapolation: forbidden
+
+sequence_contract:
+  tstar_s: 0.0
+  future_only_window: '[max(0,tau-W),tau]'
+  history_future_window: '[tau-W,tau]'
+  trailing_only_window: '[max(0,tau-W),tau]'
+  trailing_only_note: >-
+    trailing_only is the canonical name of the W=1.0 alias class where future_only and
+    history_future coincide for all tau>=1.0; execution rule identical to future_only.
+  concat_rule: history_timestamps_lt_0_plus_candidate_timestamps_ge_0
+  evaluation_start_s: 1.0
+  local_window_estimator_rule:
+    local_span_future_only_s: min_W_and_tau
+    local_span_history_future_s: W
+    local_span_trailing_only_s: min_W_and_tau
+    n_intervals: round_local_span_s_times_rate_hz
+    n_points: n_intervals_plus_1
+    history_window_parameter: n_intervals
+    min_observation_parameter: n_intervals
+    output_row_used: terminal_row_at_n_intervals
+  golden_local_windows:
+    4hz_1s: {n_intervals: 4, n_points: 5}
+    4hz_2p5s: {n_intervals: 10, n_points: 11}
+    10hz_1s: {n_intervals: 10, n_points: 11}
+    10hz_2p5s: {n_intervals: 25, n_points: 26}
+  history_future_required_past_s_at_first_evaluation: max_0_and_W_minus_1s
+  note: trailing_window_s_is_a_maximum_cap_and_future_only_uses_an_expanding_prefix_before_W
+
+horizons:
+  H2:
+    start_s: 1.0
+    end_s: 2.0
+    require_common_end_ge_s: 2.0
+  HMAX5:
+    start_s: 1.0
+    end_rule: min_5s_and_three_candidates_and_counterpart_common_end
+    require_common_end_ge_s: 2.0
+
+common_support:
+  member_set: [candidate_A, candidate_B, candidate_C, shared_counterpart]
+  interpolation_inside_observed_support: allowed
+  extrapolation: forbidden
+  missing_candidate_policy: synchronously_remove_time_for_all_three
+  minimum_grid_coverage_fraction: 0.80
+  maximum_internal_gap_steps: 2
+  time_weighting: trapezoidal_physical_seconds
+
+# R3: non-circular scene eligibility (replaces "primary-eligible")
+pre_envelope_trajectory_eligible:
+  definition:
+    - exactly_three_complete_candidates
+    - frozen_path_type_assigned
+    - solver_finite_ipv_on_scheduled_tau_grid_coverage_ge_0.80_max_gap_le_2dt
+    - shared_counterpart_common_support_holds
+    - no_envelope_queried
+    - no_rating_read
+  role: sole_input_to_required_envelope_cell_materialization
+
+envelope:
+  source: interhub_pure_hv_hv
+  form: time_indexed_path_type_central_90
+  path_types: [CP, HO, MP, F]
+  quantiles: {lower: 0.05, center: 0.50, upper: 0.95}
+  matched_fields:
+    - rate_hz
+    - dt_s
+    - trailing_window_s
+    - history_window_steps
+    - sequence_mode
+    - tau
+    - estimator_tree
+    - adapter
+    - solver
+    - ipv_grid
+    - preprocessing
+  human_episode_weighting: equal_total_weight_per_episode_within_path_type_tau
+  rating_fields_allowed: false
+  builder_contract:
+    contract_sha256: TO_FREEZE_AT_G2
+    source_input_manifest_sha256: TO_FREEZE_AT_G2
+    path_type_mapping_sha256: TO_FREEZE_AT_G2
+    episode_eligibility: pure_hv_hv_finite_positions_frozen_path_type_mapping_complete_local_span
+    maximum_source_gap_steps: 2
+    pseudo_anchor_rule: every_target_rate_grid_timestamp_with_complete_local_window_inside_observed_support
+    terminal_weight_rule: one_over_number_of_eligible_terminals_for_episode_in_path_type_tau_cell
+    weighted_quantile_rule: left_continuous_inverse_of_weighted_ecdf
+    stable_sort_keys: [ipv_value, episode_id, terminal_timestamp]
+    bootstrap_seed: 20260710
+    bootstrap_rng: numpy_Generator_PCG64
+    bootstrap_unit: episode_within_path_type
+    half_width_relative_se: bootstrap_sample_sd_divided_by_original_half_width
+  envelope_gate:
+    min_independent_human_episodes_per_path_type_tau: 50
+    require_q05_lt_q50_lt_q95: true
+    numerical_epsilon_rad: 1.0e-6
+    max_bootstrap_relative_se_of_each_half_width: 0.25
+    bootstrap_clusters: 1000
+    required_cell_rule:
+      definition: union_of_scheduled_path_type_tau_cells_over_pre_envelope_trajectory_eligible_scenes
+      materialization: required_envelope_cells.csv_with_sha256_during_blind_feature_build
+      frozen_after_materialization: true
+      required_cell_failure_policy: mark_entire_config_ineligible_before_rating_join
+      non_required_cell_failure_policy: record_only_no_effect_on_config_eligibility
+
+readouts:
+  - readout_id: mean_normalized_exceedance_90
+    role: primary
+    formula: asymmetric_exceedance_integral_divided_by_common_duration
+  - readout_id: frac_outside_90
+    role: support_only
+    formula: time_weighted_fraction_e_gt_0
+  - readout_id: max_normalized_exceedance_90
+    role: support_only
+    formula: maximum_e_on_common_support
+
+blind_power_gate:
+  target_rho_ws: -0.30
+  one_sided_alpha: 0.025
+  minimum_pipeline_power: 0.80
+  simulations_per_candidate_split: 20000
+  candidate_discovery_fractions: [0.50, 0.33, 0.25, 0.20]
+  split_allocation:
+    universe: all_segment_ids_in_frozen_rated479_manifest
+    stratum: scenario_cluster
+    missing_stratum_value: UNMAPPED
+    total_discovery_count: round_half_up_fraction_times_total_n
+    per_stratum_initial_count: floor_fraction_times_stratum_n
+    remainder_rule: largest_fractional_remainder_then_stratum_id_lexicographic
+    within_stratum_order: sha256_RQ014_v1_20260710_plus_segment_id
+    discovery_fold_rule: global_sha256_RQ014_v1_fold_plus_segment_id_order_round_robin_5
+  simulation_dgp:
+    implant_each_nonalias_config_separately: true
+    preserve_actual_multiconfig_deviations_missingness_and_correlations: true
+    latent_utility: U_sc_equals_minus_beta_j_times_Q_jsc_plus_standard_normal_error
+    beta_calibration: separate_monte_carlo_bisection_for_each_config_and_each_tie_scenario_to_expected_rho_ws_minus_0p30
+    calibration_tolerance: 0.005
+    tie_scenarios: [0.00, 0.20, 0.40]
+    tie_operator: select_scenes_by_frozen_rng_and_average_the_closest_latent_utility_pair_midranks
+    success_rule: promoted_config_equals_implanted_config_or_blind_exact_structural_alias_and_confirmation_passes
+    seed_rule: 20260710_plus_1000_times_config_index_plus_split_index
+    rng: numpy_Generator_PCG64
+    config_index_rule: zero_based_lexicographic_config_id_order
+    split_index_rule: order_0p50_0p33_0p25_0p20
+  choose_rule: largest_discovery_fraction_where_at_least_one_nonalias_config_passes_all_gates
+  config_power_eligibility: evaluated_separately_and_required_for_promotion
+  minimum_expected_discovery_informative_scenes: 40
+  minimum_expected_scenes_per_discovery_fold: 8
+  maximum_confirmation_numerical_failure_probability: 0.01
+
+
+# v1.3 exact extension and specificity contracts
+statistical_contract_v1p3:
+  schema_version: rq014-statistical-contract-v1p3
+  status: DESIGN_REVIEW_PASS_NOT_EXECUTABLE
+  execution_authorized: false
+  nominal_one_sided_alpha: 0.025
+  interval_convention: one_sided_97p5
+  comparison_operator_for_p_values: less_than_or_equal
+  numeric_epsilon: 1.0e-12
+  undefined_replicate_fraction_max: 0.01
+  no_retry_or_replacement_of_failed_replicates: true
+  forbidden:
+    - rating_access_during_contract_freeze
+    - outcome_dependent_family_shrinkage
+    - post_rating_change_to_support_or_margins
+    - post_rating_change_to_se_or_null_centering
+    - unregistered_test_substitution
+
+  freeze_and_execution_timeline:
+    G2_pre_rating_freeze:
+      rating_access: forbidden
+      freeze_and_hash:
+        - all_analysis_and_calibration_code
+        - package_versions_and_rng_implementation
+        - all_seed_domain_rules
+        - ratings_blind_predictor_arrays_and_completeness_masks
+        - extension_feature_completeness_arrays_for_the_full_frozen_universe
+        - manifest_schemas_and_inclusion_predicates
+        - DGP_grids_targets_optimizer_and_failure_rules
+        - fixed_20000_outer_replicate_rule
+        - runtime_pilot_and_compute_ceiling_rule
+      rules_may_change_after_G2: false
+    G2P_partition_freeze:
+      timing: after_blind_split_power_selection_and_before_any_rating_join
+      freeze_and_hash:
+        - selected_valid_discovery_and_confirmation_partition_manifests
+        - extension_analysis_partition_manifest
+      extension_partition_rule:
+        powered_split_available: selected_blind_split_discovery_partition_only
+        no_powered_split: full_rated479_partition_recovery_only_no_confirmation_claim
+      partition_may_change_after_G2P: false
+    authorized_discovery_join:
+      prerequisite: separate_explicit_discovery_rating_join_authorization
+      allowed:
+        - materialize_and_hash_each_extension_M_Xk_exactly_once
+        - run_frozen_valid_and_extension_discovery_statistics
+        - execute_deterministic_valid_recipe_promotion
+      forbidden:
+        - access_any_frozen_confirmation_partition_rating
+        - expand_any_extension_manifest_after_first_hash
+        - change_any_G2_or_G2P_rule
+    post_promotion_pre_confirmation_feature_freeze:
+      timing: after_deterministic_promotion_and_before_confirmation_rating_access
+      allowed_inputs: G2_frozen_promoted_predictor_controls_and_composite_on_frozen_confirmation_partition
+      freeze_and_hash:
+        - tier_C_feature_master_ids
+        - tier_PI_feature_master_ids
+      rating_access: forbidden
+      no_new_feature_computation_or_recipe_substitution: true
+    authorized_confirmation_join:
+      prerequisite: separate_explicit_rating_join_authorization
+      allowed_before_observed_statistics:
+        - join_rating_completeness_mask
+        - freeze_per_scene_tie_multiplicity_without_observed_order
+        - materialize_and_hash_registered_common_scene_manifests
+      forbidden_at_this_step:
+        - calculate_observed_rho_or_strength
+        - calculate_observed_tier_statistics
+        - inspect_effect_direction
+        - change_any_G2_rule
+    G4S_nuisance_only_calibration:
+      timing: after_authorized_confirmation_join_and_before_any_observed_tier_statistic
+      code_and_rules: exact_G2_frozen_hashes_only
+      allowed_inputs:
+        - G2_frozen_predictor_arrays
+        - frozen_common_scene_membership
+        - rating_completeness_mask
+        - per_scene_tie_multiplicity_without_observed_order
+      forbidden_inputs:
+        - observed_rating_order
+        - observed_rho
+        - observed_effect_direction
+      outputs:
+        - per_cell_DGP_fit_and_validation
+        - boundary_size_or_FWER_gates
+        - NI_power_gates
+        - compute_and_numerical_validity_status
+      rules_may_change_after_G4S: false
+    observed_tier_statistics:
+      prerequisite: G4S_complete_under_frozen_rules
+      no_retroactive_calibration_or_rule_change: true
+
+  common_primitives:
+    stable_orders:
+      scene_order: ascending_utf8_scene_id
+      candidate_order_within_scene: ascending_utf8_candidate_id
+      family_order: ascending_registered_member_id
+    canonical_manifest_encoding:
+      format: csv_rfc4180_utf8_lf
+      row_order: ascending_utf8_scene_id
+      null_token: NA
+      hash: sha256_over_exact_file_bytes
+    rho_ws:
+      analysis_unit: scene
+      scene_eligibility: exactly_three_candidates_and_rating_has_at_least_two_distinct_values_and_predictor_has_at_least_two_distinct_values
+      rating_transform: ascending_midranks_with_average_ranks_for_ties_then_center_within_scene
+      predictor_transform: ascending_midranks_with_average_ranks_for_ties_then_center_within_scene
+      scene_contribution: pearson_correlation_of_the_two_centered_three_candidate_rank_vectors
+      aggregate: arithmetic_mean_of_scene_contributions_equal_scene_weight
+      strength: max_of_zero_and_minus_rho_ws
+      undefined_scene_policy: exclude_only_by_the_predeclared_scene_eligibility_predicate_and_record_reason
+      forbidden_support_change: no_scene_can_be_removed_because_of_effect_direction_or_influence
+    sample_sd:
+      ddof: 1
+      finite_values_only: true
+    quantile:
+      definition: left_continuous_empirical_quantile
+      implementation: sorted_values_at_index_ceiling_p_times_n_minus_1_zero_based
+    monte_carlo_p:
+      correction: one_plus_exceedance_count_over_replicates_plus_one
+    numerical_failure:
+      observed_statistic_undefined: invalidate_entire_affected_family
+      observed_se_le_numeric_epsilon: invalidate_entire_affected_family
+      joint_replicate_rule: a_replicate_undefined_for_any_member_is_discarded_for_every_member
+      excessive_joint_undefined_fraction: invalidate_entire_affected_family
+      retry: forbidden
+      claim_on_invalid_family: none
+    standard_error_contract:
+      extension_association_only_SE: fixed_permutation_SD_across_9999_rho_perm_replicates
+      extension_V04_contrast_only_SE: fixed_Poisson_bootstrap_SD_across_9999_delta_replicates
+      tier_C_P_I_only_SE: fixed_scene_bootstrap_SD_across_9999_statistic_replicates
+      jackknife_SE: forbidden
+      analytic_SE: forbidden
+      reestimate_SE_inside_replicate: false
+
+  extension_X01_to_X05:
+    role: exploratory_specification_recovery_only
+    analysis_partition:
+      artifact: extension_analysis_partition_scene_ids.csv
+      source: G2P_frozen_partition_manifest
+      powered_split_available: selected_valid_discovery_partition_only
+      no_powered_split: full_rated479_partition_recovery_only
+      confirmation_partition_rows_forbidden: true
+      freeze_and_hash_before_any_rating_join: true
+    family_membership_freeze:
+      member_ids: [X01, X02, X03, X04, X05]
+      availability_decided: ratings_blind_before_any_rating_join
+      allowed_shrink_reasons:
+        - INACCESSIBLE_DEFINITION
+        - INACCESSIBLE_SOURCE
+        - INELIGIBLE_SUPPORT
+        - INELIGIBLE_SCALE_INCOMPATIBLE
+        - INELIGIBLE_ENVELOPE_GATE
+      post_rating_numerical_failure_policy: invalidate_family_not_shrink_family
+      minimum_available_members_for_inference: 3
+      below_minimum_policy: descriptive_rows_only_no_p_values_no_recovery_flag
+    scene_manifests:
+      union_master:
+        artifact: extension_union_master_scene_ids.csv
+        definition: >-
+          direct_ratings_blind_feature_universe_of_pre_envelope_trajectory_eligible_scenes
+          with_V04_feature_complete_and_at_least_one_ratings_blind_available_X01_to_X05_feature_complete
+        source_universe: frozen_extension_analysis_partition_without_loading_rating_fields
+        self_reference_to_any_M_manifest: forbidden
+        required_columns:
+          - scene_id
+          - candidate_ids_sha256
+          - extension_analysis_partition_member
+          - pre_envelope_trajectory_eligible
+          - X01_complete
+          - X02_complete
+          - X03_complete
+          - X04_complete
+          - X05_complete
+          - V04_complete
+          - inclusion_reason
+        materialization: ratings_blind_at_G2P_after_partition_freeze_before_any_rating_join
+        selection_may_use: registered_feature_completeness_only
+        selection_may_not_use: any_rating_field_effect_size_direction_or_p_value
+        freeze: hash_at_G2P
+      per_cell:
+        M_Xk: >-
+          union_master_intersect_rating_complete_and_Xk_complete_and_V04_complete_and
+          rho_ws_scene_eligible_for_both_Xk_and_V04
+        artifact_template: extension_M_{extension_id}_pairwise_V04.csv
+        use_for_both_Xk_association_and_Xk_minus_V04_contrast: true
+        materialization: exactly_once_at_the_authorized_discovery_join
+        freeze: hash_before_any_extension_statistic
+        post_hash_row_addition_or_removal: forbidden
+      pairwise_with_V04:
+        M_Xk_V04: exact_alias_of_M_Xk
+        artifact_template: extension_M_{extension_id}_pairwise_V04.csv
+        byte_identity_requirement: M_Xk_and_M_Xk_V04_are_the_same_canonical_file_and_sha256
+        recompute_both_statistics: true
+        forbidden: reusing_V04_rho_from_a_different_scene_set
+    keyed_within_scene_permutation:
+      replicates: 9999
+      master_seed: 20260711
+      domain_separator: RQ014-v1p3-extension-within-scene-permutation
+      key_fields: [replicate_index_one_based, scene_id]
+      candidate_order: common_primitives.stable_orders.candidate_order_within_scene
+      mapping_to_uniform_permutation_of_three:
+        digest: sha256_of_domain_separator_pipe_master_seed_pipe_replicate_pipe_scene_id_pipe_counter
+        digest_word: first_unsigned_big_endian_64_bit_word
+        rejection_rule: reject_word_if_word_ge_floor_2pow64_div_6_times_6_then_increment_counter
+        permutation_index: accepted_word_mod_6
+        unranking: zero_based_lexicographic_order_of_the_six_permutations
+      action: permute_original_rating_labels_across_the_three_candidate_ids
+      ties: move_the_observed_midranks_as_labels_so_tie_multiplicity_is_preserved
+      synchronization: same_replicate_and_scene_id_has_exactly_the_same_permutation_in_every_cell_containing_that_scene
+      missing_cell_scene: generate_key_anyway_but_ignore_for_that_cell
+      invariant_check: hash_of_first_100_scene_replicate_permutations_must_match_across_implementations
+    association_family:
+      hypotheses: H0_k_rho_ws_greater_than_or_equal_to_zero_vs_H1_k_less_than_zero
+      observed:
+        rho_obs_k: rho_ws_on_M_Xk
+      null_replicates:
+        rho_perm_bk: rho_ws_on_M_Xk_after_keyed_rating_label_permutation_b
+        null_center: exactly_zero
+      standardization:
+        SE_k: sample_sd_across_all_rho_perm_bk
+        reestimated_inside_replicate: false
+        T_obs_k: rho_obs_k_div_SE_k
+        T_bk: rho_perm_bk_div_SE_k
+      multiplicity:
+        method: single_step_Westfall_Young_lower_tail_minT
+        scope: complete_null_exploratory_adjustment_only_not_strong_FWER
+        varying_support_caveat: no_subset_pivotality_or_partial_null_claim
+        family_min_b: minimum_T_bj_over_all_ratings_blind_available_family_members_j
+        family_min_obs: minimum_T_obs_j_over_all_members_j
+        p_omnibus: one_plus_count_family_min_b_le_family_min_obs_over_B_plus_one
+        p_raw_k: one_plus_count_T_bk_le_T_obs_k_over_B_plus_one
+        p_adjusted_k: one_plus_count_family_min_b_le_T_obs_k_over_B_plus_one
+        required_outputs: [rho_obs_k, SE_k, T_obs_k, p_raw_k, p_adjusted_k, p_omnibus]
+      alpha: 0.025
+      p_threshold: p_adjusted_k_less_than_or_equal_to_0p025
+      numerical_policy: common_primitives.numerical_failure
+    paired_exclusivity_vs_V04:
+      estimand:
+        r_Xk_s: scene_contribution_for_Xk_on_M_Xk_V04
+        r_V04_s: scene_contribution_for_V04_on_the_same_M_Xk_V04
+        d_ks: r_Xk_s_minus_r_V04_s
+        delta_obs_k: arithmetic_mean_of_d_ks
+        direction_for_recovery: negative
+        hypothesis: H0_k_delta_k_greater_than_or_equal_to_zero_vs_H1_k_less_than_zero
+      synchronized_weighted_scene_bootstrap:
+        replicates: 9999
+        master_seed: 20260712
+        domain_separator: RQ014-v1p3-extension-V04-poisson-bootstrap
+        key_fields: [replicate_index_one_based, scene_id]
+        seed_uint64: first_unsigned_big_endian_64_bits_of_sha256_domain_seed_replicate_scene
+        rng: numpy_Generator_PCG64_version_and_implementation_sha_frozen_at_G2
+        weight_b_scene: Poisson_lambda_1_single_draw_from_the_keyed_rng
+        synchronization: identical_weight_for_an_overlapping_scene_in_every_cell
+        delta_boot_bk: sum_weight_times_d_ks_div_sum_weight_on_M_Xk_V04
+        zero_total_weight: joint_replicate_undefined
+      null_centered_standardization:
+        SE_delta_k: sample_sd_across_delta_boot_bk
+        reestimated_inside_replicate: false
+        T_delta_obs_k: delta_obs_k_div_SE_delta_k
+        Z_delta_bk: delta_boot_bk_minus_delta_obs_k_div_SE_delta_k
+        null_center: delta_k_equals_zero
+      multiplicity:
+        method: single_step_centered_bootstrap_lower_tail_minT
+        scope: complete_null_exploratory_adjustment_only_not_strong_FWER
+        family_min_Z_b: minimum_Z_delta_bj_over_all_available_members_j
+        p_adjusted_exclusivity_k: one_plus_count_family_min_Z_b_le_T_delta_obs_k_over_B_effective_plus_one
+        upper_bound_critical_value: empirical_0p975_quantile_of_maximum_minus_Z_delta_bj_over_j
+        simultaneous_upper_bound_k: delta_obs_k_plus_upper_bound_critical_value_times_SE_delta_k
+        required_outputs:
+          - rho_Xk_on_M_Xk_V04
+          - rho_V04_on_M_Xk_V04
+          - delta_obs_k
+          - SE_delta_k
+          - p_adjusted_exclusivity_k
+          - simultaneous_upper_bound_k
+      alpha: 0.025
+      p_threshold: p_adjusted_exclusivity_k_less_than_or_equal_to_0p025
+      numerical_policy: common_primitives.numerical_failure
+    recovery_flag:
+      label: EXPLORATORY_SPEC_RECOVERY_CANDIDATE
+      forbidden_nonexploratory_label: SPEC_RECOVERY_CANDIDATE
+      all_conditions_required:
+        - available_family_size_at_least_3
+        - rho_Xk_on_M_Xk_V04_less_than_or_equal_to_minus_0p30
+        - rho_V04_on_M_Xk_V04_greater_than_minus_0p10
+        - delta_obs_k_less_than_or_equal_to_minus_0p20
+        - p_adjusted_k_less_than_or_equal_to_0p025
+        - p_adjusted_exclusivity_k_less_than_or_equal_to_0p025
+        - simultaneous_upper_bound_k_less_than_zero
+      per_cell_only: true
+      omnibus_p_never_sufficient_for_a_cell_flag: true
+      strong_FWER_claim_allowed: false
+      scientific_promotion_allowed: false
+
+  specificity_tiers:
+    execution_order: [tier_C, tier_P, tier_I]
+    later_tier_requires_all_prior_tiers_pass: true
+
+    common_scene_manifests:
+      partition_contract:
+        analysis_partition: frozen_confirmation_partition_only
+        feature_master_freeze: post_promotion_pre_confirmation_without_rating_access
+        analysis_manifest_freeze: authorized_confirmation_join_before_any_tier_statistic
+        discovery_partition_rows_forbidden: true
+      feature_master_contract:
+        unit: scene
+        common_required_columns: [scene_id, candidate_ids_sha256,
+                                  confirmation_partition_member,
+                                  promoted_IPV_feature_complete,
+                                  inclusion, exclusion_reason]
+        tier_C_required_columns: [shuffled_IPV_feature_complete,
+                                 counterpart_swap_feature_complete]
+        tier_PI_required_columns: [frozen_kinematics_composite_feature_complete,
+                                  frozen_kinematics_formula_sha256,
+                                  frozen_kinematics_input_units_sha256]
+        inclusion_predicate_tier_C: confirmation_partition_member_and_promoted_IPV_shuffled_IPV_counterpart_swap_all_feature_complete
+        inclusion_predicate_tier_PI: confirmation_partition_member_and_promoted_IPV_and_frozen_kinematics_composite_all_feature_complete
+        selection_may_use: frozen_split_membership_and_ratings_blind_feature_completeness_only
+        selection_may_not_use: rating_completeness_ties_values_order_effect_direction_or_statistics
+        canonical_encoding_and_hash: common_primitives.canonical_manifest_encoding
+      tier_C:
+        feature_master_artifact: tier_C_feature_master_ids.csv
+        feature_master_definition: specificity_tiers.common_scene_manifests.feature_master_contract.inclusion_predicate_tier_C
+        artifact: tier_C_common_scene_manifest.csv
+        definition: frozen_confirmation_partition_intersect_complete_rating_promoted_IPV_shuffled_IPV_and_counterpart_swap
+        informativeness: rating_and_all_three_predictors_each_have_at_least_two_distinct_candidate_values
+      tier_P:
+        feature_master_artifact: tier_PI_feature_master_ids.csv
+        feature_master_definition: specificity_tiers.common_scene_manifests.feature_master_contract.inclusion_predicate_tier_PI
+        canonical_analysis_artifact: tier_PI_analysis_ids.csv
+        artifact: tier_P_common_scene_manifest.csv
+        artifact_relation: byte_identical_alias_of_tier_PI_analysis_ids
+        definition: frozen_confirmation_partition_intersect_complete_rating_promoted_IPV_and_frozen_rq010b_kinematics_composite
+        informativeness: rating_IPV_and_K_each_have_at_least_two_distinct_candidate_values
+      tier_I:
+        feature_master_artifact: tier_PI_feature_master_ids.csv
+        feature_master_definition: exact_same_tier_PI_feature_master_as_tier_P
+        canonical_analysis_artifact: tier_PI_analysis_ids.csv
+        artifact: tier_I_common_scene_manifest.csv
+        artifact_relation: byte_identical_alias_of_tier_PI_analysis_ids
+        definition: frozen_confirmation_partition_intersect_complete_rating_promoted_IPV_and_frozen_rq010b_kinematics_composite_required_by_the_nested_model
+        informativeness: rating_IPV_and_K_each_have_at_least_two_distinct_candidate_values
+        assertion: must_be_byte_identical_to_tier_P_manifest_or_execution_stops_with_manifest_mismatch
+      invariance_template:
+        artifact: tier_C_invariance_{control_id}_common_scene_manifest.csv
+        definition: frozen_confirmation_partition_exact_pairwise_intersection_of_complete_rating_promoted_IPV_and_the_named_flip
+      required_columns:
+        - scene_id
+        - candidate_ids_sha256
+        - confirmation_partition_member
+        - rating_complete_three
+        - primary_complete
+        - comparator_or_control_complete
+        - informative_flags
+        - inclusion
+        - exclusion_reason
+      freeze_time: after_the_authorized_confirmation_join_before_any_tier_statistic
+      hash_and_archive_before_testing: true
+      forbidden: pairwise_statistics_from_different_scene_sets
+
+    shared_scene_bootstrap:
+      replicates: 9999
+      resampling_unit: scene
+      draw: sample_N_scene_ids_with_replacement_from_the_named_common_manifest
+      synchronization: one_ordered_resample_used_for_every_statistic_in_that_tier
+      seed_rule: first_unsigned_big_endian_64_bits_of_sha256_RQ014-v1p3-tier-bootstrap_pipe_tier_id_pipe_manifest_sha256_pipe_bootstrap_replicate
+      operator_identity: exact_same_frozen_9999_manifest_keyed_resample_operators_used_for_observed_test_and_every_DGP_outer_evaluation
+      rng: numpy_Generator_PCG64_version_and_implementation_sha_frozen_at_G2
+      recompute_on_every_replicate:
+        - within_scene_midranks
+        - scene_contributions
+        - rho_ws
+        - truncated_strength_S
+        - all_advantages
+        - nested_models_when_applicable
+      SE_definition: sample_sd_of_the_9999_bootstrap_statistic_values
+      SE_reestimated_inside_replicate: false
+      centered_replicate_Z: bootstrap_statistic_minus_observed_statistic_div_SE
+      numerical_policy: common_primitives.numerical_failure
+
+    tier_C:
+      placebo_superiority:
+        members: [shuffled_ipv, counterpart_swap]
+        common_manifest: specificity_tiers.common_scene_manifests.tier_C
+        estimand_m: A_m_equals_S_IPV_minus_S_placebo_m
+        direction: positive
+        observed_standardized: T_obs_m_equals_A_obs_m_div_SE_m
+        centered_bootstrap: Z_bm_equals_A_bm_minus_A_obs_m_div_SE_m
+        critical_value: empirical_0p975_quantile_of_maximum_Z_bm_over_m
+        simultaneous_lower_bound_m: A_obs_m_minus_critical_value_times_SE_m
+        p_adjusted_m: one_plus_count_maximum_Z_bj_over_j_greater_than_or_equal_to_T_obs_m_over_B_effective_plus_one
+        alpha: 0.025
+        pass_rule: both_p_adjusted_m_le_0p025_and_both_simultaneous_lower_bound_m_gt_zero
+        CORE_REJECT_C_member_m:
+          definition: p_adjusted_m_le_0p025_and_simultaneous_lower_bound_m_gt_zero
+          excludes: [tier_C_boundary_gate, any_calibration_status]
+        CORE_REJECT_C_family: both_members_satisfy_CORE_REJECT_C_member_m
+        calibration_required: tier_C_boundary_all_cells_pass
+        pass_label: VALID_INTERNAL_CONFIRMATION_ASSOCIATION_ROBUST
+        fail_policy: stop_before_tier_P_or_tier_I_and_apply_verdict_ladder_status_annotation
+      invariance_diagnostics:
+        members: [sign_flip, role_flip]
+        inferential_status: DESCRIPTIVE_ONLY_NON_GATING
+        reason_for_downgrade: no_equivalence_or_direction_claim_is_needed_for_the_confirmatory_ladder
+        availability: decided_ratings_blind_before_join
+        structural_alias_check:
+          unit: scene
+          representation: exact_three_candidate_midrank_vector_in_stable_candidate_order_including_tie_blocks
+          alias_if_and_only_if: exact_vector_equality_for_every_scene_on_the_pairwise_feature_common_set
+          canonical_evidence: sha256_of_scene_id_and_primary_rank_vector_and_flip_rank_vector_rows
+          any_scene_difference: NONALIAS
+          spearman_rank_correlation: descriptive_only_never_defines_alias
+        nonalias_summary:
+          estimand: D_m_equals_S_flip_minus_S_IPV_on_the_named_pairwise_common_manifest
+          resampling: paired_scene_bootstrap_9999
+          interval: ordinary_two_sided_percentile_95_percent_descriptive_interval
+          margin_reference_only: [-0.10, 0.10]
+          labels:
+            interval_entirely_inside_margin: DESCRIPTIVELY_COMPATIBLE_WITH_MARGIN
+            interval_entirely_above_zero: FLIP_STRONGER_DESCRIPTIVE
+            otherwise: ASYMMETRY_DESCRIPTIVE
+        forbidden_labels: [INVARIANT, EQUIVALENT, DIRECTION_ARTIFACT_SUSPECT]
+        cannot_cap_or_upgrade_any_scientific_label: true
+        cannot_trigger_forensic_escalation_automatically: true
+        role_flip_unavailable: record_UNAVAILABLE_non_gating
+
+    tier_P:
+      comparator:
+        id: frozen_rq010b_kinematics_composite
+        exact_formula_code_sha_and_input_units_required: true
+        failure: TIER_P_UNAVAILABLE_NO_SUBSTITUTE
+      common_manifest: specificity_tiers.common_scene_manifests.tier_P
+      primary_margin:
+        delta_NI: 0.08
+        status: normative_PI_chosen_maximum_acceptable_loss_in_rho_ws_strength_units
+        empirical_effect_derivation_claimed: false
+        forbidden_justification: half_of_the_weakest_published_physics_effect
+        freeze_deadline: before_any_confirmation_rating_join
+        descriptive_sensitivities: [0.04, 0.12]
+        sensitivity_may_change_primary_verdict: false
+      estimand: A_P_equals_S_IPV_minus_S_K_plus_delta_NI
+      hypothesis: H0_A_P_less_than_or_equal_to_zero_vs_H1_A_P_greater_than_zero
+      observed_standardized: T_obs_equals_A_P_obs_div_SE_A_P
+      centered_bootstrap: Z_b_equals_A_P_b_minus_A_P_obs_div_SE_A_P
+      one_sided_lower_bound: A_P_obs_minus_empirical_0p975_quantile_of_Z_b_times_SE_A_P
+      p_value: one_plus_count_Z_b_greater_than_or_equal_to_T_obs_over_B_effective_plus_one
+      alpha: 0.025
+      pass_rule:
+        - p_value_less_than_or_equal_to_0p025
+        - one_sided_lower_bound_greater_than_zero
+        - tier_P_boundary_all_cells_pass
+        - tier_P_NI_power_all_cells_pass
+      CORE_REJECT_P:
+        definition: p_value_le_0p025_and_one_sided_lower_bound_gt_zero
+        excludes: [tier_P_boundary_gate, tier_P_power_gate, any_calibration_status]
+      pass_label: PARSIMONY_VS_FROZEN_KINEMATICS_COMPOSITE
+      below_power_gate: UNDERPOWERED_UNAVAILABLE
+
+    tier_I:
+      common_manifest: specificity_tiers.common_scene_manifests.tier_I
+      model:
+        response: rating_within_scene_centered_midranks
+        predictor_Q: promoted_IPV_deviation_within_scene_centered_midranks
+        predictor_K: frozen_kinematics_composite_within_scene_centered_midranks
+        candidate_weight: one_third
+        intercept: false
+        full: R_tilde_equals_beta_D_times_Q_tilde_plus_beta_K_times_K_tilde
+        baseline: R_tilde_equals_beta_K_times_K_tilde
+        solver: numpy_linalg_lstsq_SVD
+        rcond: 1.0e-12
+        ridge_or_pseudocount: forbidden
+        statistic: T_I_equals_minus_beta_D
+        direction: positive
+        refit_full_and_baseline_every_bootstrap: true
+      observed_collinearity_gate:
+        standardization: divide_Q_and_K_columns_by_their_weighted_L2_norm_before_diagnostics
+        weighted_rank_correlation: correlation_of_the_two_standardized_design_columns
+        gram_condition_number: largest_eigenvalue_div_smallest_eigenvalue_of_X_transpose_W_X
+        hard_singular: matrix_rank_less_than_2_or_either_standardized_column_variance_le_1e-12
+        near_collinear: absolute_weighted_rank_correlation_ge_0p95_or_gram_condition_number_gt_40
+        on_hard_singular: TIER_I_UNAVAILABLE_SINGULAR
+        on_near_collinear: TIER_I_UNAVAILABLE_COLLINEAR
+        no_residualization_or_ridge_rescue: true
+      bootstrap_collinearity_policy:
+        undefined_if_any:
+          - matrix_rank_less_than_2
+          - either_design_column_variance_le_1e-12
+          - gram_condition_number_gt_1e8
+        condition_number_gt_40_and_le_1e8: compute_statistic_and_audit_as_bootstrap_high_collinearity
+        absolute_correlation_ge_0p95_alone: compute_unless_an_undefined_condition_above_holds_and_audit
+        undefined_fraction_gt_0p01: TIER_I_NUMERICAL_INVALID
+      inference:
+        observed_standardized: T_obs_equals_T_I_obs_div_SE_T_I
+        centered_bootstrap: Z_b_equals_T_I_b_minus_T_I_obs_div_SE_T_I
+        one_sided_lower_bound: T_I_obs_minus_empirical_0p975_quantile_of_Z_b_times_SE_T_I
+        p_value: one_plus_count_Z_b_greater_than_or_equal_to_T_obs_over_B_effective_plus_one
+        alpha: 0.025
+        pass_rule:
+          - beta_D_less_than_zero
+          - SSE_full_less_than_SSE_baseline_as_sanity_only
+          - p_value_less_than_or_equal_to_0p025
+          - one_sided_lower_bound_greater_than_zero
+          - tier_I_beta_D_zero_boundary_all_cells_pass
+        CORE_REJECT_I:
+          definition: beta_D_lt_zero_and_p_value_le_0p025_and_one_sided_lower_bound_gt_zero
+          excludes: [tier_I_boundary_gate, any_calibration_status, SSE_sanity_check]
+      pass_label: INCREMENTAL_BEYOND_FROZEN_KINEMATICS_COMPOSITE
+      fail_does_not_revoke_tier_P: true
+
+    verdict_ladder:
+      prerequisite: base_v1_confirmation_association_gate_passed
+      mapping:
+        tier_C_unavailable_or_numerically_invalid: VALID_INTERNAL_CONFIRMATION_ASSOCIATION
+        tier_C_valid_test_does_not_pass: VALID_INTERNAL_CONFIRMATION_ASSOCIATION
+        tier_C_pass_and_tier_P_unavailable_underpowered_or_fail: VALID_INTERNAL_CONFIRMATION_ASSOCIATION_ROBUST
+        tier_C_and_tier_P_pass_but_tier_I_unavailable_invalid_or_fail: VALID_INTERNAL_CONFIRMATION_PARSIMONY_VS_FROZEN_KINEMATICS_COMPOSITE
+        tier_C_and_tier_P_and_tier_I_pass: VALID_INTERNAL_CONFIRMATION_INCREMENTAL_BEYOND_FROZEN_KINEMATICS_COMPOSITE
+      tier_C_annotations:
+        unavailable_or_numerically_invalid: TIER_C_NOT_ASSESSED
+        valid_test_does_not_pass: PLACEBO_SUPERIORITY_NOT_ESTABLISHED
+        automatic_CONSTRUCTION_SUSPECT_from_nonassessment_or_nonrejection: forbidden
+      invariance_diagnostics_never_change_mapping: true
+      retired_labels: [VALID_INTERNAL_CONFIRMATION_IPV_SPECIFIC, IPV_SPECIFIC, PARSIMONIOUS_INDEX]
+
+  joint_boundary_and_power_DGP:
+    model_id: fixed_design_joint_gaussian_latent_rank_v1
+    freeze_timing:
+      G2: freeze_code_seeds_predictor_arrays_grids_optimizer_resample_operator_generator_and_compute_contract_without_ratings
+      authorized_confirmation_join: freeze_manifest_membership_completeness_and_tie_multiplicity_without_computing_observed_effects
+      G4S: fit_nuisance_DGP_and_run_calibration_before_any_observed_tier_statistic
+      rule_changes_after_G2: forbidden
+      observed_effect_inputs_to_G4S: forbidden
+    design_principle: retain_observed_joint_predictor_arrays_scene_structure_collinearity_and_registered_missingness_exactly
+    feature_access: ratings_blind_predictors_only
+    rating_structure_access_when_legally_authorized:
+      allowed: rating_completeness_mask_and_per_scene_tie_multiplicity_only
+      forbidden: observed_rating_order_effect_direction_or_observed_rho
+    latent_model:
+      predictor_preparation: within_scene_centered_midranks_then_global_weighted_unit_L2_scaling
+      utility: U_sc_equals_minus_dot_X_sc_gamma_plus_epsilon_sc
+      epsilon: iid_standard_normal_per_scene_candidate
+      simulated_rating: ascending_midranks_of_U_within_scene_after_tie_operator
+      predictors_are_fixed_not_resampled_during_DGP_generation: true
+      observed_predictor_dependence_preserved: true
+    tie_profiles:
+      observed_exact:
+        rule: preserve_each_scene_observed_tie_multiplicity_none_one_pair_or_all_three_without_preserving_observed_order
+        pair_choice: latent_utility_pair_with_smallest_absolute_difference_then_candidate_id_lexicographic
+        triple_tie: assign_all_three_the_same_midrank
+      stress_0p20:
+        tied_scene_count: round_half_up_0p20_times_manifest_N
+        scene_selection: ascending_sha256_RQ014-v1p3-tie20-pipe-scene_id
+        operation: tie_closest_latent_pair
+      stress_0p40:
+        tied_scene_count: round_half_up_0p40_times_manifest_N
+        scene_selection: ascending_sha256_RQ014-v1p3-tie40-pipe-scene_id
+        operation: tie_closest_latent_pair
+      profiles_used_for_every_grid: [observed_exact, stress_0p20, stress_0p40]
+      missingness: exact_named_common_manifest_no_imputation
+    coefficient_calibration:
+      objective: match_expected_raw_rho_ws_vector_not_truncated_S
+      optimizer: scipy_optimize_least_squares_method_trf_exact_version_and_code_sha_frozen_at_G2
+      initial_gamma: all_zeros
+      bounds_each_gamma: [-8.0, 8.0]
+      ftol: 1.0e-10
+      xtol: 1.0e-10
+      gtol: 1.0e-10
+      max_nfev: 5000
+      common_random_residual_draws_fit: 100000
+      independent_validation_draws: 100000
+      maximum_absolute_target_rho_error_on_validation: 0.005
+      failure_or_infeasible_target: named_calibration_cell_DGP_INFEASIBLE_and_corresponding_tier_UNAVAILABLE
+      no_nearest_feasible_target_substitution: true
+    RNG_contract:
+      rng: numpy_Generator_PCG64_exact_version_frozen_at_G2
+      seed_uint64: first_unsigned_big_endian_64_bits_of_sha256_of_domain_fields
+      domains:
+        fit: RQ014-v1p3-DGP-fit|tier|grid|tie|draw
+        validation: RQ014-v1p3-DGP-validation|tier|grid|tie|draw
+        outer: RQ014-v1p3-DGP-outer|tier|grid|tie|replicate
+        inner_operator: RQ014-v1p3-tier-bootstrap|tier|manifest_sha256|bootstrap_replicate
+      inner_operator_reuse: exact_frozen_manifest_keyed_operator_matrix_reused_for_observed_test_and_all_outer_evaluations
+      streams_must_not_overlap: true
+    grids:
+      tier_C_equality_boundary:
+        manifest: tier_C_common_scene_manifest.csv
+        strength_grid: [0.10, 0.20, 0.30]
+        targets_for_each_strength_s:
+          rho_IPV: minus_s
+          rho_shuffled: minus_s
+          rho_counterpart_swap: minus_s
+        tie_profiles: [observed_exact, stress_0p20, stress_0p40]
+        cell_count: 9
+        false_positive_event: any_one_of_the_two_CORE_REJECT_C_member_events
+        metric: family_wise_error_rate
+      tier_C_partial_null_boundary:
+        manifest: tier_C_common_scene_manifest.csv
+        strength_grid: [0.10, 0.20, 0.30]
+        null_member_grid: [shuffled_ipv, counterpart_swap]
+        targets_for_each_strength_s_and_null_member_m:
+          rho_IPV: minus_s
+          rho_null_placebo_m: minus_s
+          rho_other_placebo: minus_max_of_zero_and_s_minus_0p10
+          identities:
+            - A_null_member_equals_zero
+            - A_other_member_equals_positive_0p10
+        tie_profiles: [observed_exact, stress_0p20, stress_0p40]
+        cell_count: 18
+        false_positive_event: CORE_REJECT_C_member_for_the_registered_null_member_only
+        metric: partial_null_family_wise_error_rate
+      tier_P_NI_boundary:
+        manifest: tier_P_common_scene_manifest.csv
+        K_strength_grid: [0.10, 0.20, 0.30]
+        targets_for_each_k:
+          rho_K: minus_k
+          rho_IPV: minus_of_k_minus_0p08
+          identity: S_IPV_minus_S_K_equals_minus_0p08
+        tie_profiles: [observed_exact, stress_0p20, stress_0p40]
+        cell_count: 9
+        false_positive_event: CORE_REJECT_P
+        metric: type_I_error
+      tier_P_NI_power:
+        manifest: tier_P_common_scene_manifest.csv
+        K_strength_grid: [0.10, 0.20, 0.30]
+        targets_for_each_k: {rho_K: minus_k, rho_IPV: minus_k}
+        identity: S_IPV_equals_S_K
+        tie_profiles: [observed_exact, stress_0p20, stress_0p40]
+        cell_count: 9
+        success_event: CORE_REJECT_P
+        metric: power
+      tier_I_beta_D_zero_boundary:
+        manifest: tier_I_common_scene_manifest.csv
+        K_strength_grid: [0.10, 0.20, 0.30]
+        coefficient_constraint: gamma_Q_exactly_zero
+        calibration_target: rho_K_equals_minus_k_by_fitting_gamma_K_only
+        marginal_rho_IPV: not_targeted_and_must_be_the_value_induced_by_the_fixed_observed_Q_K_collinearity
+        tie_profiles: [observed_exact, stress_0p20, stress_0p40]
+        cell_count: 9
+        false_positive_event: CORE_REJECT_I
+        metric: type_I_error
+      global_zero_sanity:
+        gamma: all_zeros
+        manifests: [tier_C_common_scene_manifest.csv,
+                    tier_P_common_scene_manifest.csv,
+                    tier_I_common_scene_manifest.csv]
+        tier_scope: [tier_C, tier_P, tier_I]
+        tie_profiles: [observed_exact, stress_0p20, stress_0p40]
+        cell_count: 9
+        outer_simulations_per_cell: 20000
+        each_outer_simulation_runs_the_exact_registered_tier_test: true
+        included_in_compute_projection: true
+        interpretation_by_tier:
+          tier_C: global_zero_placebo_family_behavior_sanity
+          tier_P: equal_zero_NI_behavior_sanity_not_a_type_I_null_cell
+          tier_I: global_zero_nested_model_behavior_sanity
+        role: report_only_additional_sanity_not_a_substitute_for_boundary_cells
+    outer_validation:
+      simulations_per_grid_cell: 20000
+      each_outer_simulation_runs_the_exact_registered_9999_replicate_test: true
+      fixed_denominator: 20000
+      failed_outer_replicates_excluded_from_denominator: false
+      numerical_failure_counting:
+        size_or_FWER_cell: every_failed_outer_replicate_counts_as_a_false_positive
+        power_cell: every_failed_outer_replicate_counts_as_not_success
+        denominator_reduction: forbidden
+      size_or_FWER_gate:
+        estimator: false_positive_count_div_20000
+        uncertainty: exact_one_sided_95_percent_Clopper_Pearson_upper_bound
+        threshold: upper_bound_less_than_or_equal_to_0p03
+      power_gate:
+        estimator: success_count_div_20000
+        uncertainty: exact_one_sided_95_percent_Clopper_Pearson_lower_bound
+        threshold: lower_bound_greater_than_or_equal_to_0p80
+      worst_case_rule:
+        tier_C_complete_null_boundary: every_one_of_9_cells_must_pass_size_gate
+        tier_C_partial_null_boundary: every_one_of_18_cells_must_pass_size_gate
+        tier_P_boundary: every_one_of_9_cells_must_pass_size_gate
+        tier_P_power: every_one_of_9_cells_must_pass_power_gate
+        tier_I_boundary: every_one_of_9_cells_must_pass_size_gate
+        averaging_across_cells: forbidden
+      outputs_per_cell:
+        - fitted_gamma
+        - target_and_validated_rho_vector
+        - target_error
+        - tie_profile
+        - manifest_sha256
+        - false_positive_or_success_count
+        - point_estimate
+        - Clopper_Pearson_bound
+        - numerical_failure_fraction
+        - seed_domain_hash
+      numerical_failure_fraction_reporting: mandatory_but_failures_remain_in_fixed_denominator_as_above
+    fixed_compute_feasibility:
+      scheme: fixed_20000_no_sequential_peeking_or_early_stop
+      batch_size_outer_replicates: 500
+      batches_per_grid_cell: 40
+      registered_boundary_and_power_cells: 54
+      registered_nonzero_calibration_targets_with_100000_fit_and_100000_validation_draws: 54
+      registered_global_zero_sanity_cells: 9
+      total_registered_outer_batches: 2520
+      batch_order: ascending_grid_id_then_tie_profile_then_batch_index
+      precompute_once_before_outer_simulation:
+        - exact_9999_scene_resample_count_operators_per_manifest_and_tier
+        - within_scene_candidate_rank_lookup_tables
+      separately_precomputed_extension_operators:
+        - exact_extension_keyed_permutation_operators
+        - exact_Poisson_weight_operators
+      operator_artifacts_hash_bound: true
+      G2_ratings_blind_runtime_pilot:
+        rating_values: deterministic_hash_generated_dummy_rank_patterns_only
+        predictor_arrays: G2_frozen_ratings_blind_arrays
+        manifest_size_upper_bound: 479
+        repeats_per_shape: 3
+        outer_test_shape_pilots:
+          tier_C:
+            registered_outer_batches: 1200
+            pilot_outer_replicates: 500
+            inner_replicates_per_outer: 9999
+            exact_test_shape: two_member_placebo_maxT
+          tier_P:
+            registered_outer_batches: 840
+            pilot_outer_replicates: 500
+            inner_replicates_per_outer: 9999
+            exact_test_shape: one_statistic_noninferiority_bootstrap
+          tier_I:
+            registered_outer_batches: 480
+            pilot_outer_replicates: 500
+            inner_replicates_per_outer: 9999
+            exact_test_shape: nested_model_refit_bootstrap
+        calibration_fit_validation_shape_pilots:
+          common_contract:
+            manifest_size: 479
+            fit_draws: 100000
+            validation_draws: 100000
+            max_nfev_cost_fixture: exactly_5000_objective_and_jacobian_evaluations_without_early_termination
+            scipy_optimizer_wrapper_overhead: measured_separately_on_the_same_fixture_and_added
+            deterministic_generator: first_uint64_of_sha256_RQ014-v1p3-resource-pilot_pipe_tier_pipe_scene_index_pipe_candidate_index_pipe_column_index_pipe_counter_mapped_to_uniform_then_within_scene_average_midranks_and_centered
+            rank_deficiency_rule: increment_counter_until_the_registered_parameter_dimension_is_full_rank
+            repeats: 3
+          tier_C: {optimizer_parameter_count: 3, registered_target_count: 27}
+          tier_P: {optimizer_parameter_count: 2, registered_target_count: 18}
+          tier_I: {optimizer_parameter_count: 1, registered_target_count: 9}
+        operator_generation_pilot: generate_and_hash_every_registered_operator_type_at_full_9999_size
+        resource_pilot_manifest:
+          artifact: G2_compute_resource_pilot_manifest.json
+          schema_version: rq014-compute-resource-pilot-v1p3
+          required_fields: [registry_sha256, pilot_code_sha256, environment_sha256,
+                            deterministic_generator_spec_sha256,
+                            generated_fixture_manifest_sha256,
+                            operator_manifest_sha256, repeats_by_task_shape,
+                            CPU_seconds_elapsed_seconds_peak_RSS_by_repeat,
+                            outer_batch_slots_by_tier, fit_slots_by_tier,
+                            cores_per_task_shape, memory_request_per_task_shape,
+                            BLAS_threads_equals_1, scheduler_allocation_id,
+                            projection_formulas_and_results]
+          exact_bytes_sha256_required_before_G4S: true
+        projection_statistic: per_shape_maximum_CPU_seconds_elapsed_seconds_and_peak_RSS_across_three_repeats
+        projected_outer_CPU_hours_formula: "(max_CPU_C_batch*1200 + max_CPU_P_batch*840 + max_CPU_I_batch*480) / 3600"
+        projected_non_outer_CPU_hours_formula: "(max_CPU_C_fit_validation_fixture*27 + max_CPU_P_fit_validation_fixture*18 + max_CPU_I_fit_validation_fixture*9) / 3600 + measured_operator_and_manifest_CPU_hours"
+        projected_total_CPU_hours_formula: projected_outer_CPU_hours_plus_projected_non_outer_CPU_hours_formula
+        projected_peak_memory_GiB_per_task: max_RSS_of_any_outer_batch_fit_validation_or_operator_generation_task
+        allocated_concurrency: exact_positive_integer_outer_batch_slots_and_fit_slots_by_tier_frozen_in_resource_pilot_manifest
+        projected_wall_clock_hours_formula: "(sum_tier max_outer_elapsed_t*ceil(outer_batches_t/outer_slots_t) + sum_tier max_fit_validation_elapsed_t*ceil(targets_t/fit_slots_t) + operator_and_manifest_serial_critical_path_seconds) / 3600"
+      hard_compute_ceiling:
+        aggregate_CPU_hours: 20000
+        peak_memory_GiB_per_task: 16
+        maximum_wall_clock_hours_after_resources_are_allocated: 96
+      pilot_pass_rule: all_three_projected_ceiling_metrics_less_than_or_equal_to_limits
+      pilot_fail_policy: CALIBRATION_COMPUTE_INFEASIBLE_no_observed_tier_statistics_and_no_reduction_of_replicates
+      Clopper_Pearson_use: fixed_n_20000_only
+      alpha_spending_or_confidence_sequence: not_used
+
+  X02_scale_eligibility:
+    decision_time: ratings_blind_G2_before_X02_enters_the_extension_family
+    source_definition_gate:
+      required_exact_recovery:
+        - sigma01_risk_bin_edges
+        - edge_closed_open_semantics
+        - PET_proxy_formula_units_and_coordinate_frame
+        - geometry_mapping_CP_HO_MP_F
+        - legacy_estimator_solver_sigma_grid_and_window_semantics
+        - static_envelope_builder_formula_and_input_manifest
+      artifacts:
+        source_definition: X02_source_definition.yaml
+        WOD_mapping: X02_wod_mapping.csv
+        source_definition_sha256: TO_FREEZE_AT_G2
+        WOD_mapping_sha256: TO_FREEZE_AT_G2
+      missing_or_ambiguous_any_field: INACCESSIBLE_DEFINITION
+      inferred_or_new_bins_forbidden: true
+    support_gate:
+      all_eligible_rows_denominator: every_scheduled_scene_candidate_tau_row_from_all_pre_envelope_trajectory_eligible_WOD_scenes_before_any_X02_calculability_or_finiteness_condition
+      calculable_rows_numerator: all_eligible_rows_where_recovered_PET_proxy_and_geometry_are_computable
+      calculability_fraction: calculable_rows_numerator_count_div_all_eligible_rows_denominator_count
+      minimum_calculability_fraction: 0.70
+      supported_finite_rows_numerator: all_eligible_rows_mapping_to_a_recovered_static_state_cell_with_finite_L_M_U_and_finite_X02_candidate_IPV
+      support_coverage: supported_finite_rows_numerator_count_div_all_eligible_rows_denominator_count
+      minimum_coverage: 0.70
+      denominator_and_row_level_reasons_artifact: X02_support_coverage.csv
+      failure: INELIGIBLE_SUPPORT
+    parity_manifest:
+      artifact: X02_scale_parity_12_cases.csv
+      case_unit: scene_id_candidate_id
+      eligible_pool: cases_from_calculable_rows_before_conditioning_on_legacy_or_X02_value_finiteness
+      stratification: geometry_CP_HO_MP_F
+      selection: first_3_cases_per_geometry_by_ascending_sha256_RQ014-v1p3-X02-parity-pipe-scene_id-pipe-candidate_id
+      required_cases: 12
+      fewer_than_3_in_any_geometry: INELIGIBLE_SUPPORT
+      tau_rows: every_registered_scheduled_tau_for_each_selected_case
+      freeze_and_hash_before_scale_metrics: true
+    scale_metrics:
+      units_required: radians_for_both_paths
+      no_rescaling_affine_fit_or_offset_correction: true
+      paired_values:
+        v_legacy: recovered_sigma01_full_window_IPV_on_the_exact_case_and_tau
+        v_X02: registered_X02_rolling_local_window_IPV_on_the_exact_case_and_tau
+        half_width_h: static_U_minus_static_L_div_2_for_the_mapped_state_cell
+      preliminary_validity:
+        finite_fraction_denominator: every_scheduled_tau_row_of_all_12_frozen_parity_cases_before_any_finite_filter
+        finite_fraction_numerator: rows_with_finite_v_legacy_v_X02_and_half_width_h
+        finite_paired_row_fraction: numerator_count_div_denominator_count_computed_before_conditioning
+        finite_paired_row_fraction_min: 0.90
+        metric_conditioning_after_fraction_gate: all_remaining_scale_metrics_use_only_finite_numerator_rows
+        all_values_within_frozen_IPV_grid_range_minus_3pi_over_8_to_plus_3pi_over_8: required
+        half_width_h_greater_than_1e-6_for_every_pair: required
+        at_least_10_distinct_paired_rows: required
+      rank_correlation_contract:
+        method: Spearman_correlation_of_finite_paired_rows
+        rank_ties: average_midranks
+        either_vector_constant_or_fewer_than_3_distinct_pairs: INELIGIBLE_SCALE_INCOMPATIBLE
+        NaN_or_nonfinite_correlation: INELIGIBLE_SCALE_INCOMPATIBLE
+        implementation_and_version_sha: TO_FREEZE_AT_G2
+      normalized_difference_z: abs_v_X02_minus_v_legacy_div_half_width_h
+      normalized_signed_bias: median_v_X02_minus_v_legacy_div_median_half_width_h
+      hard_thresholds_all_required:
+        median_z_less_than_or_equal_to: 0.50
+        empirical_q90_z_less_than_or_equal_to: 1.00
+        abs_normalized_signed_bias_less_than_or_equal_to: 0.25
+        spearman_v_X02_vs_v_legacy_greater_than_or_equal_to: 0.80
+      failure: INELIGIBLE_SCALE_INCOMPATIBLE
+      result_artifact: X02_scale_compatibility.json
+    family_entry:
+      all_definition_support_and_scale_gates_pass: ELIGIBLE_FOR_EXTENSION_FAMILY
+      any_gate_fail: exclude_before_rating_access_with_exact_registered_reason
+      later_override_after_ratings: forbidden
+      rescaling_rescue: forbidden
+
+allowed_blind_status:
+  - PENDING_G2
+  - ELIGIBLE_FOR_DISCOVERY
+  - INELIGIBLE_SCHEMA_OR_HASH
+  - INELIGIBLE_NUMERICAL_PARITY
+  - INELIGIBLE_ENVELOPE_UNAVAILABLE
+  - INELIGIBLE_ENVELOPE_DEGENERATE
+  - INELIGIBLE_COMMON_SUPPORT
+  - INELIGIBLE_STRUCTURAL_ALIAS
+  - INELIGIBLE_CONFIRMATION_LOW_POWER
+
+configs:
+  - {config_id: V01, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 1.0, history_window_steps: 4,  sequence_mode: trailing_only,  horizon: H2,    envelope_id: E-R04-W10-TR-v1, blind_status: PENDING_G2}
+  - {config_id: V02, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 1.0, history_window_steps: 4,  sequence_mode: trailing_only,  horizon: HMAX5, envelope_id: E-R04-W10-TR-v1, blind_status: PENDING_G2}
+  - {config_id: V03, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 2.5, history_window_steps: 10, sequence_mode: future_only,    horizon: H2,    envelope_id: E-R04-W25-FO-v1, blind_status: PENDING_G2}
+  - {config_id: V04, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 2.5, history_window_steps: 10, sequence_mode: future_only,    horizon: HMAX5, envelope_id: E-R04-W25-FO-v1, blind_status: PENDING_G2}
+  - {config_id: V05, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 2.5, history_window_steps: 10, sequence_mode: history_future, horizon: H2,    envelope_id: E-R04-W25-HF-v1, blind_status: PENDING_G2}
+  - {config_id: V06, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 2.5, history_window_steps: 10, sequence_mode: history_future, horizon: HMAX5, envelope_id: E-R04-W25-HF-v1, blind_status: PENDING_G2}
+  - {config_id: V07, rate_hz: 10, dt_s: 0.10, trailing_window_s: 1.0, history_window_steps: 10, sequence_mode: trailing_only,  horizon: H2,    envelope_id: E-R10-W10-TR-v1, blind_status: PENDING_G2}
+  - {config_id: V08, rate_hz: 10, dt_s: 0.10, trailing_window_s: 1.0, history_window_steps: 10, sequence_mode: trailing_only,  horizon: HMAX5, envelope_id: E-R10-W10-TR-v1, blind_status: PENDING_G2}
+  - {config_id: V09, rate_hz: 10, dt_s: 0.10, trailing_window_s: 2.5, history_window_steps: 25, sequence_mode: future_only,    horizon: H2,    envelope_id: E-R10-W25-FO-v1, blind_status: PENDING_G2}
+  - {config_id: V10, rate_hz: 10, dt_s: 0.10, trailing_window_s: 2.5, history_window_steps: 25, sequence_mode: future_only,    horizon: HMAX5, envelope_id: E-R10-W25-FO-v1, blind_status: PENDING_G2}
+  - {config_id: V11, rate_hz: 10, dt_s: 0.10, trailing_window_s: 2.5, history_window_steps: 25, sequence_mode: history_future, horizon: H2,    envelope_id: E-R10-W25-HF-v1, blind_status: PENDING_G2}
+  - {config_id: V12, rate_hz: 10, dt_s: 0.10, trailing_window_s: 2.5, history_window_steps: 25, sequence_mode: history_future, horizon: HMAX5, envelope_id: E-R10-W25-HF-v1, blind_status: PENDING_G2}

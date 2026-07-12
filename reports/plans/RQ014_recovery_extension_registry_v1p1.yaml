@@ -1,0 +1,69 @@
+schema_version: rq014-recovery-extension-v1p1
+registry_status: PROPOSED_NOT_EXECUTABLE
+registry_kind: recovery_extension
+created_date: '2026-07-10'
+canonical_plan: reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md
+amendment: reports/plans/RQ014_plan_v1p1_amendment_20260710.md
+execution_authorized: false
+scientific_promotion_allowed: false
+alpha_family_shared_with_valid_registry: false
+purpose: >-
+  Plausible legitimate old-spec variants that the valid family excludes by design
+  (no defects). Closes the recovery-coverage gap so that NOT_RECOVERED verdicts are
+  interpretable. Output is specification-recovery signal only.
+
+baseline:
+  extension_baseline_id: X00
+  baseline_valid_config_id: V04
+  note: 4hz_future_only_W2p5_HMAX5_analogue_all_other_fields_frozen_as_valid_registry
+
+cells:
+  - extension_id: X01
+    changed_field: endpoint
+    baseline_value: rolling_mean_normalized_exceedance_90
+    variant_value: terminal_only_normalized_exceedance_90_at_final_common_tau
+    rationale: old_study_may_have_scored_only_the_final_ipv_of_each_candidate
+  - extension_id: X02
+    changed_field: envelope_source
+    baseline_value: matched_time_indexed_path_type_hv
+    variant_value: sigma01_static_state_conditioned_quantile_envelope
+    availability_condition: reconstructable_ratings_blind_from_sigma01_batch_inputs
+    unavailable_policy: mark_INACCESSIBLE_do_not_substitute
+    rationale: pre_RQ009_era_envelope_form_from_PAPER001_lineage
+  - extension_id: X03
+    changed_field: envelope_source
+    baseline_value: matched_time_indexed_path_type_hv
+    variant_value: candidate_internal_per_scene_envelope_median_of_three
+    rationale: quick_independent_study_plausibly_used_scene_local_reference
+    caveat: compositional_coupling_across_candidates_is_why_it_is_invalid_for_science
+  - extension_id: X04
+    changed_field: band_level
+    baseline_value: central_90
+    variant_value: central_80
+  - extension_id: X05
+    changed_field: band_level
+    baseline_value: central_90
+    variant_value: central_95
+  - extension_id: X06
+    changed_field: statistical_unit
+    baseline_value: within_scene_rho_ws
+    variant_value: pooled_all_candidates_spearman
+    rationale: old_strong_visible_correlation_was_plausibly_a_pooled_scatter
+    caveat: ignores_scene_clustering_which_is_why_it_is_invalid_for_science
+
+analysis_contract:
+  run_batch: same_rating_access_event_as_valid_discovery
+  ledger_partition: extension
+  multiplicity: within_arm_maxT_over_6_cells_within_scene_permutation_9999
+  seed_rule: 20260710_plus_100_plus_zero_based_extension_index
+  rng: numpy_Generator_PCG64
+  flag_rule: rho_ws_le_minus_0.30_and_arm_maxT_p_lt_0.05
+  x06_flag_rule: pooled_spearman_le_minus_0.30_and_arm_maxT_p_lt_0.05
+  allowed_claim: SPEC_RECOVERY_CANDIDATE_only
+  forbidden: [promotion, confirmation, rq010b_amendment, alpha_sharing,
+              post_hoc_addition_of_cells_after_any_rating_join]
+
+freeze_requirements:
+  - amendment_and_registries_pass_independent_review
+  - g0_closed_no_open_surfaces
+  - checksums_registered

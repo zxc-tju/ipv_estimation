@@ -1,0 +1,627 @@
+{
+  "schema_version": "rq014-forensic-v1p5",
+  "registry_status": "G0_CLOSED_FORMAL_G1_RESOLVED_BY_EXTERNAL_ARTIFACT",
+  "registry_kind": "forensic",
+  "created_date": "2026-07-12",
+  "supersedes": "reports/plans/RQ014_forensic_registry_v1p3.yaml",
+  "canonical_plan": "reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md",
+  "amendment": "reports/plans/RQ014_plan_v1p5_amendment_20260712.md",
+  "execution_authorization_contract": {
+    "schema_version": "rq014-operation-authorization-v1",
+    "default_decision": "DENY",
+    "authority_path": "configs/research_authorization.json",
+    "authority_rq_id": "RQ014",
+    "operation_contract_path": "reports/plans/RQ014_execution_contract_v1p5.json",
+    "formal_g1_ref": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p5_20260712.yaml",
+    "scoped_decision_ref": "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
+    "forensic_operations_registered_in_v1p5": false
+  },
+  "scientific_promotion_allowed": false,
+  "historical_recovery_authority": "reports/plans/RQ014_recovery_lane_v2.json",
+  "forensic_role_after_recovery_lane_v2": "provenance and diagnostics only; forensic results never gate the 960-cell recovery screen",
+  "alpha_note": "forensic_family_owns_its_own_error_rates_no_sharing_with_scientific_or_extension",
+  "terminal_states": [
+    "FOUND",
+    "NOT_FOUND_ON_SCANNED_SURFACES",
+    "INACCESSIBLE"
+  ],
+  "transient_states": [
+    "OPEN"
+  ],
+  "forensic_surfaces": [
+    {
+      "surface_id": "F01",
+      "surface": "current_repo_git_archived_workflow",
+      "status": "NOT_FOUND_ON_SCANNED_SURFACES",
+      "complete_scan": true,
+      "all_required_reads_ok": true,
+      "zero_matches": true,
+      "closure_basis": "COMPLETED_SCAN",
+      "closure_evidence": {
+        "path": "reports/studies/RQ014_wod_e2e_rating_recovery/00_forensics/forensics_report.md",
+        "sha256": "e6f1ce6e136cdf7355e18e38b5853b934658d462f72e61acb3bddf282ca16c88"
+      },
+      "negative_finding_claim_allowed": true
+    },
+    {
+      "surface_id": "F02",
+      "surface": "old_paper_snapshots_and_history",
+      "status": "NOT_FOUND_ON_SCANNED_SURFACES",
+      "complete_scan": true,
+      "all_required_reads_ok": true,
+      "zero_matches": true,
+      "closure_basis": "COMPLETED_SCAN",
+      "closure_evidence": {
+        "path": "reports/studies/RQ014_wod_e2e_rating_recovery/00_forensics/forensics_report.md",
+        "sha256": "e6f1ce6e136cdf7355e18e38b5853b934658d462f72e61acb3bddf282ca16c88"
+      },
+      "negative_finding_claim_allowed": true
+    },
+    {
+      "surface_id": "F03",
+      "surface": "hpc_accounting_history_home_zxc",
+      "status": "NOT_FOUND_ON_SCANNED_SURFACES",
+      "complete_scan": true,
+      "all_required_reads_ok": true,
+      "zero_matches": true,
+      "closure_basis": "COMPLETED_SCAN",
+      "closure_evidence": {
+        "path": "reports/studies/RQ014_wod_e2e_rating_recovery/00_forensics/forensics_report.md",
+        "sha256": "e6f1ce6e136cdf7355e18e38b5853b934658d462f72e61acb3bddf282ca16c88"
+      },
+      "negative_finding_claim_allowed": true
+    },
+    {
+      "surface_id": "F04",
+      "surface": "mac_codex_claude_history",
+      "status": "NOT_FOUND_ON_SCANNED_SURFACES",
+      "complete_scan": true,
+      "all_required_reads_ok": true,
+      "zero_matches": true,
+      "closure_basis": "COMPLETED_SCAN",
+      "closure_evidence": {
+        "path": "reports/studies/RQ014_wod_e2e_rating_recovery/00_forensics/forensics_report.md",
+        "sha256": "e6f1ce6e136cdf7355e18e38b5853b934658d462f72e61acb3bddf282ca16c88"
+      },
+      "negative_finding_claim_allowed": true
+    },
+    {
+      "surface_id": "F05",
+      "surface": "hpc_20260629_four_pilot_directories",
+      "status": "INACCESSIBLE",
+      "complete_scan": false,
+      "closure_basis": "PI_WAIVER",
+      "reason_codes": [
+        "PI_EXPLICITLY_WAIVED_REMAINING_FORENSICS"
+      ],
+      "waiver": {
+        "decision_ref": "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
+        "decision_sha256": "00b45cb05329ac14276ca72dac52d4a226ecc0b5e3fd20864d2d436597ad8253",
+        "decision_date": "2026-07-11",
+        "exact_decision_time_available": false,
+        "waived_actions": [
+          "F05_HPC_PASS4",
+          "FL01_TO_FL04_READ_ONLY_EXTRACTION"
+        ]
+      },
+      "residual_risk_statement_required": true,
+      "negative_finding_claim_allowed": false
+    },
+    {
+      "surface_id": "F06",
+      "surface": "sibling_archived_and_paper_git_history_tree",
+      "status": "INACCESSIBLE",
+      "complete_scan": false,
+      "closure_basis": "PI_WAIVER",
+      "reason_codes": [
+        "PI_EXPLICITLY_WAIVED_REMAINING_FORENSICS"
+      ],
+      "waiver": {
+        "decision_ref": "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
+        "decision_sha256": "00b45cb05329ac14276ca72dac52d4a226ecc0b5e3fd20864d2d436597ad8253",
+        "decision_date": "2026-07-11",
+        "exact_decision_time_available": false,
+        "waived_actions": [
+          "F06_MAC_PASS4"
+        ]
+      },
+      "residual_risk_statement_required": true,
+      "negative_finding_claim_allowed": false
+    },
+    {
+      "surface_id": "F07",
+      "surface": "obsidian_wode2e_note_body",
+      "status": "INACCESSIBLE",
+      "complete_scan": false,
+      "closure_basis": "PI_WAIVER",
+      "reason_codes": [
+        "PI_EXPLICITLY_WAIVED_REMAINING_FORENSICS",
+        "NO_PRE_CUTOFF_WHOLE_INVENTORY_RECEIPT"
+      ],
+      "waiver": {
+        "decision_ref": "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
+        "decision_sha256": "00b45cb05329ac14276ca72dac52d4a226ecc0b5e3fd20864d2d436597ad8253",
+        "decision_date": "2026-07-11",
+        "exact_decision_time_available": false,
+        "waived_actions": [
+          "F07_OBSIDIAN_BODY_SCAN",
+          "F07_MAC_PASS4"
+        ]
+      },
+      "residual_risk_statement_required": true,
+      "negative_finding_claim_allowed": false
+    },
+    {
+      "surface_id": "F08",
+      "surface": "cowork_candidate_sessions_fulltext",
+      "status": "INACCESSIBLE",
+      "complete_scan": false,
+      "closure_basis": "PI_WAIVER",
+      "reason_codes": [
+        "PI_EXPLICITLY_WAIVED_REMAINING_FORENSICS",
+        "NO_PRE_CUTOFF_WHOLE_INVENTORY_RECEIPT"
+      ],
+      "waiver": {
+        "decision_ref": "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
+        "decision_sha256": "00b45cb05329ac14276ca72dac52d4a226ecc0b5e3fd20864d2d436597ad8253",
+        "decision_date": "2026-07-11",
+        "exact_decision_time_available": false,
+        "waived_actions": [
+          "F08_COWORK_FULLTEXT_SCAN",
+          "F08_MAC_PASS4"
+        ]
+      },
+      "residual_risk_statement_required": true,
+      "negative_finding_claim_allowed": false
+    },
+    {
+      "surface_id": "F09",
+      "surface": "old_windows_onedrive_history_trash",
+      "status": "INACCESSIBLE",
+      "complete_scan": false,
+      "closure_basis": "LEGACY_STORAGE_UNAVAILABLE",
+      "reason_codes": [
+        "OLD_WINDOWS_AND_ONEDRIVE_HISTORY_NOT_AVAILABLE"
+      ],
+      "residual_risk_statement_required": true,
+      "negative_finding_claim_allowed": false
+    },
+    {
+      "surface_id": "F10",
+      "surface": "hpc_rq010b_intermediate_statistics_index_FL05",
+      "status": "INACCESSIBLE",
+      "complete_scan": false,
+      "closure_basis": "PI_WAIVER",
+      "reason_codes": [
+        "PI_EXPLICITLY_WAIVED_REMAINING_FORENSICS"
+      ],
+      "waiver": {
+        "decision_ref": "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
+        "decision_sha256": "00b45cb05329ac14276ca72dac52d4a226ecc0b5e3fd20864d2d436597ad8253",
+        "decision_date": "2026-07-11",
+        "exact_decision_time_available": false,
+        "waived_actions": [
+          "FL05_INDEXER",
+          "F10_HPC_INDEX_JOB"
+        ]
+      },
+      "residual_risk_statement_required": true,
+      "negative_finding_claim_allowed": false
+    }
+  ],
+  "g0_closure": {
+    "status": "CLOSED_WITH_INACCESSIBLE_SURFACES",
+    "legal_terminal_states": [
+      "FOUND",
+      "NOT_FOUND_ON_SCANNED_SURFACES",
+      "INACCESSIBLE"
+    ],
+    "all_surfaces_terminal": true,
+    "open_surface_count": 0,
+    "terminal_status_counts": {
+      "FOUND": 0,
+      "NOT_FOUND_ON_SCANNED_SURFACES": 4,
+      "INACCESSIBLE": 6
+    },
+    "pi_waived_surface_ids": [
+      "F05",
+      "F06",
+      "F07",
+      "F08",
+      "F10"
+    ],
+    "negative_claim_scope": "F01_TO_F04_ONLY",
+    "closure_decision_ref": "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
+    "residual_risk_statement_ref": "reports/plans/RQ014_plan_v1p5_amendment_20260712.md#residual-risk",
+    "closure_effect": "permits_formal_G1_review_but_does_not_authorize_execution"
+  },
+  "superseded_g0_execution_contract": {
+    "informational_only": true,
+    "reason": "PI_waiver_means_these_scripts_are_not_G0_closure_requirements",
+    "scripts": {
+      "F05": [
+        "reports/plans/prompts/RQ014_forensics_hpc_pass4_v1p3.sh",
+        "reports/plans/prompts/RQ014_forensics_hpc_pass4_v1p3.sbatch"
+      ],
+      "F06_F07_F08": [
+        "reports/plans/prompts/RQ014_forensics_mac_pass4_v1p3.sh"
+      ],
+      "F10": [
+        "reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p3.py",
+        "reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p3.sh",
+        "reports/plans/prompts/RQ014_forensics_hpc_fl05_v1p3.sbatch"
+      ]
+    }
+  },
+  "historical_lookup_cells": [
+    {
+      "forensic_id": "FL01",
+      "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_20260629",
+      "expected_stage": "original_invalid",
+      "action": "extract_existing_statistics_and_code_fingerprint_read_only"
+    },
+    {
+      "forensic_id": "FL02",
+      "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_dtfix_20260629T123954",
+      "expected_stage": "dt_fixed_only",
+      "action": "extract_existing_statistics_and_code_fingerprint_read_only"
+    },
+    {
+      "forensic_id": "FL03",
+      "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_fixed_20260629T124417",
+      "expected_stage": "dt_and_log_domain_fixed",
+      "action": "extract_existing_statistics_and_code_fingerprint_read_only"
+    },
+    {
+      "forensic_id": "FL04",
+      "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_routefix_20260629T124941",
+      "expected_stage": "dt_log_domain_and_route_reference_fixed",
+      "known_fingerprint": {
+        "pooled_raw_ipv_rating_rho": 0.123,
+        "mean_within_scene_spearman": -0.0787,
+        "finite_candidate_rows": 33
+      },
+      "action": "extract_existing_statistics_and_code_fingerprint_read_only"
+    },
+    {
+      "forensic_id": "FL05",
+      "paths": [
+        "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis",
+        "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results"
+      ],
+      "implementation": {
+        "parser": "reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p3.py",
+        "shell_wrapper": "reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p3.sh",
+        "slurm_wrapper": "reports/plans/prompts/RQ014_forensics_hpc_fl05_v1p3.sbatch"
+      },
+      "implementation_requirements": {
+        "fail_closed": "missing_or_no_nonempty_supported_file_per_root_IO_or_parser_failure_is_nonzero_exit",
+        "complete_zero_candidate_policy": "nonempty_fully_audited_tree_publishes_COMPLETE_ZERO_CANDIDATES",
+        "canonical_artifact": "bundle_root_CURRENT_resolves_one_fully_validated_immutable_generation",
+        "publication_protocol": {
+          "staging": "bundle_root/generations/dot_staging_generation_id",
+          "committed_generation": "bundle_root/generations/generation_id",
+          "required_generation_files": [
+            "historical_stats_index.csv",
+            "fl05_run_manifest.json",
+            "DONE"
+          ],
+          "audit_exactly_one_of": [
+            "fl05_file_audit.json",
+            "fl05_file_audit.csv"
+          ],
+          "validation_before_visibility": "schema_counts_artifact_hashes_audit_completeness_and_fsync",
+          "only_visibility_step": "atomic_replace_of_bundle_root_CURRENT_text_pointer",
+          "pointer_failure": "old_CURRENT_and_old_bundle_unchanged_complete_orphan_generation_allowed",
+          "immutable_after_publication": true
+        },
+        "cli_required": [
+          "root_repeatable",
+          "bundle_root",
+          "audit_format",
+          "login_byte_budget",
+          "compute_byte_budget"
+        ],
+        "csv_schema": [
+          "statistic_name",
+          "value",
+          "n",
+          "unit",
+          "variable_x",
+          "variable_y",
+          "direction_as_recorded",
+          "dataset_scope",
+          "candidate_scope",
+          "fingerprint_disposition",
+          "config_fields_as_recorded",
+          "source_file",
+          "source_file_sha256",
+          "mtime",
+          "parse_status",
+          "raw_locator",
+          "raw_text_as_recorded"
+        ],
+        "supported_layouts": [
+          "wide_csv",
+          "long_csv",
+          "numeric_key_json",
+          "long_record_json",
+          "markdown_statistic_local_assignment"
+        ],
+        "numeric_validation": "finite_and_correlation_range_minus1_to_plus1",
+        "unparsed_candidates": "emitted_as_rows_with_parse_status_UNPARSED_CANDIDATE",
+        "per_file_audit": "every_supported_file_including_zero_hit_with_bytes_sha256_mtime_parser_status_row_counts_and_error",
+        "filesystem_safety": {
+          "required_root_symlink": "fatal",
+          "any_entry_symlink": "fatal_even_if_suffix_unsupported",
+          "regular_file_open": "O_NOFOLLOW_plus_root_containment_plus_pre_post_identity_check",
+          "output_and_any_input_root_overlap_after_lexical_and_resolved_checks": "forbidden"
+        },
+        "login_node_byte_budget": 209715200,
+        "compute_node_byte_budget": 4294967296,
+        "over_budget_policy": "only_checksum_bound_zxc_rq014_fl05_sbatch_with_matching_job_id_name_and_verification_marker_may_raise_budget",
+        "slurm_contract": {
+          "accepted_arguments": "exactly_one_safe_RUN_ID",
+          "durable_root": "/share/home/u25310231/ZXC/RQ014_recovery",
+          "fixed_repo_root": "/share/home/u25310231/ZXC/RQ014_recovery/code/repo",
+          "fixed_input_roots": [
+            "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis",
+            "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results"
+          ],
+          "job_name": "zxc-rq014-fl05",
+          "fixed_python_interpreter": "/share/home/u25310231/.conda/envs/ipv/bin/python",
+          "python_minimum_version": "3.9",
+          "interpreter_realpath_version_and_sha256_recorded": true,
+          "checksum_manifest": "reports/plans/RQ014_plan_v1p3_checksums_20260711.sha256",
+          "parser_shell_sbatch_each_have_exactly_one_matching_checksum_entry": true,
+          "slurm_preflight_logs": "/share/home/u25310231/ZXC/RQ014_recovery/zxc-rq014-fl05-%j.out_or_err",
+          "run_logs": "RUN_ROOT/logs/zxc-rq014-fl05-SLURM_JOB_ID.out_or_err",
+          "independent_durable_stdout_stderr": "required"
+        }
+      },
+      "deliverable": "historical_stats_index.csv",
+      "fingerprint_rules": {
+        "negative_threshold_candidate": "any_structured_parsed_rho_le_minus_0.30",
+        "attributable_historical_candidate_requires_all": [
+          "variable_pair_explicitly_rating_preference_or_score_vs_IPV_deviation_or_envelope",
+          "WOD_E2E_candidate_or_within_scene_scope_explicit",
+          "statistic_direction_N_unit_source_locator_source_sha_and_config_context_complete",
+          "parse_status_is_structured_PARSED_not_UNPARSED_CANDIDATE"
+        ],
+        "attributable_label": "HISTORICAL_RATING_IPV_FINGERPRINT_CANDIDATE",
+        "otherwise_label": "UNATTRIBUTED_NEGATIVE_CORRELATION_CANDIDATE",
+        "automatic_old_result_found_label_forbidden": true
+      },
+      "adjudication_contract": {
+        "artifact": "fl05_adjudication.csv",
+        "artifact_is_separate_from_and_must_not_mutate_immutable_index_generation": true,
+        "manifest": "fl05_adjudication_manifest.json",
+        "manifest_required_fields": [
+          "resolved_CURRENT_generation_id",
+          "resolved_CURRENT_generation_manifest_sha256",
+          "adjudication_csv_sha256",
+          "reviewer",
+          "completed_at_utc"
+        ],
+        "required_columns": [
+          "index_row_id",
+          "source_file_sha256",
+          "raw_locator",
+          "parser_disposition",
+          "scope_disposition",
+          "fingerprint_disposition",
+          "reviewer",
+          "reason"
+        ],
+        "every_index_row_accounted_for": true,
+        "COMPLETE_WITH_UNPARSED_CANDIDATES_is_not_terminal_by_itself": true,
+        "COMPLETE_ZERO_CANDIDATES_is_a_complete_index_state": true,
+        "unparsed_candidate_resolution": [
+          "reread_exact_source_locator_and_record_structured_interpretation",
+          "or_mark_INACCESSIBLE_with_reason_if_source_cannot_be_resolved"
+        ],
+        "terminal_decision": {
+          "terminal_states_mutually_exclusive": true,
+          "precedence": [
+            "FOUND",
+            "INACCESSIBLE",
+            "NOT_FOUND_ON_SCANNED_SURFACES"
+          ],
+          "FOUND": {
+            "attributable_candidate_count_min": 1,
+            "attributable_label": "HISTORICAL_RATING_IPV_FINGERPRINT_CANDIDATE",
+            "timing": "after_required_adjudication"
+          },
+          "INACCESSIBLE": {
+            "condition": "any_candidate_or_source_required_for_adjudication_cannot_be_read_or_resolved"
+          },
+          "NOT_FOUND_ON_SCANNED_SURFACES": {
+            "eligible_index_states": [
+              "COMPLETE",
+              "COMPLETE_ZERO_CANDIDATES",
+              "FULLY_ADJUDICATED_COMPLETE_WITH_UNPARSED_CANDIDATES"
+            ],
+            "attributable_candidate_count_exact": 0,
+            "every_unparsed_candidate_resolved": true
+          }
+        }
+      }
+    }
+  ],
+  "historical_surface_closure_contract_ref": {
+    "path": "reports/plans/RQ014_forensic_registry_v1p3.yaml#surface_closure_contract_v1p3",
+    "status": "SUPERSEDED_BY_PI_WAIVER_FOR_F05_F06_F07_F08_F10",
+    "active_execution_role": "none",
+    "retained_value": "historical_provenance_and_future_reauthorization_only"
+  },
+  "computed_diagnostics": [
+    {
+      "forensic_id": "FD01",
+      "origin": "moved_from_extension_X06",
+      "statistic": "pooled_all_candidates_spearman_deviation_vs_rating",
+      "baseline_config": "V04_analogue",
+      "inference": {
+        "method": "permute_whole_three_candidate_rating_vectors_across_scene_ids_within_frozen_path_type_support_strata",
+        "purpose": "destroy_between_scene_alignment_while_preserving_each_rating_vector_and_within_scene_pattern",
+        "keyed_permutation": "sha256_RQ014_v1p3_FD01_replicate_scene_stratum",
+        "replicates": 9999,
+        "p_value_role": "descriptive_only"
+      },
+      "seed": 20260711,
+      "role": "report_only_diagnostic_of_pooled_vs_within_scene_discrepancy",
+      "allowed_claim": "none_descriptive_only"
+    }
+  ],
+  "one_factor_twins": {
+    "baseline": {
+      "forensic_id": "FT00",
+      "baseline_valid_config_id": "V04",
+      "note": "fixed_4hz_future_only_W2p5_HMAX5_analogue"
+    },
+    "twins": [
+      {
+        "forensic_id": "FT01",
+        "pair_id": "DT_MISMATCH",
+        "baseline_config_id": "V04",
+        "changed_field": "fixed_estimator.estimator_internal_integration_dt_s",
+        "baseline_value": 0.25,
+        "defect_value": 0.1,
+        "unchanged_by_design": "input_trajectory_grid_dt_s_remains_0.25",
+        "defect_locus": "estimator_internal_integration_step_not_data_resampling",
+        "common_support_required": true,
+        "allowed_claim": "ARTIFACT_MECHANISM_SUPPORTED"
+      },
+      {
+        "forensic_id": "FT02",
+        "pair_id": "OWN_REFERENCE",
+        "baseline_config_id": "V04",
+        "changed_field": "fixed_estimator.reference",
+        "baseline_value": "wod_route_based_constant_curvature",
+        "defect_value": "candidate_as_own_reference",
+        "common_support_required": true,
+        "allowed_claim": "ARTIFACT_MECHANISM_SUPPORTED"
+      },
+      {
+        "forensic_id": "FT03",
+        "pair_id": "PROBABILITY_UNDERFLOW",
+        "baseline_config_id": "V04",
+        "changed_field": "fixed_estimator.reliability_domain",
+        "baseline_value": "stable_log",
+        "defect_value": "legacy_probability",
+        "common_support_required": true,
+        "allowed_claim": "ARTIFACT_MECHANISM_SUPPORTED"
+      },
+      {
+        "forensic_id": "FT04",
+        "pair_id": "HISTORICAL_COUNTERPART_PATHWAY_BUNDLE",
+        "bundle_purity_waiver": "Registered two-field bundle replicating the exact 2026-06-29 pilot counterpart pathway. One-factor purity explicitly waived for this cell; the bundle IS the historical artifact hypothesis.",
+        "baseline_config_id": "V04",
+        "changed_fields": [
+          {
+            "field": "counterpart.source",
+            "baseline": "selected_counterpart_tracks_real_observed",
+            "defect": "single_frame_detection"
+          },
+          {
+            "field": "counterpart.extrapolation",
+            "baseline": "forbidden",
+            "defect": "constant_velocity_allowed"
+          }
+        ],
+        "common_support_required": true,
+        "allowed_claim": "ARTIFACT_MECHANISM_SUPPORTED"
+      }
+    ]
+  },
+  "one_factor_test": {
+    "statistic": "delta_rho_ws_equals_defect_minus_clean_on_pairwise_common_support",
+    "expected_direction": "negative",
+    "bootstrap_unit": "scene",
+    "bootstrap_replicates": 9999,
+    "rng": "numpy_Generator_PCG64",
+    "seed_rule": "20260710_plus_zero_based_forensic_pair_index",
+    "family_method": "studentized_bootstrap_maxT_simultaneous_upper_bounds",
+    "one_sided_fwer": 0.025,
+    "empirical_DGP_calibration_gate": "not_claimed_or_required_for_this_forensic_family",
+    "calibration_boundary_wording_forbidden": true,
+    "rationale": "registered_forensic_mechanism_diagnostic_not_a_scientific_specificity_tier",
+    "required_pre_execution_numerical_validation": [
+      "fixed_scene_bootstrap_operator_fixture_hash",
+      "global_equal_predictor_sanity_type_I_report_descriptive_only",
+      "zero_or_undefined_SE_invalidates_entire_twin_family"
+    ],
+    "critical_value": "percentile_97p5_of_max_pair_Z_where_Z_equals_delta_b_minus_delta_obs_over_bootstrap_sd",
+    "simultaneous_upper_bound": "delta_obs_plus_critical_value_times_bootstrap_sd",
+    "thresholds": {
+      "maximum_defect_rho_ws": -0.3,
+      "maximum_delta_rho_ws": -0.2,
+      "simultaneous_upper_bound_must_be_below": 0.0,
+      "minimum_common_support_fraction_of_clean_valid_analysis": 0.8,
+      "maximum_undefined_bootstrap_fraction": 0.01
+    },
+    "allowed_claim": "ARTIFACT_MECHANISM_SUPPORTED_only"
+  },
+  "freeze_requirements": {
+    "g0_closure_common": [
+      "all_surface_statuses_are_members_of_legal_terminal_states",
+      "no_open_surface",
+      "aggregate_counts_equal_surface_rows",
+      "decision_and_residual_risk_artifacts_checksum_bound"
+    ],
+    "by_terminal_state": {
+      "FOUND": {
+        "required": [
+          "complete_scan_true",
+          "full_match_records",
+          "closure_bundle_sha256"
+        ]
+      },
+      "NOT_FOUND_ON_SCANNED_SURFACES": {
+        "required": [
+          "complete_scan_true",
+          "all_required_reads_ok",
+          "zero_matches",
+          "closure_bundle_sha256"
+        ]
+      },
+      "INACCESSIBLE": {
+        "required": [
+          "complete_scan_false",
+          "closure_basis",
+          "reason_codes",
+          "residual_risk_statement_required"
+        ],
+        "forbidden": [
+          "negative_finding_claim_allowed",
+          "closure_evidence"
+        ],
+        "when_closure_basis_PI_WAIVER": {
+          "required": [
+            "waiver.decision_ref",
+            "waiver.decision_sha256",
+            "waiver.decision_date",
+            "waiver.waived_actions"
+          ]
+        }
+      }
+    },
+    "conditional_historical_fingerprint": {
+      "when_any_surface_FOUND": {
+        "required": [
+          "historical_rho_n_figure_or_file_fingerprint"
+        ]
+      },
+      "otherwise": "not_applicable"
+    },
+    "post_g1_forensic_compute_preconditions": [
+      "exact_input_manifest",
+      "materialized_common_support_manifest_for_each_twin",
+      "separately_authorized_forensic_rating_join_and_compute"
+    ],
+    "waived_outputs_not_required": [
+      "fl05_index_outputs",
+      "F05_F08_pass4_surface_artifacts"
+    ],
+    "independent_registry_review_pass": "required_for_formal_G1"
+  }
+}

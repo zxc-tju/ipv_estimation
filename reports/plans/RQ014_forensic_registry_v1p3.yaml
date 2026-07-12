@@ -1,0 +1,373 @@
+schema_version: rq014-forensic-v1p3
+registry_status: DESIGN_REVIEW_PASS_BLOCKED_PENDING_G0
+registry_kind: forensic
+created_date: '2026-07-11'
+supersedes: reports/plans/RQ014_forensic_registry_v1p2.yaml
+canonical_plan: reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md
+amendment: reports/plans/RQ014_plan_v1p3_amendment_20260711.md
+execution_authorized: false
+authorization_scopes:
+  g0_readonly_forensics_authorized: false
+  g2_ratings_blind_build_authorized: false
+  discovery_rating_join_authorized: false
+  confirmation_rating_join_authorized: false
+  scientific_compute_authorized: false
+  extension_compute_authorized: false
+  forensic_rating_join_authorized: false
+  forensic_compute_authorized: false
+authorization_operation_map:
+  listed_scopes_are_logical_AND: true
+  F05_to_F10_read_only_forensics: [g0_readonly_forensics_authorized]
+  FD01_rating_diagnostic: [forensic_rating_join_authorized,
+                          forensic_compute_authorized]
+  FT01_to_FT04_rating_twins: [forensic_rating_join_authorized,
+                             forensic_compute_authorized]
+scientific_promotion_allowed: false
+alpha_note: forensic_family_owns_its_own_error_rates_no_sharing_with_scientific_or_extension
+
+terminal_states: [FOUND, NOT_FOUND_ON_SCANNED_SURFACES, INACCESSIBLE]
+transient_states: [OPEN]
+
+forensic_surfaces:
+  - {surface_id: F01, surface: current_repo_git_archived_workflow, status: NOT_FOUND_ON_SCANNED_SURFACES}
+  - {surface_id: F02, surface: old_paper_snapshots_and_history, status: NOT_FOUND_ON_SCANNED_SURFACES}
+  - {surface_id: F03, surface: hpc_accounting_history_home_zxc, status: NOT_FOUND_ON_SCANNED_SURFACES}
+  - {surface_id: F04, surface: mac_codex_claude_history, status: NOT_FOUND_ON_SCANNED_SURFACES}
+  - surface_id: F05
+    surface: hpc_20260629_four_pilot_directories
+    status: OPEN
+    closure_script: reports/plans/prompts/RQ014_forensics_hpc_pass4_v1p3.sh
+    over_budget_script: reports/plans/prompts/RQ014_forensics_hpc_pass4_v1p3.sbatch
+    closure_evidence: OUTPUT/F05/CURRENT_resolved_generation_bundle
+  - surface_id: F06
+    surface: sibling_archived_and_paper_git_history_tree
+    status: OPEN
+    closure_script: reports/plans/prompts/RQ014_forensics_mac_pass4_v1p3.sh
+    closure_evidence: OUTPUT/F06/CURRENT_resolved_generation_bundle
+  - surface_id: F07
+    surface: obsidian_wode2e_note_body
+    status: OPEN
+    closure_script: reports/plans/prompts/RQ014_forensics_mac_pass4_v1p3.sh
+    required_scope_manifest: F07_frozen_scope_manifest.json
+    closure_evidence: OUTPUT/F07/CURRENT_resolved_generation_bundle
+  - surface_id: F08
+    surface: cowork_candidate_sessions_fulltext
+    status: OPEN
+    closure_script: reports/plans/prompts/RQ014_forensics_mac_pass4_v1p3.sh
+    required_scope_manifest: F08_frozen_scope_manifest.json
+    closure_evidence: OUTPUT/F08/CURRENT_resolved_generation_bundle
+  - {surface_id: F09, surface: old_windows_onedrive_history_trash, status: INACCESSIBLE,
+     residual_risk_statement_required: true}
+  - surface_id: F10
+    surface: hpc_rq010b_intermediate_statistics_index_FL05
+    status: OPEN
+    closure_script: reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p3.sh
+    over_budget_script: reports/plans/prompts/RQ014_forensics_hpc_fl05_v1p3.sbatch
+    closure_evidence:
+      current_pointer: fl05_bundle/CURRENT
+      generation_root: fl05_bundle/generations/resolved_CURRENT
+      required_generation_files: [historical_stats_index.csv,
+                                  fl05_run_manifest.json, DONE]
+      audit_exactly_one_of: [fl05_file_audit.json, fl05_file_audit.csv]
+      post_index_adjudication: [fl05_adjudication.csv,
+                                fl05_adjudication_manifest.json]
+
+historical_lookup_cells:
+  - forensic_id: FL01
+    path: /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_20260629
+    expected_stage: original_invalid
+    action: extract_existing_statistics_and_code_fingerprint_read_only
+  - forensic_id: FL02
+    path: /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_dtfix_20260629T123954
+    expected_stage: dt_fixed_only
+    action: extract_existing_statistics_and_code_fingerprint_read_only
+  - forensic_id: FL03
+    path: /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_fixed_20260629T124417
+    expected_stage: dt_and_log_domain_fixed
+    action: extract_existing_statistics_and_code_fingerprint_read_only
+  - forensic_id: FL04
+    path: /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_routefix_20260629T124941
+    expected_stage: dt_log_domain_and_route_reference_fixed
+    known_fingerprint:
+      pooled_raw_ipv_rating_rho: 0.123
+      mean_within_scene_spearman: -0.0787
+      finite_candidate_rows: 33
+    action: extract_existing_statistics_and_code_fingerprint_read_only
+  - forensic_id: FL05
+    paths:
+      - /share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis
+      - /share/home/u25310231/ZXC/RQ010B_wod_e2e/results
+    implementation:
+      parser: reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p3.py
+      shell_wrapper: reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p3.sh
+      slurm_wrapper: reports/plans/prompts/RQ014_forensics_hpc_fl05_v1p3.sbatch
+    implementation_requirements:
+      fail_closed: missing_or_no_nonempty_supported_file_per_root_IO_or_parser_failure_is_nonzero_exit
+      complete_zero_candidate_policy: nonempty_fully_audited_tree_publishes_COMPLETE_ZERO_CANDIDATES
+      canonical_artifact: bundle_root_CURRENT_resolves_one_fully_validated_immutable_generation
+      publication_protocol:
+        staging: bundle_root/generations/dot_staging_generation_id
+        committed_generation: bundle_root/generations/generation_id
+        required_generation_files: [historical_stats_index.csv,
+                                    fl05_run_manifest.json, DONE]
+        audit_exactly_one_of: [fl05_file_audit.json, fl05_file_audit.csv]
+        validation_before_visibility: schema_counts_artifact_hashes_audit_completeness_and_fsync
+        only_visibility_step: atomic_replace_of_bundle_root_CURRENT_text_pointer
+        pointer_failure: old_CURRENT_and_old_bundle_unchanged_complete_orphan_generation_allowed
+        immutable_after_publication: true
+      cli_required: [root_repeatable, bundle_root, audit_format,
+                     login_byte_budget, compute_byte_budget]
+      csv_schema: [statistic_name, value, n, unit, variable_x, variable_y,
+                   direction_as_recorded, dataset_scope, candidate_scope,
+                   fingerprint_disposition, config_fields_as_recorded,
+                   source_file, source_file_sha256, mtime, parse_status,
+                   raw_locator, raw_text_as_recorded]
+      supported_layouts: [wide_csv, long_csv, numeric_key_json, long_record_json,
+                          markdown_statistic_local_assignment]
+      numeric_validation: finite_and_correlation_range_minus1_to_plus1
+      unparsed_candidates: emitted_as_rows_with_parse_status_UNPARSED_CANDIDATE
+      per_file_audit: every_supported_file_including_zero_hit_with_bytes_sha256_mtime_parser_status_row_counts_and_error
+      filesystem_safety:
+        required_root_symlink: fatal
+        any_entry_symlink: fatal_even_if_suffix_unsupported
+        regular_file_open: O_NOFOLLOW_plus_root_containment_plus_pre_post_identity_check
+        output_and_any_input_root_overlap_after_lexical_and_resolved_checks: forbidden
+      login_node_byte_budget: 209715200
+      compute_node_byte_budget: 4294967296
+      over_budget_policy: only_checksum_bound_zxc_rq014_fl05_sbatch_with_matching_job_id_name_and_verification_marker_may_raise_budget
+      slurm_contract:
+        accepted_arguments: exactly_one_safe_RUN_ID
+        durable_root: /share/home/u25310231/ZXC/RQ014_recovery
+        fixed_repo_root: /share/home/u25310231/ZXC/RQ014_recovery/code/repo
+        fixed_input_roots: [/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis,
+                            /share/home/u25310231/ZXC/RQ010B_wod_e2e/results]
+        job_name: zxc-rq014-fl05
+        fixed_python_interpreter: /share/home/u25310231/.conda/envs/ipv/bin/python
+        python_minimum_version: '3.9'
+        interpreter_realpath_version_and_sha256_recorded: true
+        checksum_manifest: reports/plans/RQ014_plan_v1p3_checksums_20260711.sha256
+        parser_shell_sbatch_each_have_exactly_one_matching_checksum_entry: true
+        slurm_preflight_logs: /share/home/u25310231/ZXC/RQ014_recovery/zxc-rq014-fl05-%j.out_or_err
+        run_logs: RUN_ROOT/logs/zxc-rq014-fl05-SLURM_JOB_ID.out_or_err
+        independent_durable_stdout_stderr: required
+    deliverable: historical_stats_index.csv
+    fingerprint_rules:
+      negative_threshold_candidate: any_structured_parsed_rho_le_minus_0.30
+      attributable_historical_candidate_requires_all:
+        - variable_pair_explicitly_rating_preference_or_score_vs_IPV_deviation_or_envelope
+        - WOD_E2E_candidate_or_within_scene_scope_explicit
+        - statistic_direction_N_unit_source_locator_source_sha_and_config_context_complete
+        - parse_status_is_structured_PARSED_not_UNPARSED_CANDIDATE
+      attributable_label: HISTORICAL_RATING_IPV_FINGERPRINT_CANDIDATE
+      otherwise_label: UNATTRIBUTED_NEGATIVE_CORRELATION_CANDIDATE
+      automatic_old_result_found_label_forbidden: true
+    adjudication_contract:
+      artifact: fl05_adjudication.csv
+      artifact_is_separate_from_and_must_not_mutate_immutable_index_generation: true
+      manifest: fl05_adjudication_manifest.json
+      manifest_required_fields: [resolved_CURRENT_generation_id,
+                                 resolved_CURRENT_generation_manifest_sha256,
+                                 adjudication_csv_sha256, reviewer, completed_at_utc]
+      required_columns: [index_row_id, source_file_sha256, raw_locator,
+                         parser_disposition, scope_disposition,
+                         fingerprint_disposition, reviewer, reason]
+      every_index_row_accounted_for: true
+      COMPLETE_WITH_UNPARSED_CANDIDATES_is_not_terminal_by_itself: true
+      COMPLETE_ZERO_CANDIDATES_is_a_complete_index_state: true
+      unparsed_candidate_resolution:
+        - reread_exact_source_locator_and_record_structured_interpretation
+        - or_mark_INACCESSIBLE_with_reason_if_source_cannot_be_resolved
+      terminal_decision:
+        terminal_states_mutually_exclusive: true
+        precedence: [FOUND, INACCESSIBLE, NOT_FOUND_ON_SCANNED_SURFACES]
+        FOUND:
+          attributable_candidate_count_min: 1
+          attributable_label: HISTORICAL_RATING_IPV_FINGERPRINT_CANDIDATE
+          timing: after_required_adjudication
+        INACCESSIBLE:
+          condition: any_candidate_or_source_required_for_adjudication_cannot_be_read_or_resolved
+        NOT_FOUND_ON_SCANNED_SURFACES:
+          eligible_index_states:
+            - COMPLETE
+            - COMPLETE_ZERO_CANDIDATES
+            - FULLY_ADJUDICATED_COMPLETE_WITH_UNPARSED_CANDIDATES
+          attributable_candidate_count_exact: 0
+          every_unparsed_candidate_resolved: true
+
+surface_closure_contract_v1p3:
+  authoritative_scripts:
+    F05: reports/plans/prompts/RQ014_forensics_hpc_pass4_v1p3.sh
+    F05_over_200MiB: reports/plans/prompts/RQ014_forensics_hpc_pass4_v1p3.sbatch
+    F06_F07_F08: reports/plans/prompts/RQ014_forensics_mac_pass4_v1p3.sh
+  schema_version: rq014-g0-closure-v1p3
+  canonical_search: FULL_BYTE_STREAM_NO_SAMPLING
+  scan_transport: STREAMING_FILE_DESCRIPTOR_READ_TO_EOF
+  bundle_layout:
+    surface_root: OUTPUT/surface_id
+    current_pointer: OUTPUT/surface_id/CURRENT
+    immutable_generation: OUTPUT/surface_id/generations/RUN_ID
+    required_generation_files: [manifest.csv, evidence.txt, status.json, DONE]
+    publication: durable_generation_rename_then_exactly_one_final_atomic_CURRENT_text_replace
+    prepublication_validation: reread_exact_file_set_CSV_schema_JSON_identity_and_all_DONE_hashes
+    pointer_failure: prior_CURRENT_unchanged_complete_unreferenced_generation_allowed
+    safe_run_id_required: true
+  manifest_fields: [surface_id, root_label, source_path, entry_type, size_bytes,
+                    sha256, mtime_utc, read_status, match_count]
+  status_required_fields: [schema_version, surface_id, generation_id, state,
+                           complete_scan, search_mode, scan_transport, sampling_used,
+                           required_inputs, read_failures, error,
+                           residual_risk_statement, scanned_file_count, scanned_bytes,
+                           matched_record_count, manifest_file, manifest_sha256,
+                           evidence_file, evidence_sha256, generated_at_utc]
+  F05_nonempty_contract:
+    each_of_FL01_FL02_FL03_FL04_and_PHASE3: at_least_one_fully_read_nonempty_regular_file
+    JOB_LOG: fully_read_nonempty_regular_file
+    empty_surface: INACCESSIBLE_and_nonzero_exit
+  F05_HPC_execution_contract:
+    login_node_byte_budget: 209715200
+    compute_node_byte_budget: 4294967296
+    over_login_budget_policy: checksum_bound_sbatch_only
+    job_name: zxc-rq014-g0-f05
+    durable_output: /share/home/u25310231/ZXC/RQ014_recovery/RUN_ID/g0_pass4
+    fixed_python_interpreter: /share/home/u25310231/.conda/envs/ipv/bin/python
+    fixed_inputs_and_safe_RUN_ID_only: true
+    preflight_and_run_durable_logs: required
+  F07_F08_frozen_scope_contract:
+    schema_version: rq014-frozen-scope-v1p3
+    manifest_nonempty: true
+    required_entry_fields: [source_path, source_sha256, snapshot_at_utc,
+                            snapshot_evidence_kind, snapshot_git_repo,
+                            snapshot_git_commit, snapshot_git_path]
+    source_path: absolute_non_symlink_regular_file
+    source_sha256: lowercase_64_hex_and_exact_byte_match
+    snapshot_evidence_kind: git_blob_v1_content_integrity_only
+    snapshot_git_anchor_validation: exact_commit_object_descriptive_committer_timestamp_blob_type_and_blob_sha256_match
+    git_author_or_committer_timestamp_is_cutoff_evidence: false
+    cutoff_exclusive_utc: '2026-07-10T00:00:00Z'
+    cutoff_time_witness_contract:
+      required_for_F07_or_F08_FOUND_or_NOT_FOUND: rfc3161_full_TimeStampResp_over_exact_raw_whole_scope_manifest_bytes
+      time_rule: token_genTime_plus_accuracy_strictly_before_cutoff
+      production_trust_material: checksum_bound_OpenSSL3_root_exact_signer_leaf_intermediates_policy_accuracy_and_revocation_contract
+      manifest_CLI_or_environment_trust_override: forbidden
+      git_time_fallback: forbidden
+      registered_production_TSA_profile_v1p3: none
+      registered_pre_cutoff_whole_inventory_receipt_v1p3: none
+      current_forced_state: INACCESSIBLE_NO_PRE_CUTOFF_SCOPE_RECEIPT
+      future_enablement: new_checksum_bound_amendment_and_independent_review_required
+    scope_manifest_hash_bound_in_status: true
+    status_additional_fields: [scope_manifest_file, scope_manifest_sha256,
+                               scope_cutoff_utc, scope_entry_count,
+                               scope_anchor_kind, scope_anchor_count,
+                               scope_time_witness_state]
+    output_either_scope_manifest_or_current_RQ014_self_contamination_after_resolved_checks: fatal
+    every_source_path_component_symlink: fatal
+  legal_terminal_state_rules:
+    F05_F06_FOUND: complete_scan_true_and_at_least_one_full_untruncated_match_record
+    F05_F06_NOT_FOUND_ON_SCANNED_SURFACES: complete_scan_true_all_required_files_FULL_READ_OK_and_zero_matches
+    F07_F08_FOUND: complete_scan_true_at_least_one_full_untruncated_match_and_that_surface_whole_inventory_receipt_valid
+    F07_F08_NOT_FOUND_ON_SCANNED_SURFACES: complete_scan_true_all_required_files_FULL_READ_OK_zero_matches_and_that_surface_whole_inventory_receipt_valid
+    INACCESSIBLE: any_required_root_read_git_LFS_submodule_traversal_or_F07_F08_whole_inventory_receipt_failure
+  missing_or_read_failure_exit_nonzero: true
+  required_root_or_any_entry_symlink_exit_nonzero: true
+  O_NOFOLLOW_containment_and_pre_post_identity_required: true
+  inaccessible_never_relabelled_not_found: true
+  output_written_outside_scanned_roots_even_if_declared_root_is_missing: required
+  fixture_test: tests/test_rq014_g0_closure_scripts.py
+
+computed_diagnostics:
+  - forensic_id: FD01
+    origin: moved_from_extension_X06
+    statistic: pooled_all_candidates_spearman_deviation_vs_rating
+    baseline_config: V04_analogue
+    inference:
+      method: permute_whole_three_candidate_rating_vectors_across_scene_ids_within_frozen_path_type_support_strata
+      purpose: destroy_between_scene_alignment_while_preserving_each_rating_vector_and_within_scene_pattern
+      keyed_permutation: sha256_RQ014_v1p3_FD01_replicate_scene_stratum
+      replicates: 9999
+      p_value_role: descriptive_only
+    seed: 20260711
+    role: report_only_diagnostic_of_pooled_vs_within_scene_discrepancy
+    allowed_claim: none_descriptive_only
+
+one_factor_twins:
+  baseline:
+    forensic_id: FT00
+    baseline_valid_config_id: V04
+    note: fixed_4hz_future_only_W2p5_HMAX5_analogue
+  twins:
+    - forensic_id: FT01
+      pair_id: DT_MISMATCH
+      baseline_config_id: V04
+      changed_field: fixed_estimator.estimator_internal_integration_dt_s
+      baseline_value: 0.25
+      defect_value: 0.10
+      unchanged_by_design: input_trajectory_grid_dt_s_remains_0.25
+      defect_locus: estimator_internal_integration_step_not_data_resampling
+      common_support_required: true
+      allowed_claim: ARTIFACT_MECHANISM_SUPPORTED
+    - forensic_id: FT02
+      pair_id: OWN_REFERENCE
+      baseline_config_id: V04
+      changed_field: fixed_estimator.reference
+      baseline_value: wod_route_based_constant_curvature
+      defect_value: candidate_as_own_reference
+      common_support_required: true
+      allowed_claim: ARTIFACT_MECHANISM_SUPPORTED
+    - forensic_id: FT03
+      pair_id: PROBABILITY_UNDERFLOW
+      baseline_config_id: V04
+      changed_field: fixed_estimator.reliability_domain
+      baseline_value: stable_log
+      defect_value: legacy_probability
+      common_support_required: true
+      allowed_claim: ARTIFACT_MECHANISM_SUPPORTED
+    - forensic_id: FT04
+      pair_id: HISTORICAL_COUNTERPART_PATHWAY_BUNDLE
+      bundle_purity_waiver: >-
+        Registered two-field bundle replicating the exact 2026-06-29 pilot counterpart
+        pathway. One-factor purity explicitly waived for this cell; the bundle IS the
+        historical artifact hypothesis.
+      baseline_config_id: V04
+      changed_fields:
+        - {field: counterpart.source, baseline: selected_counterpart_tracks_real_observed,
+           defect: single_frame_detection}
+        - {field: counterpart.extrapolation, baseline: forbidden,
+           defect: constant_velocity_allowed}
+      common_support_required: true
+      allowed_claim: ARTIFACT_MECHANISM_SUPPORTED
+
+one_factor_test:
+  statistic: delta_rho_ws_equals_defect_minus_clean_on_pairwise_common_support
+  expected_direction: negative
+  bootstrap_unit: scene
+  bootstrap_replicates: 9999
+  rng: numpy_Generator_PCG64
+  seed_rule: 20260710_plus_zero_based_forensic_pair_index
+  family_method: studentized_bootstrap_maxT_simultaneous_upper_bounds
+  one_sided_fwer: 0.025
+  empirical_DGP_calibration_gate: not_claimed_or_required_for_this_forensic_family
+  calibration_boundary_wording_forbidden: true
+  rationale: registered_forensic_mechanism_diagnostic_not_a_scientific_specificity_tier
+  required_pre_execution_numerical_validation:
+    - fixed_scene_bootstrap_operator_fixture_hash
+    - global_equal_predictor_sanity_type_I_report_descriptive_only
+    - zero_or_undefined_SE_invalidates_entire_twin_family
+  critical_value: percentile_97p5_of_max_pair_Z_where_Z_equals_delta_b_minus_delta_obs_over_bootstrap_sd
+  simultaneous_upper_bound: delta_obs_plus_critical_value_times_bootstrap_sd
+  thresholds:
+    maximum_defect_rho_ws: -0.30
+    maximum_delta_rho_ws: -0.20
+    simultaneous_upper_bound_must_be_below: 0.0
+    minimum_common_support_fraction_of_clean_valid_analysis: 0.80
+    maximum_undefined_bootstrap_fraction: 0.01
+  allowed_claim: ARTIFACT_MECHANISM_SUPPORTED_only
+
+freeze_requirements:
+  - all_forensic_surfaces_have_legal_closure_state
+  - fl05_python_shell_slurm_tests_and_outputs_checksum_bound
+  - F05_F08_pass4_shell_sbatch_tests_and_surface_artifacts_checksum_bound
+  - exact_legacy_code_or_adapter_fingerprint
+  - exact_input_manifest
+  - historical_rho_n_figure_or_file_fingerprint_if_found
+  - materialized_common_support_manifest_for_each_twin
+  - independent_registry_review_pass

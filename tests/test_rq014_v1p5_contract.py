@@ -1,0 +1,429 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from collections import Counter
+from pathlib import Path
+
+import pytest
+
+from scripts.rq014.materialize_registry import (
+    ContractError,
+    _x02_composite,
+    canonical_bytes,
+    load_json,
+    materialize,
+    sha256_file,
+)
+from scripts.rq014.preflight import (
+    ContractError as PreflightContractError,
+    canonical_json_bytes,
+    validate_anchor_receipt,
+    validate_input_manifest_g2,
+    validate_materialization_ledger,
+)
+
+
+ROOT = Path(__file__).resolve().parents[1]
+PLANS = ROOT / "reports" / "plans"
+VALID = PLANS / "RQ014_config_space_v1p5.yaml"
+FORENSIC = PLANS / "RQ014_forensic_registry_v1p5.yaml"
+EXTENSION = PLANS / "RQ014_recovery_extension_registry_v1p5.yaml"
+EXECUTION = PLANS / "RQ014_execution_contract_v1p5.json"
+RECOVERY = PLANS / "RQ014_recovery_lane_v2.json"
+
+
+def _walk_values(value: object):
+    yield value
+    if isinstance(value, dict):
+        for item in value.values():
+            yield from _walk_values(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _walk_values(item)
+
+
+def _walk_keys(value: object):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            yield key
+            yield from _walk_keys(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _walk_keys(item)
+
+
+def _pointer(document: object, pointer: str) -> object:
+    current = document
+    for part in pointer.lstrip("/").split("/"):
+        part = part.replace("~1", "/").replace("~0", "~")
+        current = current[int(part)] if isinstance(current, list) else current[part]
+    return current
+
+
+def test_v1p3_history_remains_byte_replayable() -> None:
+    manifest = PLANS / "RQ014_plan_v1p3_checksums_20260711.sha256"
+    rows = manifest.read_text(encoding="utf-8").splitlines()
+    assert len(rows) == 14
+    for row in rows:
+        expected, relative = row.split("  ", 1)
+        assert sha256_file(ROOT / relative) == expected
+
+
+def test_v1p5_g0_waivers_use_only_legal_terminal_states() -> None:
+    forensic = load_json(FORENSIC)
+    legal = set(forensic["terminal_states"])
+    surfaces = {row["surface_id"]: row for row in forensic["forensic_surfaces"]}
+    assert set(surfaces) == {f"F{index:02d}" for index in range(1, 11)}
+    assert all(row["status"] in legal for row in surfaces.values())
+    assert all(row["status"] != "OPEN" for row in surfaces.values())
+    assert "INACCESSIBLE_PI_WAIVED" not in json.dumps(forensic)
+
+    waived = {"F05", "F06", "F07", "F08", "F10"}
+    for surface_id in waived:
+        row = surfaces[surface_id]
+        assert row["status"] == "INACCESSIBLE"
+        assert row["complete_scan"] is False
+        assert row["closure_basis"] == "PI_WAIVER"
+        assert row["negative_finding_claim_allowed"] is False
+        assert row["residual_risk_statement_required"] is True
+        assert "closure_evidence" not in row
+        decision = ROOT / row["waiver"]["decision_ref"]
+        assert sha256_file(decision) == row["waiver"]["decision_sha256"]
+    assert surfaces["F09"]["closure_basis"] == "LEGACY_STORAGE_UNAVAILABLE"
+    assert "waiver" not in surfaces["F09"]
+    for surface_id in ("F07", "F08"):
+        assert "NO_PRE_CUTOFF_WHOLE_INVENTORY_RECEIPT" in surfaces[surface_id]["reason_codes"]
+
+    closure = forensic["g0_closure"]
+    counts = Counter(row["status"] for row in surfaces.values())
+    assert closure["status"] == "CLOSED_WITH_INACCESSIBLE_SURFACES"
+    assert closure["open_surface_count"] == 0
+    assert closure["pi_waived_surface_ids"] == ["F05", "F06", "F07", "F08", "F10"]
+    assert closure["terminal_status_counts"] == {
+        "FOUND": counts["FOUND"],
+        "NOT_FOUND_ON_SCANNED_SURFACES": counts["NOT_FOUND_ON_SCANNED_SURFACES"],
+        "INACCESSIBLE": counts["INACCESSIBLE"],
+    }
+    requirements = forensic["freeze_requirements"]
+    assert "post_g1_forensic_compute_preconditions" in requirements
+    assert set(requirements["waived_outputs_not_required"]) == {
+        "fl05_index_outputs",
+        "F05_F08_pass4_surface_artifacts",
+    }
+
+
+def test_v1p5_has_one_fail_closed_operation_authority() -> None:
+    registries = [load_json(path) for path in (VALID, FORENSIC, EXTENSION)]
+    for registry in registries:
+        assert "execution_authorized" not in set(_walk_keys(registry))
+        authority = registry["execution_authorization_contract"]
+        assert authority["default_decision"] == "DENY"
+        assert authority["authority_path"] == "configs/research_authorization.json"
+
+    execution = load_json(EXECUTION)
+    operations = execution["authorization"]["registered_operations"]
+    assert operations["rq014_g2_declassification_export"]["status"] == (
+        "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1"
+    )
+    assert operations["rq014_g2_declassification_export"]["rating_access"] == "FORBIDDEN"
+    assert operations["rq014_g2_contract_preflight"]["status"] == (
+        "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1"
+    )
+    assert operations["rq014_g2_contract_preflight"]["required_prior_receipts"] == [
+        "rq014-g2-declassification-export-receipt-v1",
+        "rq014-managed-operation-done-v1",
+    ]
+    authorization = load_json(ROOT / "configs" / "research_authorization.json")
+    assert authorization["authorizations"]["RQ014"]["allowed_operations"] == [
+        "rq014_g2_declassification_export"
+    ]
+    assert operations["rq014_g2_resource_pilot"]["status"].startswith("DENY_")
+    assert operations["rq014_g2_blind_build"]["status"].startswith("DENY_")
+    assert operations["rq014_g2p_power_simulation"]["status"].startswith("DENY_")
+
+    central = load_json(ROOT / "configs" / "research_authorization.json")
+    assert central["authorizations"]["RQ014"]["allowed_operations"] == [
+        "rq014_g2_declassification_export"
+    ]
+
+
+def test_v1p5_score_stripped_and_staged_manifest_contract_is_rating_blind() -> None:
+    execution = load_json(EXECUTION)
+    blind = execution["score_stripped_input_contract"]
+    assert blind["raw_tfrecord_classification"].startswith("contains embedded preference_score")
+    assert set(blind["forbidden_g2_formats"]) == {"TFRecord", "protobuf", "pickle"}
+    assert "candidate_states.csv" in blind["required_bundle_files"]
+    g2 = execution["staged_input_manifests"]["G2"]
+    assert g2["rating_access"] == "FORBIDDEN"
+    assert "ratings_manifest" in g2["forbidden_roles"]
+    assert g2["split_membership"] == "NOT_YET_FROZEN"
+    assert execution["staged_input_manifests"]["G3"]["availability"] == (
+        "LEGACY_OPTIONAL_UNREGISTERED_AND_UNAUTHORIZED_IN_V1P5"
+    )
+
+    schema = load_json(PLANS / "RQ014_score_stripped_schema_v1.json")
+    assert schema["tfrecord_inputs_visible_to_g2"] is False
+    assert schema["pickle_inputs_visible_to_g2"] is False
+    candidate_columns = schema["files"]["candidate_states.csv"]["columns"]
+    assert "raw_sample_index" in candidate_columns
+    assert "dropped_as_tstar_duplicate" in candidate_columns
+    assert "effective_time_s" in candidate_columns
+    assert "preference_score" not in candidate_columns
+
+    anchor = load_json(PLANS / "RQ014_blind_anchor_receipt_v1p5.json")
+    assert anchor["g2_rho_recomputation"] == "FORBIDDEN"
+    assert [(row["anchor_id"], row["public_scene_n"]) for row in anchor["anchors"]] == [
+        ("A1", 75),
+        ("A2", 98),
+        ("A3", 75),
+        ("A4", 47),
+    ]
+
+
+def test_recovery_lane_searches_true_history_future_and_combined_windows_without_power_gate() -> None:
+    recovery = load_json(RECOVERY)
+    assert recovery["schema_version"] == "rq014-historical-recovery-lane-v2"
+    assert recovery["known_target"]["remembered_direction"] == "negative"
+    assert recovery["known_target"]["null_hypothesis_discovery"] is False
+    assert recovery["claim_boundary"]["p_values_gate_recovery"] is False
+    assert recovery["claim_boundary"]["prospective_power_gates_recovery"] is False
+    feature_bank = recovery["rating_blind_feature_bank"]
+    recipes = {row["temporal_id"]: row for row in feature_bank["temporal_axis"]["recipes"]}
+    assert recipes["CH-W10"]["interval"] == "[tau-1.0,tau]"
+    assert recipes["LF-W10"]["interval"] == "[tau,tau+1.0]"
+    assert recipes["HF-W10"]["interval"] == "[tau-1.0,tau+1.0] with tau included once"
+    assert {"TP", "TF"} <= set(recipes)
+    assert feature_bank["feature_family_enumeration"]["registered_family_count"] == 16
+    assert feature_bank["predictor_cell_enumeration"]["registered_predictor_cell_count"] == 960
+    screen = recovery["full_data_recovery_screen"]
+    assert screen["split"].startswith("none")
+    assert screen["registered_leaderboard_row_count"] == 2880
+    assert screen["ranking"]["wait_for_all_rows_terminal"] is True
+    assert screen["ranking"]["top_recipe_count"] == 1
+    assert recovery["optional_prospective_validation"]["gating_for_recovery"] is False
+
+    execution = load_json(EXECUTION)
+    assert execution["primary_scientific_authority"]["path"] == str(RECOVERY.relative_to(ROOT))
+    operations = execution["authorization"]["registered_operations"]
+    assert operations["rq014_r2_blind_feature_build"]["status"].startswith("DENY_")
+    assert operations["rq014_r3_full_rating_join_and_rank"]["status"].startswith("DENY_")
+    assert operations["rq014_r4_clean_replay"]["status"].startswith("DENY_")
+
+
+def test_v1p5_registry_binding_targets_cover_every_placeholder() -> None:
+    execution = load_json(EXECUTION)
+    policy = execution["registry_binding_contract"]
+    registries = {
+        "valid_scientific": load_json(VALID),
+        "forensic": load_json(FORENSIC),
+        "recovery_extension": load_json(EXTENSION),
+    }
+    assert policy["required_binding_count"] == 17
+    assert len(policy["required_binding_ids"]) == 17
+    assert set(policy["binding_targets"]) == set(policy["required_binding_ids"])
+    assert sum(value == "TO_FREEZE_AT_G2" for registry in registries.values() for value in _walk_values(registry)) == 17
+    for target in policy["binding_targets"].values():
+        assert _pointer(registries[target["registry"]], target["pointer"]) == "TO_FREEZE_AT_G2"
+
+    x02 = registries["recovery_extension"]["cells"][1]
+    assert x02["extension_id"] == "X02"
+    gate = x02["source_definition_gate"]
+    assert gate["source_definition_sha256"] == "TO_FREEZE_AT_G2"
+    assert gate["wod_mapping_sha256"] == "TO_FREEZE_AT_G2"
+    assert gate["artifact_set_sha256"] == "TO_FREEZE_AT_G2"
+
+
+def _valid_bindings() -> dict[str, str]:
+    execution = load_json(EXECUTION)
+    values = {
+        binding_id: hashlib.sha256(binding_id.encode("utf-8")).hexdigest()
+        for binding_id in execution["registry_binding_contract"]["required_binding_ids"]
+    }
+    pairs = execution["registry_binding_contract"]["cross_registry_equalities"]
+    for left, right in pairs:
+        values[right] = values[left]
+    composite = _x02_composite(
+        values["extension.X02.source_definition_sha256"],
+        values["extension.X02.wod_mapping_sha256"],
+    )
+    values["extension.X02.artifact_set_sha256"] = composite
+    values["valid.statistical_contract_v1p3.X02_scale_eligibility.artifact_set_sha256"] = composite
+    return values
+
+
+def test_registry_materialization_is_deterministic_and_never_mutates_source(tmp_path: Path) -> None:
+    output = tmp_path / "materialized"
+    output.mkdir()
+    freeze = output / "registry_bindings.g2.json"
+    freeze.write_bytes(
+        canonical_bytes(
+            {
+                "schema_version": "rq014-registry-bindings-g2-v1",
+                "stage": "G2",
+                "bindings": _valid_bindings(),
+            }
+        )
+    )
+    before = {path: sha256_file(path) for path in (VALID, FORENSIC, EXTENSION)}
+    first = materialize(
+        repo_root=ROOT,
+        contract_path=EXECUTION,
+        freeze_values_path=freeze,
+        output_dir=output,
+    )
+    second = materialize(
+        repo_root=ROOT,
+        contract_path=EXECUTION,
+        freeze_values_path=freeze,
+        output_dir=output,
+    )
+    assert first["ledger_sha256"] == second["ledger_sha256"]
+    assert before == {path: sha256_file(path) for path in before}
+    for item in first["outputs"].values():
+        payload = (output / item["path"]).read_text(encoding="utf-8")
+        assert "TO_FREEZE_AT_G2" not in payload
+        assert sha256_file(output / item["path"]) == item["sha256"]
+    validated = validate_materialization_ledger(
+        ledger_path=output / "materialization_ledger.json",
+        repo_root=ROOT,
+        contract=load_json(EXECUTION),
+    )
+    assert set(validated["outputs"]) == {"valid_scientific", "forensic", "recovery_extension"}
+
+
+def test_registry_materialization_validator_rejects_empty_source_and_output_sets(
+    tmp_path: Path,
+) -> None:
+    output = tmp_path / "materialized"
+    output.mkdir()
+    bindings = _valid_bindings()
+    freeze = output / "registry_bindings.g2.json"
+    freeze.write_bytes(
+        canonical_bytes(
+            {
+                "schema_version": "rq014-registry-bindings-g2-v1",
+                "stage": "G2",
+                "bindings": bindings,
+            }
+        )
+    )
+    ledger = {
+        "schema_version": "rq014-registry-materialization-ledger-g2-v1",
+        "stage": "G2",
+        "execution_contract": {
+            "path": str(EXECUTION.relative_to(ROOT)),
+            "sha256": sha256_file(EXECUTION),
+        },
+        "freeze_values": {"path": freeze.name, "sha256": sha256_file(freeze)},
+        "materializer_sha256": sha256_file(ROOT / "scripts" / "rq014" / "materialize_registry.py"),
+        "source_registries": {},
+        "bindings": bindings,
+        "outputs": {},
+    }
+    ledger_path = output / "materialization_ledger.json"
+    ledger_path.write_bytes(canonical_json_bytes(ledger))
+    with pytest.raises(PreflightContractError, match="source registries are incomplete"):
+        validate_materialization_ledger(
+            ledger_path=ledger_path,
+            repo_root=ROOT,
+            contract=load_json(EXECUTION),
+        )
+
+
+def test_blind_anchor_rejects_extra_rating_fields(tmp_path: Path) -> None:
+    source = load_json(PLANS / "RQ014_blind_anchor_receipt_v1p5.json")
+    source["hidden_human_rating_rows"] = [5, 4, 1]
+    path = tmp_path / "anchor.json"
+    path.write_bytes(canonical_json_bytes(source))
+    with pytest.raises(PreflightContractError, match="keys differ"):
+        validate_anchor_receipt(path)
+
+
+def test_g2_input_manifest_rejects_binary_roles_and_path_aliases(tmp_path: Path) -> None:
+    root = tmp_path / "inputs"
+    root.mkdir()
+    roles = [
+        "wod_score_stripped_bundle_manifest",
+        "wod_score_stripped_sanitization_receipt",
+        "interhub_human_ipv_source_manifest",
+        "blind_anchor_receipt",
+    ]
+    entries = []
+    for index, role in enumerate(roles):
+        suffix = ".pkl" if index == 0 else ".json"
+        path = root / f"input_{index}{suffix}"
+        path.write_bytes(b"{}\n")
+        entries.append(
+            {
+                "input_id": f"input_{index}",
+                "role": role,
+                "absolute_path": str(path),
+                "sha256": sha256_file(path),
+                "contains_rating": False,
+            }
+        )
+    manifest = tmp_path / "input_manifest.g2.json"
+    manifest.write_bytes(
+        canonical_json_bytes(
+            {
+                "schema_version": "rq014-input-manifest-g2-v1",
+                "stage": "G2",
+                "parent_manifest_sha256": None,
+                "entries": entries,
+            }
+        )
+    )
+    with pytest.raises(PreflightContractError, match="must resolve to a JSON"):
+        validate_input_manifest_g2(
+            manifest_path=manifest,
+            contract=load_json(EXECUTION),
+            allowed_roots=[root],
+        )
+
+    json_path = root / "input_1.json"
+    entries[0].update(
+        absolute_path=str(json_path),
+        sha256=sha256_file(json_path),
+    )
+    manifest.write_bytes(
+        canonical_json_bytes(
+            {
+                "schema_version": "rq014-input-manifest-g2-v1",
+                "stage": "G2",
+                "parent_manifest_sha256": None,
+                "entries": entries,
+            }
+        )
+    )
+    with pytest.raises(PreflightContractError, match="Aliased G2 input path"):
+        validate_input_manifest_g2(
+            manifest_path=manifest,
+            contract=load_json(EXECUTION),
+            allowed_roots=[root],
+        )
+
+
+def test_registry_materialization_rejects_wrong_x02_composite(tmp_path: Path) -> None:
+    bindings = _valid_bindings()
+    bindings["extension.X02.artifact_set_sha256"] = "f" * 64
+    bindings["valid.statistical_contract_v1p3.X02_scale_eligibility.artifact_set_sha256"] = "f" * 64
+    output = tmp_path / "out"
+    output.mkdir()
+    freeze = output / "registry_bindings.g2.json"
+    freeze.write_bytes(
+        canonical_bytes(
+            {
+                "schema_version": "rq014-registry-bindings-g2-v1",
+                "stage": "G2",
+                "bindings": bindings,
+            }
+        )
+    )
+    with pytest.raises(ContractError, match="artifact-set digest"):
+        materialize(
+            repo_root=ROOT,
+            contract_path=EXECUTION,
+            freeze_values_path=freeze,
+            output_dir=output,
+        )

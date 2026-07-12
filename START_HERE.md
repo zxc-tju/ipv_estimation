@@ -153,6 +153,39 @@ question index in `STUDIES.md`.
   `reports/plans/RQ009_plan_v0_dynamic_counterpart_conditioned_envelope_20260624.md`.
 - RQ009 main-agent prompt:
   `reports/plans/prompts/RQ009_prompt_claude_codex_orchestration_20260624.md`.
+- **RQ014 current execution recovery:** v1.5 is the active candidate on the dedicated
+  `codex/rq014-g2-contract-v1p5` branch. It restores immutable v1.3 bytes, legally closes G0
+  with five PI-waived surfaces represented as `status=INACCESSIBLE`, and replaces ambiguous
+  booleans with fail-closed managed operation authorization. Sixth-round fresh statistics and
+  execution/governance reviews both returned `NO_BLOCKER`; machine validation accepts
+  `RQ014_formal_G1_v1p5_20260712.yaml` as `FORMAL_G1_PASS`. The exact commit is not yet published
+  on `origin/main`, so no RQ014 production job may run.
+- RQ014 primary science authority is now
+  `reports/plans/RQ014_recovery_lane_v2.json`: a fixed 960-cell rating-blind feature grid followed by a
+  one-time, separately authorized 2,880-row full-data recovery screen and a clean independent replay of
+  the mechanically frozen rank-1 recipe. True causal-history, look-ahead-future, two-sided combined,
+  t*-prefix and full-future semantics are distinct. Window-local state derivation forbids derivative
+  halos; a checksum-bound 15,328-group per-scene anchor-domain contract is the sole membership authority.
+  Legacy split/power/confirmation is optional and does not gate historical recovery.
+- RQ014 first staged operation is `rq014_g2_declassification_export`, not scientific compute and
+  not contract preflight. Raw rated479 TFRecords still embed `preference_score`, so the operation
+  may read only the eight exact score-omitting Phase-1 bundles, structural readiness TSV, and
+  selected counterpart CSV registered in
+  `reports/studies/RQ014_wod_e2e_rating_recovery/02_g2_preflight/RQ014_declassification_source_inventory_20260712.json`.
+  It emits only the canonical CSV/JSON schema under the managed input root. Contract preflight
+  remains denied until a validated export receipt exists. Current kickoff:
+  `reports/plans/prompts/RQ014_G2_kickoff_prompt_v1p5_20260712.md`.
+- RQ014 focused verification command uses the existing verifier environment:
+  `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
+  tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
+  tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Current
+  final pre-commit result: `194 passed`; broader non-shortcut regression excluding the locally absent
+  ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
+  Python compilation, shell syntax and `git diff --check` also pass. No rating value was read,
+  no production run root was created, and no Slurm job was submitted.
+- RQ014 final contract bundle is
+  `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`: 74 rows, SHA-256
+  `1ee1e1d121b8d24cef7fdca93f05ddcccfcb3282b70727c606ce03c36984c933`.
 - RQ007 held-out remains sealed. RQ009 must freeze all rules and stop at
   `READY_FOR_SEALED_TEST` until a new PI authorization opens it.
 - RQ008B is not authorized; no RQ008 motif may enter RQ009.
@@ -522,6 +555,13 @@ question index in `STUDIES.md`.
   `docs/reproducible_ipv_pipeline.md`. Historical investigation notes:
   `reports/knowledge/_analysis/ipv_estimator_divergence_investigation.md` and
   `reports/knowledge/_analysis/ipv_accel_hyperparam_finding.md`.
+- RQ014 must use this managed topology and the single checksum-bound, clean-environment bootstrap
+  frozen in `configs/run_specs/README.md` and `RQ014_execution_contract_v1p5.json`; invoking
+  `scripts/hpc/submit_research_run.sh` without that wrapper-hash gate, direct `sbatch`,
+  `/share/home/u25310231/ZXC/RQ014_recovery`, the retired `ipv_estimation` checkout, and external
+  RQ010B code execution are forbidden. The current central allowlist contains only the staged
+  declassification export and remains ineffective unless formal G1, exact published commit,
+  source/env/spec hashes, and all operation prohibitions pass.
 - RQ009 Phase 4 calibration and independent Phase 4.5 calibration-integrity
   audit are now PASS. M3 test coverage reproduces at 80=`0.8162154701`,
   90=`0.8986657101`, and 95=`0.9496345436`; M3 conformal radii reproduce

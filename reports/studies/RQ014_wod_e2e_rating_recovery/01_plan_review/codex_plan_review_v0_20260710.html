@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ014 Plan v0 — Codex independent review</title>
+  <style>
+    :root{--ink:#172033;--muted:#5d687b;--line:#dce2eb;--soft:#f5f7fa;--red:#a82424;--amber:#955b00;--green:#087f6a;--blue:#174ea6}
+    *{box-sizing:border-box} body{margin:0;background:#fff;color:var(--ink);font:15px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+    main{max-width:1120px;margin:0 auto;padding:42px 34px 72px} h1{font-size:32px;line-height:1.25;margin:0 0 8px} h2{font-size:23px;margin:38px 0 14px;padding-top:10px;border-top:1px solid var(--line)} h3{font-size:18px;margin:24px 0 9px} p{margin:8px 0 13px}.meta{color:var(--muted);font-size:13px}.verdict{margin:22px 0;padding:18px 20px;border-left:6px solid var(--red);background:#fff1f1}.verdict b{font-size:21px;color:var(--red)}.good{margin:18px 0;padding:15px 18px;border-left:5px solid var(--green);background:#edf9f6}.warn{margin:18px 0;padding:15px 18px;border-left:5px solid var(--amber);background:#fff7e8}table{width:100%;border-collapse:collapse;margin:12px 0 22px;font-size:13.5px}th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:var(--soft);color:#39465a}code{background:#f1f3f7;border-radius:4px;padding:1px 4px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}ul,ol{padding-left:23px}li{margin:5px 0}.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:650}.block{background:#ffe2e2;color:var(--red)}.major{background:#fff0d5;color:var(--amber)}.pass{background:#e7f6f1;color:var(--green)}.check li{list-style:"☐  ";padding-left:3px}.small{font-size:12.5px;color:var(--muted)}@media(max-width:650px){main{padding:25px 17px 45px}h1{font-size:27px}table{font-size:12px}}
+  </style>
+</head>
+<body><main>
+  <h1>RQ014 Plan v0 — Codex independent review</h1>
+  <p class="meta">Review date: 2026-07-10 · Plan SHA-256: 4a7d49504beeb50d09aae24a9c931d940dc5fd6e49d5f9ca7584bbbccdf55baf · Independent statistics, implementation/HPC, governance and adversarial review</p>
+
+  <div class="verdict"><b>BLOCKED_PENDING_MAJOR_REVISION</b><br>研究问题合理，但 v0 暂不批准进入 Phase R/H/S/C，也不批准提交全网格 HPC 作业。先完成高价值取证、发布取代 v0 的收窄 v1，并重新复审。</div>
+
+  <h2>Executive assessment</h2>
+  <p>v0 最大的问题不是算力，而是把三种不同任务放入一个搜索与显著性 family：候选级科学有效性、历史结果重建、已知缺陷取证。它们具有不同分析单位、统计量和结论边界。按当前设计，即使某个 cell 显著，也无法判断它是候选级关系、场景间混杂、配置选择过拟合，还是实现缺陷。</p>
+  <div class="good"><b>值得保留：</b>承认 RQ010B bounded null；forensics first；registry hashes；G2 anchor parity；评分最后 join；失败配置全记录；red team；clean-room 重实现；禁止静默修改 RQ010B；HPC 路径与 <code>zxc-</code> 前缀。</div>
+
+  <h2>Blocking findings</h2>
+  <table><thead><tr><th>ID</th><th>Finding</th><th>Why it blocks execution</th><th>Minimum fix</th></tr></thead><tbody>
+    <tr><td><span class="tag block">B1</span></td><td>Phase F 未闭环</td><td>最高价值的 6-29 pilot 中间相关数仍未检查，却给出无限定 NOT_FOUND。</td><td>完成该链；其余面完成或标记 INACCESSIBLE。</td></tr>
+    <tr><td><span class="tag block">B2</span></td><td>Estimand 不唯一</td><td>pooled、within-scene、scene-mean、history-only、driven 回答不同问题。</td><td>valid family 只保留 candidate-level within-scene estimand。</td></tr>
+    <tr><td><span class="tag block">B3</span></td><td>Grid 不可枚举</td><td>E1–E4 的合理解释产生 672–1600 个昂贵组合，而非约 96；cheap layer 还有数百 readouts。</td><td>逐行冻结 config_space.yaml；valid/forensic registry 分离。</td></tr>
+    <tr><td><span class="tag block">B4</span></td><td>Verifier/envelope 合同缺失</td><td>rolling window、共同支持、missingness、时间权重、归一化、唯一 endpoint 和同尺度 envelope 均未定义。</td><td>写出可编码数学合同与 golden fixtures。</td></tr>
+    <tr><td><span class="tag block">B5</span></td><td>Confirmation/max-stat 冲突</td><td>只跑 ≤5 个晋级 cell，却要求整个 grid 的 max-stat；family 还混入不同 estimand 和 defect cells。</td><td>最多晋级一个 valid recipe，confirmation 只检验一个主统计量。</td></tr>
+    <tr><td><span class="tag block">B6</span></td><td>无功效门</td><td>50/50 后 N≈23/37/49；n≥30 不能保证确认能力。</td><td>先做 rating-blind eligibility + simulation power，再定 split 和研究上限。</td></tr>
+    <tr><td><span class="tag block">B7</span></td><td>Estimator lineage 不完整</td><td>pinned legacy 5edd2810 不是完整 WOD timing/log-domain adapter；G2 无 adapter SHA、fixtures 和容差。</td><td>锁 legacy commit + WOD adapter + env + inputs + expected values/tolerances。</td></tr>
+    <tr><td><span class="tag block">B8</span></td><td>Claim tiers 可升级证据</td><td>同数据被称 replication；T2 不要求胜过 physics 却可改写 RQ010B。</td><td>改为 internal locked confirmation；IPV-specific 必须通过冻结控制。</td></tr>
+  </tbody></table>
+
+  <h3>B1 — Forensics is qualified, not final</h3>
+  <p>当前报告只能支持“在已完成扫描面未发现”。在 registry freeze 前至少应检查 6 月 29 日四个 pilot 目录、Mac pass3b 和 WODE2E 笔记；连接/介质不可用时记录失败证据与 <code>INACCESSIBLE</code>。旧 Windows/OneDrive 可时间盒关闭。</p>
+
+  <h3>B2/B3 — One valid estimand and an enumerable registry</h3>
+  <p>科学问题应固定为：同场 rated candidates 中 deviation 更小者是否评分更高，unit=candidate、group=segment、scene-clustered inference。pooled/scene-mean/history-only/driven/candidate-internal envelope 退出 valid family。v1 必须逐行列出合法 config IDs；不能保留“approximately ≤96”或看 leaderboard 后由 PI 选择 ≤5。</p>
+
+  <h3>B4 — Measurement contract and envelope scale</h3>
+  <p>IPV 对 rate/window 敏感，4 Hz vs 10 Hz 的候选 IPV 排序相关仅约 0.29–0.31。每个 valid timing recipe 必须使用同 estimator/dt/window/preprocessing 构建的 rating-blind human envelope，或只保留与现有 envelope 同尺度的 recipe。需要冻结：</p>
+  <ul><li><code>[t-W,t]</code>、history_window、min_observation 的物理时间合同；</li><li>同场共享 rating-blind counterpart、共同真实观测支持和 no-extrapolation；</li><li>同步 missingness、时间权重、有效时长归一化、上下侧尺度；</li><li>唯一主 endpoint、ties/NaN/fallback 和 verifier-level non-degeneracy。</li></ul>
+  <p>InterHub pure HV–HV path-type norm 只能称外部静态 reference；WOD 上 ≤15% in-support 的 M3 不能被称为有效 WOD dynamic envelope。</p>
+
+  <h3>B5/B6 — Confirmation and power</h3>
+  <p>discovery 应用 deterministic rule 最多晋级一个 valid recipe；confirmation 只运行该 recipe 的一个主统计量，无需对 discovery 全网格再次 max-stat。若晋级多个，只校正实际确认且同 estimand 的 recipes；forensic family 永远分开。</p>
+  <table><thead><tr><th>Confirmation N</th><th>Optimistic power for |rho|=0.30</th></tr></thead><tbody><tr><td>23</td><td>0.28</td></tr><tr><td>37</td><td>0.44</td></tr><tr><td>49</td><td>0.56</td></tr></tbody></table>
+  <p class="small">Fisher-z、双侧 alpha=0.05 的乐观近似；尚未计入 ties、cluster 与 multiplicity。真实 SAP 必须模拟完整 selection→confirmation 流程。</p>
+
+  <h3>B7 — Anchor parity needs an adapter manifest</h3>
+  <p><code>5edd2810</code> 保证 legacy sigma01 lineage，但 RQ010B WOD 还依赖 sample-dt 设置和稳定 log-domain reliability adapter。G2 应锁：commit、adapter SHA、environment、input row IDs/hashes、eligibility/join、expected deterministic values、N/point-estimate tolerance、随机种子/p-value tolerance，并增加 rolling verifier、inside-envelope=0、越界单调性、common-support 和 no-extrapolation fixtures。full479 pooled raw ego-IPV 只能作为 forensic anchor。</p>
+
+  <h3>B8 — Safe claim taxonomy</h3>
+  <table><thead><tr><th>Family</th><th>Allowed verdicts</th></tr></thead><tbody>
+    <tr><td>Scientific</td><td><code>VALID_INTERNAL_CONFIRMATION_ASSOCIATION</code>; <code>VALID_INTERNAL_CONFIRMATION_IPV_SPECIFIC</code>; <code>DISCOVERY_ONLY_OVERFIT</code>; <code>INCONCLUSIVE_LOW_POWER_OR_COVERAGE</code>; <code>NOT_RECOVERED_WITHIN_FROZEN_VALID_FAMILY</code></td></tr>
+    <tr><td>Forensic</td><td><code>HISTORICAL_SIGNATURE_RECONSTRUCTED</code>（需旧 fingerprint）；<code>ARTIFACT_MECHANISM_SUPPORTED</code>（common-support one-factor twin）；<code>FORENSIC_SIGNAL_FOUND_UNATTRIBUTED</code></td></tr>
+  </tbody></table>
+  <p>同一 WOD-E2E 数据只能称 same-dataset specification recovery + internal locked confirmation；clean-room agent 证明 computational reproducibility，不是独立数据 replication。任何新阳性最多给 RQ010B scoped addendum，不删除旧 operationalization 的 bounded null。</p>
+
+  <h2>Major findings</h2>
+  <ol>
+    <li>split 的 abstention status 会随 recipe 改变；应使用 config-independent hash/cluster 或冻结 baseline eligibility。</li>
+    <li>confirmation ratings 已项目级解封；需独立 manifests、loader denylist、冻结脚本与一次性 join audit。</li>
+    <li>defect-on/off twin 必须同 scenes/candidates、同 endpoint，仅变一个缺陷并报告 paired difference。</li>
+    <li>现有 final-IPV CSV 只能做 zero-recompute fingerprint/G2，不能支持新 window/smoothing/reference/counterpart 轴。</li>
+    <li>CPU-first 合理，但 12-scene pilot 应记录 per-candidate/timepoint wall time、RSS、cache、ProcessPool oversubscription、atomic DONE/retry/job manifest。</li>
+    <li>执行应建立 <code>RQ014_1_...</code> run folder；不能把 Phase H/S/C 产物直接堆在 RQ root。</li>
+    <li>确定性索引、网格、Slurm 与聚合交给低成本执行单元；高级模型只负责 registry、gate、red team 和裁决。</li>
+  </ol>
+
+  <h2>Required v1 structure</h2>
+  <ol>
+    <li>Phase F closure matrix：DONE / NOT_FOUND_ON_SCANNED_SURFACES / INACCESSIBLE。</li>
+    <li>逐行枚举的 valid registry 与独立 forensic registry。</li>
+    <li>唯一 candidate-level within-scene estimand 和主统计量。</li>
+    <li>rolling verifier timing/common-support/missingness/normalization/envelope-scale contract。</li>
+    <li>rating-blind eligibility 与 simulation-power gate。</li>
+    <li>deterministic 单-recipe promotion 和单一 confirmation test。</li>
+    <li>冻结的 physics/negative-control family 与 IPV-specific 门槛。</li>
+    <li>互斥 scientific/forensic verdict taxonomy。</li>
+    <li>G2 code/adapter/env/input hashes、expected values 和 tolerances。</li>
+    <li>HPC cache/job manifest、benchmark、retry/DONE semantics 和 run ID。</li>
+    <li>confirmation loader denylist 与一次性 join audit。</li>
+    <li>RQ010B scoped-addendum rule。</li>
+  </ol>
+
+  <h2>Re-review checklist</h2>
+  <ul class="check">
+    <li>6-29 pilot 中间结果已检查或标记不可达。</li><li>v1 明确 supersede v0，SHA 已登记。</li><li>valid/forensic configs 可逐行枚举。</li><li>不存在“约 96”或 PI 看榜选 cell。</li><li>primary estimand/endpoint/ties/missingness/permutation 完整。</li><li>envelope 与 estimator timing 同尺度。</li><li>eligibility/power gate 已定义。</li><li>confirmation family、alpha、最低效应和低功效状态明确。</li><li>G2 anchors 和 verifier fixtures 有 hash/tolerance。</li><li>reimplementation 与 independent replication 用词分开。</li><li>IPV-specific 必须击败 physics/negative controls。</li><li>HPC layout、benchmark、manifest 和 restart 语义完整。</li>
+  </ul>
+
+  <h2>Final ruling</h2>
+  <div class="warn">RQ014 值得继续，但 v0 不是可执行 SAP。最短正确路径是：完成最高价值取证 → 发布收窄 v1 → 冻结一个 valid estimand 和一个主 endpoint → 通过功效与 adapter parity 门 → 最多晋级一个 valid recipe → internal locked confirmation → clean-room reimplementation 与控制电池。</div>
+  <p class="small">No reviewer modified the plan or submitted compute. Evidence included RQ014 v0/forensics, RQ010B preregistration/results/decision, estimator API, HPC guide, and prior adversarial design record.</p>
+</main></body></html>

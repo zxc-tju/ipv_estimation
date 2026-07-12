@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ014 v1.5 执行就绪审查</title>
+  <style>
+    :root { --ink:#16212b; --muted:#61707c; --line:#d9e1e7; --paper:#fff; --wash:#f4f7f9; --pass:#116b4f; --accent:#245c8f; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--wash); color:var(--ink); font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; }
+    main { max-width:1040px; margin:36px auto; padding:54px 64px; background:var(--paper); box-shadow:0 12px 35px rgba(20,35,50,.08); }
+    h1 { margin:0 0 8px; font-size:34px; line-height:1.25; letter-spacing:-.02em; }
+    h2 { margin:42px 0 12px; padding-top:8px; border-top:1px solid var(--line); font-size:23px; }
+    p, li { max-width:88ch; }
+    .meta { color:var(--muted); margin-bottom:26px; }
+    .verdict { border-left:5px solid var(--pass); background:#eef8f4; padding:18px 22px; margin:24px 0 30px; }
+    .verdict strong { color:var(--pass); font-size:19px; }
+    code { font-family:"SFMono-Regular",Consolas,monospace; font-size:.88em; overflow-wrap:anywhere; }
+    table { width:100%; border-collapse:collapse; margin:16px 0 26px; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:10px 12px; vertical-align:top; text-align:left; }
+    th { background:#edf2f6; }
+    ul,ol { padding-left:24px; }
+    .note { color:var(--muted); font-size:14px; }
+    .tag { display:inline-block; padding:2px 9px; border-radius:999px; color:#fff; background:var(--accent); font-size:12px; letter-spacing:.04em; }
+    @media (max-width:760px) { main { margin:0; padding:28px 22px; box-shadow:none; } h1{font-size:28px;} table{display:block;overflow-x:auto;} }
+  </style>
+</head>
+<body>
+<main>
+  <span class="tag">FORMAL G1</span>
+  <h1>RQ014 v1.5 执行就绪审查</h1>
+  <div class="meta">2026-07-12 · WOD E2E 人类评分—IPV envelope 偏离关系的已知结果恢复方案</div>
+
+  <section class="verdict">
+    <strong>FORMAL_G1_PASS</strong><br>
+    允许进入首个受管去密步骤的发布准备；尚未读取评分、尚未产生相关性结果、尚未提交 HPC 作业。
+  </section>
+
+  <h2>结论先行</h2>
+  <p>RQ014 v1.5 已通过第六轮 fresh statistics 与 execution/governance 双路正式审查。两名不同 reviewer 对同一份 68-file manifest 均返回 <code>NO_BLOCKER</code>，未闭合 blocker/major 均为 0；Formal G1 artifact 已通过机器 validator。</p>
+  <p>这只证明合同字节单值、评分隔离与执行边界 fail closed，可以准备执行 <code>rq014_g2_declassification_export</code>。它不等于历史关系已经复现。本地专用分支尚未发布到 <code>origin/main</code>，managed launcher 的 published-commit gate 仍会拒绝运行；preflight、feature build、rating join/rank 与 replay 仍未获得当前中央授权。</p>
+
+  <h2>冻结的恢复设计</h2>
+  <ul>
+    <li>2 个采样率 × 8 个时间语义 × 3 个 envelope × 2 个 horizon × 10 个 readout = 960 predictor cells。</li>
+    <li>每 cell 使用 RWS、PSP、PPR，共 2,880 个必须终结的 association rows。</li>
+    <li>每个 exact closed position window 先切片，再只在窗内派生速度、加速度和航向；禁止 derivative halo 与跨窗状态复用。</li>
+    <li>HFEAS 为有限 <code>rate_hz..h_common_tick</code> 域；TF anchor 也不得越过 <code>H_common</code>。</li>
+    <li><code>wod_scene_anchor_domain.csv</code> 冻结 15,328 个 scene×feature×horizon groups；AVAILABLE group 的 path type 组内单值并匹配 scene lookup。</li>
+    <li>只有按冻结 total order 选出的 OBSERVED、compatible rank-1 recipe 可进入 clean replay；禁止回退 rank 2。</li>
+  </ul>
+
+  <h2>正式证据</h2>
+  <table>
+    <thead><tr><th>证据</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>第六轮 review manifest</td><td>68 files；<code>e8cda2e2fbe7e5a1f79f27ba64eb751b02d462ff5147d593245fd2c860bccdec</code></td></tr>
+      <tr><td>Statistics review</td><td>NO_BLOCKER；0/0；<code>9ce860f0511962cf5a0b5f98697ba1e06e2704bbedc9d7ccef053aa5742066f5</code></td></tr>
+      <tr><td>Execution/governance review</td><td>NO_BLOCKER；0/0；<code>41749fbfba243ecd8cd9992f8eb371a264b8ccd24aae75248e29fb63859ff4eb</code></td></tr>
+      <tr><td>Formal G1</td><td>FORMAL_G1_PASS；<code>a24e69c240700840d908514580ba6f43cb6555d1de02d825121475bdeda88713</code></td></tr>
+      <tr><td>聚焦回归</td><td>194 passed</td></tr>
+      <tr><td>广泛 non-shortcut 回归</td><td>202 passed, 1 skipped, 2 deselected</td></tr>
+      <tr><td>Tongji fd 探针</td><td><code>FD8_FD9_PRESERVED</code>；未调用 Slurm</td></tr>
+    </tbody>
+  </table>
+
+  <h2>六轮审查收敛</h2>
+  <table>
+    <thead><tr><th>Round</th><th>Statistics</th><th>Execution</th><th>主要闭合项</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>BLOCKED</td><td>BLOCKED</td><td>去密原语、seam、envelope/statistic、环境与 import surface</td></tr>
+      <tr><td>2</td><td>BLOCKED</td><td>BLOCKED</td><td>support/rank/ledger/bootstrap、TOCTOU、spec one-read、G0 evidence</td></tr>
+      <tr><td>3</td><td>BLOCKED</td><td>BLOCKED</td><td>窗口导数、TF-HFEAS、late import、reviewer identity</td></tr>
+      <tr><td>4</td><td>BLOCKED</td><td>BLOCKED</td><td>per-scene membership、wrapper capability</td></tr>
+      <tr><td>5</td><td>BLOCKED</td><td>NO_BLOCKER</td><td>path-type 组内单值性</td></tr>
+      <tr><td>6</td><td>NO_BLOCKER</td><td>NO_BLOCKER</td><td>0 unresolved blocker/major</td></tr>
+    </tbody>
+  </table>
+
+  <h2>执行边界</h2>
+  <p>当前唯一 centrally allowlisted operation 是去密 export。它只能读取 8 个 exact score-omitting bundles、structural readiness TSV 和 selected counterpart CSV；每个源由 role/path/size/SHA 绑定，并从单个 <code>O_NOFOLLOW</code> descriptor 的 retained bytes 完成核验、解析和 receipt。</p>
+  <p>Clean bootstrap 锁定 fd8，以 fd9 打开 exact wrapper，hash retained <code>/proc/$$/fd/9</code> 并执行同一 fd。Wrapper 无 descriptor fallback；launcher 在任何 RQ014 dependency import 前复核 fd8/fd9 identity，并产生 module-private capability token。运行代码只从 final-bundle 登记的 exact published commit blobs 物化；Slurm 全程使用 <code>--export=NIL</code>。</p>
+
+  <h2>接受的残余边界</h2>
+  <ul>
+    <li>fd capability 是本机 provenance gate，不是抵御同账号主动仿造 descriptor 的密码学秘密。</li>
+    <li><code>/lib64</code> 是显式 OS ABI trust boundary。</li>
+    <li><code>scenario_cluster=NA</code> 不成为具名 LOCO cluster；最终 claim 仅限 same-dataset historical recovery。</li>
+    <li>WOD CP/HO/MP/F mapping 必须在未来 G2R 前另行冻结并重新审查。</li>
+    <li>本地 ignored RQ009 scorer 未同步只影响其专属全仓测试，不属于 RQ014 聚焦执行面。</li>
+  </ul>
+
+  <h2>下一步</h2>
+  <ol>
+    <li>生成 final checksum bundle。</li>
+    <li>按 Lore protocol 提交专用分支；本任务不推送或合并。</li>
+    <li>exact commit 发布到 <code>origin/main</code> 后，在 managed checkout 创建只读 canonical run spec。</li>
+    <li>先 validate-only，再考虑首个 <code>zxc-</code> declassification export job。</li>
+    <li>未来启用 preflight 必须再次 refreeze authority、fresh 双审、Formal G1 与 final bundle。</li>
+  </ol>
+  <p class="note">在评分 join、2,880-row screen 与 clean replay 完成前，不得声称“评分越高，IPV envelope 偏离越低”的经验关系已经复现。</p>
+</main>
+</body>
+</html>

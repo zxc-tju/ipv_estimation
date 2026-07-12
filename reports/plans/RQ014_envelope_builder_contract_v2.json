@@ -1,0 +1,739 @@
+{
+  "schema_version": "rq014-envelope-builder-contract-v2",
+  "contract_date": "2026-07-12",
+  "authority": {
+    "research_mode": "KNOWN_RESULT_SPECIFICATION_RECOVERY_ON_FROZEN_WOD_E2E",
+    "rating_values_allowed": false,
+    "rating_derived_fields_allowed": false,
+    "purpose": "freeze the rating-blind feature and InterHub human-envelope computation used by RQ014 recovery lane v2",
+    "scope": "BL90 loader plus BM90 and BT90 builders for all 16 registered feature families",
+    "window_local_state_authority": "for RQ014 recovery computation this contract's slice-position-window-first derivative rule supersedes any score-stripped transport-schema or inherited config prose that derives state on a larger branch before temporal slicing"
+  },
+  "scientific_input_readiness": {
+    "resolution": "evaluate the checksum-bound declassification schema and golden-fixture manifest at G2R preflight; no design-time claim about mutable schema readiness is allowed",
+    "schema_profile_gate": {
+      "required_profile": "RQ014_SAFE_PRIMITIVE_PROFILE_V2",
+      "pass_status": "SATISFIED",
+      "fail_status": "INELIGIBLE_BLIND",
+      "requirements": "all required rating-blind WOD primitives are present, schema-allowlisted, checksum-bound, and fixture-covered"
+    },
+    "fixture_gate": {
+      "artifact": "rq014_safe_primitive_golden_fixture_manifest.json",
+      "pass_status": "SATISFIED",
+      "fail_status": "INELIGIBLE_BLIND",
+      "requirements": "every required fixture has input, expected-output, implementation, and environment SHA-256 bindings and passes exactly"
+    },
+    "candidate_native_velocity_claim": "FORBIDDEN",
+    "candidate_state_evidence": "the rating-blind structural audit found 476 available scenes; candidates contain 2..21 XY samples while candidate velocity and acceleration arrays are empty",
+    "other_safe_source_evidence": "tstar pose is a finite 4x4 list; intent is one of 1/GO_STRAIGHT, 2/GO_LEFT, 3/GO_RIGHT; past XY/velocity/acceleration each have 16 samples; future XYZ each have 20 samples while future velocity/acceleration are empty",
+    "required_rating_blind_wod_primitives": [
+      "candidate XY with the frozen raw-point-zero duplicate flag and geometry hash",
+      "past XY plus native past velocity/acceleration retained for provenance and parity audit only, and the tstar ego pose",
+      "future ego XYZ retained for rating-blind provenance and preprocessing parity but not consumed by legacy_route_reference_v1",
+      "intent integer and intent name restricted to 1/GO_STRAIGHT, 2/GO_LEFT, or 3/GO_RIGHT",
+      "safe geometry/intent/pose primitives sufficient for the separately frozen WOD CP/HO/MP/F mapping builder",
+      "source_shard_id",
+      "selected counterpart observed XY and timestamps"
+    ],
+    "required_rating_blind_interhub_primitives": [
+      "episode and participant identities",
+      "pure-HV/HV participant types",
+      "observed XY and timestamps for both key participants",
+      "focal reference polyline for both directed roles",
+      "episode-to-CP/HO/MP/F exact lookup",
+      "episode_grid_origin_ns"
+    ],
+    "safe_primitive_policy": "all primitives must be allowlisted in a successor declassification schema, emitted without score/rank/tie/completeness fields, checksum-bound, and validated before G2R; the score-stripped schema governs transported source positions but its derivative prose is non-normative for RQ014 scientific features",
+    "missing_policy": "INELIGIBLE_BLIND; no predictor or envelope value may be computed",
+    "required_golden_fixtures_before_g2r": [
+      "R04N seam plus exact-window-local derivative and no-halo fixture",
+      "R10L tstar-anchored interpolation plus exact-window-local derivative and no-halo fixture",
+      "one fixture for every CH/LF/HF/TP/TF boundary at each sampling rate",
+      "route-reference and path-type lookup fixture",
+      "legacy_route_reference_v1 straight/left/right/heading-fallback and counterpart-observed-reference fixtures",
+      "InterHub pseudo-anchor and directed-role fixture"
+    ]
+  },
+  "path_type_contract": {
+    "canonical_values_in_order": ["CP", "HO", "MP", "F"],
+    "interhub_mapping": {
+      "source": "checksum-bound path_type_mapping.csv",
+      "key": ["episode_id"],
+      "value": "path_type",
+      "rule": "exact one-to-one lookup only; no geometry inference, filename inference, or fallback",
+      "missing_status": "MISSING_INTERHUB_PATH_TYPE",
+      "duplicate_or_conflicting_status": "AMBIGUOUS_INTERHUB_PATH_TYPE"
+    },
+    "wod_mapping": {
+      "source": "checksum-bound wod_path_type_mapping.csv materialized rating-blind before G2R from the safe geometry/intent/pose primitives",
+      "key": ["segment_id", "tstar_context_step"],
+      "value": "path_type",
+      "builder_binding": "the mapping implementation, mapping table, safe-primitive inputs, golden fixtures, and environment are SHA-256 frozen before any feature or envelope build",
+      "rule": "after materialization use exact one-to-one lookup only; path_type=NA is never executable and runtime geometry inference or fallback is forbidden",
+      "missing_status": "MISSING_WOD_PATH_TYPE",
+      "duplicate_or_conflicting_status": "AMBIGUOUS_WOD_PATH_TYPE"
+    },
+    "cross_dataset_semantics": "the same canonical CP/HO/MP/F mapping artifact and version must bind both WOD query rows and InterHub envelope rows",
+    "unrecognized_value_status": "UNRECOGNIZED_PATH_TYPE"
+  },
+  "wod_reference_contract": {
+    "builder_id": "legacy_route_reference_v1",
+    "role": "the sole frozen WOD focal reference builder for all 16 recovery feature families",
+    "rating_blind": true,
+    "candidate_scope": "scene-level and byte-identical for all three candidates in a scene",
+    "candidate_specific_reference": "forbidden",
+    "source_provenance": {
+      "absolute_path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/rq010b_ipv_rating_pilot_20260629/analyze_wod_e2e_ipv_rating_pilot.py",
+      "size_bytes": 42665,
+      "sha256": "7c60676effd0b3787cba8825790b6648a3de9d462e571677bf12dbb3920cdba2",
+      "functions": ["infer_heading_direction", "build_ego_route_reference"],
+      "drift": "STALE_FATAL"
+    },
+    "inputs": {
+      "past_xy": "finite source past_states XY in source order; the audited rated479 source has 16 rows",
+      "intent_name": "uppercase string; expected exact safe values GO_STRAIGHT, GO_LEFT, or GO_RIGHT",
+      "ratings_or_candidate_geometry": "not used"
+    },
+    "heading_direction": {
+      "p0": "past_xy[-1]",
+      "empty_past_fallback": "replace past_xy with one [0.0,0.0] row",
+      "back_index_iteration": "range(max(0,n_past-6),n_past-1) in increasing index order",
+      "delta": "p0-past_xy[back_idx]",
+      "acceptance": "first delta with numpy.linalg.norm(delta)>1e-6",
+      "return": "delta divided by its norm",
+      "no_accepted_delta_fallback": [1.0, 0.0]
+    },
+    "past_reference": {
+      "keep_every": "max(1,n_past//8)",
+      "initial": "past_xy[::keep_every]",
+      "ensure_p0": "append p0 with numpy.vstack iff numpy.linalg.norm(past_ref[-1]-p0)>1e-9"
+    },
+    "intent_to_turn_sign": {
+      "normalization": "str(scene.get('intent_name','GO_STRAIGHT')).upper()",
+      "contains_LEFT": 1.0,
+      "else_contains_RIGHT": -1.0,
+      "else": 0.0
+    },
+    "constants": {
+      "turn_radius_m": 12.0,
+      "extension_m": 80.0,
+      "step_m": 1.0
+    },
+    "straight_branch": {
+      "s_values": "numpy.arange(1.0,80.0+1.0,1.0)",
+      "forward": "p0+s_values[:,None]*direction[None,:]"
+    },
+    "turn_branch": {
+      "heading": "math.atan2(direction_y,direction_x)",
+      "left_normal": "[-direction_y,direction_x]",
+      "center": "p0+turn_sign*12.0*left_normal",
+      "theta0": "math.atan2(p0_y-center_y,p0_x-center_x)",
+      "arc_len": "12.0*pi/2",
+      "arc_steps": "max(8,ceil((12.0*pi/2)/1.0))",
+      "phi": "numpy.linspace(1.0/12.0,pi/2,arc_steps)",
+      "theta": "theta0+turn_sign*phi",
+      "arc": "center+12.0*column_stack(cos(theta),sin(theta))",
+      "end_heading": "heading+turn_sign*pi/2",
+      "end_direction": "[cos(end_heading),sin(end_heading)]",
+      "tail_len": "max(0.0,80.0-arc_len)",
+      "tail_s_values": "numpy.arange(1.0,tail_len+1.0,1.0) when tail_len>0",
+      "tail": "arc[-1]+tail_s_values[:,None]*end_direction[None,:]",
+      "forward": "vstack(arc,tail) when tail_len>0 else arc"
+    },
+    "focal_output": "numpy.vstack([past_ref,forward]) passed as the focal MotionSequence reference",
+    "counterpart_reference": {
+      "builder": "the observed counterpart_state[:,0:2] on the exact resampled estimator-window grid",
+      "extrapolation": "forbidden",
+      "candidate_scope": "shared across the three candidates when their exact temporal windows coincide"
+    },
+    "estimator_reference_preparation": "pass the raw array to the pinned estimate_ipv_pair implementation, which applies its pinned smooth_ployline reference preparation exactly once",
+    "fixture_and_hash_gate": {
+      "required_fixture_ids": [
+        "LEGACY_REF_STRAIGHT",
+        "LEGACY_REF_LEFT",
+        "LEGACY_REF_RIGHT",
+        "LEGACY_REF_HEADING_FALLBACK",
+        "LEGACY_REF_PAST_ENDPOINT_APPEND",
+        "LEGACY_REF_COUNTERPART_OBSERVED"
+      ],
+      "required_bindings": [
+        "source path/size/SHA-256",
+        "fixture input and expected raw-reference SHA-256",
+        "pinned smooth_ployline implementation SHA-256",
+        "expected prepared-reference SHA-256",
+        "numpy/python/environment manifest SHA-256"
+      ],
+      "pass": "REFERENCE_BUILDER_SATISFIED",
+      "failure": "INELIGIBLE_BLIND"
+    }
+  },
+  "episode_and_role_contract": {
+    "episode_unit": "InterHub interaction episode",
+    "eligibility": [
+      "exactly two key participants",
+      "both participant types equal HV",
+      "both observed XY series finite and timestamp-unique",
+      "path type is exactly one of CP/HO/MP/F",
+      "both focal reference polylines are present and finite",
+      "registered query window lies wholly inside common observed support"
+    ],
+    "directed_role_estimator_tuple_order": ["focal_state", "focal_raw_reference", "counterpart_state", "counterpart_raw_reference"],
+    "directed_roles_in_order": [
+      {
+        "role_id": "A_AS_FOCAL",
+        "focal": "participant_id sorted UTF-8 first",
+        "counterpart": "participant_id sorted UTF-8 second",
+        "focal_state": "first participant's resampled [x,y,vx,vy,heading] window",
+        "focal_raw_reference": "first participant's checksum-bound route/lane reference polyline",
+        "counterpart_state": "second participant's resampled [x,y,vx,vy,heading] window",
+        "counterpart_raw_reference": "second participant's observed resampled window XY",
+        "estimator_input_tuple": ["first_participant_state", "first_participant_route_reference", "second_participant_state", "second_participant_observed_window_xy"],
+        "reported_output": "focal IPV only"
+      },
+      {
+        "role_id": "B_AS_FOCAL",
+        "focal": "participant_id sorted UTF-8 second",
+        "counterpart": "participant_id sorted UTF-8 first",
+        "focal_state": "second participant's resampled [x,y,vx,vy,heading] window",
+        "focal_raw_reference": "second participant's checksum-bound route/lane reference polyline",
+        "counterpart_state": "first participant's resampled [x,y,vx,vy,heading] window",
+        "counterpart_raw_reference": "first participant's observed resampled window XY",
+        "estimator_input_tuple": ["second_participant_state", "second_participant_route_reference", "first_participant_state", "first_participant_observed_window_xy"],
+        "reported_output": "focal IPV only"
+      }
+    ],
+    "reference_preparation": "for each directed role pass both raw reference arrays to the pinned estimator and apply pinned smooth_ployline exactly once to each; pre-smoothed input or a second smoothing pass is forbidden",
+    "counterpart_output": "computed internally only if required by the pinned pair kernel and always discarded; it never enters the human envelope",
+    "role_requirement": "both directed roles must be executable for an episode-query to contribute",
+    "role_weighting": "the two roles share the episode's total weight equally before pseudo-anchor and tau weighting",
+    "unsupported_episode_status": "INELIGIBLE_INTERHUB_EPISODE"
+  },
+  "timeline_and_state_contract": {
+    "numeric_type": "IEEE-754 binary64",
+    "position_authority": "positions are authoritative for both WOD and InterHub; source candidate velocity/acceleration must not be used",
+    "time_comparison_tolerance_s": 1.0e-09,
+    "wod_tstar": {
+      "time_s": 0.0,
+      "history_side": "resampled ego history includes t<=0 and the last history state is exactly t=0",
+      "candidate_side": "effective candidate future begins at t=0.25 after the frozen optional raw-point-zero duplicate removal",
+      "seam": "one t=0 state from ego history followed by candidate states with t>0; a candidate t=0 state is forbidden",
+      "counterpart": "interpolate the selected observed counterpart to the same absolute relative-time grid inside support only"
+    },
+    "interhub_pseudo_tstar": {
+      "origin": "episode_grid_origin_ns from the checksum-bound source manifest",
+      "anchor_grid": "episode_grid_origin_ns + integer_tick * dt_ns",
+      "relative_time": "s=(absolute_timestamp-pseudo_anchor_timestamp) in exact integer ticks",
+      "anchor_set_for_query": "every grid timestamp for which both directed roles and both participants contain every closed-interval grid point required by that exact query",
+      "selection": "all eligible pseudo anchors; no event, outcome, score, or IPV-dependent selection"
+    },
+    "sampling_definitions": [
+      {
+        "sampling_id": "R04N",
+        "rate_hz": 4,
+        "dt_s": 0.25,
+        "dt_ns": 250000000,
+        "wod_grid_phase": "tstar plus integer multiples of 0.25 s",
+        "wod_future_rule": "use the exported effective candidate samples at +0.25,+0.50,... without resampling candidate XY",
+        "wod_history_rule": "linearly interpolate history XY inside support to nonpositive grid ticks and retain the exact t=0 endpoint",
+        "interhub_rule": "linearly interpolate both participant XY series inside support to episode_grid_origin_ns plus integer multiples of 0.25 s",
+        "extrapolation": "forbidden"
+      },
+      {
+        "sampling_id": "R10L",
+        "rate_hz": 10,
+        "dt_s": 0.1,
+        "dt_ns": 100000000,
+        "wod_grid_phase": "tstar plus integer multiples of 0.1 s",
+        "wod_rule": "linearly interpolate XY by absolute relative timestamp inside support after duplicate removal",
+        "seam_interpolation": "for 0<t<0.25 interpolate between the t=0 ego-history XY and the first effective candidate XY at t=0.25",
+        "interhub_rule": "linearly interpolate both participant XY series inside support to episode_grid_origin_ns plus integer multiples of 0.1 s",
+        "extrapolation": "forbidden"
+      }
+    ],
+    "linear_interpolation": "componentwise p(t)=p0+(t-t0)/(t1-t0)*(p1-p0) using the immediately bracketing source timestamps; exact source timestamps retain their source XY",
+    "maximum_source_gap": {
+      "default": "at most 2*dt between bracketing source timestamps; a larger gap makes the query ineligible",
+      "R04N_wod_candidate": "exact native 0.25 s consecutive effective samples; no candidate XY interpolation",
+      "R10L_wod_candidate": "at most the registered native candidate cadence 0.25 s, including the t=0 history-to-first-candidate seam; this explicit exception permits the intended 0.1 s interpolation grid",
+      "R10L_wod_candidate_gap_above_s": 0.25,
+      "interhub": "default 2*dt rule",
+      "extrapolation": "forbidden for every source"
+    },
+    "derived_state_rule": {
+      "stage": "for every WOD or InterHub estimator query, resolve the exact closed temporal interval, slice that interval's resampled position rows first, and only then derive state inside that window",
+      "position_window_input": "exact ordered positions p[0]..p[n-1] at every closed grid tick from the registered lower_tick through upper_tick inclusive; require n>=2",
+      "velocity_first_tick": "(p[1]-p[0])/dt",
+      "velocity_interior_tick": "(p[k+1]-p[k-1])/(2*dt)",
+      "velocity_last_tick": "(p[n-1]-p[n-2])/dt",
+      "acceleration": "inside the same sliced window apply the identical first-one-sided/interior-centered/last-one-sided finite-difference operator to that window's derived velocity only",
+      "heading": "inside the same sliced window set atan2(vy,vx) when hypot(vx,vy)>1e-9; otherwise copy only the nearest earlier defined heading in that window and backfill leading undefined ticks only from the first later defined heading in that window",
+      "all_stationary_status": "INELIGIBLE_UNDEFINED_HEADING",
+      "angle_storage": "radians in (-pi,pi] without smoothing or unwrapping; an atan2 result exactly equal to -pi is normalized to +pi before storage, comparison, or hashing",
+      "negative_pi_normalization": "if heading == -math.pi set heading = +math.pi; no tolerance-based conversion",
+      "derivative_halo": "FORBIDDEN: do not read any position tick below the window lower_tick or above its upper_tick",
+      "cross_window_state_reuse": "FORBIDDEN: do not copy velocity, acceleration, or heading derived for a larger, smaller, earlier, later, or overlapping window",
+      "endpoint_consequence": "the same physical position tick may intentionally receive different endpoint versus interior derived state in different registered windows",
+      "source_dynamics": "source velocity and acceleration columns are provenance-only and never replace this window-local operator",
+      "reference_separation": "MotionSequence state positions and all derivatives obey the exact window; the separately frozen scene-level reference polyline remains non-state route context and never authorizes a derivative halo or extra observed-track row"
+    },
+    "common_end": "for an eligible scene H_common is the finite nonnegative integer grid tick equal to the largest tick jointly supported by all three WOD candidates and the selected counterpart after sampling; no extrapolation",
+    "failure_status_by_condition": {
+      "no_complete_common_support_or_extrapolation_required": "INELIGIBLE_TIMELINE_SUPPORT",
+      "source_gap_exceeds_registered_sampling_rule": "INELIGIBLE_TIMELINE_SOURCE_GAP",
+      "timestamp_off_registered_grid_or_phase": "INELIGIBLE_TIMELINE_GRID_PHASE",
+      "wod_tstar_seam_contract_failed": "INELIGIBLE_TIMELINE_SEAM",
+      "position_or_derived_state_nonfinite": "INELIGIBLE_STATE_NONFINITE",
+      "all_positions_stationary_heading_undefined": "INELIGIBLE_UNDEFINED_HEADING"
+    }
+  },
+  "temporal_position_support_contract": {
+    "closed_window_only": "the MotionSequence observed position/state rows are exactly the registered closed interval and no outside position is consumed for state derivation",
+    "CH": "CH-W10 and CH-W25 consume no observed-track position later than tau",
+    "TP": "TP consumes no observed-track position later than tau",
+    "LF": "LF-W10 and LF-W25 consume observed-track positions only from tau through tau+W inclusive and no earlier or later position",
+    "HF": "HF-W10 and HF-W25 consume observed-track positions only from tau-W through tau+W inclusive",
+    "TF": "TF consumes observed-track positions only from tstar=0 through H_common inclusive",
+    "references": "raw reference polylines are separate frozen route context, never MotionSequence observed rows and never derivative support"
+  },
+  "temporal_recipes": [
+    {
+      "temporal_id": "CH-W10",
+      "mode": "causal_history",
+      "window_s": 1.0,
+      "relative_interval": "[tau-1.0,tau]",
+      "lower_tick_formula": "tau_tick-rate_hz",
+      "upper_tick_formula": "tau_tick",
+      "point_count_formula": "rate_hz+1",
+      "window_operator": {"lower_anchor": "TAU", "lower_offset_s": -1.0, "upper_anchor": "TAU", "upper_offset_s": 0.0, "closed_endpoints": true},
+      "terminal_physical_time": "tau"
+    },
+    {
+      "temporal_id": "CH-W25",
+      "mode": "causal_history",
+      "window_s": 2.5,
+      "relative_interval": "[tau-2.5,tau]",
+      "lower_tick_formula": "tau_tick-5*rate_hz/2",
+      "upper_tick_formula": "tau_tick",
+      "point_count_formula": "5*rate_hz/2+1",
+      "window_operator": {"lower_anchor": "TAU", "lower_offset_s": -2.5, "upper_anchor": "TAU", "upper_offset_s": 0.0, "closed_endpoints": true},
+      "terminal_physical_time": "tau"
+    },
+    {
+      "temporal_id": "LF-W10",
+      "mode": "lookahead_future",
+      "window_s": 1.0,
+      "relative_interval": "[tau,tau+1.0]",
+      "lower_tick_formula": "tau_tick",
+      "upper_tick_formula": "tau_tick+rate_hz",
+      "point_count_formula": "rate_hz+1",
+      "window_operator": {"lower_anchor": "TAU", "lower_offset_s": 0.0, "upper_anchor": "TAU", "upper_offset_s": 1.0, "closed_endpoints": true},
+      "terminal_physical_time": "tau+1.0"
+    },
+    {
+      "temporal_id": "LF-W25",
+      "mode": "lookahead_future",
+      "window_s": 2.5,
+      "relative_interval": "[tau,tau+2.5]",
+      "lower_tick_formula": "tau_tick",
+      "upper_tick_formula": "tau_tick+5*rate_hz/2",
+      "point_count_formula": "5*rate_hz/2+1",
+      "window_operator": {"lower_anchor": "TAU", "lower_offset_s": 0.0, "upper_anchor": "TAU", "upper_offset_s": 2.5, "closed_endpoints": true},
+      "terminal_physical_time": "tau+2.5"
+    },
+    {
+      "temporal_id": "HF-W10",
+      "mode": "history_plus_future",
+      "window_s_each_side": 1.0,
+      "relative_interval": "[tau-1.0,tau+1.0]",
+      "lower_tick_formula": "tau_tick-rate_hz",
+      "upper_tick_formula": "tau_tick+rate_hz",
+      "point_count_formula": "2*rate_hz+1",
+      "window_operator": {"lower_anchor": "TAU", "lower_offset_s": -1.0, "upper_anchor": "TAU", "upper_offset_s": 1.0, "closed_endpoints": true},
+      "tau_multiplicity": 1,
+      "terminal_physical_time": "tau+1.0"
+    },
+    {
+      "temporal_id": "HF-W25",
+      "mode": "history_plus_future",
+      "window_s_each_side": 2.5,
+      "relative_interval": "[tau-2.5,tau+2.5]",
+      "lower_tick_formula": "tau_tick-5*rate_hz/2",
+      "upper_tick_formula": "tau_tick+5*rate_hz/2",
+      "point_count_formula": "5*rate_hz+1",
+      "window_operator": {"lower_anchor": "TAU", "lower_offset_s": -2.5, "upper_anchor": "TAU", "upper_offset_s": 2.5, "closed_endpoints": true},
+      "tau_multiplicity": 1,
+      "terminal_physical_time": "tau+2.5"
+    },
+    {
+      "temporal_id": "TP",
+      "mode": "tstar_candidate_prefix",
+      "relative_interval": "[0,tau]",
+      "lower_tick_formula": "0",
+      "upper_tick_formula": "tau_tick",
+      "point_count_formula": "tau_tick+1",
+      "window_operator": {"lower_anchor": "TSTAR", "lower_offset_s": 0.0, "upper_anchor": "TAU", "upper_offset_s": 0.0, "closed_endpoints": true},
+      "terminal_physical_time": "tau"
+    },
+    {
+      "temporal_id": "TF",
+      "mode": "tstar_full_future",
+      "relative_interval": "[0,H_common]",
+      "lower_tick_formula": "0",
+      "upper_tick_formula": "h_common_tick",
+      "point_count_formula": "h_common_tick+1",
+      "window_operator": {"lower_anchor": "TSTAR", "lower_offset_s": 0.0, "upper_anchor": "H_COMMON", "upper_offset_s": 0.0, "closed_endpoints": true},
+      "terminal_physical_time": "H_common",
+      "span_match_key": "h_common_tick",
+      "tau_anchor_rule": "the position window is tau-invariant, but every tau_tick is supplied only by horizon_anchor_contract and never exceeds h_common_tick"
+    }
+  ],
+  "horizon_anchor_contract": {
+    "tick_units": "integer ticks at the feature family's rate_hz with tstar_tick=0",
+    "window_completeness": "for a candidate tau_tick first require tau_tick<=h_common_tick for every temporal recipe, then evaluate the selected recipe's exact lower_tick and upper_tick formulas and retain the anchor only when every closed position tick lies inside four-way observed support; derivative halos do not enter this predicate",
+    "H20": {
+      "candidate_tau_ticks": "integer closed interval rate_hz..2*rate_hz",
+      "requirement": "require 2*rate_hz<=h_common_tick and every candidate tick's exact temporal window complete; otherwise the scene/predictor query is INELIGIBLE_TIMELINE_SUPPORT and no shortened H20 set is emitted",
+      "maximum_tau_tick": "2*rate_hz"
+    },
+    "HFEAS": {
+      "candidate_tau_ticks": "integer closed interval rate_hz..h_common_tick, empty when h_common_tick<rate_hz",
+      "filter": "retain only candidate ticks satisfying window_completeness",
+      "maximum_tau_tick": "h_common_tick for CH, LF, HF, TP, and TF",
+      "TF": "when [0,h_common_tick] is complete, retained TF anchors are exactly every integer tick rate_hz..h_common_tick; the tau-invariant TF window never creates anchors beyond h_common_tick",
+      "minimum_requirement": "the complete H20 anchor set must exist",
+      "empty_status": "INELIGIBLE_TIMELINE_SUPPORT"
+    },
+    "finite_domain_proof": "each horizon emits a subset of one finite integer closed interval, so every feature/horizon scene has a finite tau list and a unique maximum valid tau when nonempty",
+    "domain_materialization": "materialize every segment_id x feature_id x horizon_id result exactly once through scene_anchor_domain_contract before feature evaluation, readout computation, or envelope-query aggregation"
+  },
+  "scene_anchor_domain_contract": {
+    "artifact": "wod_scene_anchor_domain.csv",
+    "purpose": "checksum-bound reversible per-scene membership authority; aggregate query rows never substitute for this artifact",
+    "status_scope": "membership_status terminates only rating-blind path/timeline/window/state construction for the scene-feature-horizon anchor domain; downstream IPV solver and envelope outcomes remain separate registered execution statuses and never rewrite this immutable membership artifact",
+    "expected_group_count": "479*16*2=15328 segment_id x feature_id x horizon_id groups",
+    "exact_columns": ["segment_id", "feature_id", "horizon_id", "path_type_or_NA", "h_common_tick_or_NA", "tau_tick_or_NA", "membership_status", "reason_code"],
+    "primary_key": ["segment_id", "feature_id", "horizon_id", "tau_tick_or_NA"],
+    "group_key": ["segment_id", "feature_id", "horizon_id"],
+    "registered_membership_statuses": ["AVAILABLE", "INELIGIBLE_BLIND", "MISSING_WOD_PATH_TYPE", "AMBIGUOUS_WOD_PATH_TYPE", "UNRECOGNIZED_PATH_TYPE", "INELIGIBLE_TIMELINE_SUPPORT", "INELIGIBLE_TIMELINE_SOURCE_GAP", "INELIGIBLE_TIMELINE_GRID_PHASE", "INELIGIBLE_TIMELINE_SEAM", "INELIGIBLE_STATE_NONFINITE", "INELIGIBLE_UNDEFINED_HEADING"],
+    "reason_code_registry": "reports/plans/RQ014_recovery_lane_v2.json#/full_data_recovery_screen/upstream_terminal_rollup/rows, checksum-bound with this contract",
+    "encoding": "CPython 3.9 csv.writer with dialect=excel, quoting=csv.QUOTE_MINIMAL, lineterminator='\\n', UTF-8 without BOM; header and every data row end in exactly one LF and CR is forbidden",
+    "row_order": "segment_id raw UTF-8 bytes ascending, feature_id by feature_families order, horizon_id H20 then HFEAS, then AVAILABLE tau_tick integer ascending; an ineligible group has only its literal NA tau row",
+    "field_rules": {
+      "segment_id": "exact frozen blind-scene identifier",
+      "feature_id": "one of the 16 feature_families",
+      "horizon_id": "exact H20 or HFEAS",
+      "path_type_or_NA": "canonical CP/HO/MP/F when the checksum-bound WOD lookup succeeds, otherwise literal NA; every AVAILABLE row in every group for that segment must repeat the unique value returned by the exact checksum-bound (segment_id,tstar_context_step) lookup",
+      "h_common_tick_or_NA": "for TF use the finite scene h_common_tick whenever it was resolved, otherwise literal NA; for every non-TF feature use literal NA because h_common_tick is not an envelope lookup dimension",
+      "tau_tick_or_NA": "base-10 nonnegative JSON-style integer text for an AVAILABLE membership row, or literal NA for the sole terminal row",
+      "membership_status": "one exact value from registered_membership_statuses; envelope-only, InterHub-only, solver-result, rating, or runtime-invented statuses are forbidden",
+      "reason_code": "F_AVAILABLE_CONTINUE for AVAILABLE, otherwise the unique reason_code mapped from membership_status by recovery_lane_v2.upstream_terminal_rollup"
+    },
+    "available_group": "one or more rows, every row membership_status=AVAILABLE and reason_code=F_AVAILABLE_CONTINUE; set(path_type_or_NA) has cardinality exactly 1 and its sole CP/HO/MP/F value equals the exact checksum-bound WOD path lookup for that segment's frozen (segment_id,tstar_context_step); tau_tick_or_NA values are unique integers exactly equal to the frozen H20 or HFEAS membership and sorted ascending; TF requires set(h_common_tick_or_NA) cardinality exactly 1 with one finite integer and non-TF requires literal NA on every row; terminal rows are forbidden",
+    "path_type_group_invariant": {
+      "available_path_type_set_cardinality": 1,
+      "expected_value": "the unique CP/HO/MP/F returned by path_type_contract.wod_mapping for this segment's frozen (segment_id,tstar_context_step)",
+      "cross_group_scene_binding": "every AVAILABLE feature_id x horizon_id group for the same segment_id repeats that same checksum-bound lookup value",
+      "mismatch": "FATAL_ANCHOR_DOMAIN_INTEGRITY_ERROR"
+    },
+    "terminal_group": "exactly one row with tau_tick_or_NA=NA, one non-AVAILABLE registered_membership_status and its unique registered reason_code; AVAILABLE rows are forbidden",
+    "mixed_group": "FATAL_ANCHOR_DOMAIN_INTEGRITY_ERROR",
+    "missing_or_duplicate_group": "FATAL_ANCHOR_DOMAIN_INTEGRITY_ERROR",
+    "horizon_binding": "AVAILABLE memberships are exactly the ticks emitted by horizon_anchor_contract; H20 and HFEAS are not regenerated by any downstream consumer",
+    "manifest": {
+      "artifact": "wod_scene_anchor_domain_manifest.json",
+      "exact_keys": ["schema_version", "artifact_relative_path", "artifact_size_bytes", "artifact_sha256", "row_count", "group_count", "available_group_count", "terminal_group_count", "generator_path", "generator_size_bytes", "generator_sha256", "recovery_contract_sha256", "envelope_contract_sha256", "source_manifest_sha256", "path_mapping_sha256", "python_executable_sha256", "environment_manifest_sha256", "created_at_utc"],
+      "schema_version": "rq014-wod-scene-anchor-domain-manifest-v1",
+      "serialization": "CPython 3.9 sorted-key compact canonical JSON plus exactly one terminal LF, UTF-8 without BOM, allow_nan=False",
+      "count_identities": ["group_count=15328", "group_count=available_group_count+terminal_group_count"],
+      "hash_drift": "STALE_FATAL"
+    },
+    "direct_consumers": ["WOD feature evaluation", "per-scene NEX/NMD/AMD MEAN/MAX/LAST/FOUT readouts", "required_envelope_queries.csv deterministic aggregation"],
+    "forbidden": ["derive a scene membership from required_envelope_queries.csv", "regenerate H20 or HFEAS downstream", "mix AVAILABLE and terminal rows in one group", "share one scene membership row set between distinct group keys"]
+  },
+  "estimator_call_contract": {
+    "solver_mode": "exact",
+    "sigma": 0.1,
+    "ipv_grid_multipliers_pi_over_8": [-3, -2, -1, 0, 1, 2, 3],
+    "history_window": "point_count-1",
+    "min_observation": "point_count-1",
+    "reported_value": "focal-agent IPV at the sole terminal estimator row",
+    "counterpart_ipv": "not an envelope observation",
+    "window_endpoints": "both included",
+    "nonfinite_or_solver_failure_status": "INELIGIBLE_IPV_NUMERICAL"
+  },
+  "feature_families": [
+    {"feature_id": "F-R04N-CH-W10", "sampling_id": "R04N", "temporal_id": "CH-W10"},
+    {"feature_id": "F-R04N-CH-W25", "sampling_id": "R04N", "temporal_id": "CH-W25"},
+    {"feature_id": "F-R04N-LF-W10", "sampling_id": "R04N", "temporal_id": "LF-W10"},
+    {"feature_id": "F-R04N-LF-W25", "sampling_id": "R04N", "temporal_id": "LF-W25"},
+    {"feature_id": "F-R04N-HF-W10", "sampling_id": "R04N", "temporal_id": "HF-W10"},
+    {"feature_id": "F-R04N-HF-W25", "sampling_id": "R04N", "temporal_id": "HF-W25"},
+    {"feature_id": "F-R04N-TP", "sampling_id": "R04N", "temporal_id": "TP"},
+    {"feature_id": "F-R04N-TF", "sampling_id": "R04N", "temporal_id": "TF"},
+    {"feature_id": "F-R10L-CH-W10", "sampling_id": "R10L", "temporal_id": "CH-W10"},
+    {"feature_id": "F-R10L-CH-W25", "sampling_id": "R10L", "temporal_id": "CH-W25"},
+    {"feature_id": "F-R10L-LF-W10", "sampling_id": "R10L", "temporal_id": "LF-W10"},
+    {"feature_id": "F-R10L-LF-W25", "sampling_id": "R10L", "temporal_id": "LF-W25"},
+    {"feature_id": "F-R10L-HF-W10", "sampling_id": "R10L", "temporal_id": "HF-W10"},
+    {"feature_id": "F-R10L-HF-W25", "sampling_id": "R10L", "temporal_id": "HF-W25"},
+    {"feature_id": "F-R10L-TP", "sampling_id": "R10L", "temporal_id": "TP"},
+    {"feature_id": "F-R10L-TF", "sampling_id": "R10L", "temporal_id": "TF"}
+  ],
+  "wod_query_manifest": {
+    "artifact": "required_envelope_queries.csv",
+    "generated_before_envelope_build": true,
+    "rating_blind": true,
+    "source_artifact": "only checksum-verified AVAILABLE rows from wod_scene_anchor_domain.csv under its exact manifest",
+    "encoding": "CPython 3.9 csv.writer with dialect=excel, quoting=csv.QUOTE_MINIMAL, lineterminator='\\n', UTF-8 without BOM and no CR",
+    "columns": [
+      "feature_id",
+      "path_type",
+      "horizon_id",
+      "tau_tick",
+      "h_common_tick_or_NA",
+      "wod_scene_count"
+    ],
+    "key": ["feature_id", "path_type", "horizon_id", "tau_tick", "h_common_tick_or_NA"],
+    "rule": "rename path_type_or_NA to path_type and tau_tick_or_NA to tau_tick after requiring non-NA values, then perform the one unique group-by over feature_id,path_type,horizon_id,tau_tick,h_common_tick_or_NA; set wod_scene_count=count(distinct segment_id); sort by feature_families order, CP/HO/MP/F order, H20/HFEAS order, tau_tick integer ascending, then h_common_tick integer with literal NA before integers",
+    "group_by_identity": "every AVAILABLE scene-membership row contributes to exactly one aggregate key and wod_scene_count is exactly its distinct segment cardinality; because each AVAILABLE scene-feature-horizon group has path_type set cardinality exactly 1, all of that group's tau rows contribute only to that one checksum-bound path_type branch; terminal rows contribute to none",
+    "aggregate_only": "this table contains no segment_id and cannot identify, reconstruct, extend, intersect, or substitute for any per-scene anchor membership",
+    "domain_binding": "WOD feature evaluation and per-scene readouts consume wod_scene_anchor_domain.csv directly; BM90/BT90 query generation consumes only this unique aggregate, which is itself derived once from that scene artifact",
+    "other_generation_paths": "FORBIDDEN",
+    "manifest_binding": "the envelope builder manifest binds exact path/size/SHA-256 for both wod_scene_anchor_domain.csv and its manifest plus required_envelope_queries.csv and its aggregate-generator implementation",
+    "mutation_after_hash": "forbidden"
+  },
+  "weighted_quantile_contract": {
+    "rule": "left-continuous inverse of the normalized weighted empirical CDF",
+    "algorithm": "sort by stable_sort_keys ascending; weight_total=math.fsum(weights in sorted order); require finite weight_total>0; normalized_weight=weight/weight_total; scan in sorted order with cumulative=cumulative+normalized_weight using binary64 addition from initial 0.0; return the first IPV whose cumulative>=q",
+    "stable_sort_keys": ["ipv_rad", "episode_id", "role_id", "pseudo_anchor_tick", "tau_tick", "h_common_tick_or_NA"],
+    "key_comparison": "numeric fields numeric ascending; episode_id raw UTF-8 bytes ascending; role_id order A_AS_FOCAL then B_AS_FOCAL; literal NA is only compared with NA inside one cell",
+    "episode_order_before_weighting": "unique episode_id raw UTF-8 bytes ascending",
+    "quantiles": [0.05, 0.5, 0.95],
+    "episode_weight": "every contributing episode has total weight 1/E within the exact envelope cell",
+    "within_episode_weight": "for episode e let K_e be its total count of eligible IPV observations across both required directed roles and all pseudo-anchor/query observations in the exact cell; require integer K_e>0 and give each observation raw weight (1/E)/K_e",
+    "zero_or_nonfinite_weight_status": "INELIGIBLE_WEIGHTING"
+  },
+  "envelope_builders": [
+    {
+      "envelope_id": "BL90",
+      "kind": "byte_exact_legacy_static_path_type_central_90",
+      "execution": "load the exact checksum-bound legacy L/M/U row by path_type; never reconstruct, refit, smooth, or imitate",
+      "lookup_key": ["path_type"],
+      "family_application": "the same exact legacy path-type row is applied to every registered feature family as an intentionally historical scale candidate",
+      "horizon_pooling": "not applicable",
+      "unavailable_status": "INELIGIBLE_REFERENCE",
+      "gate": "exact artifact, builder provenance, source manifest, path mapping, finite ordered L<M<U, and hashes all verified",
+      "legacy_artifact_contract": {
+        "artifact_relative_path": "legacy_bl90_envelope.json",
+        "manifest_relative_path": "legacy_bl90_envelope_manifest.json",
+        "artifact_serialization": "CPython 3.9 json.dumps with sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False plus exactly one terminal LF, UTF-8 without BOM",
+        "artifact_exact_top_keys": ["schema_version", "rows"],
+        "artifact_schema_version": "rq014-legacy-bl90-envelope-v1",
+        "row_order": ["CP", "HO", "MP", "F"],
+        "row_exact_keys": ["path_type", "L_binary64_be_hex", "M_binary64_be_hex", "U_binary64_be_hex", "row_canonical_sha256"],
+        "binary64_encoding": "each bound is exactly 16 lowercase hexadecimal digits encoding its IEEE-754 binary64 big-endian bytes; decode with struct.unpack('>d',bytes.fromhex(value))[0] and require finite L<M<U",
+        "row_hash_preimage": "ASCII RQ014-BL90-ROW| concatenated with path_type strict UTF-8, one ASCII |, then raw 8-byte L, raw 8-byte M, and raw 8-byte U in that order; row_canonical_sha256 is lowercase SHA256 hex of this preimage",
+        "manifest_exact_keys": ["schema_version", "artifact_relative_path", "artifact_size_bytes", "artifact_sha256", "legacy_source_path", "legacy_source_size_bytes", "legacy_source_sha256", "legacy_builder_path", "legacy_builder_size_bytes", "legacy_builder_sha256", "path_mapping_path", "path_mapping_size_bytes", "path_mapping_sha256", "created_at_utc"],
+        "manifest_schema_version": "rq014-legacy-bl90-envelope-manifest-v1",
+        "manifest_serialization": "the same artifact_serialization canonical JSON rule",
+        "screen_binding": "the blind feature-bank manifest and every BL90 execution receipt bind the exact artifact path/size/SHA-256 and manifest path/size/SHA-256 used by the screen",
+        "selected_recipe_binding": "when BL90 is selected, selected_recovery_recipe.json copies the exact artifact and manifest bindings plus every path-type row actually present in selected support, in canonical CP/HO/MP/F order, with its L/M/U hex and row_canonical_sha256",
+        "clean_replay_rule": "the replay allowlist admits only that exact artifact and manifest; verify both hashes and every selected row byte/hash before loading; reconstruction, imitation, screen-cache substitution, or a different legacy artifact is forbidden",
+        "rankability": "BL90 rows are AVAILABLE and rankable only after the artifact, manifest, source, builder, mapping, all required selected-support path rows, and hashes pass; otherwise every affected BL90 predictor cell is INELIGIBLE_REFERENCE"
+      }
+    },
+    {
+      "envelope_id": "BM90",
+      "kind": "matched_static_path_type_central_90",
+      "execution": "build episode-equal weighted q05/q50/q95 from the exact family estimator over the registered horizon pooling domain",
+      "query_source": "consume only the unique checksum-bound required_envelope_queries.csv aggregate; independent horizon/tau regeneration or per-scene inference is forbidden",
+      "lookup_key": ["feature_id", "path_type", "horizon_id", "h_common_tick_or_NA_for_TF_else_NA"],
+      "pooling_domain": {
+        "H20": "all and only complete required tau ticks rate_hz..2*rate_hz from horizon_anchor_contract for that sampling rate",
+        "HFEAS": "the sorted unique finite required tau ticks rate_hz..h_common_tick in the frozen WOD query manifest for that feature/path type",
+        "TF": "never pool different h_common_tick values; h_common_tick is an exact lookup dimension",
+        "other_temporal_modes": "pool all eligible pseudo-anchor, role, and registered tau observations inside the exact feature/path/horizon cell"
+      },
+      "episode_weighting": "one total unit per episode within the exact lookup cell regardless of roles, pseudo-anchor count, or tau count",
+      "output": "one L/M/U row for each required BM90 lookup key"
+    },
+    {
+      "envelope_id": "BT90",
+      "kind": "matched_time_indexed_path_type_central_90",
+      "execution": "build episode-equal weighted q05/q50/q95 at the exact registered tau tick",
+      "query_source": "consume only the unique checksum-bound required_envelope_queries.csv aggregate; independent horizon/tau regeneration or per-scene inference is forbidden",
+      "lookup_key": ["feature_id", "path_type", "tau_tick", "h_common_tick_or_NA_for_TF_else_NA"],
+      "tau_cell": "one cell per exact integer tau tick; interpolation between envelope tau cells is forbidden",
+      "horizon_pooling": "none; H20 and HFEAS reuse byte-identical BT90 rows when their lookup keys coincide",
+      "TF": "never pool different h_common_tick values and never materialize a TF tau cell above its h_common_tick",
+      "episode_weighting": "one total unit per episode within the exact tau cell regardless of roles or pseudo-anchor count",
+      "output": "one L/M/U row for each required BT90 lookup key"
+    }
+  ],
+  "envelope_gate": {
+    "applies_to": ["BM90", "BT90"],
+    "minimum_independent_episodes": 50,
+    "minimum_distinct_ipv_values": 3,
+    "ordered_quantiles": "q05<q50<q95",
+    "minimum_each_half_width_rad": 1.0e-06,
+    "bootstrap_canonical_lookup": {
+      "object_keys": [
+        "envelope_id",
+        "feature_id",
+        "h_common_tick_or_NA",
+        "horizon_id_or_NA",
+        "path_type",
+        "tau_tick_or_NA"
+      ],
+      "BM90_values": {
+        "envelope_id": "BM90",
+        "feature_id": "exact UTF-8 feature_id",
+        "h_common_tick_or_NA": "integer tick for TF, otherwise literal string NA",
+        "horizon_id_or_NA": "exact H20 or HFEAS",
+        "path_type": "exact CP, HO, MP, or F",
+        "tau_tick_or_NA": "literal string NA"
+      },
+      "BT90_values": {
+        "envelope_id": "BT90",
+        "feature_id": "exact UTF-8 feature_id",
+        "h_common_tick_or_NA": "integer tick for TF, otherwise literal string NA",
+        "horizon_id_or_NA": "literal string NA",
+        "path_type": "exact CP, HO, MP, or F",
+        "tau_tick_or_NA": "integer tau tick"
+      },
+      "NA_encoding": "the literal JSON string \"NA\" (four UTF-8 bytes including quotes; two ASCII content bytes); JSON null is forbidden",
+      "tick_encoding": "base-10 JSON integer; floats, exponent notation, and quoted integers are forbidden",
+      "serialization": "json.dumps(object,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False) followed by exactly one LF byte",
+      "bytes": "UTF-8 with no BOM and exactly one terminal byte 0x0A",
+      "seed_material": "ASCII bytes RQ014-ENVBOOT| concatenated directly with canonical lookup UTF-8-LF bytes",
+      "seed": "int.from_bytes(SHA256(seed_material).digest()[0:8],byteorder='big',signed=False)",
+      "lookup_fixture_ids": [
+        "ENVBOOT_CANON_BM90_NON_TF",
+        "ENVBOOT_CANON_BM90_TF",
+        "ENVBOOT_CANON_BT90_NON_TF",
+        "ENVBOOT_CANON_BT90_TF"
+      ]
+    },
+    "bootstrap": {
+      "replicates": 1000,
+      "unit": "episode within the exact envelope cell",
+      "episode_source_order": "sort unique episode_id values by raw UTF-8 byte order ascending before assigning integer positions 0..E-1",
+      "rng_constructor": "numpy.random.Generator(numpy.random.PCG64(seed))",
+      "draw_rule": "for replicate_index 0..999 in increasing order call rng.integers(0,E,size=E,dtype=numpy.int64,endpoint=False) exactly once; no discarded, warm-up, vectorized multi-replicate, or parallel RNG draws",
+      "draw_order": "preserve returned draw_position 0..E-1; sampled occurrence identity is (replicate_index,draw_position,source_episode_id)",
+      "occurrence_identity_schema": {"exact_keys": ["replicate_index", "draw_position", "source_episode_id"], "replicate_index": "integer 0..999", "draw_position": "integer 0..E-1 in returned RNG order", "source_episode_id": "exact source UTF-8 identifier at the sampled source position"},
+      "occurrence_order_rule": "within a replicate retain draw_position order when assigning occurrence weights and identities; repeated source_episode_id values remain distinct occurrences and are never collapsed or re-sorted before bootstrap_quantile_sort_keys are applied",
+      "resampling": "every sampled episode occurrence is an independent weighting group with total raw weight 1/E and retains both directed roles plus all source-episode observations in the exact cell; repeated source episodes remain distinct occurrences even though their IPV payloads are byte-identical",
+      "occurrence_observation_weight": "for draw occurrence j sampling source episode e_j with K_e_j eligible observations, assign each retained observation raw weight (1/E)/K_e_j; compute K_e_j separately within the source episode before sampling and reuse its exact positive integer for every repeated occurrence",
+      "bootstrap_quantile_sort_keys": ["ipv_rad", "source_episode_id", "draw_position", "role_id", "pseudo_anchor_tick", "tau_tick", "h_common_tick_or_NA"],
+      "weight_normalization_order": "materialize all E occurrence groups and their observation raw weights, stable-sort observations once by bootstrap_quantile_sort_keys, compute weight_total=math.fsum(raw weights in that sorted order), require finite weight_total>0, divide each raw weight by weight_total in sorted order, then run the weighted_quantile_contract cumulative scan in that same order",
+      "fixed_draw_count_and_retry_policy": "execute exactly the 1000 registered RNG calls and no others; an invalid replicate is retained as failed metadata and is never retried, replaced, discarded, or followed by an extra draw",
+      "replicate_success_predicate": "one of the fixed 1000 replicates is successful iff it contains at least one retained observation and every IPV, raw/normalized weight, weight_total, q05/q50/q95, and both derived half-widths is finite; strict_positive_weight_invariant separately guarantees all weights and weight_total are >0",
+      "finite_degenerate_replicates": "fewer than 3 distinct resampled IPV values, q05=q50, q50=q95, q05=q50=q95, and either or both replicate half-widths equal to 0.0 are valid successful finite width observations; they are not retried or discarded",
+      "strict_positive_weight_invariant": "because E>0 and every K_e>0, every constructed raw weight and finite weight_total must be strictly positive; a finite nonpositive value is FATAL_BOOTSTRAP_WEIGHTING_ERROR and aborts the envelope build rather than becoming a failed or replacement replicate",
+      "replicate_failure_predicate": "empty retained observation set or any nonfinite IPV/weight/weight_total/quantile/half-width; these are the only replicate failures",
+      "half_widths": {
+        "lower": "q50-q05",
+        "upper": "q95-q50"
+      },
+      "half_width_relative_se": "only after all fixed 1000 replicates satisfy replicate_success_predicate, for each side set mean_width=math.fsum(widths including valid zero widths in replicate order)/1000 once, sample_sd=math.sqrt(math.fsum((width_b-mean_width)**2 in replicate order)/999), then sample_sd/original_half_width; the original gate guarantees original_half_width>=1e-6",
+      "maximum_relative_se_each_half_width": 0.25,
+      "successful_replicates_required": 1000,
+      "successful_replicate_count": "count successful statuses over exactly replicate_index 0..999; any value other than 1000 yields INELIGIBLE_ENVELOPE_UNCERTAIN and no replacement draw",
+      "fixture_ids": ["ENVBOOT_PCG64_DRAWS", "ENVBOOT_WEIGHTED_QUANTILES", "ENVBOOT_RELATIVE_SE"],
+      "implementation_gate": "bootstrap implementation, numpy version, Python executable, environment manifest, canonical lookup fixtures, first-draw fixture, quantile fixture, and relative-SE fixture SHA-256 values are frozen before G2R; any drift is INELIGIBLE_BLIND"
+    },
+    "failure_status_by_gate": {
+      "safe_primitive_or_fixture_profile_failed": "INELIGIBLE_BLIND",
+      "fewer_than_50_independent_episodes": "INELIGIBLE_ENVELOPE_LOW_EPISODE_COUNT",
+      "fewer_than_3_distinct_ipv_values": "INELIGIBLE_ENVELOPE_DEGENERATE",
+      "quantiles_not_strictly_ordered": "INELIGIBLE_ENVELOPE_DEGENERATE",
+      "either_half_width_below_1e-6_rad": "INELIGIBLE_ENVELOPE_DEGENERATE",
+      "not_exactly_1000_successful_bootstrap_replicates": "INELIGIBLE_ENVELOPE_UNCERTAIN",
+      "either_half_width_relative_se_above_0p25": "INELIGIBLE_ENVELOPE_UNCERTAIN",
+      "missing_required_lookup_row": "INELIGIBLE_ENVELOPE_REQUIRED_CELL"
+    },
+    "required_query_failure": "materialize every required lookup row and retain its granular terminal status; the enclosing predictor cell selects the registered first granular failure through the recovery-lane rollup priority before rating access; INELIGIBLE_ENVELOPE_REQUIRED_CELL is reserved for an absent required lookup row, not a wrapper that erases low-count/degenerate/uncertain reasons",
+    "nonrequired_query_failure": "record only",
+    "no_pseudocount_or_ridge": true
+  },
+  "terminal_statuses": [
+    "AVAILABLE",
+    "INELIGIBLE_BLIND",
+    "MISSING_INTERHUB_PATH_TYPE",
+    "AMBIGUOUS_INTERHUB_PATH_TYPE",
+    "MISSING_WOD_PATH_TYPE",
+    "AMBIGUOUS_WOD_PATH_TYPE",
+    "UNRECOGNIZED_PATH_TYPE",
+    "INELIGIBLE_INTERHUB_EPISODE",
+    "INELIGIBLE_TIMELINE_SUPPORT",
+    "INELIGIBLE_TIMELINE_SOURCE_GAP",
+    "INELIGIBLE_TIMELINE_GRID_PHASE",
+    "INELIGIBLE_TIMELINE_SEAM",
+    "INELIGIBLE_STATE_NONFINITE",
+    "INELIGIBLE_UNDEFINED_HEADING",
+    "INELIGIBLE_IPV_NUMERICAL",
+    "INELIGIBLE_WEIGHTING",
+    "INELIGIBLE_REFERENCE",
+    "INELIGIBLE_ENVELOPE_LOW_EPISODE_COUNT",
+    "INELIGIBLE_ENVELOPE_DEGENERATE",
+    "INELIGIBLE_ENVELOPE_UNCERTAIN",
+    "INELIGIBLE_ENVELOPE_REQUIRED_CELL"
+  ],
+  "terminal_status_completeness": {
+    "authoritative_list": "terminal_statuses",
+    "producer_paths": [
+      "scientific_input_readiness.schema_profile_gate.fail_status",
+      "scientific_input_readiness.fixture_gate.fail_status",
+      "path_type_contract.interhub_mapping.missing_status",
+      "path_type_contract.interhub_mapping.duplicate_or_conflicting_status",
+      "path_type_contract.wod_mapping.missing_status",
+      "path_type_contract.wod_mapping.duplicate_or_conflicting_status",
+      "path_type_contract.unrecognized_value_status",
+      "wod_reference_contract.fixture_and_hash_gate.failure",
+      "episode_and_role_contract.unsupported_episode_status",
+      "timeline_and_state_contract.failure_status_by_condition.*",
+      "estimator_call_contract.nonfinite_or_solver_failure_status",
+      "weighted_quantile_contract.zero_or_nonfinite_weight_status",
+      "envelope_builders[BL90].unavailable_status",
+      "envelope_gate.failure_status_by_gate.*"
+    ],
+    "identity": "set(terminal_statuses) equals {AVAILABLE} union the exact values at producer_paths after wildcard expansion; duplicate list entries, missing producer values, and unused list values are FATAL_CONTRACT_ERROR"
+  },
+  "execution_enumeration": {
+    "feature_family_rule": "sampling_definitions order Cartesian temporal_recipes order",
+    "feature_family_count": 16,
+    "envelope_order": ["BL90", "BM90", "BT90"],
+    "feature_envelope_execution_count": 48,
+    "execution_id": "ENV2-{feature_id}-{envelope_id}",
+    "unique_executable_rule": "each of the 16x3 execution IDs resolves to exactly one sampling definition, temporal recipe, estimator call, role rule, path-type rule, builder/loader, weighting rule, gate, and missing-state rule",
+    "duplicate_or_unresolved_execution": "FATAL_CONTRACT_ERROR"
+  },
+  "materialized_artifacts": {
+    "wod_scene_anchor_domain": "wod_scene_anchor_domain.csv",
+    "wod_scene_anchor_domain_manifest": "wod_scene_anchor_domain_manifest.json",
+    "required_envelope_queries": "required_envelope_queries.csv",
+    "episode_eligibility": "interhub_episode_eligibility.csv",
+    "pseudo_anchor_queries": "interhub_pseudo_anchor_queries.csv",
+    "envelope_rows": "envelope_rows.csv",
+    "envelope_gate_rows": "envelope_gate_rows.csv",
+    "execution_registry": "feature_envelope_execution_registry.csv",
+    "manifest": "envelope_builder_manifest.json",
+    "manifest_required_bindings": ["wod_scene_anchor_domain.csv path/size/SHA-256", "wod_scene_anchor_domain_manifest.json path/size/SHA-256", "required_envelope_queries.csv path/size/SHA-256", "anchor-domain generator path/size/SHA-256", "aggregate-query generator path/size/SHA-256", "recovery and envelope contract SHA-256", "source and path-mapping manifest SHA-256", "Python executable and environment manifest SHA-256"],
+    "row_level_required_provenance": [
+      "execution_id",
+      "lookup key",
+      "source manifest hash",
+      "path mapping hash",
+      "feature contract hash",
+      "wod scene anchor-domain manifest hash",
+      "required-envelope-query aggregate hash",
+      "episode count",
+      "weighted observation count",
+      "L/M/U",
+      "both half-width relative SE values",
+      "terminal status"
+    ],
+    "ratings_or_rating_derived_values": "FORBIDDEN"
+  }
+}

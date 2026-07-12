@@ -1,0 +1,90 @@
+{
+  "schema_version": "rq014-hpc-runtime-compatibility-probe-v1",
+  "captured_date": "2026-07-12",
+  "hpc_system": "Tongji scientific-computing platform",
+  "managed_base": "/share/home/u25310231/ZXC/sociality_estimation",
+  "probe_scope": "read-only runtime and scheduler compatibility; no scientific computation",
+  "slurm_nil_probe": {
+    "command_shape": "/usr/bin/sbatch --test-only --export=NIL <temporary-probe-script>",
+    "accepted": true,
+    "scheduler_estimate_reference": "1916313",
+    "post_probe_squeue_matches": 0,
+    "job_submitted": false,
+    "interpretation": "Tongji sbatch accepts NIL; test-only returned an estimate and created no queued job"
+  },
+  "gnu_sha256sum_probe": {
+    "command": "head -n 2 managed_python_stdlib_v1.sha256 | (cd / && /usr/bin/sha256sum --check --strict -)",
+    "exit_status": 0,
+    "verified_regular_files": 1,
+    "size_comment_accepted": true
+  },
+  "python_executable_linkage": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/bin/python3.9",
+    "readlink_f": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/bin/python3.9",
+    "managed_environment_dependencies_outside_python39_tree": [],
+    "system_dependencies": [
+      "/lib64/ld-linux-x86-64.so.2",
+      "/lib64/libc.so.6",
+      "/lib64/libdl.so.2",
+      "/lib64/libm.so.6",
+      "/lib64/libpthread.so.0",
+      "/lib64/libutil.so.1"
+    ]
+  },
+  "lib_dynload_resolved_closure": {
+    "discovery": "ldd over every regular lib/python3.9/lib-dynload/*.so, including transitive resolved dependencies",
+    "system_trust_roots": [
+      "/lib64"
+    ],
+    "managed_native_soname_count": 20,
+    "managed_native_symlink_rows": 16,
+    "managed_native_regular_loader_rows": 4,
+    "managed_native_multi_hop_rows": 0,
+    "resolved_regular_file_total_size_bytes": 14656296,
+    "companion_manifest": {
+      "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_native_libs_v1.tsv",
+      "size_bytes": 5858,
+      "sha256": "46004531edef17588151114e6e024a85cac7aad063a887ec5d600903b1dfaa9d",
+      "data_rows": 20,
+      "header_rows": 5,
+      "columns": [
+        "soname",
+        "loader_path",
+        "link_target_or_dash",
+        "resolved_path",
+        "size_bytes",
+        "sha256"
+      ]
+    }
+  },
+  "stdlib_closure": {
+    "root": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9",
+    "regular_file_count": 14326,
+    "regular_file_total_size_bytes": 307357072,
+    "symlink_count": 0,
+    "python39_zip_status": "ABSENT",
+    "checksum_manifest": {
+      "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_stdlib_v1.sha256",
+      "size_bytes": 3204661,
+      "sha256": "0a9944e1de0cf2b4168097b3afe82132333189127976c0a60c0891933853f0d5"
+    }
+  },
+  "final_environment_lock": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json",
+    "captured_at_utc": "2026-07-12T02:28:03Z",
+    "mode": "0400",
+    "size_bytes": 2229,
+    "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a",
+    "canonical_json_verified": true,
+    "supersedes_for_authorization": [
+      "managed_python_environment_v1.json",
+      "managed_python_environment_v2.json"
+    ]
+  },
+  "attestations": {
+    "rating_values_accessed": false,
+    "raw_rated479_tfrecord_opened": false,
+    "production_run_root_created": false,
+    "slurm_job_submitted": false
+  }
+}

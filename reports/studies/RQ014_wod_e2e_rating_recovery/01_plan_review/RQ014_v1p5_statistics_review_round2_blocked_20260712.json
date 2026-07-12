@@ -1,0 +1,151 @@
+{
+  "schema_version": "rq014-formal-review-v1p5",
+  "review_role": "statistics",
+  "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p5_review_manifest_20260712.sha256",
+  "reviewed_manifest_sha256": "5a6b34f85904b3cedfb59d1d949058148869ea01fe2daa552637fd1d1618dbed",
+  "verdict": "BLOCKED",
+  "unresolved_blockers": 0,
+  "unresolved_majors": 6,
+  "findings": [
+    {
+      "finding_id": "STAT2-M01",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The analysis-support and stability contract is not single-valued across predictor cells.",
+      "evidence": [
+        "reports/plans/RQ014_recovery_lane_v2.json#/full_data_recovery_screen/association_support_contract says between-cell support may differ only through rating-blind predictor availability, while its shared mask and ordered D stage additionally exclude a scene when its finite three-candidate deviation vector is constant after the F-stage feature-availability gate. These rules describe different support-change mechanisms and can change support_id and ranking.",
+        "reports/plans/RQ014_recovery_lane_v2.json#/full_data_recovery_screen/stability makes eligible scenario-cluster counts and leave-one-cluster fractions part of recovery compatibility, but the score-stripped exporter is allowed to emit scenario_cluster=NA and neither the lane nor preflight defines whether NA is a cluster, a missing value, or an exclusion.",
+        "The stability row schema contains cluster/shard fractions but no explicit eligible-cluster, negative-cluster, eligible-shard, or negative-shard denominator fields, even though the contract defines those denominators and recovery compatibility requires at least two eligible clusters. The required common-support sensitivity likewise has no frozen support_id, count, association-row schema, or terminal policy."
+      ]
+    },
+    {
+      "finding_id": "STAT2-M02",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The base ranking, adaptive extension, recipe freeze, and replay state machine is not uniquely defined when the frozen grid has no compatible row.",
+      "evidence": [
+        "reports/plans/RQ014_recovery_lane_v2.json#/full_data_recovery_screen fixes one total order over exactly 2,880 rows and ranks 1..2880, but adaptive_recovery_extension may append as many as three batches of 256 new predictor cells without defining their association-row count, leaderboard IDs, or whether ranking is recomputed jointly or separately.",
+        "selected_recipe_freeze is stated to be generated mechanically from terminal rank 1 without an explicit recovery-compatible prerequisite, while verdict_ladder defines distinct all-ineligible and eligible-but-none-compatible stop states and adaptive extension is enabled in the latter state.",
+        "Consequently reasonable implementations can freeze and replay a non-compatible base rank 1, run one or more extensions before freezing, stop at the first compatible extension batch, or rerank a combined ledger. Those paths can select different recipes."
+      ]
+    },
+    {
+      "finding_id": "STAT2-M03",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "A registered BL90 winner cannot be reproduced from the clean-replay allowlist.",
+      "evidence": [
+        "reports/plans/RQ014_envelope_builder_contract_v2.json#/envelope_builders/BL90 permits BL90 only by loading the exact checksum-bound legacy L/M/U artifact and explicitly forbids reconstruction or imitation.",
+        "reports/plans/RQ014_recovery_lane_v2.json#/clean_independent_replay requires reimplementation of the envelope builder or exact legacy-envelope loader, but its allowed_inputs omit the legacy envelope artifact and its exact artifact manifest/bytes.",
+        "selected_recovery_recipe.json is required to bind envelope manifests, but the contract does not require it to contain the selected BL90 L/M/U bytes. Screen caches are forbidden, so a valid BL90 rank-1 branch lacks an authorized replay input."
+      ]
+    },
+    {
+      "finding_id": "STAT2-M04",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The registered placebo and robustness battery cannot produce a unique final control-sensitive versus robust verdict.",
+      "evidence": [
+        "Only NC_PRETSTAR_HISTORY_ONLY has a frozen branch, perturbation fixture, and leakage failure rule. NC_CYCLIC_CANDIDATE_SHIFT, NC_COUNTERPART_SWAP_WITHIN_PATH_TYPE_AND_SUPPORT_BIN, and NC_SIGN_FLIP_WITH_ENVELOPE_UNCHANGED are names only in reports/plans/RQ014_recovery_lane_v2.json#/registered_controls_and_robustness.",
+        "Those three controls have no exact transform, seed/order, eligibility mask, support matching, association method, weights, denominators, terminal status, or fixture contract. central_80/central_95 robustness envelopes and the three supporting statistics are likewise only named.",
+        "The same section uses a placebo comparison to set CONTROL_SENSITIVE, and verdict_ladder uses the control/robustness result to choose the final recovered label. Different reasonable implementations therefore yield different final verdicts."
+      ]
+    },
+    {
+      "finding_id": "STAT2-M05",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The append-only recovery-ledger hash chain is not byte-reproducible.",
+      "evidence": [
+        "reports/plans/RQ014_recovery_lane_v2.json#/full_data_recovery_screen/append_only_ledger states only that each canonical JSON row binds prev_record_sha256 and its own record_sha256.",
+        "It does not freeze the exact row keys and JSON encoder settings, LF policy, float representation, genesis prev hash, the preimage used to calculate record_sha256 without a self-reference, or the append order of the 2,880 rows.",
+        "The orchestration permits immutable worker batches, so completion order can differ. selected_recipe_freeze binds the leaderboard and hash-chain terminal digest; identical scientific rows could therefore produce different freeze and replay gates."
+      ]
+    },
+    {
+      "finding_id": "STAT2-M06",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The BM90/BT90 envelope bootstrap leaves weight and replicate-success choices that can change eligibility.",
+      "evidence": [
+        "The ordinary weighted-ECDF contract gives each episode total weight 1/E and divides it over two roles and its eligible observations. The bootstrap contract gives every sampled episode occurrence total weight 1/E and preserves its observations, but does not explicitly define repeated occurrences as independent weighting groups, the occurrence-level observation-weight formula, or the normalization order when source episodes have unequal observation counts.",
+        "The gate requires exactly 1,000 successful bootstrap replicates and maps a shortfall to INELIGIBLE_ENVELOPE_UNCERTAIN, but does not define the success predicate for a resample with fewer than three distinct values, collapsed q05/q50/q95, or a zero bootstrap half-width.",
+        "Treating such degenerate resamples as valid width observations versus failed replicates changes both the relative-SE calculation and the predictor cell terminal status."
+      ]
+    },
+    {
+      "finding_id": "STAT2-m01",
+      "severity": "MINOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The five-fold assignment omits an explicit byte encoding for its seed material.",
+      "evidence": [
+        "reports/plans/RQ014_recovery_lane_v2.json defines SHA256('RQ014-R2-FOLD|' + segment_id) but does not state the prefix and segment encoding or a separator/length convention. Current segment IDs are restricted enough that UTF-8 is the likely intent, but the fold fixture should freeze the exact bytes."
+      ]
+    },
+    {
+      "finding_id": "STAT2-m02",
+      "severity": "MINOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The clean-replay rank-vector equality check is not scoped by association method.",
+      "evidence": [
+        "clean_independent_replay requires rank_vectors to match exactly, which is directly defined for RWS and PSP but not for raw-score PPR. The contract should state whether a PPR winner has no rank-vector check or carries diagnostic ranks that do not enter its statistic."
+      ]
+    },
+    {
+      "finding_id": "STAT2-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The primary estimand and same-dataset claim boundary are appropriate for known-result specification recovery.",
+      "evidence": [
+        "The target is explicitly the remembered negative human-score versus candidate IPV-envelope-deviation association, null-hypothesis discovery is false, p values and prospective power are non-gating, and causal, new-data-confirmation, and independent-replication language is forbidden.",
+        "The design waits for terminal rows, uses a mechanical total order, and requires same-data clean computational replay without falling through to rank 2."
+      ]
+    },
+    {
+      "finding_id": "STAT2-N02",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The core frozen-grid counts, temporal semantics, route/reference construction, and primary association kernels are internally coherent.",
+      "evidence": [
+        "Independent enumeration reproduced 16 unique feature families as 2 rates x 8 CH/LF/HF/TP/TF recipes, 960 unique predictor cells as 16x3x2x10, and 2,880 unique base leaderboard rows after the three RWS/PSP/PPR methods.",
+        "R04N/R10L use a single tstar-anchored history<=0/candidate>0 seam, the R10L 0-to-0.25 interpolation is explicit, and position-derived velocity/acceleration/heading is computed once before slicing windows.",
+        "legacy_route_reference_v1 is scene-level, rating-blind, candidate-shared, algorithmically specified, and source/fixture bound. The main BM90/BT90 lookup keys, episode-equal weighting, gates, granular statuses, RWS/PSP/PPR shared within-cell mask, exact midranks, candidate/scene weights, and bootstrap occurrence ordering are otherwise detailed."
+      ]
+    },
+    {
+      "finding_id": "STAT2-N03",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The score-stripped scientific primitives and rating-isolation boundary are adequate for the currently authorized declassification step.",
+      "evidence": [
+        "The exporter preserves candidate, history, and ego-future seven-state arrays, tstar pose, exact route intent, source shard, raw/effective timing, counterpart tracks, legacy geometry hashes, and the 479-row structural universe while treating candidate order as opaque.",
+        "It uses a restricted unpickler, exact source and output schemas, recursive rating-semantic rejection, canonical CSV/JSON, a geometry-keyed future join, and full receipt/hash validation. Raw scored TFRecords, rating tables, and rating values remain outside G2."
+      ]
+    },
+    {
+      "finding_id": "STAT2-N04",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The G0/G1 and current operation boundaries remain fail-closed.",
+      "evidence": [
+        "G0 records FOUND=0, NOT_FOUND_ON_SCANNED_SURFACES=4, INACCESSIBLE=6, OPEN=0 and limits negative claims to F01-F04. The PI waiver is a closure basis and residual risk, not evidence of absence.",
+        "The current central allowlist contains only rq014_g2_declassification_export, conditional on an external formal G1 PASS. Contract preflight, feature build, rating join/ranking, replay, and optional operations remain denied."
+      ]
+    },
+    {
+      "finding_id": "STAT2-N05",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The exact candidate bytes and focused contract tests were stable during this review.",
+      "evidence": [
+        "The 51-row review manifest had SHA-256 5a6b34f85904b3cedfb59d1d949058148869ea01fe2daa552637fd1d1618dbed and sha256sum -c passed 51 of 51 paths before review.",
+        "The bounded RQ014 suite completed with 141 passed. No rating value was accessed and no HPC command or Slurm submission was performed."
+      ]
+    }
+  ],
+  "reviewer_agent": "/root/review_execution_round2",
+  "fresh_reviewer_attested": true,
+  "rating_values_accessed": false,
+  "hpc_jobs_submitted": false,
+  "reviewed_at_utc": "2026-07-12T03:17:57Z"
+}
