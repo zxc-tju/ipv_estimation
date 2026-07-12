@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/rq014-managed-python-environment-v3.json",
+  "title": "RQ014 isolated Python and native-library runtime-closure manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "environment_id",
+    "python_executable",
+    "execution_dependencies",
+    "site_packages_imported",
+    "isolated_python_flags",
+    "isolated_sys_path",
+    "stdlib_integrity",
+    "native_library_integrity",
+    "captured_at_utc"
+  ],
+  "properties": {
+    "schema_version": {"const": "rq014-managed-python-environment-v3"},
+    "environment_id": {"const": "ipv-exact-sigma01"},
+    "python_executable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "version", "size_bytes", "sha256"],
+      "properties": {
+        "path": {"const": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/bin/python3.9"},
+        "version": {"const": "Python 3.9.24"},
+        "size_bytes": {"const": 16285544},
+        "sha256": {"const": "616aea77938978c3578ed480eac4025ef7099f4c944ab8684722bc9455f99f32"}
+      }
+    },
+    "execution_dependencies": {"const": "PYTHON_STANDARD_LIBRARY_PLUS_PINNED_NATIVE_CLOSURE"},
+    "site_packages_imported": {"type": "array", "maxItems": 0},
+    "isolated_python_flags": {"const": ["-I", "-S", "-B", "-X", "utf8"]},
+    "isolated_sys_path": {
+      "const": [
+        "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python39.zip",
+        "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9",
+        "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9/lib-dynload"
+      ]
+    },
+    "stdlib_integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stdlib_root",
+        "lib_dynload_root",
+        "zip_path",
+        "zip_path_status",
+        "symlink_count",
+        "regular_file_count",
+        "regular_file_total_size_bytes",
+        "checksum_manifest_path",
+        "checksum_manifest_size_bytes",
+        "checksum_manifest_sha256"
+      ],
+      "properties": {
+        "stdlib_root": {"const": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9"},
+        "lib_dynload_root": {"const": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9/lib-dynload"},
+        "zip_path": {"const": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python39.zip"},
+        "zip_path_status": {"const": "ABSENT"},
+        "symlink_count": {"const": 0},
+        "regular_file_count": {"type": "integer", "minimum": 1},
+        "regular_file_total_size_bytes": {"type": "integer", "minimum": 1},
+        "checksum_manifest_path": {"const": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_stdlib_v1.sha256"},
+        "checksum_manifest_size_bytes": {"type": "integer", "minimum": 1},
+        "checksum_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "native_library_integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discovery_scope",
+        "columns",
+        "manifest_path",
+        "manifest_size_bytes",
+        "manifest_sha256",
+        "row_count",
+        "resolved_regular_file_total_size_bytes",
+        "symlink_row_count",
+        "multi_hop_count",
+        "system_library_trust_roots",
+        "symlink_chain_policy"
+      ],
+      "properties": {
+        "discovery_scope": {"const": "ldd python3.9 plus every regular lib-dynload/*.so; complete recursive resolved closure"},
+        "columns": {"const": ["soname", "loader_path", "link_target_or_dash", "resolved_path", "size_bytes", "sha256"]},
+        "manifest_path": {"const": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_native_libs_v1.tsv"},
+        "manifest_size_bytes": {"type": "integer", "minimum": 1},
+        "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "row_count": {"const": 20},
+        "resolved_regular_file_total_size_bytes": {"type": "integer", "minimum": 1},
+        "symlink_row_count": {"const": 16},
+        "multi_hop_count": {"const": 0},
+        "system_library_trust_roots": {"const": ["/lib64"]},
+        "symlink_chain_policy": {"const": "exact loader link target and final resolved regular-file bytes"}
+      }
+    },
+    "captured_at_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"}
+  }
+}

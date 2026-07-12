@@ -1,0 +1,121 @@
+{
+  "schema_version": "rq014-formal-review-v1p5",
+  "review_role": "execution_governance",
+  "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p5_review_manifest_20260712.sha256",
+  "reviewed_manifest_sha256": "5a6b34f85904b3cedfb59d1d949058148869ea01fe2daa552637fd1d1618dbed",
+  "verdict": "BLOCKED",
+  "unresolved_blockers": 1,
+  "unresolved_majors": 4,
+  "findings": [
+    {
+      "finding_id": "EG2-B01",
+      "severity": "BLOCKER",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The declassification operation does not bind the SHA-256 receipt to the exact source bytes that are parsed, leaving a source-TOCTOU hole at the rating boundary.",
+      "evidence": [
+        "The generated job hashes each source before starting Python (scripts/hpc/prepare_research_run.py:1783-1798), but the exporter receives only paths, not the reviewed expected digests, and it reopens those paths later.",
+        "For each pickle, scripts/rq014/export_score_stripped_bundle.py:338-343 computes sha256_file(path) and then separately opens path for restricted_load; replacement between those opens makes the recorded digest describe different bytes from the parsed object.",
+        "The readiness TSV and counterpart CSV are parsed at scripts/rq014/export_score_stripped_bundle.py:317-332 and 402-437, while their receipt hashes are computed only later at lines 483-484. They can therefore be replaced after parse and restored before hashing, or otherwise yield parsed bytes different from receipt bytes.",
+        "Path-level is_symlink/is_file checks do not provide O_NOFOLLOW descriptor identity or pre/post fstat continuity. The strict semantic allowlist cannot detect a rating value deliberately encoded in an otherwise permitted numeric field, so this is material at a declassification boundary rather than merely an audit-format issue.",
+        "Required repair: pass the inventory digests into the exporter and, for every source, open once with O_NOFOLLOW, fstat, read the exact bytes once, verify the expected size/digest on those bytes, parse from BytesIO/StringIO, and record that same digest; reject pre/post identity drift. Add adversarial source-swap fixtures."
+      ]
+    },
+    {
+      "finding_id": "EG2-M01",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "G0 now uses legal terminal states, but the evidence supporting the four negative closures is outside the reviewed and required final-bundle byte sets.",
+      "evidence": [
+        "reports/plans/RQ014_forensic_registry_v1p5.yaml:31-86 makes F01-F04 depend on reports/studies/RQ014_wod_e2e_rating_recovery/00_forensics/forensics_report.md at SHA-256 e6f1ce6e136cdf7355e18e38b5853b934658d462f72e61acb3bddf282ca16c88; the current file matches that digest.",
+        "That evidence path is absent from the 51-row reviewed manifest and absent from scripts/hpc/prepare_research_run.py:RQ014_REVIEW_REQUIRED_PATHS (lines 88-134). The final bundle minimum is derived from the reviewed set plus formal artifacts at lines 1242-1249, so it also need not contain the G0 evidence.",
+        "Consequently the evidence file can disappear or drift without changing the reviewed-manifest SHA or making formal G1 stale, while _validate_formal_g1 accepts only the aggregate g0_closure_status string at lines 532-621.",
+        "Required repair: add the exact closure-evidence byte to the candidate review manifest and required-path set, require it in the final bundle/snapshot, and machine-check every F01-F04 evidence path/hash while validating formal G1."
+      ]
+    },
+    {
+      "finding_id": "EG2-M02",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The production run-spec implementation does not implement the registered canonical one-read and immutable-managed-spec contract.",
+      "evidence": [
+        "configs/run_specs/README.md:57-64 requires a production spec written once in an immutable managed manifest area and says the launcher reads those bytes once.",
+        "scripts/hpc/prepare_research_run.py:2245-2256 reads and validates canonical spec bytes, but _prepare_and_submit_rq014 rereads spec_path at line 2068 instead of sealing the retained spec_bytes. Lines 2069-2075 detect changed bytes/semantics and are fail-closed, but they do not satisfy the one-read contract.",
+        "The CLI resolves --spec but never requires a regular non-symlink file inside the managed RQ014 manifest area; an arbitrary mutable or symlinked path is accepted if its contents happen to pass both reads.",
+        "Required repair: retain the initially opened canonical bytes through validate and submit, seal exactly those bytes without reopening the path, require an allowlisted regular non-symlink immutable-spec root, and add tests proving a second open is neither needed nor performed."
+      ]
+    },
+    {
+      "finding_id": "EG2-M03",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The mandatory validate-only evidence described by the kickoff cannot be produced by the validate-only code path, so the documented prerequisite for submission is unsatisfiable.",
+      "evidence": [
+        "reports/plans/prompts/RQ014_G2_kickoff_prompt_v1p5_20260712.md:42-50 requires validate-only output to show a closed-code-snapshot receipt and both Slurm NIL controls before --submit is allowed.",
+        "scripts/hpc/prepare_research_run.py:2236-2269 only validates and prints the validated dictionary when --submit is absent. The code snapshot and code_snapshot_receipt_sha256 are first created at lines 2079-2095, and the sbatch text is first rendered at lines 2105-2122, both inside the submit path.",
+        "The validate-only output therefore has code_snapshot_files and a resource profile, but cannot contain the demanded snapshot receipt or rendered #SBATCH/command evidence. The same kickoff also requires a clean managed checkout at lines 14-16, whereas the v2 launcher intentionally omits the legacy dirty-worktree check and relies on commit blobs; this is another prose-versus-machine mismatch under a prompt that says any conflict stops.",
+        "Required repair: either add a side-effect-free deterministic render/snapshot-plan receipt to validate-only and make the kickoff require that exact artifact, or revise the prerequisite to evidence that validate-only can actually emit; align the clean-checkout wording with the commit-blob isolation rule."
+      ]
+    },
+    {
+      "finding_id": "EG2-M04",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "The documented transition from declassification export to contract preflight changes only the central allowlist, but the frozen execution contract and launcher require an additional unregistered contract-status change.",
+      "evidence": [
+        "reports/plans/RQ014_execution_contract_v1p5.json:80-99 registers rq014_g2_contract_preflight as DENY_PENDING_DECLASSIFICATION_RECEIPT, and configs/research_authorization.json currently allowlists only the export operation, which is correct for the first step.",
+        "scripts/hpc/prepare_research_run.py:1258-1264 accepts an operation only when its execution-contract status is exactly CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1. Adding preflight only to configs/research_authorization.json after the export would therefore still fail.",
+        "The PI decision at reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md:19-23, amendment at lines 114-117 and 284-289, and kickoff at lines 88-89 describe the next transition as adding preflight to the central allowlist after receipt acceptance; none states that the execution contract must also change, that this invalidates the reviewed bytes/formal G1, or that a new review bundle is required.",
+        "Required repair: either register preflight now as conditionally authorized with its prior-receipt predicates while keeping the central allowlist as the controlling DENY, or explicitly register the future checksum-bound contract amendment/re-review sequence in all three documents and templates."
+      ]
+    },
+    {
+      "finding_id": "EG2-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The clean operator bootstrap, shared-lock handoff, first-managed-Python closure, NIL policy and explicit /lib64 boundary are otherwise coherently fail-closed.",
+      "evidence": [
+        "scripts/hpc/submit_research_run.sh:5-47 rejects inherited hook variables, fixes the managed base, verifies/inherits fd 8 and takes the shared runtime lock; the documented env -i bootstrap atomically checks the 7,137-byte wrapper SHA before exec.",
+        "The wrapper verifies launcher, preflight, Python, v3 environment receipt, exact stdlib set/count/size/hash, absent zip, native loader links/final bytes and isolated sys.path before the first managed Python at lines 49-162.",
+        "The generated job uses #SBATCH --export=NIL and /usr/bin/sbatch --export=NIL, a second empty environment and isolated -I -S -B -X utf8 startup (prepare_research_run.py:1749-1909,2124-2132). NONE is not used. /lib64 is explicitly recorded as the OS ABI trust root rather than falsely claimed as a fully frozen managed dependency."
+      ]
+    },
+    {
+      "finding_id": "EG2-N02",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Exact published-commit blob materialization and final-bundle execution isolation correctly exclude dirty, untracked, hook, filter and unregistered checkout bytes.",
+      "evidence": [
+        "scripts/hpc/prepare_research_run.py:170-246 uses absolute git with replacement objects, hooks, fsmonitor, global/system config and attributes disabled, and accepts only regular commit-tree blobs.",
+        "Lines 1188-1207 require managed HEAD equality and origin/main ancestry. Lines 1234-1256 require the final bundle to preserve every reviewed digest and include both reviewer/formal artifacts.",
+        "Lines 1924-1965 materialize only bundle-registered exact commit blobs into a closed snapshot, verify each digest, preserve Git mode and emit a canonical receipt; the job rechecks the bundle itself and every registered snapshot byte before the entrypoint."
+      ]
+    },
+    {
+      "finding_id": "EG2-N03",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Submission rollback and ambiguous-sbatch-state accounting preserve raw evidence and prevent blind retry.",
+      "evidence": [
+        "scripts/hpc/prepare_research_run.py:1968-2029 removes a pre-submit partial run root when possible and writes a global immutable FAILED receipt whose retry_authorized flag is true only after complete cleanup.",
+        "Lines 2031-2044 parse a unique parsable Slurm job ID; lines 2124-2165 retain the raw sbatch response and known ID in the success receipt.",
+        "Lines 2166-2190 preserve the run namespace and write SUBMISSION_STATE_UNKNOWN with raw response and any parsed job ID for every failure after sbatch starts, making such failures non-retryable."
+      ]
+    },
+    {
+      "finding_id": "EG2-N04",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Static integrity checks and the frozen focused suite pass, but they do not close the five findings above.",
+      "evidence": [
+        "The exact 51-row candidate manifest verified before and after review at SHA-256 5a6b34f85904b3cedfb59d1d949058148869ea01fe2daa552637fd1d1618dbed.",
+        "Focused command using the project verifier environment: python -m pytest -q tests/test_hpc_run_launcher.py tests/test_rq014_fl05_indexer.py tests/test_rq014_g0_closure_scripts.py tests/test_rq014_managed_hpc_contract.py tests/test_rq014_recovery_lane_v2_contract.py tests/test_rq014_score_stripped_export.py tests/test_rq014_v1p3_registry_contract.py tests/test_rq014_v1p5_contract.py; result 141 passed in 13.18 seconds.",
+        "git diff --check, shell syntax and Python compilation completed without error. No rating value was accessed and no HPC connection or job submission occurred."
+      ]
+    }
+  ],
+  "reviewer_agent": "/root/rq014_current_status_audit",
+  "fresh_reviewer_attested": true,
+  "rating_values_accessed": false,
+  "hpc_jobs_submitted": false,
+  "reviewed_at_utc": "2026-07-12T03:19:24Z"
+}

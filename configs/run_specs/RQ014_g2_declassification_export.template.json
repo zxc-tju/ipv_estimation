@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "rq_id": "RQ014",
+  "run_id": "RQ014_0_score_stripped_export_REPLACE_UTC_REPLACE_PLAN_SHA8",
+  "operation": "rq014_g2_declassification_export",
+  "git_commit": "0000000000000000000000000000000000000000",
+  "formal_g1": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p5_20260712.yaml",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "contract_bundle": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "scene_bundles": [
+    {"path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_0/phase1_post_scene_bundle.pkl", "sha256": "57b6fb62bf64bfe786245d18063eacf55c09a16bde175a415c6aad29718cd975"},
+    {"path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_1/phase1_post_scene_bundle.pkl", "sha256": "c710c588f0e86a587999f57af487082514483b6611e9ae14141ff53b3b62b507"},
+    {"path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_2/phase1_post_scene_bundle.pkl", "sha256": "1cab3cd6d59b63fb8beecb3dcb6d0c7251841db16fdfdf64ef28953daa373b58"},
+    {"path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_3/phase1_post_scene_bundle.pkl", "sha256": "99dffe4e65fa64d4458802868e599f2b268dfe93d1b1a72022a7458d9044c937"},
+    {"path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_4/phase1_post_scene_bundle.pkl", "sha256": "dcf63903ae6c18445d64de633e616a3690596fbd12edcce51e887f01d7b2688c"},
+    {"path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_5/phase1_post_scene_bundle.pkl", "sha256": "05e1ef602c0d9f426ded36c614d0a0eb8602491dea3b39bf6a465d38582f9734"},
+    {"path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_6/phase1_post_scene_bundle.pkl", "sha256": "3db1323ebbe13ded066f777128688cfd0521dc328fd438f0f7404703837d4e07"},
+    {"path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_7/phase1_post_scene_bundle.pkl", "sha256": "510f68f5922feff66866685604c0d99a521b168f9be4ceacbdd3128aaf19cb09"}
+  ],
+  "readiness_table": {
+    "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/manifests/rated479_segment_readiness.tsv",
+    "sha256": "425410ac48480513b566509321cd7f4cbac2a65c7db21e4174b39737f953f8a5"
+  },
+  "counterpart_tracks": {
+    "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/selected_counterpart_tracks.csv",
+    "sha256": "609979ae31cf9b926643b93f282c21eddb3a408ef968cc871c3d48538700c7c9"
+  },
+  "environment_manifest": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json",
+    "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"
+  },
+  "created_at_utc": "2026-07-12T00:00:00Z",
+  "resource_profile_id": "rq014-g2-declassify-cpu-v1"
+}

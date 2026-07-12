@@ -1,0 +1,165 @@
+date: invalid argument 's' for -I
+=== RQ014 Mac forensics  ===
+== [1] Cowork session transcripts (all sessions, all spaces) ==
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/sml.xsd
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/WorkSans-Regular.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/CrimsonPro-Italic.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/YoungSerif-Regular.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/CrimsonPro-Regular.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/WorkSans-BoldItalic.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/CrimsonPro-Bold.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/LibreBaskerville-Regular.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/WorkSans-Italic.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/Gloock-Regular.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/BigShoulders-Regular.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/BigShoulders-Bold.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/canvas-design/canvas-fonts/WorkSans-Bold.ttf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/pptx/pptxgenjs.md
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/pptx/scripts/office/schemas/ISO-IEC29500-4_2016/sml.xsd
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/docx/scripts/office/schemas/ISO-IEC29500-4_2016/sml.xsd
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/chart-atlas/atlas-02-line-trends.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/chart-atlas/atlas-04-scatter-bubble.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/chart-atlas/atlas-09-image-plates.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/chart-atlas/atlas-05-radar-polar.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/figure_FPGM/figures/freq_prior.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/figure_Dispersion/figures/idea.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/figure_VIGIL/figures/comparison_posttraining.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/figure_ImmunoStruct/figures/bars_ablation_IEDB.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/assets/ImmunoStruct_results_IEDB.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/assets/Dispersion_motivation.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/assets/ImmunoStruct_schematic.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/assets/Dispersion_observation_distillation.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/assets/RNAGenScape_schematic.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/assets/ImmunoStruct_results_CEDAR.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/figure_brainteaser/figures/rewriting.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/figures4papers/figure_CellSpliceNet/figures/ablation.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/gallery/fig4-single-cell-systems-rich.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/gallery/fig5-validation-perturbation-rich.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/788a6ee0-692e-44a8-95fd-f8bd60afbb75/f6f565d5-642e-4c3a-b743-f76e64c2b293/skills/nature-figure/assets/gallery/fig1-material-mechanism-rich.png
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_58dc9330-df28-43b6-830a-12bd1866698f/.claude/projects/-sessions-eloquent-happy-fermi/d825f078-2afe-4b56-8bab-01206f9ef656.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_58dc9330-df28-43b6-830a-12bd1866698f/audit.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_0602cd7a-24fb-4316-b05d-f778f9276449/.claude/projects/-Users-xiaocong-Library-Application-Support-Claude-local-agent-mode-sessions-f6f565d5-642e-4c3a-b743-f76e64c2b293-788a6ee0-692e-44a8-95fd-f8bd60afbb75-local-0602cd7a-24fb-4316-b05d-f778f9276449-output-112r1o/c52c6278-a6f1-4eb2-8133-9049a374130d.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_0602cd7a-24fb-4316-b05d-f778f9276449/.claude/projects/-Users-xiaocong-Library-Application-Support-Claude-local-agent-mode-sessions-f6f565d5-642e-4c3a-b743-f76e64c2b293-788a6ee0-692e-44a8-95fd-f8bd60afbb75-local-0602cd7a-24fb-4316-b05d-f778f9276449-output-112r1o/d19466ba-b6bd-4a3a-a37f-ac47c374b8bf.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_0602cd7a-24fb-4316-b05d-f778f9276449/audit.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_106751cc-575b-4606-93a8-41ffce2e99e8/.claude/projects/-Users-xiaocong-Library-Application-Support-Claude-local-agent-mode-sessions-f6f565d5-642e-4c3a-b743-f76e64c2b293-788a6ee0-692e-44a8-95fd-f8bd60afbb75-local-106751cc-575b-4606-93a8-41ffce2e99e8-output-oi3nn8/b05a0926-dc59-4155-91c9-ffcb0314a258/tool-results/pdf-c67f1b90-e325-4ae7-bf9a-5db726070219/page-15.jpg
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_106751cc-575b-4606-93a8-41ffce2e99e8/.claude/projects/-Users-xiaocong-Library-Application-Support-Claude-local-agent-mode-sessions-f6f565d5-642e-4c3a-b743-f76e64c2b293-788a6ee0-692e-44a8-95fd-f8bd60afbb75-local-106751cc-575b-4606-93a8-41ffce2e99e8-output-oi3nn8/b05a0926-dc59-4155-91c9-ffcb0314a258.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_106751cc-575b-4606-93a8-41ffce2e99e8/uploads/上海奖-技术内容-0702汇总-批注.docx
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_106751cc-575b-4606-93a8-41ffce2e99e8/uploads/科技成果评价57号 同济大学场景驱动的智能驾驶公共服务平台构建关键技术及应用.pdf
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_106751cc-575b-4606-93a8-41ffce2e99e8/audit.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_7174f781-c895-4f62-9be9-b432ef8b604d/.claude/projects/-sessions-nifty-relaxed-dirac/6b80a0b0-8e4c-40df-9d24-50787e822650/tool-results/br84tulq0.txt
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_7174f781-c895-4f62-9be9-b432ef8b604d/.claude/projects/-sessions-nifty-relaxed-dirac/6b80a0b0-8e4c-40df-9d24-50787e822650.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_7174f781-c895-4f62-9be9-b432ef8b604d/audit.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_554d1500-5cfd-4d65-9961-d1b3ce232d15/.claude/projects/-Users-xiaocong-Library-Application-Support-Claude-local-agent-mode-sessions-f6f565d5-642e-4c3a-b743-f76e64c2b293-788a6ee0-692e-44a8-95fd-f8bd60afbb75-local-554d1500-5cfd-4d65-9961-d1b3ce232d15-output-jcj4cq/e690ad14-b2d8-4625-a01b-af913e8deea5.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_554d1500-5cfd-4d65-9961-d1b3ce232d15/audit.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_554d1500-5cfd-4d65-9961-d1b3ce232d15/outputs/node_modules/@types/node/net.d.ts
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_c14deb74-b32f-43ac-bf12-79f3ffc2934c/.claude/projects/-Users-xiaocong-Library-Application-Support-Claude-local-agent-mode-sessions-f6f565d5-642e-4c3a-b743-f76e64c2b293-788a6ee0-692e-44a8-95fd-f8bd60afbb75-local-c14deb74-b32f-43ac-bf12-79f3ffc2934c-output-2dt287/c5331fb8-50fd-4dd2-8a11-1893c4501efc.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_c14deb74-b32f-43ac-bf12-79f3ffc2934c/audit.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_c14deb74-b32f-43ac-bf12-79f3ffc2934c/outputs/slide-vision-retrieval-PLAN.md
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_c14deb74-b32f-43ac-bf12-79f3ffc2934c/outputs/slidevision-bootstrap/board/plan.md
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_c8559910-3f9e-49c4-a820-601d7229d40f/.claude/projects/-sessions-brave-gallant-hypatia/654c53a8-ef0a-4278-b460-74233fe17f18.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_c8559910-3f9e-49c4-a820-601d7229d40f/audit.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_07de7b3a-44fd-4a24-b54d-f177024cf943/.claude/projects/-sessions-dazzling-cool-planck/dbe725b0-60d2-47a9-9f14-21e383e22884.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_07de7b3a-44fd-4a24-b54d-f177024cf943/audit.jsonl
+/Users/xiaocong/Library/Application Support/Claude/local-agent-mode-sessions/f6f565d5-642e-4c3a-b743-f76e64c2b293/788a6ee0-692e-44a8-95fd-f8bd60afbb75/local_c0003825-77e9-43ce-b4de-12fbc3a890b9/.claude/projects/-Users-xiaocong-Library-Application-Support-Claude-local-agent-mode-sessions-f6f565d5-642e-4c3a-b743-f76e64c2b293-788a6ee0-692e-44a8-95fd-f8bd60afbb75-local-c0003825-77e9-43ce-b4de-12fbc3a890b9-output-4eymos/7769974f-8884-4cf3-911c-3503f1dfe203.jsonl
+== [2] Claude Code project transcripts ==
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/f5c908a1-1b07-46c8-98a3-e68a849a236d.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/d5d6814c-45ae-4ac5-911e-e17fe83fb4ec/subagents/agent-a148182cfd8bc5fe8.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/49e8796b-522b-4410-aeb5-a6286d888bf7.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/31e2e545-c604-459d-9ea8-698dc5eade9b.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/5324afbc-d374-4701-8011-4c26d573910c.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/memory/rq010b-wod-e2e-hpc-ingest.md
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/memory/MEMORY.md
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/memory/rq010a-wod-e2e-feasibility.md
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/memory/rq010b-reframed-ipv-deviation-contract.md
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/094a176f-cacd-4afd-abb9-7bd2b2473a06.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/54c19b90-1522-4683-9acf-9aa16a24fff6.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/21cc2003-9e0d-4f66-90ac-d002b166252e.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/d5d6814c-45ae-4ac5-911e-e17fe83fb4ec.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/725bbaf6-ae1c-46c1-83e9-eeada8edce37.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/31d75579-09ed-4103-b170-6871ba0bd31d.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/11ee097f-c4b8-45fc-9295-b6a9dc0d6235/tool-results/bbcdigazz.txt
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/20ef283f-a922-4af1-8060-d6a89d7a89ac.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/9478208f-2cc2-4950-a175-5fdf120f0c18.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_52e7b7e0-0fd/agent-a822c9366a7084922.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_52e7b7e0-0fd/agent-a347343c9f6217089.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_52e7b7e0-0fd/journal.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_52e7b7e0-0fd/agent-ae11a72216c8e5b7c.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_52e7b7e0-0fd/agent-aae0871418d08d6b9.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_52e7b7e0-0fd/agent-a02e116b7eb57e0a0.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_52e7b7e0-0fd/agent-ad4de7d61d3e76481.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_52e7b7e0-0fd/agent-a0733405a79add5d7.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_4eedc6a6-cd2/agent-aac56824f2bd61855.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_4eedc6a6-cd2/agent-ae2c4cb9e4162f816.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_4eedc6a6-cd2/agent-abca1a60a005f4f34.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_4eedc6a6-cd2/journal.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/subagents/workflows/wf_4eedc6a6-cd2/agent-af5b02238e9ef3dd4.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/workflows/wf_52e7b7e0-0fd.json
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/workflows/wf_4eedc6a6-cd2.json
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/workflows/scripts/route4-tracker-candidates-wf_4eedc6a6-cd2.js
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/workflows/scripts/waymo-e2e-access-howto-wf_52e7b7e0-0fd.js
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/tool-results/webfetch-1782390279144-o307ry.pdf
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/tool-results/bcta6jfiw.txt
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/a8401e25-a29a-4ff0-8eec-c4a95bf2cc94/tool-results/byxjnv3yq.txt
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/11ee097f-c4b8-45fc-9295-b6a9dc0d6235.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/bd6c2cf5-2c4c-472c-87e6-935c502ad1ac.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/9d780c7e-703e-452f-959b-85811b7deb32.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation/725bbaf6-ae1c-46c1-83e9-eeada8edce37/tool-results/bl2dcf252.txt
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation-interhub-traj-lane-1-ipv-estimation-results/00419208-329b-4050-928a-ff603a2ba717.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Projects-1-Codes-2-sociality-estimation-interhub-traj-lane-1-ipv-estimation-results/b7d952f8-48b7-4562-895e-a65b20a08d79.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-a40683503e6d555a8.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-ab64f1d0f0db760de.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-a5b3166db773dbc34.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-a377f94088fc13e6f.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-ae09d478e57389319.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-a159c9f0a5c39b26c.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-a3238acce581c1ca1.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-aced894adedda02e3.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-a11ec52e1a0e2f92a.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-a235a8b2532761a74.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-ac027d54ed4bc246a.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-ac1876cf0083a8912.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-adafb87293e645019.jsonl
+/Users/xiaocong/.claude/projects/-Users-xiaocong-Library-CloudStorage-OneDrive----Desktop-Resources-Slides-slidevision/203db432-bd58-4b03-83a9-f24c5067e21f/subagents/agent-a0b7119ec2a4778bb.jsonl
+== [3] codex CLI session/log stores ==
+/Users/xiaocong/.codex/sessions/2026/03/18/rollout-2026-03-18T13-18-37-019cff61-ac65-74e0-8b31-51ae6e497523.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/18/rollout-2026-03-18T12-49-43-019cff47-3a1f-7913-82af-9412ac5a916d.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/11/rollout-2026-03-11T23-20-17-019cdd7b-ffe6-7a72-88c6-5b9d6ab99e0f.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/11/rollout-2026-03-11T21-35-20-019cdd1b-eb9d-7262-a8e6-76775fd3a5df.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/17/rollout-2026-03-17T15-20-44-019cfaab-1f5f-7513-acc4-c08e54d83e98.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/17/rollout-2026-03-17T15-19-33-019cfaaa-07ac-7d70-9953-4027fbabf427.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/21/rollout-2026-03-21T10-08-36-019d0e26-cbd3-7d92-a6eb-8e6f0c8df486.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/13/rollout-2026-03-13T08-21-11-019ce491-9493-7482-922b-0b1dee6b15af.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/13/rollout-2026-03-13T08-28-46-019ce498-8364-7d60-b815-0a2df054562c.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/13/rollout-2026-03-13T12-49-55-019ce587-9ce0-7321-9bd9-82688d00d798.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/22/rollout-2026-03-22T16-36-20-019d14b0-2124-7a81-82e0-173ffb1af5f0.jsonl
+/Users/xiaocong/.codex/sessions/2026/03/22/rollout-2026-03-22T16-36-20-019d14b0-2097-7693-9c34-1c514992430a.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T15-02-20-019d5c73-1ab4-7380-a459-5645de8f74a6.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T15-02-27-019d5c73-369a-7141-ad3a-c7ded4759a30.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T14-40-19-019d5c5e-f31c-70b2-9dfa-f187f70342c7.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T15-04-29-019d5c75-1053-7952-b26e-471479c95b91.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T14-48-58-019d5c66-dc73-74f0-8c4b-d2d30eb9dc74.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T15-00-15-019d5c71-30c8-7ed1-ab6b-ed3ca2e8345e.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T15-36-21-019d5c92-3dcc-7503-bd47-c55d9d37a156.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T14-56-27-019d5c6d-b862-7092-88c4-52f7173bf38f.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T18-32-28-019d5d33-7c72-7ac0-a1af-0f4d45a0ccff.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T14-36-53-019d5c5b-cc32-7ae3-95ac-e7048f300a32.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T18-37-02-019d5d37-a98f-76d2-9349-c2dea32b6944.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T15-07-29-019d5c77-d24e-7050-83c6-6db77ceb2e60.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/05/rollout-2026-04-05T18-34-15-019d5d35-1dfc-7bc3-8093-88c2bef4741b.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/29/rollout-2026-04-29T15-04-47-019dd80d-f997-7812-bec1-b1a1a0f992ec.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/09/rollout-2026-04-09T14-09-57-019d70dc-956f-7e20-a059-62bdc201fb09.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/09/rollout-2026-04-09T18-48-55-019d71db-fc02-7a23-bad8-21744ac080c5.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/09/rollout-2026-04-09T18-56-34-019d71e2-fbd7-7120-aa36-59baaa58a62f.jsonl
+/Users/xiaocong/.codex/sessions/2026/04/09/rollout-2026-04-09T18-59-27-019d71e5-a04d-7550-90cd-c6bee9951c95.jsonl
+/Users/xiaocong/.codex/history.jsonl
+== [4] Sibling project folders under 1_Codes (names + mtimes) ==
+ls: /Users/xiaocong/Library/CloudStorage/OneDrive-个人/Desktop/Projects/1_Codes: No such file or directory
+== [5] WOD/e2e/rating-named files across ALL sibling projects (excl. this repo + venvs) ==
+== [6] Python files mentioning preference_score outside this repo ==
+== [7] ~/.rq009_codex_fleet residue ==
+== [8] Spotlight full-text probe (may be slow; ctrl-C safe) ==
+=== end RQ014 Mac forensics ===
+MANUAL follow-ups (cannot be scripted): OneDrive web version-history/recycle-bin for deleted
+analysis dirs; the old Windows machine C:\Users\xiaocongzhao\OneDrive\...\2_sociality_estimation.

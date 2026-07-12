@@ -1,0 +1,156 @@
+schema_version: rq014-forensic-v1p2
+registry_status: PROPOSED_BLOCKED_PENDING_G0
+registry_kind: forensic
+created_date: '2026-07-11'
+supersedes: reports/plans/RQ014_forensic_registry_v1p1.yaml
+canonical_plan: reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md
+amendment: reports/plans/RQ014_plan_v1p2_amendment_20260711.md
+execution_authorized: false
+scientific_promotion_allowed: false
+alpha_note: forensic_family_owns_its_own_error_rates_no_sharing_with_scientific_or_extension
+
+terminal_states: [FOUND, NOT_FOUND_ON_SCANNED_SURFACES, INACCESSIBLE]
+transient_states: [OPEN]
+
+forensic_surfaces:
+  - {surface_id: F01, surface: current_repo_git_archived_workflow, status: NOT_FOUND_ON_SCANNED_SURFACES}
+  - {surface_id: F02, surface: old_paper_snapshots_and_history, status: NOT_FOUND_ON_SCANNED_SURFACES}
+  - {surface_id: F03, surface: hpc_accounting_history_home_zxc, status: NOT_FOUND_ON_SCANNED_SURFACES}
+  - {surface_id: F04, surface: mac_codex_claude_history, status: NOT_FOUND_ON_SCANNED_SURFACES}
+  - {surface_id: F05, surface: hpc_20260629_four_pilot_directories, status: OPEN,
+     closure_script: reports/plans/prompts/RQ014_forensics_hpc_pass3_20260710.sh}
+  - {surface_id: F06, surface: sibling_archived_and_paper_git_pass3b, status: OPEN,
+     closure_script: reports/plans/prompts/RQ014_forensics_mac_pass3b_20260710.sh}
+  - {surface_id: F07, surface: obsidian_wode2e_note_body, status: OPEN,
+     closure_script: reports/plans/prompts/RQ014_forensics_mac_pass3b_20260710.sh}
+  - {surface_id: F08, surface: cowork_candidate_sessions_fulltext, status: OPEN,
+     closure_script: reports/plans/prompts/RQ014_forensics_mac_pass3b_20260710.sh}
+  - {surface_id: F09, surface: old_windows_onedrive_history_trash, status: INACCESSIBLE,
+     residual_risk_statement_required: true}
+  - {surface_id: F10, surface: hpc_rq010b_intermediate_statistics_index_FL05, status: OPEN,
+     closure_script: reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p2.sh,
+     closure_evidence: [historical_stats_index.csv, fl05_audit_log, output_sha256]}
+
+historical_lookup_cells:
+  - forensic_id: FL01
+    path: /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_20260629
+    expected_stage: original_invalid
+    action: extract_existing_statistics_and_code_fingerprint_read_only
+  - forensic_id: FL02
+    path: /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_dtfix_20260629T123954
+    expected_stage: dt_fixed_only
+    action: extract_existing_statistics_and_code_fingerprint_read_only
+  - forensic_id: FL03
+    path: /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_fixed_20260629T124417
+    expected_stage: dt_and_log_domain_fixed
+    action: extract_existing_statistics_and_code_fingerprint_read_only
+  - forensic_id: FL04
+    path: /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_routefix_20260629T124941
+    expected_stage: dt_log_domain_and_route_reference_fixed
+    known_fingerprint:
+      pooled_raw_ipv_rating_rho: 0.123
+      mean_within_scene_spearman: -0.0787
+      finite_candidate_rows: 33
+    action: extract_existing_statistics_and_code_fingerprint_read_only
+  - forensic_id: FL05
+    paths:
+      - /share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis
+      - /share/home/u25310231/ZXC/RQ010B_wod_e2e/results
+    implementation: reports/plans/prompts/RQ014_forensics_hpc_fl05_indexer_v1p2.sh
+    implementation_requirements:
+      fail_closed: missing_root_or_parser_crash_or_zero_rows_from_nonempty_tree_is_nonzero_exit
+      canonical_artifact: untruncated_csv_on_stdout_audit_on_stderr
+      csv_schema: [statistic_name, value, n, unit, config_fields_as_recorded,
+                   source_file, source_file_sha256, mtime, parse_status, raw_locator]
+      unparsed_candidates: emitted_as_rows_with_parse_status_UNPARSED_CANDIDATE
+      per_file_manifest: count_bytes_sha256_mtime_reported_in_audit
+      login_node_byte_budget: 209715200
+      over_budget_policy: abort_and_rerun_as_zxc_cpu_sbatch
+    deliverable: historical_stats_index.csv
+    fingerprint_rule: any_recorded_rho_le_minus_0.30_becomes_historical_fingerprint_candidate
+
+computed_diagnostics:
+  - forensic_id: FD01
+    origin: moved_from_extension_X06
+    statistic: pooled_all_candidates_spearman_deviation_vs_rating
+    baseline_config: V04_analogue
+    inference: scene_block_permutation_preserving_between_scene_structure_9999
+    seed: 20260711
+    role: report_only_diagnostic_of_pooled_vs_within_scene_discrepancy
+    allowed_claim: none_descriptive_only
+
+one_factor_twins:
+  baseline:
+    forensic_id: FT00
+    baseline_valid_config_id: V04
+    note: fixed_4hz_future_only_W2p5_HMAX5_analogue
+  twins:
+    - forensic_id: FT01
+      pair_id: DT_MISMATCH
+      baseline_config_id: V04
+      changed_field: fixed_estimator.estimator_internal_integration_dt_s
+      baseline_value: 0.25
+      defect_value: 0.10
+      unchanged_by_design: input_trajectory_grid_dt_s_remains_0.25
+      defect_locus: estimator_internal_integration_step_not_data_resampling
+      common_support_required: true
+      allowed_claim: ARTIFACT_MECHANISM_SUPPORTED
+    - forensic_id: FT02
+      pair_id: OWN_REFERENCE
+      baseline_config_id: V04
+      changed_field: fixed_estimator.reference
+      baseline_value: wod_route_based_constant_curvature
+      defect_value: candidate_as_own_reference
+      common_support_required: true
+      allowed_claim: ARTIFACT_MECHANISM_SUPPORTED
+    - forensic_id: FT03
+      pair_id: PROBABILITY_UNDERFLOW
+      baseline_config_id: V04
+      changed_field: fixed_estimator.reliability_domain
+      baseline_value: stable_log
+      defect_value: legacy_probability
+      common_support_required: true
+      allowed_claim: ARTIFACT_MECHANISM_SUPPORTED
+    - forensic_id: FT04
+      pair_id: HISTORICAL_COUNTERPART_PATHWAY_BUNDLE
+      bundle_purity_waiver: >-
+        Registered two-field bundle replicating the exact 2026-06-29 pilot counterpart
+        pathway. One-factor purity explicitly waived for this cell; the bundle IS the
+        historical artifact hypothesis.
+      baseline_config_id: V04
+      changed_fields:
+        - {field: counterpart.source, baseline: selected_counterpart_tracks_real_observed,
+           defect: single_frame_detection}
+        - {field: counterpart.extrapolation, baseline: forbidden,
+           defect: constant_velocity_allowed}
+      common_support_required: true
+      allowed_claim: ARTIFACT_MECHANISM_SUPPORTED
+
+one_factor_test:
+  statistic: delta_rho_ws_equals_defect_minus_clean_on_pairwise_common_support
+  expected_direction: negative
+  bootstrap_unit: scene
+  bootstrap_replicates: 9999
+  rng: numpy_Generator_PCG64
+  seed_rule: 20260710_plus_zero_based_forensic_pair_index
+  family_method: studentized_bootstrap_maxT_simultaneous_upper_bounds
+  one_sided_fwer: 0.025
+  g2_calibration_note: fwer_verified_at_equality_boundaries_not_only_global_null
+  critical_value: percentile_97p5_of_max_pair_Z_where_Z_equals_delta_b_minus_delta_obs_over_bootstrap_sd
+  simultaneous_upper_bound: delta_obs_plus_critical_value_times_bootstrap_sd
+  thresholds:
+    maximum_defect_rho_ws: -0.30
+    maximum_delta_rho_ws: -0.20
+    simultaneous_upper_bound_must_be_below: 0.0
+    minimum_common_support_fraction_of_clean_valid_analysis: 0.80
+    maximum_undefined_bootstrap_fraction: 0.01
+  allowed_claim: ARTIFACT_MECHANISM_SUPPORTED_only
+
+freeze_requirements:
+  - all_forensic_surfaces_have_legal_closure_state
+  - fl05_script_and_outputs_checksum_bound
+  - exact_legacy_code_or_adapter_fingerprint
+  - exact_input_manifest
+  - historical_rho_n_figure_or_file_fingerprint_if_found
+  - materialized_common_support_manifest_for_each_twin
+  - independent_registry_review_pass

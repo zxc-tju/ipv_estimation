@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/research-run-spec-v2.json",
+  "title": "RQ014 managed G2 run specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "rq_id",
+    "run_id",
+    "operation",
+    "git_commit",
+    "formal_g1",
+    "contract_bundle",
+    "environment_manifest",
+    "resource_profile_id"
+  ],
+  "properties": {
+    "schema_version": {"const": 2},
+    "rq_id": {"const": "RQ014"},
+    "run_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+    "operation": {
+      "enum": ["rq014_g2_declassification_export", "rq014_g2_contract_preflight"]
+    },
+    "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "formal_g1": {"$ref": "#/$defs/fileRef"},
+    "contract_bundle": {"$ref": "#/$defs/fileRef"},
+    "resource_profile_id": {"type": "string"},
+    "scene_bundles": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/fileRef"}
+    },
+    "readiness_table": {"$ref": "#/$defs/fileRef"},
+    "counterpart_tracks": {"$ref": "#/$defs/fileRef"},
+    "environment_manifest": {"$ref": "#/$defs/fileRef"},
+    "created_at_utc": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "input_manifest": {"$ref": "#/$defs/fileRef"},
+    "sanitization_receipt": {"$ref": "#/$defs/fileRef"},
+    "materialization_ledger": {"$ref": "#/$defs/fileRef"},
+    "declassification_export_receipt": {"$ref": "#/$defs/fileRef"},
+    "declassification_export_done": {"$ref": "#/$defs/fileRef"}
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "operation": {"const": "rq014_g2_declassification_export"},
+        "resource_profile_id": {"const": "rq014-g2-declassify-cpu-v1"}
+      },
+      "required": [
+        "scene_bundles",
+        "readiness_table",
+        "counterpart_tracks",
+        "environment_manifest",
+        "created_at_utc"
+      ]
+    },
+    {
+      "properties": {
+        "operation": {"const": "rq014_g2_contract_preflight"},
+        "resource_profile_id": {"const": "rq014-g2-preflight-cpu-v1"}
+      },
+      "required": [
+        "input_manifest",
+        "sanitization_receipt",
+        "materialization_ledger",
+        "declassification_export_receipt",
+        "declassification_export_done"
+      ]
+    }
+  ],
+  "$defs": {
+    "fileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

@@ -1,0 +1,251 @@
+{
+  "schema_version": "rq014-score-stripped-schema-v1",
+  "encoding": {
+    "csv": "RFC4180 UTF-8 LF header-present NA-only-null",
+    "float": "Python-3 repr of finite binary64 after parse; NA is the only permitted missing token",
+    "json": "UTF-8 LF sorted-keys compact-separators no-NaN-or-Infinity"
+  },
+  "unexpected_columns_or_keys": "REJECT",
+  "pickle_inputs_visible_to_g2": false,
+  "tfrecord_inputs_visible_to_g2": false,
+  "frozen_universe_segment_count": 479,
+  "scientific_time_series_contract": {
+    "time_origin": "tstar_equals_0_s",
+    "history": {
+      "domain": "time_s_less_than_or_equal_to_0",
+      "source_grid_phase": "tstar_anchored",
+      "source_step_s": 0.25,
+      "zero_owner": "ego_history"
+    },
+    "candidate_raw_time": {
+      "duplicate_rule": "raw0_xy_distance_to_history_tstar_strictly_less_than_0.75_m",
+      "duplicate_raw0_time_s": 0.0,
+      "nonduplicate_raw0_time_s": 0.25,
+      "later_raw_time_rule": "duplicate:raw_sample_index_times_0.25;nonduplicate:(raw_sample_index_plus_1)_times_0.25"
+    },
+    "effective_candidate": {
+      "domain": "time_s_strictly_greater_than_0",
+      "duplicate_raw0_use": "audit_only_excluded",
+      "max_points": 20,
+      "observed_support_only": true
+    },
+    "r04n": {
+      "grid_phase": "tstar_anchored",
+      "step_s": 0.25,
+      "history_grid": "integer_k_times_0.25_with_k_less_than_or_equal_to_0",
+      "candidate_grid": "integer_k_times_0.25_with_k_greater_than_0",
+      "resampling": "none"
+    },
+    "r10l": {
+      "grid_phase": "tstar_anchored",
+      "step_s": 0.1,
+      "history_grid": "integer_k_times_0.1_with_k_less_than_or_equal_to_0_inside_observed_history_support",
+      "candidate_grid": "integer_k_times_0.1_with_k_greater_than_0_not_after_last_effective_candidate",
+      "interpolation": "piecewise_linear_position",
+      "support": "observed_only_no_extrapolation"
+    },
+    "cross_seam": {
+      "anchor_at_0": "last_ego_history_state",
+      "first_future_anchor": "first_effective_candidate_state_at_positive_time",
+      "rule": "piecewise_linear_between_the_two_anchors",
+      "candidate_raw0_at_0": "never_used_as_a_second_zero_sample"
+    },
+    "derivatives": {
+      "application_stage": "derive_once_on_each_complete_resampled_branch_before_temporal_window_selection",
+      "branch_scope": "one_complete_R04N_or_R10L_branch_per_candidate",
+      "window_boundary_rederivation": "forbidden",
+      "position_authority": "pos_x_m_and_pos_y_m",
+      "source_velocity_and_acceleration": "preserved_for_forensic_recovery_but_not_used_by_the_frozen_derivative_operator",
+      "minimum_points": 2,
+      "velocity_first": "(p[1]-p[0])/(t[1]-t[0])",
+      "velocity_interior": "(p[i+1]-p[i-1])/(t[i+1]-t[i-1])",
+      "velocity_last": "(p[n-1]-p[n-2])/(t[n-1]-t[n-2])",
+      "acceleration": "apply_the_same_endpoint_and_interior_operator_to_velocity",
+      "smoothing": "none"
+    }
+  },
+  "files": {
+    "blind_scene_manifest.csv": {
+      "columns": [
+        "segment_id",
+        "tstar_context_step",
+        "source_shard_id",
+        "scenario_cluster",
+        "path_type",
+        "route_intent_code",
+        "route_intent_name",
+        "coordinate_frame",
+        "native_frame_rate_hz",
+        "state_rate_hz",
+        "candidate_rate_hz",
+        "candidate_count",
+        "candidate_geometry_available",
+        "ego_future_state_count",
+        "tstar_ego_pose_element_count",
+        "structural_status",
+        "candidate_set_sha256"
+      ],
+      "primary_key": ["segment_id"],
+      "row_order": ["segment_id"],
+      "rules": [
+        "contains all 479 frozen segment IDs exactly once",
+        "tstar_context_step is declassified structural metadata and exposes no score value, order, tie, or count",
+        "candidate_count equals 3 whenever candidate_geometry_available is true",
+        "candidate ordinals are not rating ranks",
+        "source_shard_id preserves the nonempty safe-token source shard for registered source-shard leave-one-out stability checks",
+        "route_intent_code and route_intent_name preserve the source routing command; path_type remains UNMAPPED until a separate frozen mapping is registered",
+        "every geometry-available scene preserves exactly 20 source ego-future states and one finite 4x4 tstar ego pose"
+      ]
+    },
+    "candidate_states.csv": {
+      "columns": [
+        "segment_id",
+        "tstar_context_step",
+        "candidate_id",
+        "candidate_ordinal",
+        "geometry_sha256",
+        "raw_sample_index",
+        "raw_time_s",
+        "dropped_as_tstar_duplicate",
+        "included_in_effective_future",
+        "effective_sample_index",
+        "effective_time_s",
+        "pos_x_m",
+        "pos_y_m",
+        "pos_z_m",
+        "vel_x_mps",
+        "vel_y_mps",
+        "accel_x_mps2",
+        "accel_y_mps2"
+      ],
+      "primary_key": ["segment_id", "candidate_ordinal", "raw_sample_index"],
+      "row_order": ["segment_id", "candidate_ordinal", "raw_sample_index"],
+      "rules": [
+        "candidate_id is one of C1 C2 C3 in frozen source ordinal order",
+        "candidate_id is not a rating rank",
+        "geometry_sha256 is computed on all seven original candidate fields before any drop or truncation using the frozen legacy byte rule",
+        "raw sample indices are contiguous and raw_time_s preserves the frozen duplicate-dependent source-time interpretation",
+        "candidate raw point zero is marked dropped only when its XY distance from the last ego-history point is strictly below 0.75 m",
+        "after the optional drop, at most 20 positive-time points are effective on the tstar-anchored 0.25 s grid",
+        "each optional source state array is encoded as all NA when empty or finite values at every raw sample when populated"
+      ]
+    },
+    "ego_history_states.csv": {
+      "columns": [
+        "segment_id",
+        "tstar_context_step",
+        "sample_index",
+        "time_s",
+        "pos_x_m",
+        "pos_y_m",
+        "pos_z_m",
+        "vel_x_mps",
+        "vel_y_mps",
+        "accel_x_mps2",
+        "accel_y_mps2"
+      ],
+      "primary_key": ["segment_id", "sample_index"],
+      "row_order": ["segment_id", "sample_index"],
+      "rules": [
+        "source order is preserved on a tstar-anchored 0.25 s grid ending exactly at 0",
+        "all seven source state arrays are preserved losslessly; an empty optional source array is encoded as all NA"
+      ]
+    },
+    "ego_future_states.csv": {
+      "columns": [
+        "segment_id",
+        "tstar_context_step",
+        "sample_index",
+        "time_s",
+        "pos_x_m",
+        "pos_y_m",
+        "pos_z_m",
+        "vel_x_mps",
+        "vel_y_mps",
+        "accel_x_mps2",
+        "accel_y_mps2"
+      ],
+      "primary_key": ["segment_id", "sample_index"],
+      "row_order": ["segment_id", "sample_index"],
+      "rules": [
+        "the source actual-driven future is preserved separately from every rated candidate",
+        "source order is preserved on positive tstar-anchored 0.25 s times",
+        "all seven source state arrays are preserved losslessly; an empty optional source array is encoded as all NA"
+      ]
+    },
+    "tstar_ego_pose.csv": {
+      "columns": [
+        "segment_id",
+        "tstar_context_step",
+        "matrix_row",
+        "matrix_column",
+        "value"
+      ],
+      "primary_key": ["segment_id", "matrix_row", "matrix_column"],
+      "row_order": ["segment_id", "matrix_row", "matrix_column"],
+      "rules": [
+        "each geometry-available scene contributes exactly the sixteen finite elements of the source 4x4 pose in source row-major order",
+        "no transform convention beyond source order is inferred during declassification"
+      ]
+    },
+    "counterpart_tracks.csv": {
+      "columns": [
+        "segment_id",
+        "tstar_context_step",
+        "counterpart_track_id",
+        "context_step",
+        "time_s",
+        "x_m",
+        "y_m",
+        "vx_mps",
+        "vy_mps",
+        "class_name",
+        "detector_confidence"
+      ],
+      "primary_key": ["segment_id", "counterpart_track_id", "context_step"],
+      "row_order": ["segment_id", "counterpart_track_id", "context_step"],
+      "rules": [
+        "the selected counterpart identity is shared across the three candidates",
+        "rows are observed support only and extrapolated rows are forbidden",
+        "detector_confidence is a detector field and never a human preference score"
+      ]
+    },
+    "structural_attrition.csv": {
+      "columns": ["segment_id", "stage", "reason_code", "source_receipt_id"],
+      "primary_key": ["segment_id", "stage", "reason_code"],
+      "row_order": ["segment_id", "stage", "reason_code"],
+      "rules": [
+        "reason codes are structural and rating-blind",
+        "rating completeness tie order and outcome-statistic reasons are forbidden"
+      ]
+    }
+  },
+  "forbidden_semantic_fields_normalized": [
+    "preference_score",
+    "candidate_scores",
+    "human_rating",
+    "rating",
+    "rating_value",
+    "rating_rank",
+    "rating_order",
+    "rating_tie",
+    "rating_complete",
+    "preference_rank",
+    "preference_order",
+    "score_rank",
+    "score_order",
+    "top_rated_candidate",
+    "observed_rho",
+    "effect_direction",
+    "p_value",
+    "score"
+  ],
+  "forbidden_source_formats_in_g2": ["pickle", "TFRecord", "protobuf"],
+  "required_receipts": ["sanitization_receipt.json", "file_manifest.json"],
+  "g3_join_key": [
+    "segment_id",
+    "tstar_context_step",
+    "candidate_ordinal",
+    "geometry_sha256"
+  ]
+}

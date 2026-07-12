@@ -1,0 +1,92 @@
+{
+  "schema_version": "rq014-formal-review-v1p5",
+  "review_role": "execution_governance",
+  "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p5_review_manifest_20260712.sha256",
+  "reviewed_manifest_sha256": "85bc636f67911b0e383ef048004f78730b1ade6c32abb14d31d7f2368b7d0853",
+  "verdict": "BLOCKED",
+  "unresolved_blockers": 1,
+  "unresolved_majors": 1,
+  "findings": [
+    {
+      "finding_id": "EG-B01",
+      "severity": "BLOCKER",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "Unresolved: the launcher and Slurm job can execute inherited, unreviewed environment hooks before the reviewed authorization and checksum checks run.",
+      "evidence": [
+        "scripts/hpc/submit_research_run.sh:4-7 accepts HPC_SOCIALITY_ROOT to select the launcher checkout and invokes an unbound PATH-resolved python3, despite the v1.5 contract declaring managed-base override forbidden.",
+        "scripts/hpc/prepare_research_run.py:1117-1146 renders a /usr/bin/env bash job without #SBATCH --export=NONE and only sets thread/PYTHONPATH variables after shell startup; scripts/hpc/prepare_research_run.py:1196 submits with sbatch's inherited-environment default.",
+        "Consequently BASH_ENV, ENV, LD_PRELOAD, PATH-selected bash/tools, PYTHONHOME, and related hooks can act before the script's git/hash/formal-G1 checks or alter them. The checksum-bound python3.9 at lines 1109-1112 protects the later executable bytes, not the shell/launcher path that decides whether and what to submit.",
+        "No reviewed test asserts a clean submission environment, --export=NONE, absolute shell/tool paths, rejection of HPC_SOCIALITY_ROOT, or invocation of the launcher with the bound interpreter. This must be fixed and adversarially tested before formal G1 can pass."
+      ]
+    },
+    {
+      "finding_id": "EG-M01",
+      "severity": "MAJOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "Unresolved: the reviewed-byte manifest is a required-file subset, not a closed Python execution/import set.",
+      "evidence": [
+        "scripts/hpc/prepare_research_run.py:746-756 proves that every reviewed file is present with the reviewed digest, but it permits arbitrary additional files in the published commit and final checksum bundle.",
+        "The rendered job exports PYTHONPATH=<detached code>:<detached code>/src at lines 1138-1139 and launches Python without -I/-S at lines 1037-1061. An additional sitecustomize.py, usercustomize.py, or stdlib-name shadow module in an otherwise published clean commit can therefore execute even though it is absent from the formal review manifest.",
+        "The environment manifest schema binds only the python executable, version, and a declaration that standard-library-only dependencies are used; it does not bind the imported standard-library module bytes or prove an isolated import closure.",
+        "The execution path should use isolated/no-site startup with an explicitly constructed reviewed module path (or an equivalent closed import manifest/tree digest), and tests should demonstrate rejection or non-loading of unreviewed sitecustomize and shadow-module fixtures."
+      ]
+    },
+    {
+      "finding_id": "EG-m01",
+      "severity": "MINOR",
+      "status": "ACCEPTED_RESIDUAL",
+      "summary": "Submission-preparation failures are fail-closed but do not have a deterministic rollback or structured FAILED receipt.",
+      "evidence": [
+        "scripts/hpc/prepare_research_run.py:1158-1196 creates the run directories and detached worktree before sbatch, without a compensating cleanup/failure-record block. A worktree-add, manifest-write, render, chmod, or sbatch error can leave an orphaned run root that prevents reuse of the immutable run_id.",
+        "The exporter itself has appropriate staging cleanup and removes the published bundle if run-receipt creation fails at scripts/rq014/export_score_stripped_bundle.py:417-421,598-602,639-671, so the data product remains fail-closed. The remaining issue is operational auditability and retry determinism, not rating leakage."
+      ]
+    },
+    {
+      "finding_id": "EG-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Authorization precedence, formal-review staleness checks, source bindings, and the prior-export receipt chain are otherwise fail-closed in the frozen bytes.",
+      "evidence": [
+        "configs/research_authorization.json centrally allowlists only rq014_g2_declassification_export; reports/plans/RQ014_execution_contract_v1p5.json keeps preflight, pilot, feature, rating, and replay operations denied.",
+        "scripts/hpc/prepare_research_run.py:362-451 binds formal G1 to two exact reviewer artifacts and one exact review manifest; lines 744-756 require the final bundle to preserve every reviewed digest.",
+        "scripts/hpc/prepare_research_run.py:593-677 requires the exact audited shard_0..7/readiness/counterpart paths, sizes, and SHA-256 values. scripts/rq014/preflight.py:801-864 and 1102-1209 require PASS export and DONE receipts, canonical bundle hashes, source hashes, and registry materialization before preflight can succeed."
+      ]
+    },
+    {
+      "finding_id": "EG-N02",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The reviewed declassification code provides a strong restricted-pickle, canonical-output, semantic-denylist, timing, and receipt boundary for the first operation.",
+      "evidence": [
+        "scripts/rq014/export_score_stripped_bundle.py:147-155 rejects pickle global/class construction; lines 282-326 enforce exact bundle/metadata/scene/state shapes and recursively reject rating-semantic keys; lines 413-602 use a staging directory, strict canonical outputs, full validation, and atomic publish.",
+        "scripts/rq014/preflight.py:188-242 rejects noncanonical CSV and rating-semantic columns/cell values; lines 267-650 enforce the 479-scene universe, 10 Hz/4 Hz timing, exact tstar consistency, duplicate-drop rule, candidate-set hashes, keys, counts, file hashes, and provenance receipt values.",
+        "The frozen source inventory binds producer-code audit hashes and records restricted-unpickle structural results (476 geometry scenes, 3 structural absences, exact three candidates, zero tstar mismatch on declassified scenes) without rating-value access."
+      ]
+    },
+    {
+      "finding_id": "EG-N03",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Registry materialization is reconstructible and immutable under the reviewed 17-binding protocol.",
+      "evidence": [
+        "scripts/rq014/materialize_registry.py:132-264 requires the exact binding allowlist, validates cross-registry equalities and the X02 composite, checks every source placeholder and source hash, writes once-or-identical canonical outputs, and records a complete ledger.",
+        "scripts/rq014/preflight.py:983-1099 independently reconstructs all materialized registry bytes from the immutable source registries plus binding ledger and rejects missing, aliased, drifted, or noncanonical artifacts."
+      ]
+    },
+    {
+      "finding_id": "EG-N04",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "All frozen-manifest tests passed, but they do not cover the two unresolved runtime-closure findings.",
+      "evidence": [
+        "Bounded command: .venv_ipv_verifier/bin/python -m pytest -q tests/test_hpc_run_launcher.py tests/test_rq014_fl05_indexer.py tests/test_rq014_g0_closure_scripts.py tests/test_rq014_managed_hpc_contract.py tests/test_rq014_score_stripped_export.py tests/test_rq014_v1p3_registry_contract.py tests/test_rq014_v1p5_contract.py",
+        "Result: 81 passed in 4.62 seconds. No rating values were accessed and no HPC job was submitted."
+      ]
+    }
+  ],
+  "reviewer_agent": "formal_g1_execution_v1p5",
+  "fresh_reviewer_attested": true,
+  "rating_values_accessed": false,
+  "hpc_jobs_submitted": false,
+  "reviewed_at_utc": "2026-07-12T01:09:34Z"
+}

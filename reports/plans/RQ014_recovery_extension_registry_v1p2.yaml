@@ -1,0 +1,118 @@
+schema_version: rq014-recovery-extension-v1p2
+registry_status: PROPOSED_NOT_EXECUTABLE
+registry_kind: recovery_extension
+created_date: '2026-07-11'
+supersedes: reports/plans/RQ014_recovery_extension_registry_v1p1.yaml
+canonical_plan: reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md
+amendment: reports/plans/RQ014_plan_v1p2_amendment_20260711.md
+execution_authorized: false
+scientific_promotion_allowed: false
+alpha_note: >-
+  This arm has its OWN exploratory family (within-arm maxT). It does not share alpha
+  with the scientific or forensic families.
+purpose: >-
+  Plausible legitimate old-spec variants excluded from the valid family by design.
+  Every cell is a complete, hashable verifier contract executable without further choices.
+
+baseline:
+  extension_baseline_id: X00
+  baseline_valid_config_id: V04
+  inherited_fields: all_v1p2_valid_registry_fields_unless_overridden_below
+  note: 4hz_future_only_W2p5_HMAX5_analogue
+
+cells:
+  - extension_id: X01
+    kind: endpoint_bundle
+    overrides:
+      endpoint_formula: terminal_only_normalized_exceedance_90_evaluated_at_final_common_tau
+      envelope: matched_time_indexed_path_type_hv_at_final_common_tau_only
+    everything_else: identical_to_X00
+    rationale: old_study_may_have_scored_only_final_ipv_per_candidate
+  - extension_id: X02
+    kind: envelope_bundle_multi_field
+    availability_condition: all_inputs_reconstructable_ratings_blind_from_sigma01_batch
+    unavailable_policy: mark_INACCESSIBLE_shrink_family_do_not_substitute
+    overrides:
+      envelope_source: sigma01_static_state_conditioned_quantile_bands
+      envelope_state_variables:
+        risk_bin: frozen_pet_proxy_bins_from_sigma01_batch_definition
+        geometry: geometry_path_category_CP_HO_MP_F
+        priority_role: marginalized_documented_as_unlabelled_on_wod_e2e
+      tau_rule: time_pooled_static_band_horizon_enters_envelope_id
+      quantiles: {lower: 0.05, center: 0.50, upper: 0.95}
+      weighting: episode_equal_total_weight_as_v1_builder
+      wod_feature_mapping: frozen_mapping_table_required_at_G2_with_sha256
+      scale_compatibility: >-
+        legacy full-window sigma01 IPV scale vs rolling local-window estimate scale
+        MUST be measured on the 12-case parity set and recorded as a caveat field;
+        no rescaling is permitted.
+      blind_support_gate:
+        min_candidate_state_cell_coverage: 0.70
+        below_threshold_policy: INELIGIBLE_ENVELOPE_UNAVAILABLE
+      builder_contract_sha256: TO_FREEZE_AT_G2
+      source_input_manifest_sha256: TO_FREEZE_AT_G2
+    rationale: pre_RQ009_era_envelope_form_from_PAPER001_lineage
+  - extension_id: X03
+    kind: envelope_plus_endpoint_bundle
+    overrides:
+      envelope: none_candidate_internal_reference
+      reference_series: median3_tau_equals_median_of_three_candidate_ipv_at_each_common_tau
+      endpoint_formula: D_sc_equals_trapz_abs_v_c_tau_minus_median3_tau_over_common_duration
+      primary_exceedance_formula_applicable: false
+      band_L_M_U: not_defined_for_this_cell
+    everything_else: identical_to_X00
+    rationale: quick_independent_study_plausibly_used_scene_local_reference
+    caveat: compositional_coupling_across_candidates_is_why_it_is_invalid_for_science
+  - extension_id: X04
+    kind: band_level_bundle
+    overrides:
+      quantiles: {lower: 0.10, center: 0.50, upper: 0.90}
+      envelope_id_suffix: B80
+      builder: identical_v1_human_sample_weights_tau_contract
+      envelope_gate: identical_v1_gates_applied_to_q10_q50_q90_half_widths
+    everything_else: identical_to_X00
+  - extension_id: X05
+    kind: band_level_bundle
+    overrides:
+      quantiles: {lower: 0.025, center: 0.50, upper: 0.975}
+      envelope_id_suffix: B95
+      builder: identical_v1_human_sample_weights_tau_contract
+      envelope_gate: identical_v1_gates_applied_to_q025_q50_q975_half_widths
+    everything_else: identical_to_X00
+
+removed_cells:
+  - former_id: X06_pooled_spearman
+    disposition: moved_to_forensic_registry_v1p2_as_FD01
+    reason: heterogeneous_statistic_cannot_join_rho_ws_maxT_family
+
+analysis_contract:
+  run_batch: same_rating_access_event_as_valid_discovery
+  ledger_partition: extension
+  statistic: rho_ws_identical_definition_to_valid_family
+  family: homogeneous_X01_to_X05_available_cells_only
+  multiplicity:
+    method: studentized_lower_tail_maxT_over_synchronized_within_scene_permutations
+    permutation_replicates: 9999
+    synchronization: identical_permutation_draws_across_cells_via_master_seed
+    master_seed: 20260711
+    rng: numpy_Generator_PCG64
+    p_value: one_plus_count_minT_b_le_minT_obs_over_B_plus_1
+  shrink_policy:
+    unavailable_cells: shrink_family_with_registered_reason
+    minimum_family_size_for_maxT: 3
+    below_minimum_policy: per_cell_descriptive_rows_only_no_family_p
+  common_scene_rule: per_cell_manifest_plus_pairwise_overlap_with_V04_reported
+  exclusivity_flag:
+    definition: >-
+      rho_ws_cell <= -0.30 AND V04_clean_rho_ws > -0.10 on the same scene set
+      AND within_arm_maxT_p < 0.05
+    claim_on_flag: SPEC_RECOVERY_CANDIDATE
+  allowed_claim: SPEC_RECOVERY_CANDIDATE_only
+  forbidden: [promotion, confirmation, rq010b_amendment,
+              post_hoc_addition_of_cells_after_any_rating_join]
+
+freeze_requirements:
+  - amendment_and_registries_pass_independent_review
+  - g0_closed_no_open_surfaces
+  - x02_mapping_and_builder_hashes_frozen_or_cell_marked_inaccessible
+  - checksums_registered

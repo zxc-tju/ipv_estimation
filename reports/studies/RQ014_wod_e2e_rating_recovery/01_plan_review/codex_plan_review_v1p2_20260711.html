@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RQ014 Plan v1.2 — Codex independent re-review</title>
+  <style>
+    :root { color-scheme: light; --ink:#18212b; --muted:#5b6775; --line:#d9e0e7;
+      --bg:#f5f7fa; --card:#fff; --red:#a61b1b; --amber:#9a5b00; --green:#176b3a; --blue:#174f8a; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.62 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { max-width:1060px; margin:0 auto; padding:40px 24px 64px; }
+    h1 { margin:0 0 8px; font-size:2rem; line-height:1.2; }
+    h2 { margin:34px 0 12px; font-size:1.25rem; }
+    p { margin:10px 0; }
+    .meta { color:var(--muted); }
+    .verdict { margin:24px 0; padding:20px 22px; border-left:6px solid var(--red); background:#fff1f1; border-radius:8px; }
+    .verdict strong { color:var(--red); font-size:1.2rem; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px; }
+    .card h3 { margin:0 0 8px; font-size:1rem; }
+    .pass { border-top:4px solid var(--green); }
+    .block { border-top:4px solid var(--red); }
+    .major { border-top:4px solid var(--amber); }
+    ul,ol { padding-left:1.35rem; }
+    li { margin:7px 0; }
+    code { background:#edf1f5; border-radius:4px; padding:1px 5px; font-size:.92em; }
+    a { color:var(--blue); }
+    .route { background:#eef5ff; border:1px solid #c9dcf5; border-radius:10px; padding:18px 22px; }
+    .footer { margin-top:34px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); }
+    @media (max-width:760px) { .grid { grid-template-columns:1fr; } main { padding:24px 16px 44px; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>RQ014 Plan v1.2 — independent re-review</h1>
+  <p class="meta">2026-07-11 · statistics + registry + forensic execution + lead adjudication</p>
+
+  <section class="verdict">
+    <strong>BLOCKED_PENDING_MAJOR_REVISION / NO_COMPUTE_AUTHORIZED</strong>
+    <p>v1.2 已修复主要概念结构，但取证闭环仍可能漏读、误读或在扫描面缺失时成功退出；重构后的
+    extension maxT、单格 flag 和 boundary calibration 也尚不能唯一执行。因此 G1 仍不能通过。</p>
+  </section>
+
+  <h2>已经通过的部分</h2>
+  <div class="grid">
+    <section class="card pass"><h3>测量与注册</h3><p>12 configs × 3 readouts；required cells 非循环；
+      <code>trailing_only</code>、FT01/FT04 字段已闭合。</p></section>
+    <section class="card pass"><h3>主张边界</h3><p>Tier C 已拆分 placebo / invariance；Tier P/I 比较器与标签已收窄；X06 已移至 FD01。</p></section>
+    <section class="card pass"><h3>治理护栏</h3><p>三个 registry 均为 <code>execution_authorized=false</code>；F05–F08/F10 仍明确 OPEN。</p></section>
+    <section class="card pass"><h3>静态完整性</h3><p>三个 YAML 可解析；v1.2 checksum manifest 8/8 匹配；三个 shell 脚本语法通过。</p></section>
+  </div>
+
+  <h2>阻断项</h2>
+  <div class="grid">
+    <section class="card block"><h3>1. FL05 parser</h3><p>漏掉长表 CSV/JSON，接受非数值 CSV，Markdown 取整行第一个数字；无法支持“全部统计量”主张。</p></section>
+    <section class="card block"><h3>2. G0 closure</h3><p>FL05 非原子、无逐文件 audit、无可执行 sbatch fallback；pass3/pass3b fail-open 且截断输出。</p></section>
+    <section class="card block"><h3>3. Extension inference</h3><p>studentization 与异支持同步未定义；omnibus p 被错误复用于 cell-specific flag。</p></section>
+    <section class="card block"><h3>4. Alpha + calibration</h3><p><code>p&lt;0.05</code> 与统一单侧 <code>alpha=0.025</code> 冲突；C/P boundary 与 NI power 缺联合 DGP。</p></section>
+    <section class="card block"><h3>5. X02 eligibility</h3><p>risk bins、WOD mapping、parity set 和尺度阈值未冻结；不可比 cell 仍能进入 maxT。</p></section>
+    <section class="card major"><h3>6. Remaining inferential contracts</h3><p>invariance 只是点估计阈值；P/I common set 与 Tier-I null calibration 尚未冻结。</p></section>
+  </div>
+
+  <h2>最短修复路径</h2>
+  <section class="route">
+    <ol>
+      <li>把 FL05 改成 fixture-tested、原子发布、逐文件审计，并提供 checksum-bound 的 <code>zxc-</code> CPU wrapper。</li>
+      <li>把 F05–F08 改成逐 surface、fail-closed、非截断的 closure procedure。</li>
+      <li>冻结 extension master scene IDs、精确 studentization、adjusted <code>p_k</code>、V04 paired contrast 和唯一 alpha。</li>
+      <li>冻结 Tier C/P joint boundary DGP、Tier-P NI power DGP、X02 尺度门、P/I common sets 与 Tier-I calibration。</li>
+      <li>发布 targeted v1.3、重算 checksums，再做一次独立复审；G1/G0/G2 全部关闭前不得 rating join。</li>
+    </ol>
+  </section>
+
+  <h2>证据</h2>
+  <ul>
+    <li>本地 mock 重现：long-form CSV/JSON 漏读、非数值 CSV 被标为 parsed、Markdown <code>4 Hz</code> 被误当 rho。</li>
+    <li>HPC pass3 在全部硬编码 HPC 路径不存在时仍返回 exit 0。</li>
+    <li>未读取评分、未执行 RQ014 compute、未连接 HPC、未提交 Slurm job。</li>
+    <li><a href="codex_plan_review_v1p2_20260711.md">完整 Markdown review</a></li>
+  </ul>
+
+  <p class="footer">Final status: BLOCKED_PENDING_MAJOR_REVISION / NO_COMPUTE_AUTHORIZED. Use v1.2 as the base for a targeted v1.3.</p>
+</main>
+</body>
+</html>

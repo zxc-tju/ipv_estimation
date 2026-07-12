@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RQ014 Plan v1 — WOD-E2E 评分与 IPV-envelope 偏离结果找回</title>
+  <style>
+    :root{--ink:#18212b;--muted:#5e6b78;--line:#d8dee5;--paper:#fff;--wash:#f4f7f9;--blue:#174a7e;--amber:#8a5a00;--red:#8f2d2d;--green:#1f6b45}
+    *{box-sizing:border-box} body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+    main{max-width:1080px;margin:36px auto;padding:44px 54px;background:var(--paper);box-shadow:0 8px 30px #1a26330f}
+    h1{font-size:32px;line-height:1.25;margin:0 0 10px} h2{font-size:22px;margin:34px 0 12px;border-bottom:1px solid var(--line);padding-bottom:7px}
+    h3{font-size:17px;margin:22px 0 8px}.meta{color:var(--muted);margin-bottom:24px}.status{display:inline-block;padding:3px 9px;border-radius:999px;background:#fff3d8;color:var(--amber);font-weight:700;font-size:13px}
+    .lead{font-size:19px;line-height:1.7;padding:19px 22px;background:#eef5fb;border-left:5px solid var(--blue)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}.card{padding:17px;border:1px solid var(--line);border-radius:8px;background:#fff}.card b{display:block;font-size:24px;color:var(--blue)}
+    table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid var(--line);padding:9px 10px;vertical-align:top}th{background:#f0f4f7;text-align:left}
+    code{background:#eef1f4;padding:2px 5px;border-radius:4px}pre{white-space:pre-wrap;background:#17212b;color:#eef5fb;padding:16px;border-radius:7px;overflow:auto}
+    .warn{padding:14px 17px;border:1px solid #eed7a7;background:#fff8e8}.stop{color:var(--red);font-weight:700}.ok{color:var(--green);font-weight:700}
+    a{color:var(--blue)}ul,ol{padding-left:23px}.footer{margin-top:38px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+    @media(max-width:760px){main{margin:0;padding:25px 20px}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body><main>
+  <h1>RQ014 Plan v1</h1>
+  <div class="meta">WOD-E2E 人类评分与 rolling IPV-envelope 偏离结果找回 · 2026-07-10 · <span class="status">DRAFT FOR INDEPENDENT REVIEW</span></div>
+  <p class="lead">v1 把任务从“宽网格找显著”改造成两个隔离流程：用 12 个非别名、物理时间一致的 valid configs 找回 rate/window/sequence/horizon 设置；用小型 one-factor forensic catalog 检验旧 pilot 与已知缺陷。当前只完成计划与注册表，未授权计算、评分 join 或 HPC 作业。</p>
+
+  <div class="grid">
+    <div class="card"><b>12</b>non-alias core configs</div>
+    <div class="card"><b>36</b>固定 readout rows</div>
+    <div class="card"><b>1</b>最多晋级的 recipe</div>
+  </div>
+
+  <h2>核心设计</h2>
+  <table>
+    <tr><th>组件</th><th>v1 冻结方案</th></tr>
+    <tr><td>配置轴</td><td>4/10 Hz；1.0 s 的 future/history alias 合并为 trailing-only，2.5 s 保留 future-only/history+future；各含 H2/HMAX5</td></tr>
+    <tr><td>分析单位</td><td>candidate；segment 为 group/resampling unit；三候选 complete-case</td></tr>
+    <tr><td>Primary endpoint</td><td>相对 time-indexed、同尺度 InterHub pure HV-HV central-90 envelope 的 asymmetric normalized exceedance，按物理时间积分并除以 common duration</td></tr>
+    <tr><td>Primary statistic</td><td>场景内 rating/deviation midrank correlation，再对 informative scenes 等权平均：<code>rho_WS</code></td></tr>
+    <tr><td>Selection</td><td>rating-blind coverage/power → deterministic discovery promotion → 最多一个 recipe</td></tr>
+    <tr><td>Confirmation</td><td>one-sided within-scene permutation + scene bootstrap；association 与 IPV-specificity 分层检验</td></tr>
+  </table>
+
+  <h2>最重要的技术修正</h2>
+  <ol>
+    <li><b>2.5 s 是最大回看上限。</b> future-only 的 W=2.5/H2 使用 1–2 s expanding prefix，不伪称已经积累完整 2.5 s。</li>
+    <li><b>Envelope 必须同尺度。</b> 旧单一 path-type band 不能覆盖所有 rate/window recipes；v1 使用 path type × rate × window × sequence × tau 的 time-indexed envelope。</li>
+    <li><b>Common support 同步。</b> 任一候选在某时刻无效，该时刻从同场三候选同步删除；counterpart 禁止外推。</li>
+    <li><b>Scientific 与 forensic 分离。</b> dt mismatch、自参考、概率域 underflow、CV 外推均不能进入 valid promotion。</li>
+  </ol>
+
+  <h2>功效与结果找回的关系</h2>
+  <div class="warn">当前已知 N=75/98/47 在 50/50 后，针对 |rho|=0.30 的乐观 confirmation power 约为 0.44/0.56/0.28。v1 因此先做完整 pipeline simulation。若没有 split 达到 80% power，仍允许运行冻结的 specification-recovery leaderboard，但总 scientific verdict 必须是 <code>INCONCLUSIVE_LOW_POWER_OR_COVERAGE</code>，不得把它称为独立确认，也不得用阴性加强 RQ010B null。</div>
+
+  <h2>Gate flow</h2>
+  <pre>G0 取证闭环
+  → G1 v1 + registries 独立复审
+  → G2 inputs / adapter / environment / anchors / fixtures
+  → G2P blind coverage + pipeline power
+  → G3 discovery（确定性、最多一个 recipe）
+  → G4 same-dataset internal locked confirmation
+  → G5 red team + clean-room verifier + scoped decision</pre>
+  <p><span class="stop">当前停在 G1 draft。</span> G0 仍有 6 月 29 日 pilot 中间目录、sibling Git、Obsidian 与 Cowork 面需要关闭或正式标为不可达。</p>
+
+  <h2>执行模型</h2>
+  <p>高级 lead 只负责 estimand、registry、gate、异常解释和结论边界；低成本 workers 执行索引、hash、cache build、Slurm、固定统计和完整 ledger；独立 validator 只按书面 spec 重实现。第一轮固定 CPU-only，HPC durable root 为 <code>/share/home/u25310231/ZXC/RQ014_recovery/</code>，新 job name 必须以 <code>zxc-</code> 开头。</p>
+
+  <h2>Verdict boundaries</h2>
+  <p>Scientific verdict 从低到高为：<code>INCONCLUSIVE_LOW_POWER_OR_COVERAGE</code>、<code>NOT_RECOVERED_WITHIN_FROZEN_VALID_FAMILY</code>、<code>DISCOVERY_ONLY_OVERFIT</code>、<code>VALID_INTERNAL_CONFIRMATION_ASSOCIATION</code>、<code>VALID_INTERNAL_CONFIRMATION_IPV_SPECIFIC</code>。Forensic verdict 独立，不共享 promotion 或 alpha。</p>
+
+  <h2>Canonical artifacts</h2>
+  <ul>
+    <li><a href="RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md">完整 v1 计划（Markdown）</a></li>
+    <li><a href="RQ014_config_space_v1.yaml">12-config valid registry（YAML）</a></li>
+    <li><a href="RQ014_forensic_registry_v1.yaml">forensic closure 与 one-factor catalog（YAML）</a></li>
+    <li><a href="../studies/RQ014_wod_e2e_rating_recovery/01_plan_review/codex_plan_review_v0_20260710.html">v0 independent review</a></li>
+  </ul>
+
+  <p class="footer">本页是读取入口；完整、规范性内容以 Markdown 与两个 YAML 的冻结 SHA 为准。</p>
+</main></body></html>

@@ -7,5 +7,93 @@ path and SHA-256, RQ/operation authorization, and input paths.  Generated code,
 logs, manifests, and outputs live under one immutable
 `work_dirs/<RQ>/<run_id>/` tree.
 
-RQ014 has no authorized operations.  Infrastructure-only preflight and parity
-fixtures are registered under `INFRA`; they cannot perform rating joins.
+For RQ014, the only supported operator invocation is:
+
+```sh
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" d8036336c354b202f388c5fd9dbc05a80a1e8292a574cc4c47400d0a772d7a1d /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+```
+
+This single clean-environment command is the authorization boundary rather
+than a convenience example: it locks inherited fd8, opens the exact managed
+wrapper as fd9, hashes that retained descriptor, and executes the same fd9
+instead of reopening the wrapper path. The wrapper may only inherit these two
+descriptors; it cannot create a missing capability itself. Before either RQ014
+dependency is preloaded, the launcher checks both exact `/proc/self/fd` targets,
+regular non-symlink path identities, and descriptor/path device, inode and mode.
+This is a local machine provenance gate, not a cryptographic secret against
+deliberate same-account descriptor emulation; the reviewed clean-bootstrap hash
+remains the wrapper byte trust anchor.
+A direct caller-supplied `--rq014-only`, a plain boolean, or an arbitrary object
+cannot authorize RQ014 validation/submission; missing or mismatched descriptors
+are rejected before `materialize_registry.py` or `preflight.py` is loaded.
+A shell script cannot undo a dynamic-loader hook that ran before the script
+started. The wrapper therefore also rejects `HPC_SOCIALITY_ROOT`,
+`BASH_ENV`, `ENV`, `LD_PRELOAD`, `PYTHONHOME`, `PYTHONPATH`, and every inherited
+`SBATCH_*` variable. It uses the fixed checkout and managed interpreter, starts
+Python with `-I -S -B`, submits with an absolute `sbatch --export=NIL`, and the
+generated job enters the Python entrypoint through a second empty environment.
+`NIL` is intentional: Slurm's `NONE` mode can implicitly reconstruct the user
+login environment, while `NIL` forbids user-variable export. Before either the
+launcher or job starts managed Python, the runtime gate verifies the pinned
+launcher, preflight and registry-materializer bytes, stdlib checksum manifest, exact regular-file
+count and total size, zero stdlib symlinks, the absent `python39.zip`, and the
+complete pinned native-library closure including exact loader links and final
+regular-file digests.
+
+Both isolated Python stages create `scripts` and `scripts.rq014` with empty
+`__path__`. They explicitly preload the exact closed-snapshot
+`materialize_registry.py` with `spec_from_file_location` as
+`scripts.rq014.materialize_registry` before loading preflight and the fixed
+entrypoint; ordinary path imports and local shadows remain unavailable.
+
+RQ014 v1.5 initially allowlists only `rq014_g2_declassification_export`. It
+converts eight exact score-omitting Phase-1 bundles plus structural and
+counterpart tables into the canonical score-stripped CSV/JSON bundle. The
+launcher passes every reviewed role/size/SHA-256, and the exporter opens each
+source once without following links, verifies and parses only the retained
+descriptor bytes, then records that same digest; raw
+TFRecords and rating tables are forbidden. `rq014_g2_contract_preflight` remains
+conditionally registered in the reviewed contract but centrally denied until
+that export has a validated completion receipt and `DONE.json`. Both operations
+require a checksum-bound `FORMAL_G1_PASS`, the scoped PI decision, and the exact
+published `origin/main` commit. They also bind the exact reviewed source
+inventory and `managed_python_environment_v3.json`; an arbitrary self-reported
+source or environment hash is rejected. Contract preflight additionally
+requires the prior export PASS receipt and `DONE.json`.
+Adding preflight to the central allowlist changes a reviewed authority byte and
+therefore requires a rebuilt candidate manifest, fresh statistics and execution
+reviews, a new formal G1 artifact and final bundle; the already reviewed
+execution-contract status does not change. The two passing review payloads must
+also declare different nonempty `reviewer_agent` identities.
+
+RQ014 does not create a Git worktree. The launcher copies only regular files
+registered by the final contract checksum bundle into a closed code snapshot.
+Every snapshot byte is read directly from the declared published Git commit
+tree and checked against the registered digest; the worktree is never a source.
+The job checks the checksum bundle file's own pinned digest and then verifies
+every registered byte. Repository hooks, fsmonitor commands, checkout filters,
+dirty/untracked worktree bytes, and unregistered commit files therefore cannot
+enter the execution tree.
+
+Validate-only is side-effect free: it emits the exact commit-blob
+`code_snapshot_files` plan, job/resource/thread plan and pinned runtime metadata.
+It does not create a snapshot receipt, run root or rendered sbatch script. Those
+artifacts, including both concrete `--export=NIL` controls, are created and
+revalidated only inside the authorized submit path.
+
+The primary recovery route is defined in `reports/plans/RQ014_recovery_lane_v2.json`.
+Resource pilot, the 960-cell rating-blind feature build, the 2,880-row full-data
+rating recovery screen, clean replay, optional power/stability, and every other
+rating-bearing operation remain centrally unauthorized.
+
+Schema v2 is fixed by `research_run_spec_v2.schema.json`, while the managed
+standard-library interpreter receipt is fixed by
+`rq014_managed_python_environment_v3.schema.json`; the checked-in RQ014
+template is intentionally non-executable until every placeholder is replaced
+with an exact path/hash in an immutable managed manifest area. The final
+production spec must be a direct child of
+`/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/`, be a
+regular non-symlink read-only file, and be written once as canonical JSON
+(sorted keys, compact separators, one trailing newline). The launcher reads it
+through one no-follow descriptor, retains those exact bytes through validation
+and sealing, and never reopens the spec path.

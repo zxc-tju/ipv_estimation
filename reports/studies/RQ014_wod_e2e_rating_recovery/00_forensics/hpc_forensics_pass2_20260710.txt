@@ -1,0 +1,126 @@
+=== RQ014 HPC pass2 2026年 07月 10日 星期五 20:50:08 CST ===
+== [9] Home top-level (anything predating June 2026 => candidate) ==
+总用量 2105047
+drwxrwxr-x   8 u25310231 u25310231       8192 2026-07-10 .codex
+-rw-------   1 u25310231 u25310231      27626 2026-07-10 .bash_history
+drwxr-xr-x 658 root      root            8192 2026-07-10 ..
+drwxr-x---   5 u25310231 u25310231       8192 2026-07-10 .vscode-server
+drwx------  32 u25310231 u25310231       8192 2026-07-10 .
+drwxrwxr-x   9 u25310231 u25310231       8192 2026-07-09 ZZ
+-rw-rw-r--   1 u25310231 u25310231        222 2026-07-09 .wget-hsts
+drwxrwxrwx  58 u25310231 u25310231       8192 2026-07-09 XN
+-rw-rw-r--   1 u25310231 u25310231   54255765 2026-07-08 cosmos_default_sparse9_videos.zip
+-rw-rw-r--   1 u25310231 u25310231 2101049898 2026-07-08 interhub_sparse9_real_full.zip
+drwx------   6 u25310231 u25310231       8192 2026-07-07 .config
+drwxrwxr-x  16 u25310231 u25310231       8192 2026-07-05 .cache
+-rw-r--r--   1 u25310231 u25310231        969 2026-07-04 .bashrc
+lrwxrwxr-x   1 u25310231 u25310231         34 2026-07-04 chi_code -> /share/home/u25310231/JXY/chi_code
+lrwxrwxr-x   1 u25310231 u25310231         36 2026-07-04 chi_deploy -> /share/home/u25310231/JXY/chi_deploy
+lrwxrwxr-x   1 u25310231 u25310231         42 2026-07-04 chi_train_output -> /share/home/u25310231/JXY/chi_train_output
+drwxrwxr-x  10 u25310231 u25310231       8192 2026-07-03 JXY
+drwxrwxr-x  14 u25310231 u25310231       8192 2026-06-30 CJE
+-rw-rw-r--   1 u25310231 u25310231          0 2026-06-30 nul
+drwxrwxr-x   3 u25310231 u25310231       4096 2026-06-29 .modelscope
+drwxrwxr-x   5 u25310231 u25310231       8192 2026-06-29 .cursor-server
+-rw-rw-r--   1 u25310231 u25310231        187 2026-06-28 cuda_check.py
+drwxrwxr-x   7 u25310231 u25310231       8192 2026-06-28 ZXC
+drwxrwxr-x   3 u25310231 u25310231       4096 2026-06-27 interhub_nuplan_ego
+drwxrwxr-x   3 u25310231 u25310231       4096 2026-06-25 carlaCache
+drwx------   3 u25310231 u25310231       8192 2026-06-25 .singularity
+drwxrwsr-x   4 u25310231 u25310231       8192 2026-06-25 .conda
+drwx------   2 u25310231 u25310231       8192 2026-06-24 .ssh
+drwxrwxr-x   5 u25310231 u25310231       8192 2026-06-24 .antigravity-ide-server
+drwxrwxr-x   3 u25310231 u25310231       4096 2026-06-11 KRX
+drwxrwxr-x   4 u25310231 u25310231       8192 2026-06-11 HBY
+drwxrwxr-x   5 u25310231 u25310231       8192 2026-06-11 .claude
+-rw-------   1 u25310231 u25310231        231 2026-06-11 .claude.json
+drwxrwxr-x   2 u25310231 u25310231       4096 2026-06-10 .securecoder
+drwxrwxr-x   4 u25310231 u25310231       8192 2026-06-10 .local
+drwxrwxr-x   4 u25310231 u25310231       8192 2026-06-10 .gemini
+drwx------   3 u25310231 u25310231       4096 2026-04-14 .copilot
+drwxrwxr-x   4 u25310231 u25310231       8192 2026-04-13 .cursor
+drwxrwxr-x   3 u25310231 u25310231       8192 2026-04-08 .antigravity-server
+drwxrwxr-x   3 u25310231 u25310231       4096 2026-03-30 .triton
+-rw-rw-r--   1 u25310231 u25310231         54 2025-11-01 .gitconfig
+drwxr-xr-x   3 u25310231 u25310231       8192 2025-11-01 .vnc
+drwxrwxr-x   2 u25310231 u25310231       8192 2025-10-23 .keras
+drwx------   3 u25310231 u25310231       4096 2025-10-19 .nv
+-rw-------   1 u25310231 u25310231         16 2025-10-17 .esd_auth
+-rw-r--r--   1 u25310231 u25310231         18 2025-10-16 .bash_logout
+-rw-r--r--   1 u25310231 u25310231        141 2025-10-16 .bash_profile
+== [10] Home dirs NOT under /ZXC, oldest first (maxdepth 2) ==
+2025-10-19  /share/home/u25310231/JXY/metadrive_main
+2025-10-22  /share/home/u25310231/CJE/Sa2VA-4B
+2025-10-22  /share/home/u25310231/CJE/Senna
+2025-10-22  /share/home/u25310231/JXY/Betop_private-main
+2025-10-23  /share/home/u25310231/CJE/sixview_nus
+2025-10-23  /share/home/u25310231/CJE/testdemo
+2025-10-25  /share/home/u25310231/CJE/flash-attention
+2025-10-25  /share/home/u25310231/CJE/Sa2VA-8B
+2025-10-28  /share/home/u25310231/CJE/Sa2VA-Qwen2_5-VL-7B
+2025-10-29  /share/home/u25310231/CJE/pictures
+2025-11-06  /share/home/u25310231/CJE/Sa2VA
+2025-12-08  /share/home/u25310231/XN/assets
+2025-12-08  /share/home/u25310231/XN/cosmos-drive-dreams-toolkits
+2026-03-22  /share/home/u25310231/XN/checkpoints
+2026-03-24  /share/home/u25310231/XN/.cache
+2026-03-27  /share/home/u25310231/XN/outputs
+2026-03-27  /share/home/u25310231/XN/.venv
+2026-04-14  /share/home/u25310231/CJE/qwen8b
+2026-06-10  /share/home/u25310231/ZZ/AIDE_Dataset
+2026-06-11  /share/home/u25310231/HBY
+2026-06-11  /share/home/u25310231/HBY/CrowdPose
+2026-06-11  /share/home/u25310231/KRX
+2026-06-11  /share/home/u25310231/KRX/KMU-FED_Classes
+2026-06-23  /share/home/u25310231/XN/dm_hdmap_smoke_work
+2026-06-24  /share/home/u25310231/JXY/carla_cogrl_docs
+2026-06-24  /share/home/u25310231/XN/Cosmos-Drive-Dreams-main
+2026-06-24  /share/home/u25310231/XN/dm_hdmap_batch_work
+2026-06-25  /share/home/u25310231/carlaCache
+2026-06-25  /share/home/u25310231/carlaCache/0.9.15
+2026-06-25  /share/home/u25310231/JXY/carla
+2026-06-25  /share/home/u25310231/JXY/hpc_jobs
+2026-06-26  /share/home/u25310231/XN/dm_sensitivity_work
+2026-06-27  /share/home/u25310231/interhub_nuplan_ego
+2026-06-29  /share/home/u25310231/XN/dm_optuna_work
+2026-06-29  /share/home/u25310231/XN/sensitivity_plots
+2026-06-29  /share/home/u25310231/XN/wd_optuna_work
+2026-06-29  /share/home/u25310231/XN/wd_sweep_work
+2026-06-30  /share/home/u25310231/CJE
+2026-06-30  /share/home/u25310231/CJE/Qwen3-VL-30B-A3B-Instruct
+2026-06-30  /share/home/u25310231/XN/cosmos_fg_train
+2026-06-30  /share/home/u25310231/XN/sweep_export
+2026-07-01  /share/home/u25310231/JXY/chi_code
+2026-07-01  /share/home/u25310231/XN/sensitivity_sweep
+2026-07-03  /share/home/u25310231/JXY
+2026-07-03  /share/home/u25310231/JXY/chi_train_output
+2026-07-03  /share/home/u25310231/XN/dm_sweep_work
+2026-07-03  /share/home/u25310231/XN/dm_sweep_work_multi
+2026-07-04  /share/home/u25310231/JXY/chi_deploy
+2026-07-05  /share/home/u25310231/CJE/EC
+2026-07-05  /share/home/u25310231/XN/wd_fg_sweep_work_multi
+2026-07-05  /share/home/u25310231/XN/wd_sweep_work_multi
+2026-07-06  /share/home/u25310231/XN/repaired_inputs
+2026-07-06  /share/home/u25310231/XN/repaired_real_root
+2026-07-06  /share/home/u25310231/XN/sensitivity_sweep_multi
+2026-07-06  /share/home/u25310231/XN/wd_multiview_coupling_work_multi
+2026-07-07  /share/home/u25310231/XN/dm_expanded_screening_work
+2026-07-07  /share/home/u25310231/XN/output
+2026-07-07  /share/home/u25310231/XN/perception
+2026-07-07  /share/home/u25310231/XN/wd_param_combo_work
+2026-07-07  /share/home/u25310231/XN/worldbench
+== [11] bash_history size + any wod/ipv/waymo lines (loose) ==
+502 /share/home/u25310231/.bash_history
+== [12] rating/preference-named files, home-wide but bounded depth ==
+2026-06-29        13357  /share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/zxc-rq010b-ipv-rating_1746009.out
+2026-06-29            0  /share/home/u25310231/ZXC/RQ010B_wod_e2e/logs/zxc-rq010b-ipv-rating_1746009.err
+2026-06-29         8192  /share/home/u25310231/ZXC/RQ010B_wod_e2e/code/rq010b_ipv_rating_pilot_20260629
+2026-06-30         1422  /share/home/u25310231/ZXC/RQ010B_wod_e2e/tmp/probe_ratings2.py
+2026-06-30         2007  /share/home/u25310231/ZXC/RQ010B_wod_e2e/tmp/probe_ratings.py
+2026-06-29         4096  /share/home/u25310231/ZXC/RQ010B_wod_e2e/tmp/rq010b_ipv_rating_prepare_smoke
+2026-06-29         8192  /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_fixed_20260629T124417
+2026-06-29         8192  /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_routefix_20260629T124941
+2026-06-29         8192  /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_20260629
+2026-06-29         8192  /share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_ipv_rating_pilot_dtfix_20260629T123954
+2026-07-03         8192  /share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase3_preference_test
+== [13] preference_score in code, /ZXC only, excluding known RQ010B code dirs ==

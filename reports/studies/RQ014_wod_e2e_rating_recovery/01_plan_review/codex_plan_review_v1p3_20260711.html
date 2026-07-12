@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RQ014 Plan v1.3 — targeted independent design review</title>
+  <style>
+    :root { color-scheme:light; --ink:#17212b; --muted:#5d6977; --line:#d9e1e8;
+      --bg:#f4f7f9; --card:#fff; --green:#176b3a; --amber:#8a5700; --blue:#174f8a; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.64 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { max-width:1080px; margin:0 auto; padding:40px 24px 64px; }
+    h1 { margin:0 0 8px; font-size:2rem; line-height:1.2; }
+    h2 { margin:34px 0 12px; font-size:1.25rem; }
+    h3 { margin:0 0 8px; font-size:1rem; }
+    p { margin:10px 0; }
+    code { background:#edf1f4; border-radius:4px; padding:1px 5px; font-size:.92em; }
+    a { color:var(--blue); }
+    .meta,.foot { color:var(--muted); }
+    .verdict { margin:24px 0; padding:20px 22px; border-left:6px solid var(--green);
+      background:#edf9f1; border-radius:9px; }
+    .verdict strong { color:var(--green); font-size:1.13rem; }
+    .warning { background:#fff7e8; border:1px solid #efd4a4; border-radius:10px; padding:18px 21px; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:18px; }
+    .card.pass { border-top:4px solid var(--green); }
+    .card.boundary { border-top:4px solid var(--amber); }
+    table { width:100%; border-collapse:collapse; background:var(--card); }
+    th,td { padding:10px 12px; text-align:left; vertical-align:top; border:1px solid var(--line); }
+    th { background:#edf2f6; }
+    ul { padding-left:1.35rem; }
+    li { margin:7px 0; }
+    .foot { margin-top:34px; padding-top:18px; border-top:1px solid var(--line); }
+    @media (max-width:760px) { .grid { grid-template-columns:1fr; } main { padding:24px 16px 44px; }
+      table { display:block; overflow-x:auto; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>RQ014 Plan v1.3 — targeted independent design review</h1>
+  <p class="meta">2026-07-11 · statistics review + execution red team + cutoff-provenance review + lead adjudication</p>
+
+  <section class="verdict">
+    <strong>PASS_AS_NONEXECUTABLE_DESIGN_CONTRACT</strong>
+    <p><code>G0_OPEN / G1_NOT_REACHED / NO_EXECUTION_AUTHORIZED</code></p>
+    <p>v1.3 可以取代 v1.2 作为当前方案，但不等于 formal G1 PASS，也没有恢复、生成或确认任何实验结果。</p>
+  </section>
+
+  <h2>本轮收敛结果</h2>
+  <div class="grid">
+    <section class="card pass"><h3>FL05</h3><p>多格式安全解析、逐文件 audit、immutable generation、atomic <code>CURRENT</code>，以及 checksum-bound CPU Slurm fallback。</p></section>
+    <section class="card pass"><h3>F05–F08 execution</h3><p>完整 byte-stream、O_NOFOLLOW/containment/identity、逐 surface fail-closed status 与固定 Python provenance。</p></section>
+    <section class="card pass"><h3>Extension + specificity</h3><p>同一 <code>M_k</code>、cell-adjusted minT、V04 paired contrast、frozen C/P/I DGP、fixed denominators 与 resource ceilings。</p></section>
+    <section class="card pass"><h3>Governance</h3><p>八项 authorization 与逐 operation 逻辑 AND 已冻结；rating join、HPC 与 compute 继续全部关闭。</p></section>
+  </div>
+
+  <h2>不可放宽的截止时间边界</h2>
+  <section class="warning">
+    <p>Git commit 日期可以事后回填，因此 Git hash 只证明内容一致，不能证明 F07/F08 的整份扫描范围在
+    2026-07-10 前已经冻结。v1.3 没有生产 TSA profile，也没有已知的截止日前 whole-inventory receipt。</p>
+    <p>所以 F07/F08 即使出现候选线索，也必须保持
+    <code>INACCESSIBLE_NO_PRE_CUTOFF_SCOPE_RECEIPT</code>、<code>complete_scan=false</code> 和非零退出；
+    不得写成阴性扫描。未来启用 receipt 需要新的 checksum-bound amendment 与独立复审。</p>
+  </section>
+
+  <h2>验证证据</h2>
+  <table>
+    <thead><tr><th>检查</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>Targeted fixtures/contracts</td><td><code>42 passed</code></td></tr>
+      <tr><td>Shell / Python</td><td>五个 wrappers 通过 <code>bash -n</code>；indexer + tests 通过 <code>py_compile</code></td></tr>
+      <tr><td>Registries</td><td>三个 YAML 可解析、无 duplicate keys；八项 scopes 全为 false</td></tr>
+      <tr><td>Packaging</td><td>14/14 checksum entries verified</td></tr>
+      <tr><td>External state</td><td>未读取 ratings、真实 HPC 或 OneDrive；未提交 Slurm job</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Gate 状态</h2>
+  <div class="grid">
+    <section class="card boundary"><h3>G0 · OPEN</h3><p>F05–F08/F10 真实 surface 尚未由授权只读取证关闭。</p></section>
+    <section class="card boundary"><h3>G1 · NOT REACHED</h3><p>base plan 先要求 G0 terminal closure；本轮是 targeted design review。</p></section>
+    <section class="card boundary"><h3>G2/G2P · 未开始</h3><p>code/data/env hashes、ratings-blind build 与 power gate 均未运行。</p></section>
+    <section class="card boundary"><h3>Rating/compute · 禁止</h3><p>所有八项授权为 false，不得相互替代。</p></section>
+  </div>
+
+  <h2>产物</h2>
+  <ul>
+    <li><a href="../../../plans/RQ014_plan_v1p3_amendment_20260711.md">v1.3 amendment</a></li>
+    <li><a href="../../../plans/RQ014_plan_v1p3_checksums_20260711.sha256">14-file checksum manifest</a></li>
+    <li><a href="codex_plan_review_v1p3_20260711.md">完整 Markdown review</a></li>
+  </ul>
+
+  <p class="foot">Final boundary: v1.3 passes only as a non-executable design contract. G0 remains open; no empirical RQ014 claim exists.</p>
+</main>
+</body>
+</html>

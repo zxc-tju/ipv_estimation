@@ -1,0 +1,308 @@
+schema_version: rq014-valid-scientific-v1p2
+registry_status: PROPOSED_NOT_EXECUTABLE
+registry_kind: valid_scientific
+created_date: '2026-07-11'
+supersedes: reports/plans/RQ014_config_space_v1p1.yaml
+canonical_plan: reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md
+amendment: reports/plans/RQ014_plan_v1p2_amendment_20260711.md
+execution_authorized: false
+unit: candidate
+group: segment
+primary_scene_rule: exactly_three_complete_candidates
+two_candidate_scenes: support_only
+
+alpha_contract:
+  nominal_one_sided_alpha_all_tests: 0.025
+  interval_convention: one_sided_97p5_lower_or_upper_bounds
+  g2_empirical_size_or_fwer_tolerance: 0.03
+  note: single_coherent_contract_no_unexplained_conservatism
+
+fixed_estimator:
+  solver_mode: exact
+  sigma: 0.1
+  ipv_grid_multipliers_pi_over_8: [-3, -2, -1, 0, 1, 2, 3]
+  reliability_domain: stable_log
+  dt_must_equal_inverse_rate: true
+  estimator_internal_integration_dt_s: equal_to_input_grid_dt_by_contract
+  reference: wod_route_based_constant_curvature
+  smoothing: none
+  core_tree_sha: TO_FREEZE_AT_G2
+  wod_adapter_sha256: TO_FREEZE_AT_G2
+  preprocessing_contract_sha256: TO_FREEZE_AT_G2
+  reference_builder_sha256: TO_FREEZE_AT_G2
+
+counterpart:
+  source: selected_counterpart_tracks_real_observed
+  shared_across_three_candidates: true
+  rating_blind: true
+  interpolation: inside_observed_support_only
+  extrapolation: forbidden
+
+sequence_contract:
+  tstar_s: 0.0
+  future_only_window: '[max(0,tau-W),tau]'
+  history_future_window: '[tau-W,tau]'
+  trailing_only_window: '[max(0,tau-W),tau]'
+  trailing_only_note: >-
+    trailing_only is the canonical name of the W=1.0 alias class where future_only and
+    history_future coincide for all tau>=1.0; execution rule identical to future_only.
+  concat_rule: history_timestamps_lt_0_plus_candidate_timestamps_ge_0
+  evaluation_start_s: 1.0
+  local_window_estimator_rule:
+    local_span_future_only_s: min_W_and_tau
+    local_span_history_future_s: W
+    local_span_trailing_only_s: min_W_and_tau
+    n_intervals: round_local_span_s_times_rate_hz
+    n_points: n_intervals_plus_1
+    history_window_parameter: n_intervals
+    min_observation_parameter: n_intervals
+    output_row_used: terminal_row_at_n_intervals
+  golden_local_windows:
+    4hz_1s: {n_intervals: 4, n_points: 5}
+    4hz_2p5s: {n_intervals: 10, n_points: 11}
+    10hz_1s: {n_intervals: 10, n_points: 11}
+    10hz_2p5s: {n_intervals: 25, n_points: 26}
+  history_future_required_past_s_at_first_evaluation: max_0_and_W_minus_1s
+  note: trailing_window_s_is_a_maximum_cap_and_future_only_uses_an_expanding_prefix_before_W
+
+horizons:
+  H2:
+    start_s: 1.0
+    end_s: 2.0
+    require_common_end_ge_s: 2.0
+  HMAX5:
+    start_s: 1.0
+    end_rule: min_5s_and_three_candidates_and_counterpart_common_end
+    require_common_end_ge_s: 2.0
+
+common_support:
+  member_set: [candidate_A, candidate_B, candidate_C, shared_counterpart]
+  interpolation_inside_observed_support: allowed
+  extrapolation: forbidden
+  missing_candidate_policy: synchronously_remove_time_for_all_three
+  minimum_grid_coverage_fraction: 0.80
+  maximum_internal_gap_steps: 2
+  time_weighting: trapezoidal_physical_seconds
+
+# R3: non-circular scene eligibility (replaces "primary-eligible")
+pre_envelope_trajectory_eligible:
+  definition:
+    - exactly_three_complete_candidates
+    - frozen_path_type_assigned
+    - solver_finite_ipv_on_scheduled_tau_grid_coverage_ge_0.80_max_gap_le_2dt
+    - shared_counterpart_common_support_holds
+    - no_envelope_queried
+    - no_rating_read
+  role: sole_input_to_required_envelope_cell_materialization
+
+envelope:
+  source: interhub_pure_hv_hv
+  form: time_indexed_path_type_central_90
+  path_types: [CP, HO, MP, F]
+  quantiles: {lower: 0.05, center: 0.50, upper: 0.95}
+  matched_fields:
+    - rate_hz
+    - dt_s
+    - trailing_window_s
+    - history_window_steps
+    - sequence_mode
+    - tau
+    - estimator_tree
+    - adapter
+    - solver
+    - ipv_grid
+    - preprocessing
+  human_episode_weighting: equal_total_weight_per_episode_within_path_type_tau
+  rating_fields_allowed: false
+  builder_contract:
+    contract_sha256: TO_FREEZE_AT_G2
+    source_input_manifest_sha256: TO_FREEZE_AT_G2
+    path_type_mapping_sha256: TO_FREEZE_AT_G2
+    episode_eligibility: pure_hv_hv_finite_positions_frozen_path_type_mapping_complete_local_span
+    maximum_source_gap_steps: 2
+    pseudo_anchor_rule: every_target_rate_grid_timestamp_with_complete_local_window_inside_observed_support
+    terminal_weight_rule: one_over_number_of_eligible_terminals_for_episode_in_path_type_tau_cell
+    weighted_quantile_rule: left_continuous_inverse_of_weighted_ecdf
+    stable_sort_keys: [ipv_value, episode_id, terminal_timestamp]
+    bootstrap_seed: 20260710
+    bootstrap_rng: numpy_Generator_PCG64
+    bootstrap_unit: episode_within_path_type
+    half_width_relative_se: bootstrap_sample_sd_divided_by_original_half_width
+  envelope_gate:
+    min_independent_human_episodes_per_path_type_tau: 50
+    require_q05_lt_q50_lt_q95: true
+    numerical_epsilon_rad: 1.0e-6
+    max_bootstrap_relative_se_of_each_half_width: 0.25
+    bootstrap_clusters: 1000
+    required_cell_rule:
+      definition: union_of_scheduled_path_type_tau_cells_over_pre_envelope_trajectory_eligible_scenes
+      materialization: required_envelope_cells.csv_with_sha256_during_blind_feature_build
+      frozen_after_materialization: true
+      required_cell_failure_policy: mark_entire_config_ineligible_before_rating_join
+      non_required_cell_failure_policy: record_only_no_effect_on_config_eligibility
+
+readouts:
+  - readout_id: mean_normalized_exceedance_90
+    role: primary
+    formula: asymmetric_exceedance_integral_divided_by_common_duration
+  - readout_id: frac_outside_90
+    role: support_only
+    formula: time_weighted_fraction_e_gt_0
+  - readout_id: max_normalized_exceedance_90
+    role: support_only
+    formula: maximum_e_on_common_support
+
+blind_power_gate:
+  target_rho_ws: -0.30
+  one_sided_alpha: 0.025
+  minimum_pipeline_power: 0.80
+  simulations_per_candidate_split: 20000
+  candidate_discovery_fractions: [0.50, 0.33, 0.25, 0.20]
+  split_allocation:
+    universe: all_segment_ids_in_frozen_rated479_manifest
+    stratum: scenario_cluster
+    missing_stratum_value: UNMAPPED
+    total_discovery_count: round_half_up_fraction_times_total_n
+    per_stratum_initial_count: floor_fraction_times_stratum_n
+    remainder_rule: largest_fractional_remainder_then_stratum_id_lexicographic
+    within_stratum_order: sha256_RQ014_v1_20260710_plus_segment_id
+    discovery_fold_rule: global_sha256_RQ014_v1_fold_plus_segment_id_order_round_robin_5
+  simulation_dgp:
+    implant_each_nonalias_config_separately: true
+    preserve_actual_multiconfig_deviations_missingness_and_correlations: true
+    latent_utility: U_sc_equals_minus_beta_j_times_Q_jsc_plus_standard_normal_error
+    beta_calibration: separate_monte_carlo_bisection_for_each_config_and_each_tie_scenario_to_expected_rho_ws_minus_0p30
+    calibration_tolerance: 0.005
+    tie_scenarios: [0.00, 0.20, 0.40]
+    tie_operator: select_scenes_by_frozen_rng_and_average_the_closest_latent_utility_pair_midranks
+    success_rule: promoted_config_equals_implanted_config_or_blind_exact_structural_alias_and_confirmation_passes
+    seed_rule: 20260710_plus_1000_times_config_index_plus_split_index
+    rng: numpy_Generator_PCG64
+    config_index_rule: zero_based_lexicographic_config_id_order
+    split_index_rule: order_0p50_0p33_0p25_0p20
+  tier_p_noninferiority_power_item:
+    condition: S_IPV_equals_S_K_with_observed_tie_missingness_structure
+    minimum_pass_probability: 0.80
+    below_threshold_policy: tier_P_pre_registered_UNDERPOWERED_UNAVAILABLE_ladder_caps_at_ASSOCIATION_ROBUST
+  choose_rule: largest_discovery_fraction_where_at_least_one_nonalias_config_passes_all_gates
+  config_power_eligibility: evaluated_separately_and_required_for_promotion
+  minimum_expected_discovery_informative_scenes: 40
+  minimum_expected_scenes_per_discovery_fold: 8
+  maximum_confirmation_numerical_failure_probability: 0.01
+
+# R4-R6: rebuilt specificity tiers (strict execution order C -> P -> I)
+specificity_tiers:
+  execution_order_rule: strict_C_then_P_then_I_later_tier_runs_only_if_all_prior_passed
+  tier_C_construction_validity:
+    role: must_pass_for_labels_above_ASSOCIATION
+    placebo_superiority_family:
+      members:
+        shuffled_ipv:
+          rule: frozen_hash_nonidentity_cyclic_shift_of_three_candidate_deviations_within_scene
+        counterpart_swap:
+          rule: cyclic_next_segment_by_frozen_hash_within_path_type_and_observed_support_quartile
+          extrapolation: forbidden
+      statistic: A_m_equals_S_IPV_minus_S_placebo_where_S_equals_max0_minus_rho_ws
+      universal_common_scene_manifest: frozen_master_id_list_primary_plus_both_placebos_complete
+      multiplicity:
+        method: paired_scene_bootstrap_studentized_maxT_simultaneous_lower_bounds
+        synchronization: master_id_synchronized_resampling
+        bootstrap_replicates: 9999
+        one_sided_fwer: 0.025
+        family_size: 2
+      pass_rule: both_lower_bounds_gt_0
+      fail_policy: association_label_annotated_CONSTRUCTION_SUSPECT_no_tier_P_or_I
+    invariance_diagnostics:
+      members: [sign_flip, role_flip]
+      sign_flip_rule: replace_candidate_ipv_v_with_minus_v_keep_original_asymmetric_envelope
+      role_flip_rule: swap_ego_and_counterpart_and_use_matched_human_role_envelope
+      step1_structural_alias_check:
+        criterion: rank_corr_ge_0.999_or_max_abs_diff_lt_1e-9_vs_baseline_deviations
+        on_alias: record_STRUCTURAL_INVARIANCE_pass_neutral_expected_symmetry_property
+      step2_equivalence_test_if_not_alias:
+        margin_abs_S_difference: 0.10
+        within_margin: record_INVARIANT
+        flip_stronger_lower_bound_gt_0: record_DIRECTION_ARTIFACT_SUSPECT_escalate_forensic_and_annotate_CONSTRUCTION_SUSPECT
+        otherwise: record_ASYMMETRY_OBSERVED_informative_only
+      gating: diagnostics_never_gate_labels_except_DIRECTION_ARTIFACT_SUSPECT_case
+      role_flip_unavailable_policy: record_UNAVAILABLE_no_label_cap
+  tier_P_parsimony:
+    role: core_claim_noninferiority_vs_frozen_composite
+    comparator:
+      name: frozen_rq010b_kinematics_composite
+      requirement: exact_formula_and_code_sha_recovered_from_rq010b_artifacts_at_G2
+      unrecoverable_policy: tier_P_UNAVAILABLE_no_substitute_formula
+    individual_kinematic_costs_reported_descriptively_only:
+      - neg_min_gap_m
+      - neg_min_ttc_capped_s
+      - accel_rms
+      - jerk_rms
+      - neg_progress_m
+      - curvature_mean_abs
+    noninferiority_margin_delta_NI: 0.08
+    margin_justification: half_of_weakest_published_rq010b_physics_effect_rho_approx_0.16
+    statistic: A_P_equals_S_IPV_minus_S_K_plus_delta_NI
+    test: paired_scene_bootstrap_one_sided_97p5_lower_bound_gt_0
+    bootstrap_replicates: 9999
+    pass_semantics: single_ipv_deviation_index_not_inferior_to_frozen_rq010b_kinematics_composite
+    pass_label: PARSIMONY_VS_FROZEN_KINEMATICS_COMPOSITE
+    forbidden_wordings_on_pass:
+      - matches_a_seven_feature_battery
+      - one_index_expresses_the_comprehensive_tendency
+  tier_I_incrementality:
+    role: optional_crown_not_a_qualification_bar
+    model_contract:
+      transforms: within_scene_centered_midranks
+      full_model: R_tilde_equals_beta_D_Q_tilde_plus_beta_K_Kcomposite_tilde_no_intercept
+      baseline_model: R_tilde_equals_beta_K_Kcomposite_tilde_no_intercept
+      candidate_weight: one_third
+      increment_statistic: minus_beta_D
+      sse_check: SSE_full_lt_SSE_baseline_sanity_only
+      refit_every_scene_bootstrap: true
+    test: single_statistic_paired_scene_bootstrap_one_sided_97p5_lower_bound_gt_0
+    bootstrap_replicates: 9999
+    pass_label: INCREMENTAL_BEYOND_FROZEN_KINEMATICS_COMPOSITE
+    fail_wording: AMBIGUOUS_MEDIATION_OR_REDUNDANCY_does_not_degrade_tier_P
+  g2_calibration:
+    boundary_null_contract:
+      tier_P: simulate_S_IPV_minus_S_K_equals_minus_delta_NI_with_S_K_in_[0.10,0.20,0.30]_and_observed_tie_missingness
+      tier_C_placebos: simulate_S_IPV_equals_S_placebo_in_[0.10,0.20,0.30]_equality_boundaries
+      global_zero_null: retained_as_additional_sanity_scenario_only
+    global_null_simulations: 10000
+    maximum_empirical_size_or_fwer: 0.03
+    positive_control_coverage_must_be_reported: true
+    maximum_undefined_bootstrap_fraction: 0.01
+    zero_bootstrap_sd_policy: SPECIFICITY_NUMERICAL_INVALID
+    failed_calibration_policy: cap_scientific_verdict_at_ASSOCIATION
+  label_ladder:
+    - VALID_INTERNAL_CONFIRMATION_ASSOCIATION
+    - VALID_INTERNAL_CONFIRMATION_ASSOCIATION_ROBUST
+    - VALID_INTERNAL_CONFIRMATION_PARSIMONY_VS_FROZEN_KINEMATICS_COMPOSITE
+    - VALID_INTERNAL_CONFIRMATION_INCREMENTAL_BEYOND_FROZEN_KINEMATICS_COMPOSITE
+  retired_labels: [IPV_SPECIFIC, PARSIMONIOUS_INDEX]
+  freeze_deadline: before_discovery_rating_join
+
+allowed_blind_status:
+  - PENDING_G2
+  - ELIGIBLE_FOR_DISCOVERY
+  - INELIGIBLE_SCHEMA_OR_HASH
+  - INELIGIBLE_NUMERICAL_PARITY
+  - INELIGIBLE_ENVELOPE_UNAVAILABLE
+  - INELIGIBLE_ENVELOPE_DEGENERATE
+  - INELIGIBLE_COMMON_SUPPORT
+  - INELIGIBLE_STRUCTURAL_ALIAS
+  - INELIGIBLE_CONFIRMATION_LOW_POWER
+
+configs:
+  - {config_id: V01, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 1.0, history_window_steps: 4,  sequence_mode: trailing_only,  horizon: H2,    envelope_id: E-R04-W10-TR-v1, blind_status: PENDING_G2}
+  - {config_id: V02, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 1.0, history_window_steps: 4,  sequence_mode: trailing_only,  horizon: HMAX5, envelope_id: E-R04-W10-TR-v1, blind_status: PENDING_G2}
+  - {config_id: V03, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 2.5, history_window_steps: 10, sequence_mode: future_only,    horizon: H2,    envelope_id: E-R04-W25-FO-v1, blind_status: PENDING_G2}
+  - {config_id: V04, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 2.5, history_window_steps: 10, sequence_mode: future_only,    horizon: HMAX5, envelope_id: E-R04-W25-FO-v1, blind_status: PENDING_G2}
+  - {config_id: V05, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 2.5, history_window_steps: 10, sequence_mode: history_future, horizon: H2,    envelope_id: E-R04-W25-HF-v1, blind_status: PENDING_G2}
+  - {config_id: V06, rate_hz: 4,  dt_s: 0.25, trailing_window_s: 2.5, history_window_steps: 10, sequence_mode: history_future, horizon: HMAX5, envelope_id: E-R04-W25-HF-v1, blind_status: PENDING_G2}
+  - {config_id: V07, rate_hz: 10, dt_s: 0.10, trailing_window_s: 1.0, history_window_steps: 10, sequence_mode: trailing_only,  horizon: H2,    envelope_id: E-R10-W10-TR-v1, blind_status: PENDING_G2}
+  - {config_id: V08, rate_hz: 10, dt_s: 0.10, trailing_window_s: 1.0, history_window_steps: 10, sequence_mode: trailing_only,  horizon: HMAX5, envelope_id: E-R10-W10-TR-v1, blind_status: PENDING_G2}
+  - {config_id: V09, rate_hz: 10, dt_s: 0.10, trailing_window_s: 2.5, history_window_steps: 25, sequence_mode: future_only,    horizon: H2,    envelope_id: E-R10-W25-FO-v1, blind_status: PENDING_G2}
+  - {config_id: V10, rate_hz: 10, dt_s: 0.10, trailing_window_s: 2.5, history_window_steps: 25, sequence_mode: future_only,    horizon: HMAX5, envelope_id: E-R10-W25-FO-v1, blind_status: PENDING_G2}
+  - {config_id: V11, rate_hz: 10, dt_s: 0.10, trailing_window_s: 2.5, history_window_steps: 25, sequence_mode: history_future, horizon: H2,    envelope_id: E-R10-W25-HF-v1, blind_status: PENDING_G2}
+  - {config_id: V12, rate_hz: 10, dt_s: 0.10, trailing_window_s: 2.5, history_window_steps: 25, sequence_mode: history_future, horizon: HMAX5, envelope_id: E-R10-W25-HF-v1, blind_status: PENDING_G2}

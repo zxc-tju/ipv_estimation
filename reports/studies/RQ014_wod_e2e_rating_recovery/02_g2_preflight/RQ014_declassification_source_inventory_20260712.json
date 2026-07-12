@@ -1,0 +1,106 @@
+{
+  "schema_version": "rq014-declassification-source-inventory-v1",
+  "captured_date": "2026-07-12",
+  "capture_mode": "HPC path-size-SHA, restricted-unpickle structural metadata and safe-primitive shapes, plus static producer/reference-builder data-flow audit; no rating values",
+  "rating_values_read": false,
+  "raw_rated479_tfrecord_opened": false,
+  "execution_binding_contract": {
+    "expected_metadata_source": "files[].role/path/size_bytes/sha256",
+    "open_policy": "SINGLE_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
+    "continuity_fields": ["st_mode", "st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns"],
+    "parse_policy": "VERIFY_EXPECTED_SIZE_AND_SHA256_THEN_PARSE_ONLY_RETAINED_BYTES",
+    "receipt_policy": "RECORD_THE_SAME_RETAINED_BYTES_SHA256"
+  },
+  "files": [
+    {"role": "phase1_scene_bundle_00", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_0/phase1_post_scene_bundle.pkl", "size_bytes": 562364, "sha256": "57b6fb62bf64bfe786245d18063eacf55c09a16bde175a415c6aad29718cd975"},
+    {"role": "phase1_scene_bundle_01", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_1/phase1_post_scene_bundle.pkl", "size_bytes": 568813, "sha256": "c710c588f0e86a587999f57af487082514483b6611e9ae14141ff53b3b62b507"},
+    {"role": "phase1_scene_bundle_02", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_2/phase1_post_scene_bundle.pkl", "size_bytes": 561347, "sha256": "1cab3cd6d59b63fb8beecb3dcb6d0c7251841db16fdfdf64ef28953daa373b58"},
+    {"role": "phase1_scene_bundle_03", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_3/phase1_post_scene_bundle.pkl", "size_bytes": 570948, "sha256": "99dffe4e65fa64d4458802868e599f2b268dfe93d1b1a72022a7458d9044c937"},
+    {"role": "phase1_scene_bundle_04", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_4/phase1_post_scene_bundle.pkl", "size_bytes": 561633, "sha256": "dcf63903ae6c18445d64de633e616a3690596fbd12edcce51e887f01d7b2688c"},
+    {"role": "phase1_scene_bundle_05", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_5/phase1_post_scene_bundle.pkl", "size_bytes": 570955, "sha256": "05e1ef602c0d9f426ded36c614d0a0eb8602491dea3b39bf6a465d38582f9734"},
+    {"role": "phase1_scene_bundle_06", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_6/phase1_post_scene_bundle.pkl", "size_bytes": 561508, "sha256": "3db1323ebbe13ded066f777128688cfd0521dc328fd438f0f7404703837d4e07"},
+    {"role": "phase1_scene_bundle_07", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/shards/shard_7/phase1_post_scene_bundle.pkl", "size_bytes": 571301, "sha256": "510f68f5922feff66866685604c0d99a521b168f9be4ceacbdd3128aaf19cb09"},
+    {"role": "rated479_structural_readiness", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/manifests/rated479_segment_readiness.tsv", "size_bytes": 138666, "sha256": "425410ac48480513b566509321cd7f4cbac2a65c7db21e4174b39737f953f8a5"},
+    {"role": "selected_counterpart_tracks", "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/selected_counterpart_tracks.csv", "size_bytes": 2449448, "sha256": "609979ae31cf9b926643b93f282c21eddb3a408ef968cc871c3d48538700c7c9"}
+  ],
+  "managed_interpreter": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/bin/python3.9",
+    "version": "Python 3.9.24",
+    "size_bytes": 16285544,
+    "sha256": "616aea77938978c3578ed480eac4025ef7099f4c944ab8684722bc9455f99f32"
+  },
+  "managed_environment_manifest": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json",
+    "size_bytes": 2229,
+    "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"
+  },
+  "score_omitting_bundle_structural_audit": {
+    "audited_at_utc": "2026-07-12T00:14:07Z",
+    "audit_mode": "restricted-unpickle and structural metadata only",
+    "rating_values_read": false,
+    "restricted_unpickle_pass": true,
+    "metadata_keys_exact_across_8_shards": true,
+    "scene_count": 476,
+    "missing_declassified_scene_count": 3,
+    "candidate_count_per_scene": 3,
+    "candidate_length_min": 2,
+    "candidate_length_max": 21,
+    "safe_primitive_shape_audited_at_utc": "2026-07-12T01:28:42Z",
+    "tstar_ego_pose_shape": [4, 4],
+    "tstar_ego_pose_leaf_type": "finite numeric",
+    "route_intent_code_name_pairs": [
+      [1, "GO_STRAIGHT"],
+      [2, "GO_LEFT"],
+      [3, "GO_RIGHT"]
+    ],
+    "candidate_state_shapes": "pos_x/pos_y have equal length 2..21; pos_z/vel_x/vel_y/accel_x/accel_y are empty in all 1,428 candidates",
+    "past_state_shapes": "pos_x/pos_y/vel_x/vel_y/accel_x/accel_y each have 16 values and pos_z is empty in all 476 scenes",
+    "future_state_shapes": "pos_x/pos_y/pos_z each have 20 values and vel_x/vel_y/accel_x/accel_y are empty in all 476 scenes",
+    "prep_abstention_count": 0,
+    "counterpart_row_count": 14665,
+    "counterpart_segment_count": 289,
+    "counterpart_tstar_mismatch_for_declassified_scenes": 0
+  },
+  "provenance_code_audit": {
+    "audited_at_utc": "2026-07-12T00:31:00Z",
+    "audit_mode": "static source data-flow inspection without opening rating rows",
+    "rating_values_read": false,
+    "files": [
+      {
+        "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/full93_rated479_ingest_extract.py",
+        "size_bytes": 27915,
+        "sha256": "817210630d43d3cec7b93cd9074dacb37ae0701964fca740089eaf38f6d64fee"
+      },
+      {
+        "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/prepare_phase1_post_assets.py",
+        "size_bytes": 15092,
+        "sha256": "0c487b85a29245388adc7dc73e0781e3e68678d2315190a66f0a3023b0c971ab"
+      },
+      {
+        "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/rq010b_multiframe_tracking_ipv_20260630/prepare_multiframe_pilot_assets.py",
+        "size_bytes": 19034,
+        "sha256": "d4d1916b3282c3ab5ce6429d5dd01a6748918318dea31b71217ae56b28a4d36e"
+      },
+      {
+        "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/code/rq010b_ipv_rating_pilot_20260629/analyze_wod_e2e_ipv_rating_pilot.py",
+        "size_bytes": 42665,
+        "sha256": "7c60676effd0b3787cba8825790b6648a3de9d462e571677bf12dbb3920cdba2"
+      }
+    ],
+    "findings": {
+      "target_score_column": "the full CSV row is parsed, then candidate_scores is removed before any row dictionary or downstream filter is formed",
+      "cohort_and_tstar": "filters use segment_key, scored-frame count, and tstar range; the accepted rated479/tstar cohort is structurally score-availability-conditioned but no score magnitude or rank is used",
+      "candidate_inclusion": "requires exactly three protobuf trajectories, score-field presence, and nonempty geometry; it does not inspect the score value",
+      "candidate_order": "preference_trajectories are serialized in protobuf repeated-field order with no score-dependent sort, reorder, top-k, or filter",
+      "candidate_output": "trajectory_to_dict is called with include_score=false and emits only seven geometry/state arrays",
+      "legacy_wod_reference_builder": "build_ego_route_reference is scene-level and rating-blind: it infers heading from frozen ego history, preserves a deterministic past subsample, then extends an intent-conditioned straight or 12 m-radius quarter-turn reference at 1 m spacing to 80 m; the same reference is shared by all three candidates and counterpart reference defaults to its observed/resampled XY",
+      "residual_control": "candidate_ordinal is an opaque source-order key, is forbidden as a predictor, and future rating joins must use candidate geometry SHA-256 rather than assume ordinal means rating rank"
+    }
+  },
+  "next_required_artifacts": [
+    "FORMAL_G1_PASS artifact",
+    "checksum-bound safe-primitive and temporal golden-fixture manifest before G2R",
+    "final v1.5 checksum bundle",
+    "published origin/main commit"
+  ]
+}

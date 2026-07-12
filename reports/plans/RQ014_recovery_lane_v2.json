@@ -1,0 +1,864 @@
+{
+  "schema_version": "rq014-historical-recovery-lane-v2",
+  "contract_date": "2026-07-12",
+  "objective_type": "KNOWN_RESULT_SPECIFICATION_RECOVERY",
+  "known_target": {
+    "predictor": "candidate_ipv_envelope_deviation",
+    "response": "human_preference_score",
+    "remembered_direction": "negative",
+    "remembered_strength": "strong_but_numeric_value_unknown",
+    "null_hypothesis_discovery": false,
+    "goal": "identify one byte-frozen computation recipe that reproduces the remembered negative association"
+  },
+  "claim_boundary": {
+    "full_rated479_search": "historical specification recovery on the same dataset",
+    "clean_replay": "computational reproduction on the same frozen data",
+    "independent_replication": "not provided",
+    "causal_claim": "forbidden",
+    "p_values_gate_recovery": false,
+    "prospective_power_gates_recovery": false
+  },
+  "units": {
+    "observation_unit": "candidate",
+    "dependence_cluster": "three-candidate segment",
+    "primary_independent_resampling_unit": "segment",
+    "candidate_order_semantics": "opaque protobuf source order; never a predictor and never interpreted as rating rank"
+  },
+  "orchestration_contract": {
+    "lead_model": "frontier reasoning model owns the frozen registry, gate decisions, aggregate interpretation, and stop/reopen decisions",
+    "execution_workers": "lower-cost workers receive immutable cell batches, may compute only registered artifacts, and cannot edit axes, joins, ranking, thresholds, or prior ledger rows",
+    "independent_validator": "fresh high-reasoning agent reviews exact hashes and reimplements only the selected recipe in a clean worktree",
+    "worker_output_visibility": "workers return receipts and artifacts; no worker sees a partial leaderboard or row-level ratings outside the authorized join operation",
+    "shared_failure_rule": "any worker deviation, source drift, or schema mismatch terminates the batch and cannot be repaired by silently changing the contract"
+  },
+  "rating_blind_feature_bank": {
+    "must_complete_before_rating_access": true,
+    "source": "canonical score-stripped WOD bundle plus checksum-bound InterHub pure-HV/HV source",
+    "envelope_builder_contract": {
+      "path": "reports/plans/RQ014_envelope_builder_contract_v2.json",
+      "schema_version": "rq014-envelope-builder-contract-v2",
+      "binding": "the file SHA-256 must be frozen before G2R; all timeline, state, pseudo-anchor, role, path-type, envelope, gate, and missing-state rules are normative",
+      "scientific_readiness_resolution": "G2R preflight evaluates the checksum-bound safe-primitive profile plus golden-fixture manifest; both SATISFIED permits compute and either failure yields INELIGIBLE_BLIND",
+      "derivative_authority": "the envelope builder contract's exact-window-local derivative rule is the sole scientific authority for RQ014 recovery features and supersedes any transport-schema prose that describes deriving state on a larger resampled branch"
+    },
+    "fixed_estimator": {
+      "solver_mode": "exact",
+      "sigma": 0.1,
+      "ipv_grid_multipliers_pi_over_8": [-3, -2, -1, 0, 1, 2, 3],
+      "ipv_output_smoothing": "none",
+      "wod_focal_reference": "scene-level legacy_route_reference_v1 from the envelope builder contract, shared byte-identically by all three candidates",
+      "wod_counterpart_reference": "observed counterpart XY on the exact resampled estimator-window grid",
+      "reference_preparation": "the pinned estimator applies pinned smooth_ployline exactly once to each raw reference array",
+      "dt_equals_inverse_rate": true,
+      "local_window_output": "terminal estimator row at the window terminal physical time"
+    },
+    "sampling_axis": [
+      {
+        "sampling_id": "R04N",
+        "rate_hz": 4,
+        "dt_s": 0.25,
+        "candidate_rule": "exported native effective timeline after frozen point-zero duplicate removal",
+        "history_and_counterpart_rule": "linear interpolation inside observed support to the full tstar-anchored 0.25 s grid; the candidate future remains at its native effective +0.25 s ticks",
+        "operation_order": "duplicate decision on raw 4 Hz candidate, then common-support assembly",
+        "derived_state_rule": "resample positions only, slice each registered exact closed position window, then reconstruct that window's velocity, acceleration, and heading solely from positions inside it using the envelope builder contract; source candidate dynamics, derivative halos, and state reuse from any larger branch are forbidden",
+        "extrapolation": "forbidden"
+      },
+      {
+        "sampling_id": "R10L",
+        "rate_hz": 10,
+        "dt_s": 0.1,
+        "candidate_rule": "after frozen raw point-zero duplicate removal, linearly interpolate XY by absolute timestamp inside observed support",
+        "history_and_counterpart_rule": "linear interpolation by absolute timestamp to the same 10 Hz grid",
+        "grid_phase": "tstar-anchored integer multiples of 0.1 s; interpolate 0<t<0.25 across the exact history t=0 to first effective candidate t=0.25 seam",
+        "derived_state_rule": "interpolate positions only on the tstar-anchored grid, slice each registered exact closed position window, then reconstruct that window's velocity, acceleration, and heading solely from its own positions using the envelope builder contract; never interpolate IPV, use a derivative halo, or reuse state derived for another window",
+        "extrapolation": "forbidden"
+      }
+    ],
+    "temporal_axis": {
+      "analysis_anchor": "tau",
+      "tstar_s": 0.0,
+      "minimum_tau_s": 1.0,
+      "complete_window_required": true,
+      "boundary_shortening": "forbidden",
+      "position_and_state_support": "for each exact closed recipe interval slice resampled positions first and derive velocity, acceleration, and heading only inside that window; CH and TP consume no state position after tau, and LF/HF/TF consume no state position outside their declared interval",
+      "derivative_halo_or_cross_window_reuse": "FORBIDDEN",
+      "recipes": [
+        {
+          "temporal_id": "CH-W10",
+          "mode": "causal_history",
+          "window_s": 1.0,
+          "interval": "[tau-1.0,tau]",
+          "causal": true
+        },
+        {
+          "temporal_id": "CH-W25",
+          "mode": "causal_history",
+          "window_s": 2.5,
+          "interval": "[tau-2.5,tau]",
+          "causal": true
+        },
+        {
+          "temporal_id": "LF-W10",
+          "mode": "lookahead_future",
+          "window_s": 1.0,
+          "interval": "[tau,tau+1.0]",
+          "causal": false
+        },
+        {
+          "temporal_id": "LF-W25",
+          "mode": "lookahead_future",
+          "window_s": 2.5,
+          "interval": "[tau,tau+2.5]",
+          "causal": false
+        },
+        {
+          "temporal_id": "HF-W10",
+          "mode": "history_plus_future",
+          "window_s_each_side": 1.0,
+          "interval": "[tau-1.0,tau+1.0] with tau included once",
+          "causal": false
+        },
+        {
+          "temporal_id": "HF-W25",
+          "mode": "history_plus_future",
+          "window_s_each_side": 2.5,
+          "interval": "[tau-2.5,tau+2.5] with tau included once",
+          "causal": false
+        },
+        {
+          "temporal_id": "TP",
+          "mode": "tstar_candidate_prefix",
+          "interval": "[0,tau]",
+          "causal": true,
+          "note": "preserves the plausible legacy expanding-future-prefix implementation"
+        },
+        {
+          "temporal_id": "TF",
+          "mode": "tstar_full_future",
+          "interval": "[0,H_common] for every registered finite tau anchor",
+          "causal": false,
+          "note": "preserves the plausible legacy one-IPV-per-full-planned-trajectory implementation; the IPV window is tau-invariant but tau anchors remain bounded by the horizon contract"
+        }
+      ]
+    },
+    "feature_family_enumeration": {
+      "rule": "Cartesian product of sampling_axis and temporal_axis.recipes",
+      "registered_family_count": 16,
+      "feature_id": "F-{sampling_id}-{temporal_id}",
+      "order": "sampling_axis order, then temporal recipes order",
+      "machine_enumeration": "reports/plans/RQ014_envelope_builder_contract_v2.json#/feature_families",
+      "technical_ineligibility": "retain the row and terminal reason; never delete a family"
+    },
+    "horizon_axis": [
+      {
+        "horizon_id": "H20",
+        "candidate_tau_ticks": "every integer tau_tick from rate_hz through 2*rate_hz inclusive, corresponding exactly to tau=1.0,1.0+dt,...,2.0",
+        "anchor_rule": "retain the full candidate_tau_ticks set only when every tau_tick<=h_common_tick and every tick's exact registered temporal window is complete inside observed position support; no H20 boundary shortening or partial anchor set is allowed",
+        "window_support_may_extend_beyond_anchor_end": true,
+        "maximum_tau_tick": "2*rate_hz"
+      },
+      {
+        "horizon_id": "HFEAS",
+        "candidate_tau_ticks": "finite integer closed interval rate_hz,rate_hz+1,...,h_common_tick; empty when h_common_tick<rate_hz",
+        "anchor_rule": "from candidate_tau_ticks retain only tau ticks whose exact registered temporal position window is complete inside four-way observed support",
+        "minimum_requirement": "the H20 anchor set is complete",
+        "maximum_tau_tick": "h_common_tick for every temporal recipe, including TF",
+        "TF_rule": "TF uses the same [0,H_common] position window at every retained tau, but its HFEAS tau anchors are still exactly rate_hz..h_common_tick and therefore finite",
+        "empty_status": "INELIGIBLE_TIMELINE_SUPPORT"
+      }
+    ],
+    "scene_anchor_domain_binding": {
+      "artifact": "wod_scene_anchor_domain.csv",
+      "manifest": "wod_scene_anchor_domain_manifest.json",
+      "authority": "reports/plans/RQ014_envelope_builder_contract_v2.json#/scene_anchor_domain_contract",
+      "group_key": ["segment_id", "feature_id", "horizon_id"],
+      "execution_rule": "WOD feature evaluation and all per-scene readouts consume only the checksum-verified rows for their exact group key; an AVAILABLE group uses exactly its integer tau memberships, requires path_type_or_NA set cardinality 1 equal to that segment's checksum-bound WOD path lookup, and contributes only to that one path branch; a terminal group emits no feature/readout value",
+      "aggregate_separation": "required_envelope_queries.csv is derived from AVAILABLE memberships for envelope building only and can never supply or reconstruct a scene's tau list",
+      "hash_drift": "STALE_FATAL"
+    },
+    "envelope_axis": [
+      {
+        "envelope_id": "BL90",
+        "kind": "byte_exact_legacy_static_path_type_central_90",
+        "execution_binding": "rq014-envelope-builder-contract-v2 BL90",
+        "availability": "only if exact legacy artifact, builder, source, and mapping hashes are verified",
+        "unavailable_status": "INELIGIBLE_REFERENCE",
+        "reconstruction_or_imitation": "forbidden"
+      },
+      {
+        "envelope_id": "BM90",
+        "kind": "matched_static_path_type_central_90",
+        "execution_binding": "rq014-envelope-builder-contract-v2 BM90",
+        "builder": "apply the exact feature family estimator to both directed pure HV-HV InterHub roles; use equal total episode weights within the exact feature/path/horizon cell and never pool distinct TF H_common ticks",
+        "quantiles": [0.05, 0.5, 0.95]
+      },
+      {
+        "envelope_id": "BT90",
+        "kind": "matched_time_indexed_path_type_central_90",
+        "execution_binding": "rq014-envelope-builder-contract-v2 BT90",
+        "builder": "apply the exact feature family estimator to both directed pure HV-HV InterHub roles and compute episode-equal q05/q50/q95 in the exact integer tau cell; never interpolate tau cells or pool distinct TF H_common ticks",
+        "quantiles": [0.05, 0.5, 0.95]
+      }
+    ],
+    "pointwise_deviation_axis": {
+      "NEX": "zero inside [L,U]; below L use (L-v)/(M-L); above U use (v-U)/(U-M)",
+      "NMD": "normalized absolute distance from median M using the side-specific half width",
+      "AMD": "absolute distance abs(v-M) in radians"
+    },
+    "readout_axis": [
+      "NEX_MEAN",
+      "NEX_MAX",
+      "NEX_LAST",
+      "NEX_FOUT",
+      "NMD_MEAN",
+      "NMD_MAX",
+      "NMD_LAST",
+      "AMD_MEAN",
+      "AMD_MAX",
+      "AMD_LAST"
+    ],
+    "readout_rules": {
+      "ANCHOR_DOMAIN": "for the exact segment_id x feature_id x horizon_id consume only its AVAILABLE integer tau_tick rows from checksum-bound wod_scene_anchor_domain.csv; required_envelope_queries.csv is aggregate-only and no readout regenerates, shares, extends, or shortens a scene membership",
+      "MEAN": "physical-time trapezoid integral divided by common duration",
+      "MAX": "maximum over valid registered anchors",
+      "LAST": "value at the maximum retained valid tau_tick; for HFEAS this is always <=h_common_tick, including TF",
+      "FOUT": "physical-time trapezoid-weighted fraction with NEX greater than zero"
+    },
+    "predictor_cell_enumeration": {
+      "rule": "16 feature families x 3 envelopes x 2 horizons x 10 readouts",
+      "registered_predictor_cell_count": 960,
+      "cell_id": "RR2-{sampling_id}-{temporal_id}-{envelope_id}-{horizon_id}-{readout_id}",
+      "feature_envelope_execution_rule": "each cell resolves through exactly one of the 48 unique ENV2-{feature_id}-{envelope_id} executions in the envelope builder contract",
+      "every_registered_row_must_reach_one_terminal_status": true
+    },
+    "hard_negative_control": {
+      "control_id": "NC_PRETSTAR_HISTORY_ONLY",
+      "current_role": "rating-blind G2R structural candidate/future-leakage fixture and fatal gate only",
+      "association_execution": false,
+      "leaderboard_rows": 0,
+      "post_gate_ranking_or_verdict_effect": "NONE",
+      "registered_executions": ["R04N-W10", "R04N-W25", "R10L-W10", "R10L-W25"],
+      "source_interval": "closed [-W,0] observed shared ego history and observed counterpart history only",
+      "branch_isolation": "construct one history-only position branch before candidate forking; the function signature accepts no candidate ID, candidate geometry, candidate future, ego future, H_common, envelope result, rating, or rating-derived input",
+      "state_derivation": "for each registered W separately slice the exact closed [-W,0] shared-history position window, then derive velocity, acceleration, and heading only within that window using the same window-local operator; derivative halos and reuse of state from a larger history or candidate branch are forbidden",
+      "focal_reference": "legacy_route_reference_v1 may use only shared past XY and scene intent; it is built once before candidate forking",
+      "counterpart_reference": "observed/resampled counterpart history XY on [-W,0] only",
+      "candidate_materialization": "after the single control value and its canonical byte payload are complete, copy the same payload hash to candidate ordinals 1,2,3 without recomputation",
+      "future_perturbation_fixture": "replace each candidate future and ego future with three distinct finite adversarial trajectories, rerun the isolated control builder, and require exact equality of state bytes, reference bytes, IPV bytes, terminal status, and payload SHA-256 to the unperturbed build",
+      "expected": "candidate ordinals 1,2,3 have byte-identical control payloads before and after every registered future perturbation",
+      "required_fixture_ids": ["NC_HISTORY_BRANCH_R04N_W10", "NC_HISTORY_BRANCH_R04N_W25", "NC_HISTORY_BRANCH_R10L_W10", "NC_HISTORY_BRANCH_R10L_W25", "NC_HISTORY_FUTURE_PERTURBATION"],
+      "fixture_and_hash_gate": "history-only builder implementation SHA-256, five fixture input/output SHA-256 pairs, pinned estimator SHA-256, Python executable SHA-256, and environment manifest SHA-256 must all match before G2R",
+      "failure": "FATAL_CANDIDATE_ID_OR_FUTURE_LEAKAGE"
+    }
+  },
+  "full_data_recovery_screen": {
+    "prerequisites": [
+      "all rating-blind feature cells, masks, envelopes, and their hashes are frozen",
+      "the 960-row predictor manifest is terminal and immutable",
+      "a separately authorized full-rated479 rating access receipt exists"
+    ],
+    "split": "none; use all rating-complete rated479 scenes for specification recovery",
+    "rating_join_count": 1,
+    "association_support_contract": {
+      "scene_universe": "the frozen 479-row blind scene manifest; no scene is removed because of a rating value",
+      "shared_scene_inclusion_predicate": [
+        "predictor cell is rating-blind AVAILABLE for all three source-order candidates in the scene",
+        "exactly three finite joined human scores are present and geometry keys match exactly",
+        "all three candidate deviations are finite",
+        "the three human scores contain at least two distinct exact binary64 values",
+        "the three deviations contain at least two distinct exact binary64 values"
+      ],
+      "shared_across_associations": "RWS, PSP, and PPR for one predictor cell use exactly the same included scenes and the same 3*n candidate rows",
+      "within_cell_support_id": "SHA256 over UTF-8 bytes of segment IDs sorted by raw UTF-8 byte order, each followed by exactly one LF byte including the final ID; no BOM, CR, blank line, or omitted terminal LF",
+      "between_cell_support": "may differ across predictor cells only because the cell is not rating-blind AVAILABLE for all three candidates in a scene, one or more of its three deviations is nonfinite, or its exact three-deviation vector is constant; rating-key presence, finite-rating, and nonconstant-rating predicates are cell-invariant after the single join and are applied identically to every cell-specific survivor; support_id and all denominator fields are mandatory",
+      "ranking_support": "native within-cell shared support; this is an operational historical-recovery ordering, not an equal-cohort causal comparison",
+      "scenario_cluster_missing_rule": "the exact CSV missing token NA is not a scenario cluster, is never LOCO-eligible, and remains in the native association support; record its included-scene count in scenario_cluster_na_scene_count_metric",
+      "common_support_sensitivity": {
+        "role": "required non-ranking, non-gating sensitivity only; it never changes recovery_compatible, rank, freeze, replay, or verdict",
+        "cell_universe": "all 960 registered predictor cell_ids in canonical predictor enumeration order; no globally or scene-locally unavailable cell is skipped",
+        "blind_scene_predicate": "a frozen universe scene is included only if every one of the 960 cells is rating-blind AVAILABLE for all three candidates, all three deviations are finite, and the exact three-deviation vector is nonconstant",
+        "blind_artifact": {
+          "path": "common_support_blind_manifest.csv",
+          "exact_columns": ["segment_id"],
+          "encoding": "CPython 3.9 csv.writer with dialect=excel, quoting=csv.QUOTE_MINIMAL, lineterminator='\\n', UTF-8 without BOM",
+          "row_order": "segment_id raw UTF-8 bytes ascending",
+          "primary_key": ["segment_id"],
+          "empty_file_rule": "header plus LF only",
+          "support_id": "the within_cell_support_id algorithm over artifact data rows; use SHA256 of zero bytes when empty"
+        },
+        "post_join_predicate": "from the blind artifact retain a scene only when its three geometry-keyed ratings are present and finite and its exact three-rating vector is nonconstant; no predictor-cell-specific predicate is reevaluated",
+        "result_artifact": {
+          "path": "common_support_sensitivity.json",
+          "serialization": "CPython 3.9 json.dumps with sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False plus exactly one terminal LF, UTF-8 without BOM",
+          "exact_top_keys": ["schema_version", "status", "blind_cell_count", "blind_scene_count", "rated_informative_scene_count", "support_id", "rows"],
+          "schema_version": "rq014-common-support-sensitivity-v1",
+          "row_order": ["RWS", "PSP", "PPR"],
+          "row_exact_keys": ["association_id", "status", "association_value", "n_informative_scenes_metric"],
+          "typed_metrics": "association_value and n_informative_scenes_metric use stability.typed_metric_schema",
+          "support_id": "within_cell_support_id over post_join_predicate survivors in raw UTF-8 order; SHA256 of zero bytes when rated_informative_scene_count=0",
+          "field_rules": {
+            "blind_cell_count": "exact integer 960",
+            "blind_scene_count": "number of blind_artifact data rows",
+            "rated_informative_scene_count": "number of post_join_predicate survivors",
+            "association_value": "FINITE_FLOAT only for a COMMON_SUPPORT_AVAILABLE row and NA(ROW_NOT_OBSERVED) otherwise",
+            "n_informative_scenes_metric": "FINITE_INT equal to rated_informative_scene_count when it is positive, and NA(ROW_NOT_OBSERVED) when it is zero"
+          }
+        },
+        "terminal_policy": {
+          "COMMON_SUPPORT_AVAILABLE": "rated_informative_scene_count>0 and all three registered association kernels return finite values",
+          "COMMON_SUPPORT_EMPTY_BLIND": "blind_scene_count=0; do not evaluate rating values or associations; all three rows use NA(ROW_NOT_OBSERVED)",
+          "COMMON_SUPPORT_EMPTY_AFTER_RATING": "blind_scene_count>0 but rated_informative_scene_count=0; all three rows use NA(ROW_NOT_OBSERVED)",
+          "COMMON_SUPPORT_ASSOCIATION_CONSTANT": "at least one registered kernel returns ASSOCIATION_CONSTANT; affected association_value is NA(ROW_NOT_OBSERVED)",
+          "COMMON_SUPPORT_NUMERICAL_FAILURE": "at least one registered kernel returns ASSOCIATION_NUMERICAL_FAILURE; affected association_value is NA(ROW_NOT_OBSERVED)",
+          "row_status_rule": "each row records COMMON_SUPPORT_AVAILABLE only for a finite association; otherwise it records the applicable common-support terminal status; top-level status is the first non-AVAILABLE status in row_order, or COMMON_SUPPORT_AVAILABLE when all three are available"
+        }
+      },
+      "scene_weight": "when n_informative_scenes>0, 1/n_informative_scenes; no scene weights are instantiated when it is 0",
+      "candidate_weight": "when n_informative_scenes>0, 1/(3*n_informative_scenes); exactly three candidates make pooled PSP/PPR scene-equal; no candidate weights are instantiated when it is 0",
+      "candidate_order": "opaque source order used only to align rating and deviation; never a covariate or rank",
+      "tie_rule": "average midranks over exact binary64 equality; no tolerance, jitter, ordinal tie-break, or random tie-break",
+      "signed_zero_rule": "normalize -0.0 to +0.0 before serialization and ranking",
+      "required_denominator_fields": [
+        "N_B",
+        "N_K",
+        "N_F",
+        "N_R",
+        "N_D",
+        "N_I",
+        "X_K",
+        "X_F",
+        "X_R",
+        "X_D",
+        "X_I",
+        "n_scene_universe",
+        "n_blind_available_scenes",
+        "n_rating_key_complete_scenes",
+        "n_excluded_nonfinite_scenes",
+        "n_excluded_constant_rating_scenes",
+        "n_excluded_constant_deviation_scenes",
+        "n_informative_scenes",
+        "n_informative_candidates",
+        "rating_distinct_count_pooled",
+        "deviation_distinct_count_pooled",
+        "scene_weight_sum",
+        "candidate_weight_sum",
+        "support_id"
+      ],
+      "denominator_field_types": {
+        "raw_integer_fields": ["N_B", "N_K", "N_F", "N_R", "N_D", "N_I", "X_K", "X_F", "X_R", "X_D", "X_I", "n_scene_universe", "n_blind_available_scenes", "n_rating_key_complete_scenes", "n_excluded_nonfinite_scenes", "n_excluded_constant_rating_scenes", "n_excluded_constant_deviation_scenes", "n_informative_scenes", "n_informative_candidates", "rating_distinct_count_pooled", "deviation_distinct_count_pooled"],
+        "raw_finite_float_fields": ["scene_weight_sum", "candidate_weight_sum"],
+        "digest_fields": ["support_id"],
+        "typed_metric_namespace": "typed leaderboard metric objects are separate fields under stability.row_metric_fields and never replace or alias a raw denominator field"
+      },
+      "derived_denominator_definitions": {
+        "n_scene_universe": "N_B",
+        "n_rating_key_complete_scenes": "N_K",
+        "n_blind_available_scenes": "N_F",
+        "n_informative_scenes": "N_I as a bare nonnegative JSON integer",
+        "n_informative_candidates": "3*N_I as a bare nonnegative JSON integer",
+        "n_excluded_nonfinite_scenes": "count of scenes whose mutually exclusive first-failure upstream_status is INELIGIBLE_STATE_NONFINITE, INELIGIBLE_IPV_NUMERICAL, or RATING_VALUE_NONFINITE",
+        "n_excluded_constant_rating_scenes": "count of scenes whose mutually exclusive first-failure upstream_status is RATING_VECTOR_CONSTANT",
+        "n_excluded_constant_deviation_scenes": "count of scenes whose mutually exclusive first-failure upstream_status is DEVIATION_VECTOR_CONSTANT",
+        "rating_distinct_count_pooled": "number of distinct normalized exact binary64 rating values over the 3*N_I canonical informative candidate rows; 0 when N_I=0",
+        "deviation_distinct_count_pooled": "number of distinct normalized exact binary64 deviation values over the 3*N_I canonical informative candidate rows; 0 when N_I=0",
+        "scene_weight_sum": "math.fsum of N_I scene weights in canonical scene order when N_I>0, otherwise 0.0",
+        "candidate_weight_sum": "math.fsum of 3*N_I candidate weights in canonical row order when N_I>0, otherwise 0.0",
+        "support_id": "within_cell_support_id digest over the N_I canonical segment IDs; when N_I=0 use SHA256 of the zero-byte payload, e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "denominator_identities": [
+        "n_scene_universe=N_B",
+        "n_rating_key_complete_scenes=N_K",
+        "n_blind_available_scenes=N_F",
+        "n_informative_scenes=N_I",
+        "n_informative_candidates=3*n_informative_scenes",
+        "if N_I>0 then scene_weight_sum=1 within absolute tolerance 1e-12 else scene_weight_sum=0 exactly",
+        "if N_I>0 then candidate_weight_sum=1 within absolute tolerance 1e-12 else candidate_weight_sum=0 exactly"
+      ]
+    },
+    "ordered_attrition_contract": {
+      "stage_order": ["B", "K", "F", "R", "D", "I"],
+      "stages": {
+        "B": "blind base: every one of the 479 frozen segment IDs is present exactly once and has structural candidate slots 1,2,3; a scene without candidate geometry retains three unavailable slots and fails K rather than disappearing",
+        "K": "key complete: all three (segment_id,tstar_context_step,candidate_ordinal,geometry_sha256) keys are finite, unique on both sides, and match one-to-one",
+        "F": "feature complete: the predictor cell's upstream envelope/timeline/path/reference execution is AVAILABLE and all three candidate deviations are finite",
+        "R": "rating complete: exactly one authorized finite human score joins to each of candidate ordinals 1,2,3",
+        "D": "distinct: the three exact binary64 ratings and the three exact binary64 deviations each contain at least two distinct values",
+        "I": "informative invariant: exact row count, deterministic order, weight sums, support_id, and statistic implementation/environment hash gates all pass"
+      },
+      "scene_order": "segment_id raw UTF-8 bytes ascending",
+      "candidate_order_within_scene": "candidate_ordinal integer ascending exactly 1,2,3; candidate_id must equal C1,C2,C3 respectively",
+      "admission": "a scene advances only when all three candidates pass the current stage",
+      "first_failure_assignment": "assign every base scene to exactly one mutually exclusive first-failure bucket X_K, X_F, X_R, X_D, X_I, or to N_I; later-stage conditions are not evaluated after the first failure",
+      "terminal_precedence": "earlier stage in B->K->F->R->D->I wins; within one stage use upstream_terminal_rollup.reason_priority ascending; no scene or candidate deletion is permitted",
+      "count_fields": ["N_B", "N_K", "N_F", "N_R", "N_D", "N_I", "X_K", "X_F", "X_R", "X_D", "X_I"],
+      "field_aliases": {
+        "N_B": "n_scene_universe",
+        "N_K": "n_rating_key_complete_scenes",
+        "N_F": "n_blind_available_scenes",
+        "N_I": "n_informative_scenes",
+        "3*N_I": "n_informative_candidates"
+      },
+      "field_namespace": "N_*, X_*, and their n_* aliases are bare raw numeric fields in association_attrition.csv and leaderboard denominator columns; typed leaderboard metric objects use distinct *_metric names and never overwrite these fields",
+      "count_identities": [
+        "N_B=479",
+        "N_B=N_K+X_K",
+        "N_K=N_F+X_F",
+        "N_F=N_R+X_R",
+        "N_R=N_D+X_D",
+        "N_D=N_I+X_I",
+        "N_B=N_I+X_K+X_F+X_R+X_D+X_I",
+        "candidate_slot_count_at_each_N_stage=3*N_stage"
+      ],
+      "violation": "FATAL_ATTRITION_ACCOUNTING_ERROR",
+      "artifact": "association_attrition.csv with one row per cell_id and all count fields, first-failure reason counts, support_id, and identity_check=PASS",
+      "implementation_and_environment_gate": {
+        "artifact": "association_attrition_manifest.json",
+        "required_bindings": ["attrition implementation SHA-256", "B-to-I fixture input/output SHA-256", "terminal-rollup table SHA-256", "Python executable SHA-256", "environment manifest SHA-256"],
+        "required_fixture_ids": ["ATTRITION_ALL_PASS", "ATTRITION_ONE_FAILURE_EACH_STAGE", "ATTRITION_MULTIPLE_REASON_PRECEDENCE", "ATTRITION_MISSING_GEOMETRY_RETAINED_AT_B"],
+        "pass": "ATTRITION_KERNEL_SATISFIED",
+        "failure": "FATAL_ATTRITION_ACCOUNTING_ERROR"
+      },
+      "cell_fatal_count_policy": {
+        "scope": "applies only when one non-AVAILABLE upstream status terminates the whole predictor cell before scene-specific feature evaluation",
+        "B_and_K": "still execute B and the geometry/rating-join-key-only K audit over all 479 scenes without reading a rating value",
+        "F_injection": "assign every K-surviving scene to X_F with the cell-fatal upstream status; set N_F=0 and retain every K failure in X_K",
+        "downstream_counts": "set N_R=N_D=N_I=X_R=X_D=X_I=0; N_B=N_K+X_K, N_K=X_F, and every registered count identity must still pass",
+        "derived_zero_support": "n_informative_scenes=0, n_informative_candidates=0, both pooled distinct counts=0, both raw weight sums=0.0, and support_id is SHA256 of the zero-byte payload",
+        "row_status": "emit the cell-fatal rollup status/reason for all three association rows while retaining the exact raw attrition counts; no typed raw-count sentinel or invented terminal status is permitted"
+      }
+    },
+    "statistic_kernel_contract": {
+      "numeric_domain": "finite IEEE-754 binary64 only; normalize -0.0 to +0.0 on input and output",
+      "input_identity_and_order": {
+        "ordinary_and_deletion_subsets": "row identity is (segment_id,candidate_ordinal); order by segment_id raw UTF-8 bytes ascending, then candidate_ordinal integer ascending 1,2,3",
+        "bootstrap_occurrences": "row identity is (replicate_index,draw_position,source_segment_id,candidate_ordinal); within one replicate order by draw_position integer ascending 0..N_I-1, then candidate_ordinal ascending 1,2,3; source_segment_id remains payload identity and repeated source scenes are never collapsed or resorted by source_segment_id",
+        "input_index_for_midrank_ties": "zero-based position in the applicable canonical order above"
+      },
+      "terminal_status_namespace": {
+        "finite": "ASSOCIATION_AVAILABLE",
+        "constant": "ASSOCIATION_CONSTANT",
+        "nonfinite_or_kernel_gate_failure": "ASSOCIATION_NUMERICAL_FAILURE",
+        "normalization_forbidden": "INELIGIBLE_ASSOCIATION_CONSTANT and NUMERICAL_FAILURE are ledger-status labels only and must never be returned as upstream association statuses"
+      },
+      "midrank": {
+        "algorithm": "stable-sort (value,input_index) by numeric value ascending then input_index ascending; scan maximal groups whose binary64 values compare exactly equal; for one-based occupied rank positions lo..hi assign every group member (lo+hi)/2.0; restore input order",
+        "ties": "exact equality only; no tolerance, jitter, randomization, ordinal preference, or string conversion",
+        "nonfinite": "ASSOCIATION_NUMERICAL_FAILURE"
+      },
+      "weighted_pearson": {
+        "weight_order": "same as input order",
+        "sum_weights": "sw=math.fsum(weights in input order); require finite sw>0",
+        "means": "mx=math.fsum(w*x in input order)/sw and my=math.fsum(w*y in input order)/sw",
+        "centered_sums": "sxy=math.fsum(w*(x-mx)*(y-my) in input order), sxx=math.fsum(w*(x-mx)**2 in input order), syy analogously",
+        "constant": "if sxx<=0 or syy<=0 return ASSOCIATION_CONSTANT",
+        "result": "r=sxy/math.sqrt(sxx*syy); require finite or return ASSOCIATION_NUMERICAL_FAILURE; if -1-1e-15<=r<-1 set r=-1, if 1<r<=1+1e-15 set r=1, if outside [-1-1e-15,1+1e-15] return ASSOCIATION_NUMERICAL_FAILURE; normalize -0.0 to +0.0"
+      },
+      "method_reductions": {
+        "RWS": "within each scene occurrence midrank its three ratings and deviations, call weighted_pearson with weights [1/3,1/3,1/3], then math.fsum(scene_rho in the applicable canonical ordinary segment order or bootstrap draw_position occurrence order)/N_I",
+        "PSP": "midrank all 3*N_I pooled ratings and deviations in canonical input order, then weighted_pearson with 3*N_I identical weights 1/(3*N_I)",
+        "PPR": "call weighted_pearson on raw ratings and deviations in canonical input order with 3*N_I identical weights 1/(3*N_I)"
+      },
+      "subset_recomputation": "fold, LOO, LOCO, shard, and common-support statistics rerun the identical kernel from ordinary canonical subset rows; bootstrap statistics rerun it from canonical draw-position occurrence rows, preserving duplicate occurrences; subtractive shortcuts, duplicate collapse, source-segment resorting of bootstrap occurrences, and cached pooled ranks are forbidden",
+      "implementation_and_environment_gate": {
+        "artifact": "association_kernel_manifest.json",
+        "required_bindings": ["implementation file SHA-256", "golden midrank/Pearson/RWS/PSP/PPR fixture SHA-256", "Python executable SHA-256", "Python version", "environment manifest SHA-256", "math/numpy version manifest"],
+        "required_fixture_ids": ["STAT_MIDRANK_TIES", "STAT_PEARSON_SIGNED_ZERO", "STAT_RWS_REDUCTION", "STAT_PSP_REDUCTION", "STAT_PPR_REDUCTION", "STAT_SUBSET_RECOMPUTE"],
+        "pass": "STATISTIC_KERNEL_SATISFIED",
+        "failure": "ASSOCIATION_NUMERICAL_FAILURE"
+      }
+    },
+    "association_axis": [
+      {
+        "association_id": "RWS",
+        "method": "within-scene rating and deviation average midranks, Pearson correlation of the centered three-candidate rank vectors, then equal-scene arithmetic mean",
+        "point_estimate": "sum(scene_rho)/n_informative_scenes",
+        "constant_policy": "a constant within-scene rating or deviation vector excludes that scene from the shared mask before any association is computed",
+        "denominator": "n_informative_scenes"
+      },
+      {
+        "association_id": "PSP",
+        "method": "Pearson correlation of pooled average-midranks of score and deviation over the exact shared 3*n candidate rows",
+        "point_estimate": "weighted Pearson with candidate_weight=1/(3*n_informative_scenes), algebraically identical to unweighted pooled Spearman here",
+        "constant_policy": "if either pooled rank vector is constant, upstream terminal status is ASSOCIATION_CONSTANT for all three association rows of that predictor cell",
+        "denominator": "n_informative_candidates"
+      },
+      {
+        "association_id": "PPR",
+        "method": "Pearson correlation of raw finite human score and deviation over the exact shared 3*n candidate rows",
+        "point_estimate": "weighted Pearson with candidate_weight=1/(3*n_informative_scenes), algebraically identical to unweighted pooled Pearson here",
+        "constant_policy": "if either pooled raw vector is constant, upstream terminal status is ASSOCIATION_CONSTANT for all three association rows of that predictor cell",
+        "denominator": "n_informative_candidates"
+      }
+    ],
+    "association_uncertainty": {
+      "role": "reported support only; never a recovery gate or ranking key",
+      "bootstrap_unit": "scene with its intact three-candidate score/deviation vectors",
+      "replicates": 2000,
+      "canonical_seed_object": {"exact_keys": ["association_id", "cell_id", "leaderboard_id", "replicates", "support_id"], "replicates": 2000, "string_values": "exact UTF-8", "serialization": "sorted-key compact canonical JSON plus exactly one terminal LF, UTF-8 without BOM, allow_nan=False"},
+      "row_seed": "int.from_bytes(SHA256(ASCII 'RQ014-ASSOCBOOT|' concatenated with canonical seed JSON UTF-8-LF).digest()[0:8],'big',signed=False)",
+      "scene_source_order": "segment_id raw UTF-8 bytes ascending before assigning positions 0..N_I-1",
+      "rng_constructor": "numpy.random.Generator(numpy.random.PCG64(row_seed))",
+      "draw_rule": "for replicate_index 0..1999 call rng.integers(0,N_I,size=N_I,dtype=numpy.int64,endpoint=False) exactly once; preserve draw order and the intact three-candidate vector; no discarded or parallel draws",
+      "occurrence_identity": "the j-th returned index creates occurrence (replicate_index,j,source_segment_id) with draw_position=j; pass rows to the statistic kernel in draw_position then candidate_ordinal order and never collapse or re-sort repeated source_segment_id occurrences",
+      "statistic_recomputation": "rerun the exact registered RWS/PSP/PPR kernel on the drawn scene occurrences, including pooled midranks for PSP",
+      "interval": "sort 2000 finite estimates ascending; for q in {0.025,0.975} set h=(2000-1)*q, j=floor(h), g=h-j, and return (1-g)*x[j]+g*x[j+1] (zero-based type-7 linear quantile)",
+      "successful_replicates_required": 2000,
+      "fixture_and_hash_gate": "canonical seed, first PCG64 draws, each method's resample reduction, implementation, Python executable, and environment SHA-256 fixtures must pass",
+      "failure": "UNCERTAINTY_UNAVAILABLE; point estimate remains observed but robustness label is unavailable"
+    },
+    "registered_leaderboard_row_count": 2880,
+    "leaderboard_id": "{cell_id}-{association_id}",
+    "upstream_terminal_rollup": {
+      "rule": "every granular terminal status is listed exactly once and maps to one immutable (ledger_status,reason_code) pair; duplicate, missing, or runtime-invented mappings are FATAL_STATUS_ROLLUP_ERROR",
+      "recovery_internal_upstream_statuses": ["RATING_JOIN_KEY_MISSING", "RATING_JOIN_KEY_AMBIGUOUS", "RATING_VALUE_MISSING", "RATING_VALUE_NONFINITE", "RATING_VECTOR_CONSTANT", "DEVIATION_VECTOR_CONSTANT", "INFORMATIVE_INVARIANT_FAILURE", "ASSOCIATION_CONSTANT", "ASSOCIATION_NUMERICAL_FAILURE", "ASSOCIATION_AVAILABLE"],
+      "completeness_identity": "set(rows.upstream_status) must equal set(envelope_builder_contract.terminal_statuses) union set(recovery_internal_upstream_statuses); subset-only validation is forbidden",
+      "scope_rule": "scene-local occurrences populate the ordered attrition first-failure counts; when a condition terminates the whole predictor/association row, the same mapping supplies its single ledger status and reason_code",
+      "ledger_status_rank": {
+        "OBSERVED": 0,
+        "INELIGIBLE_BLIND": 1,
+        "INELIGIBLE_REFERENCE": 2,
+        "INELIGIBLE_RATING_COMPLETENESS": 3,
+        "INELIGIBLE_ASSOCIATION_CONSTANT": 4,
+        "NUMERICAL_FAILURE": 5
+      },
+      "rows": [
+        {"upstream_status": "AVAILABLE", "stage": "F", "reason_priority": 0, "ledger_status": "CONTINUE", "reason_code": "F_AVAILABLE_CONTINUE"},
+        {"upstream_status": "INELIGIBLE_BLIND", "stage": "F", "reason_priority": 10, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_SAFE_PRIMITIVE_OR_FIXTURE_GATE"},
+        {"upstream_status": "MISSING_INTERHUB_PATH_TYPE", "stage": "F", "reason_priority": 20, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_MISSING_INTERHUB_PATH_TYPE"},
+        {"upstream_status": "AMBIGUOUS_INTERHUB_PATH_TYPE", "stage": "F", "reason_priority": 21, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_AMBIGUOUS_INTERHUB_PATH_TYPE"},
+        {"upstream_status": "MISSING_WOD_PATH_TYPE", "stage": "F", "reason_priority": 22, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_MISSING_WOD_PATH_TYPE"},
+        {"upstream_status": "AMBIGUOUS_WOD_PATH_TYPE", "stage": "F", "reason_priority": 23, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_AMBIGUOUS_WOD_PATH_TYPE"},
+        {"upstream_status": "UNRECOGNIZED_PATH_TYPE", "stage": "F", "reason_priority": 24, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_UNRECOGNIZED_PATH_TYPE"},
+        {"upstream_status": "INELIGIBLE_INTERHUB_EPISODE", "stage": "F", "reason_priority": 30, "ledger_status": "INELIGIBLE_REFERENCE", "reason_code": "F_INTERHUB_EPISODE_SUPPORT"},
+        {"upstream_status": "INELIGIBLE_TIMELINE_SUPPORT", "stage": "F", "reason_priority": 40, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_TIMELINE_SUPPORT"},
+        {"upstream_status": "INELIGIBLE_TIMELINE_SOURCE_GAP", "stage": "F", "reason_priority": 41, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_TIMELINE_SOURCE_GAP"},
+        {"upstream_status": "INELIGIBLE_TIMELINE_GRID_PHASE", "stage": "F", "reason_priority": 42, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_TIMELINE_GRID_PHASE"},
+        {"upstream_status": "INELIGIBLE_TIMELINE_SEAM", "stage": "F", "reason_priority": 43, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_TIMELINE_SEAM"},
+        {"upstream_status": "INELIGIBLE_STATE_NONFINITE", "stage": "F", "reason_priority": 44, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_STATE_NONFINITE"},
+        {"upstream_status": "INELIGIBLE_UNDEFINED_HEADING", "stage": "F", "reason_priority": 45, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_UNDEFINED_HEADING"},
+        {"upstream_status": "INELIGIBLE_IPV_NUMERICAL", "stage": "F", "reason_priority": 50, "ledger_status": "NUMERICAL_FAILURE", "reason_code": "F_IPV_NUMERICAL"},
+        {"upstream_status": "INELIGIBLE_WEIGHTING", "stage": "F", "reason_priority": 60, "ledger_status": "INELIGIBLE_REFERENCE", "reason_code": "F_ENVELOPE_WEIGHTING"},
+        {"upstream_status": "INELIGIBLE_REFERENCE", "stage": "F", "reason_priority": 61, "ledger_status": "INELIGIBLE_REFERENCE", "reason_code": "F_LEGACY_REFERENCE_UNAVAILABLE"},
+        {"upstream_status": "INELIGIBLE_ENVELOPE_LOW_EPISODE_COUNT", "stage": "F", "reason_priority": 62, "ledger_status": "INELIGIBLE_REFERENCE", "reason_code": "F_ENVELOPE_LOW_EPISODE_COUNT"},
+        {"upstream_status": "INELIGIBLE_ENVELOPE_DEGENERATE", "stage": "F", "reason_priority": 63, "ledger_status": "INELIGIBLE_REFERENCE", "reason_code": "F_ENVELOPE_DEGENERATE"},
+        {"upstream_status": "INELIGIBLE_ENVELOPE_UNCERTAIN", "stage": "F", "reason_priority": 64, "ledger_status": "INELIGIBLE_REFERENCE", "reason_code": "F_ENVELOPE_UNCERTAIN"},
+        {"upstream_status": "INELIGIBLE_ENVELOPE_REQUIRED_CELL", "stage": "F", "reason_priority": 65, "ledger_status": "INELIGIBLE_REFERENCE", "reason_code": "F_ENVELOPE_REQUIRED_CELL"},
+        {"upstream_status": "RATING_JOIN_KEY_MISSING", "stage": "K", "reason_priority": 10, "ledger_status": "INELIGIBLE_RATING_COMPLETENESS", "reason_code": "K_RATING_JOIN_KEY_MISSING"},
+        {"upstream_status": "RATING_JOIN_KEY_AMBIGUOUS", "stage": "K", "reason_priority": 20, "ledger_status": "INELIGIBLE_RATING_COMPLETENESS", "reason_code": "K_RATING_JOIN_KEY_AMBIGUOUS"},
+        {"upstream_status": "RATING_VALUE_MISSING", "stage": "R", "reason_priority": 10, "ledger_status": "INELIGIBLE_RATING_COMPLETENESS", "reason_code": "R_RATING_VALUE_MISSING"},
+        {"upstream_status": "RATING_VALUE_NONFINITE", "stage": "R", "reason_priority": 20, "ledger_status": "INELIGIBLE_RATING_COMPLETENESS", "reason_code": "R_RATING_VALUE_NONFINITE"},
+        {"upstream_status": "RATING_VECTOR_CONSTANT", "stage": "D", "reason_priority": 10, "ledger_status": "INELIGIBLE_ASSOCIATION_CONSTANT", "reason_code": "D_RATING_VECTOR_CONSTANT"},
+        {"upstream_status": "DEVIATION_VECTOR_CONSTANT", "stage": "D", "reason_priority": 20, "ledger_status": "INELIGIBLE_ASSOCIATION_CONSTANT", "reason_code": "D_DEVIATION_VECTOR_CONSTANT"},
+        {"upstream_status": "INFORMATIVE_INVARIANT_FAILURE", "stage": "I", "reason_priority": 10, "ledger_status": "NUMERICAL_FAILURE", "reason_code": "I_INFORMATIVE_INVARIANT_FAILURE"},
+        {"upstream_status": "ASSOCIATION_CONSTANT", "stage": "I", "reason_priority": 20, "ledger_status": "INELIGIBLE_ASSOCIATION_CONSTANT", "reason_code": "I_ASSOCIATION_CONSTANT"},
+        {"upstream_status": "ASSOCIATION_NUMERICAL_FAILURE", "stage": "I", "reason_priority": 30, "ledger_status": "NUMERICAL_FAILURE", "reason_code": "I_ASSOCIATION_NUMERICAL_FAILURE"},
+        {"upstream_status": "ASSOCIATION_AVAILABLE", "stage": "I", "reason_priority": 0, "ledger_status": "OBSERVED", "reason_code": "I_ASSOCIATION_OBSERVED"}
+      ],
+      "terminal_selection": "within one scene select its first failed attrition stage; if multiple granular reasons exist at that stage choose smallest reason_priority then reason_code raw UTF-8 ascending; AVAILABLE and CONTINUE are never written as terminal ledger statuses",
+      "row_outcome_algorithm": [
+        "if a cell-fatal upstream execution status is not AVAILABLE, apply ordered_attrition_contract.cell_fatal_count_policy, then apply its unique rollup without reading a rating value",
+        "otherwise run ordered attrition; if N_I=0 choose the earliest stage K,F,R,D,I with X_stage>0, then the smallest reason_priority and reason_code among scenes first failing there",
+        "otherwise run the registered association kernel; finite output maps ASSOCIATION_AVAILABLE to OBSERVED even when stability fields are typed NA",
+        "association constant or numerical failure maps through its unique I-stage row",
+        "exactly one terminal ledger row is emitted for every leaderboard_id"
+      ],
+      "row_required_fields": ["ledger_status", "reason_code", "upstream_status", "first_failure_stage", "reason_priority"]
+    },
+    "append_only_ledger": {
+      "artifact": "recovery_ledger.jsonl",
+      "schema_version": "rq014-recovery-ledger-row-v2",
+      "exact_row_keys": ["schema_version", "row_index", "leaderboard_id", "cell_id", "association_id", "ledger_status", "reason_code", "upstream_status", "first_failure_stage", "reason_priority", "raw_denominators", "metrics", "recovery_compatible", "rank_sort_tuple", "prev_record_sha256", "record_sha256"],
+      "raw_denominators_exact_keys": ["N_B", "N_K", "N_F", "N_R", "N_D", "N_I", "X_K", "X_F", "X_R", "X_D", "X_I", "n_scene_universe", "n_blind_available_scenes", "n_rating_key_complete_scenes", "n_excluded_nonfinite_scenes", "n_excluded_constant_rating_scenes", "n_excluded_constant_deviation_scenes", "n_informative_scenes", "n_informative_candidates", "rating_distinct_count_pooled", "deviation_distinct_count_pooled", "scene_weight_sum", "candidate_weight_sum", "support_id"],
+      "metrics_exact_keys": ["association_value", "n_informative_scenes_metric", "fold_associations", "fold_negative_count", "median_fold_association", "leave_one_scene_out_max", "scenario_cluster_na_scene_count_metric", "eligible_cluster_count_metric", "negative_cluster_count_metric", "leave_one_cluster_out_negative_fraction", "eligible_shard_count_metric", "negative_shard_count_metric", "leave_one_shard_out_negative_fraction", "association_ci_lower", "association_ci_upper"],
+      "field_rules": {
+        "schema_version": "exact rq014-recovery-ledger-row-v2",
+        "row_index": "integer 0..2879",
+        "leaderboard_id": "exact {cell_id}-{association_id}",
+        "cell_id": "one of the 960 canonical registered predictor cell IDs",
+        "association_id": "exact RWS, PSP, or PPR",
+        "ledger_status": "one of allowed_terminal_statuses",
+        "recovery_compatible": "JSON boolean",
+        "first_failure_stage": "exact K, F, R, D, or I from the selected rollup row; observed ASSOCIATION_AVAILABLE rows use I",
+        "reason_priority": "nonnegative JSON integer copied from the unique rollup row",
+        "raw_denominators": "exact bare numeric/digest fields defined by association_support_contract; no typed wrappers",
+        "metrics": "exact typed objects/arrays defined by stability.row_metric_fields",
+        "rank_sort_tuple": "exact 11-element array materialized from ranking.typed_sort_projection in lexicographic_key order; final element is leaderboard_id as a JSON string",
+        "hash_fields": "lowercase 64-character SHA-256 hex"
+      },
+      "canonical_json": "CPython 3.9 json.dumps(row,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False) using CPython 3.9 finite-float repr, UTF-8 without BOM, followed by exactly one LF byte",
+      "hash_domain_prefix": "ASCII bytes RQ014-RECOVERY-LEDGER-v2 followed by one NUL byte 0x00",
+      "genesis_prev_record_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "record_sha256_preimage": "hash_domain_prefix concatenated with canonical_json bytes of the exact row after removing only record_sha256; prev_record_sha256 remains in the preimage; no other key is omitted and the preimage retains its terminal LF",
+      "record_sha256_rule": "lowercase hex SHA256(record_sha256_preimage); add this value as record_sha256, then serialize the full stored row once with canonical_json",
+      "stored_jsonl": "concatenate the 2880 full stored-row canonical_json byte strings in row_index order; every row including the last has exactly one LF and there are no blank lines",
+      "base_row_order": "enumerate sampling_axis order, temporal_axis.recipes order, envelope_axis order, horizon_axis order, readout_axis order to obtain 960 cell_ids; within each cell enumerate association_axis order RWS, PSP, PPR; assign row_index 0..2879",
+      "worker_completion_order": "workers never append; the lead validates and buffers all terminal rows, then writes only base_row_order, so scheduling or completion order cannot affect bytes",
+      "hash_chain": "row 0 uses genesis_prev_record_sha256; each later row prev_record_sha256 equals the immediately preceding stored row's record_sha256",
+      "terminal_digest_artifact": {
+        "path": "recovery_ledger_terminal_digest.json",
+        "exact_keys": ["schema_version", "row_count", "terminal_record_sha256", "ledger_size_bytes", "ledger_sha256"],
+        "schema_version": "rq014-recovery-ledger-terminal-v1",
+        "row_count": 2880,
+        "terminal_record_sha256": "record_sha256 of row_index 2879",
+        "ledger_sha256": "SHA256 of exact stored_jsonl bytes",
+        "serialization": "canonical_json"
+      },
+      "partial_leaderboard_visibility": "forbidden until all 2880 rows are terminal",
+      "allowed_terminal_statuses": [
+        "OBSERVED",
+        "INELIGIBLE_BLIND",
+        "INELIGIBLE_REFERENCE",
+        "INELIGIBLE_RATING_COMPLETENESS",
+        "INELIGIBLE_ASSOCIATION_CONSTANT",
+        "NUMERICAL_FAILURE"
+      ],
+      "status_and_reason_required": true,
+      "unmapped_upstream_status": "FATAL_STATUS_ROLLUP_ERROR",
+      "no_row_deletion_or_replacement": true,
+      "noncanonical_or_chain_mismatch": "FATAL_LEDGER_INTEGRITY_ERROR"
+    },
+    "stability": {
+      "typed_metric_schema": {
+        "FINITE_FLOAT": {"exact_keys": ["kind", "value"], "kind": "FINITE_FLOAT", "value": "finite JSON binary64 number with -0.0 normalized to 0.0"},
+        "FINITE_INT": {"exact_keys": ["kind", "value"], "kind": "FINITE_INT", "value": "JSON integer"},
+        "NA": {"exact_keys": ["kind", "reason_code"], "kind": "NA", "reason_code": "registered uppercase ASCII reason"},
+        "registered_na_reasons": ["ROW_NOT_OBSERVED", "INSUFFICIENT_FOLD_SUPPORT", "NONFINITE_FOLD_RECOMPUTATION", "INSUFFICIENT_LOO_SUPPORT", "NONFINITE_LOO_RECOMPUTATION", "INSUFFICIENT_CLUSTER_SUPPORT", "NONFINITE_CLUSTER_RECOMPUTATION", "INSUFFICIENT_SHARD_SUPPORT", "NONFINITE_SHARD_RECOMPUTATION", "UNCERTAINTY_UNAVAILABLE"],
+        "forbidden": ["JSON null", "NaN", "Infinity", "-Infinity", "bare string NA", "numeric sentinel"]
+      },
+      "row_metric_fields": {
+        "association_value": "FINITE_FLOAT for OBSERVED and NA(ROW_NOT_OBSERVED) otherwise",
+        "n_informative_scenes_metric": "FINITE_INT copied from the separate raw n_informative_scenes field for OBSERVED and NA(ROW_NOT_OBSERVED) otherwise",
+        "fold_associations": "length-5 array of FINITE_FLOAT or one NA reason object for the entire unavailable vector",
+        "fold_negative_count": "FINITE_INT only when all five fold values are finite, otherwise the same typed NA reason",
+        "median_fold_association": "FINITE_FLOAT only when all five fold values are finite, otherwise the same typed NA reason",
+        "leave_one_scene_out_max": "FINITE_FLOAT or typed NA",
+        "scenario_cluster_na_scene_count_metric": "FINITE_INT count over the native shared support for OBSERVED and NA(ROW_NOT_OBSERVED) otherwise",
+        "eligible_cluster_count_metric": "FINITE_INT for OBSERVED even when fewer than two clusters are eligible; NA(ROW_NOT_OBSERVED) otherwise",
+        "negative_cluster_count_metric": "FINITE_INT only when every eligible cluster omission is finite, otherwise NA(NONFINITE_CLUSTER_RECOMPUTATION); NA(ROW_NOT_OBSERVED) for a nonobserved row",
+        "leave_one_cluster_out_negative_fraction": "FINITE_FLOAT or typed NA",
+        "eligible_shard_count_metric": "FINITE_INT for OBSERVED even when fewer than two shards are eligible; NA(ROW_NOT_OBSERVED) otherwise",
+        "negative_shard_count_metric": "FINITE_INT only when every eligible shard omission is finite, otherwise NA(NONFINITE_SHARD_RECOMPUTATION); NA(ROW_NOT_OBSERVED) for a nonobserved row",
+        "leave_one_shard_out_negative_fraction": "FINITE_FLOAT or typed NA",
+        "association_ci_lower": "FINITE_FLOAT when all 2000 association bootstrap replicates are finite, NA(UNCERTAINTY_UNAVAILABLE) for an observed row otherwise, and NA(ROW_NOT_OBSERVED) for a nonobserved row",
+        "association_ci_upper": "FINITE_FLOAT when all 2000 association bootstrap replicates are finite, NA(UNCERTAINTY_UNAVAILABLE) for an observed row otherwise, and NA(ROW_NOT_OBSERVED) for a nonobserved row"
+      },
+      "five_fold_rule": {
+        "prefix_bytes": "ASCII bytes 52 51 30 31 34 2d 52 32 2d 46 4f 4c 44 7c, exactly RQ014-R2-FOLD|",
+        "segment_bytes": "segment_id encoded once as strict UTF-8 with no BOM, normalization, length prefix, terminator, or LF",
+        "seed_material": "prefix_bytes concatenated directly with segment_bytes",
+        "assignment": "int.from_bytes(SHA256(seed_material).digest()[0:8],byteorder='big',signed=False) mod 5",
+        "fixture_id": "FOLD_UTF8_BYTES"
+      },
+      "fold_role": "for each association method, recompute that exact method independently on the shared included scenes assigned to each fold; never average candidate rows across folds and never use folds as train/test",
+      "fold_min_informative_scenes": 5,
+      "fold_validity": "all five folds must each meet the minimum and the method-specific nonconstant rule; otherwise fold_associations, fold_negative_count, and median_fold_association use the registered typed NA reason and recovery_compatible=false",
+      "fold_negative_definition": "finite association strictly less than 0; denominator is exactly 5",
+      "leave_one_scene_out": "for every shared included scene remove its intact three-candidate vector and recompute the exact association method, including pooled reranking for PSP; every deletion must be finite",
+      "leave_one_scene_out_denominator": "n_informative_scenes",
+      "leave_one_scenario_cluster_out": "from the native shared support count exact scenario_cluster=NA scenes separately and never treat NA as a cluster; for each eligible non-NA scenario cluster remove every scene in that cluster and recompute the exact association method on the remaining shared mask",
+      "eligible_cluster_min_informative_scenes": 5,
+      "eligible_cluster_remaining_min_informative_scenes": 5,
+      "eligible_cluster_definition": "a distinct non-NA scenario_cluster with at least 5 included scenes and at least 5 included scenes remaining after its removal; order eligible cluster IDs by raw UTF-8 bytes",
+      "leave_one_cluster_denominator": "eligible_cluster_count_metric.value; it is recorded even when 0 or 1",
+      "leave_one_cluster_negative_definition": "negative_cluster_count_metric is the number of eligible-cluster omission associations strictly less than 0, only when every eligible omission is finite; leave_one_cluster_out_negative_fraction equals negative_cluster_count_metric.value/eligible_cluster_count_metric.value only when eligible_cluster_count_metric.value>=2 and every omission is finite, otherwise typed NA(INSUFFICIENT_CLUSTER_SUPPORT or NONFINITE_CLUSTER_RECOMPUTATION)",
+      "source_shard_leave_one_out": "use checksum-bound source_shard_id; a shard is eligible with at least 5 included scenes and at least 5 remaining scenes, then remove the shard and recompute the exact association method",
+      "eligible_shard_definition": "a distinct checksum-bound nonmissing source_shard_id with at least 5 included scenes and at least 5 included scenes remaining after its removal; order eligible shard IDs by raw UTF-8 bytes",
+      "leave_one_shard_denominator": "eligible_shard_count_metric.value; it is recorded even when 0 or 1",
+      "leave_one_shard_negative_definition": "negative_shard_count_metric is the number of eligible-shard omission associations strictly less than 0, only when every eligible omission is finite; leave_one_shard_out_negative_fraction equals negative_shard_count_metric.value/eligible_shard_count_metric.value only when eligible_shard_count_metric.value>=2 and every omission is finite, otherwise typed NA(INSUFFICIENT_SHARD_SUPPORT or NONFINITE_SHARD_RECOMPUTATION)",
+      "native_support_and_common_support_views_required": true,
+      "support_reuse_rule": "all fold/LOO/LOCO/shard computations start from the same association_support_contract mask and may only remove whole scenes",
+      "observed_with_stability_na": "permitted; ledger_status remains OBSERVED, every unavailable metric uses a typed NA object, recovery_compatible is false, and ranking uses the explicit typed sort projection"
+    },
+    "recovery_compatible_marker": {
+      "interpretation": "operational compatibility with the remembered strong negative result, not a hypothesis test",
+      "requirements": [
+        "raw_n_informative_scenes_at_least_40",
+        "association_value.kind_equals_FINITE_FLOAT_and_association_value.value_less_than_or_equal_to_minus_0p30",
+        "all_5_fold_associations_finite",
+        "at_least_4_of_5_fold_associations_negative",
+        "median_fold_association_less_than_or_equal_to_minus_0p20",
+        "all_leave_one_scene_out_associations_finite",
+        "maximum_leave_one_scene_out_association_less_than_0",
+        "eligible_cluster_count_metric.kind_equals_FINITE_INT_and_value_at_least_2",
+        "negative_cluster_count_metric.kind_equals_FINITE_INT_proving_all_eligible_cluster_omissions_finite",
+        "leave_one_cluster_out_negative_fraction.kind_equals_FINITE_FLOAT_and_value_at_least_0p80"
+      ],
+      "accepted_residuals": {
+        "STAT4-m01": "scenario_cluster=NA scenes remain in native support but are not a LOCO cluster; no NA-share ceiling or leave-all-NA omission is added to recovery_compatible in this v2 contract"
+      }
+    },
+    "ranking": {
+      "wait_for_all_rows_terminal": true,
+      "lexicographic_key": [
+        "status_rank ascending",
+        "recovery_compatible_rank ascending",
+        "association_sort_tag ascending then association_sort_value ascending",
+        "fold_negative_sort_tag ascending then fold_negative_sort_value ascending",
+        "cluster_fraction_sort_tag ascending then cluster_fraction_sort_value ascending",
+        "n_scene_sort_tag ascending then n_scene_sort_value ascending",
+        "leaderboard_id UTF-8 ascending"
+      ],
+      "typed_sort_projection": {
+        "status_rank": "exact integer lookup in upstream_terminal_rollup.ledger_status_rank",
+        "recovery_compatible_rank": "0 for true, 1 for false; any required typed NA forces false",
+        "association_finite": "[0,association_value.value] after requiring exact keys {kind,value}, kind=FINITE_FLOAT, and finite value",
+        "association_NA": "[1,0.0]",
+        "fold_negative_count_finite_descending": "[0,-fold_negative_count.value] after requiring exact keys {kind,value}, kind=FINITE_INT, and integer value",
+        "fold_negative_count_NA": "[1,0]",
+        "cluster_fraction_finite_descending": "[0,-leave_one_cluster_out_negative_fraction.value] after requiring exact keys {kind,value}, kind=FINITE_FLOAT, and finite value",
+        "cluster_fraction_NA": "[1,0.0]",
+        "n_informative_scenes_finite_descending": "[0,-n_informative_scenes_metric.value] after requiring exact keys {kind,value}, kind=FINITE_INT, and integer value equal to raw n_informative_scenes",
+        "n_informative_scenes_NA": "[1,0]"
+      },
+      "missing_sort_values": "typed NA values are projected only through their registered [1,zero] tagged tuple; JSON null, NaN, infinity, and ad-hoc numeric sentinels are forbidden",
+      "float_comparison": "compare finite IEEE-754 binary64 values exactly after signed-zero normalization; no epsilon grouping",
+      "support_comparability": "RWS/PSP/PPR rows within a cell are exactly support-matched; cells may have frozen varying support, so rank is explicitly an operational specification-recovery order and every row carries support_id and denominators",
+      "unique_rank_rule": "materialize the exact typed sort tuple, then stable lexicographic sort over all 2880 unique leaderboard IDs; assign integer ranks 1..2880 exactly once; raw UTF-8 leaderboard_id bytes are the final total-order key",
+      "no_early_stop": true,
+      "no_manual_substitution": true,
+      "top_recipe_count": 1,
+      "freeze_candidate_rule": "only when at least one row has ledger_status=OBSERVED and recovery_compatible=true; because status_rank and recovery_compatible_rank precede every other key, rank 1 is necessarily such a row whenever one exists"
+    },
+    "same_recipe_robustness_requirement": {
+      "historical_metric_may_select": ["RWS", "PSP", "PPR"],
+      "robust_internal_label_requires_RWS_twin": "when rank 1 uses PSP or PPR, RWS for the same predictor cell and exact shared support must be negative and reported with scene-cluster uncertainty",
+      "failure_effect": "record AGGREGATION_SENSITIVE as a separate diagnostic flag without changing the selected recipe or final same-dataset recovery verdict; never choose another recipe"
+    }
+  },
+  "adaptive_recovery_extension": {
+    "status": "DENY_REQUIRES_NEW_CHECKSUM_BOUND_AMENDMENT",
+    "enabled": false,
+    "current_v2_execution": "FORBIDDEN",
+    "current_v2_append_rows": 0,
+    "base_ledger_rule": "the current lane contains exactly 960 predictor cells and 2880 association rows; no new cell, row, leaderboard ID, rank, or hash-chain record may be appended",
+    "no_compatible_base_row": "terminate as NOT_RECOVERED_WITHIN_FROZEN_RECOVERY_GRID; do not freeze a recipe and do not replay",
+    "future_reconsideration": "requires a new checksum-bound amendment, new review manifest, fresh formal review, new authorization, and a separate ledger namespace; it cannot mutate or rerank this v2 ledger"
+  },
+  "selected_recipe_freeze": {
+    "artifact": "selected_recovery_recipe.json",
+    "creation_prerequisite": "at least one of the fixed 2880 rows has ledger_status=OBSERVED and recovery_compatible=true",
+    "generated_mechanically_from": "terminal fixed-2880 leaderboard rank 1 after creation_prerequisite passes; rank 1 must itself be OBSERVED and recovery_compatible=true",
+    "no_artifact_states": ["RECOVERY_INCONCLUSIVE_COVERAGE", "NOT_RECOVERED_WITHIN_FROZEN_RECOVERY_GRID"],
+    "no_artifact_action": "do not create, truncate, or replace selected_recovery_recipe.json and do not authorize clean replay",
+    "required_bindings": [
+      "grid and predictor manifests",
+      "wod_scene_anchor_domain.csv and wod_scene_anchor_domain_manifest.json path/size/SHA-256 plus required_envelope_queries.csv aggregate SHA-256",
+      "leaderboard and hash-chain terminal digest",
+      "cell and association IDs plus rank key",
+      "sampling, resampling, temporal, horizon, envelope, deviation, and aggregation contracts",
+      "estimator tree, code, environment, preprocessing, and source hashes",
+      "candidate, counterpart, InterHub, path-type, and envelope manifests",
+      "rating-access receipt and frozen analysis-manifest hashes",
+      "observed N, association, fold, leave-one-cluster, leave-one-shard, and leave-one-scene metrics",
+      "clean replay tolerances"
+    ],
+    "BL90_conditional_binding": {
+      "required_when_selected_envelope_id": "BL90",
+      "exact_keys": ["legacy_artifact_path", "legacy_artifact_size_bytes", "legacy_artifact_sha256", "legacy_manifest_path", "legacy_manifest_size_bytes", "legacy_manifest_sha256", "selected_rows"],
+      "selected_rows_order": "the subset of CP, HO, MP, F present in the selected recipe's exact informative support, in that canonical order",
+      "selected_row_exact_keys": ["path_type", "L_binary64_be_hex", "M_binary64_be_hex", "U_binary64_be_hex", "row_canonical_sha256"],
+      "source": "the exact BL90 artifact and manifest used by the screen plus every selected-support path-type L/M/U row byte/hash defined by envelope_builder_contract_v2.BL90.legacy_artifact_contract",
+      "mismatch": "STALE_FATAL"
+    },
+    "scene_anchor_domain_binding": {
+      "required": true,
+      "exact_keys": ["artifact_path", "artifact_size_bytes", "artifact_sha256", "manifest_path", "manifest_size_bytes", "manifest_sha256", "selected_feature_id", "selected_horizon_id", "selected_group_projection_row_count", "selected_group_projection_sha256"],
+      "selected_group_projection": "from checksum-verified wod_scene_anchor_domain.csv retain the header and every row whose feature_id and horizon_id equal the selected recipe, preserving exact artifact row order and encoding; selected_group_projection_sha256 hashes those exact UTF-8 LF bytes",
+      "replay_use": "clean replay receives only the expected projection SHA/count through selected_recovery_recipe.json, independently rederives the selected per-scene groups, serializes the same projection, and requires exact count/SHA equality without reading the screen artifact"
+    },
+    "upstream_hash_drift": "STALE_FATAL"
+  },
+  "clean_independent_replay": {
+    "independence": "fresh agent, separate managed run root, exact published-commit closed code snapshot, and no access to the screen leaderboard except selected_recovery_recipe.json; Git worktree execution is forbidden",
+    "allowed_inputs": [
+      "selected recipe",
+      "score-stripped WOD bundle",
+      "checksum-bound InterHub source",
+      "authorized ratings manifest",
+      "pinned numerical estimator kernel",
+      "only when selected envelope_id=BL90: the exact checksum-bound legacy BL90 artifact and its exact manifest used by the screen"
+    ],
+    "must_reimplement": [
+      "resampling",
+      "window assembly",
+      "envelope builder or exact legacy-envelope loader",
+      "deviation endpoint",
+      "rating join",
+      "association statistic"
+    ],
+    "forbidden_inputs": [
+      "screen feature caches",
+      "nonselected leaderboard rows",
+      "screen statistic implementation"
+    ],
+    "BL90_input_verification": "when selected envelope_id=BL90, require selected_recipe_freeze.BL90_conditional_binding, verify the allowlisted artifact and manifest path/size/SHA-256 values, decode the exact selected_rows L/M/U binary64 bytes, recompute every row_canonical_sha256, and require byte identity to the artifact used by the screen before replay",
+    "scene_anchor_domain_verification": "require selected_recipe_freeze.scene_anchor_domain_binding and exact independently rederived selected_group_projection_row_count/SHA-256 equality; the screen artifact itself remains forbidden input",
+    "pass_tolerances": {
+      "scene_candidate_ids_and_attrition_masks": "exact",
+      "scene_anchor_domain_group_status_reason_and_tau_membership": "exact for every segment_id x selected feature_id x selected horizon_id group",
+      "finite_missing_ipv_masks": "exact",
+      "ipv_rad": "absolute 1e-8 and relative 1e-6",
+      "candidate_deviation": "absolute 1e-6",
+      "all_counts": "exact",
+      "rank_vectors_by_association": {
+        "RWS": "exact scene-local rating and deviation midrank vectors in canonical scene/candidate order",
+        "PSP": "exact pooled rating and deviation midrank vectors in canonical candidate-row order",
+        "PPR": "NOT_APPLICABLE; PPR consumes raw vectors and no diagnostic rank vector is a replay gate"
+      },
+      "association_absolute_difference": 1.0e-12,
+      "recovery_compatible_marker": "exact"
+    },
+    "failure_rule": "debug and rerun the same frozen top recipe; never fall through to rank 2"
+  },
+  "registered_controls_and_robustness": {
+    "selection_independent": true,
+    "current_structural_gate": {
+      "control_id": "NC_PRETSTAR_HISTORY_ONLY",
+      "role": "G2R rating-blind candidate/future-leakage fixture and fatal gate only",
+      "association_rows": 0,
+      "leaderboard_membership": false,
+      "rating_access": "FORBIDDEN",
+      "verdict_effect": "none after its structural gate passes; a gate failure aborts G2R before rating access"
+    },
+    "future_optional_denied": {
+      "status": "DENY_REQUIRES_NEW_CHECKSUM_BOUND_AMENDMENT",
+      "controls": ["NC_CYCLIC_CANDIDATE_SHIFT", "NC_COUNTERPART_SWAP_WITHIN_PATH_TYPE_AND_SUPPORT_BIN", "NC_SIGN_FLIP_WITH_ENVELOPE_UNCHANGED"],
+      "robustness_envelopes": ["central_80", "central_95"],
+      "supporting_statistics": ["Kendall_tau", "top_vs_bottom_concordance", "kinematic_partial_association"],
+      "current_execution": "FORBIDDEN",
+      "current_ranking_or_verdict_effect": "NONE"
+    },
+    "final_verdict_rule": "no current control, optional envelope, or supporting statistic changes the fixed-grid selection, replay gate, or same-dataset recovery label"
+  },
+  "verdict_ladder": {
+    "state_conditions": {
+      "all_predictor_cells_ineligible": "zero of 2880 rows has ledger_status=OBSERVED; selected_recovery_recipe.json is absent and replay is forbidden",
+      "eligible_but_none_compatible": "at least one row has ledger_status=OBSERVED and zero rows have recovery_compatible=true; selected_recovery_recipe.json is absent and replay is forbidden",
+      "top_compatible_not_replayed": "at least one row is OBSERVED and recovery_compatible=true, rank 1 is mechanically frozen, and clean replay has not passed",
+      "clean_replay_mismatch": "the one frozen rank-1 compatible recipe fails an exact registered replay gate; never fall through to another rank",
+      "clean_replay_pass": "the one frozen rank-1 compatible recipe passes all replay gates and preserves recovery_compatible=true"
+    },
+    "all_predictor_cells_ineligible": "RECOVERY_INCONCLUSIVE_COVERAGE",
+    "eligible_but_none_compatible": "NOT_RECOVERED_WITHIN_FROZEN_RECOVERY_GRID",
+    "top_compatible_not_replayed": "RECOVERY_RECIPE_FROZEN_PENDING_REPLAY",
+    "clean_replay_mismatch": "RECOVERY_CANDIDATE_COMPUTATIONALLY_UNREPRODUCED",
+    "clean_replay_pass": "HISTORICAL_RESULT_RECOVERED_ON_SAME_DATASET",
+    "stability_basis": "the selected row and clean replay must preserve recovery_compatible=true; optional/current controls do not alter this label"
+  },
+  "staged_rating_access": {
+    "G2R": "rating-blind 960-cell feature bank, masks, envelopes, the NC_PRETSTAR_HISTORY_ONLY structural leakage fixture/gate, and manifests; no control association row",
+    "G3R": "single separately authorized full-rated479 rating join and 2880-row recovery screen; no sealed confirmation claim",
+    "G4R": "frozen selected-recipe clean replay on the same ratings",
+    "G5_NEW_DATA": "optional true confirmation on ratings never used for recovery"
+  },
+  "optional_prospective_validation": {
+    "gating_for_recovery": false,
+    "legacy_v1p3_power_and_confirmation_contract": "retained only as provenance, post-selection split stability, and future new-sample planning",
+    "old_hash_splits_are_sealed_confirmation_after_full_data_search": false,
+    "operations": {
+      "rq014_optional_prospective_power": "DENY",
+      "rq014_optional_postselection_split_stability": "DENY",
+      "rq014_optional_newdata_confirmation": "DENY"
+    }
+  }
+}
