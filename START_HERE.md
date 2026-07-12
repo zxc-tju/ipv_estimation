@@ -176,6 +176,19 @@ question index in `STUDIES.md`.
   It emits only the canonical CSV/JSON schema under the managed input root. Contract preflight
   remains denied until a validated export receipt exists. Current kickoff:
   `reports/plans/prompts/RQ014_G2_kickoff_prompt_v1p5_20260712.md`.
+- RQ014 multi-agent execution handoff is
+  `reports/plans/RQ014_plan_v1p6_execution_handoff_20260712.md` (SHA-256
+  `f007c290ea6bb1130b2df1b49c63e482e34cfc7147716f8d68dd4c918e81de0c`). It is an
+  append-only operational supplement, not a new authorization and not part of the v1.5 Formal-G1
+  bundle. Current Tongji managed checkout is still `b1476bd0` and lacks the v1.5 contract; the Lead
+  Agent must first sync published Git history and detach at exact reviewed commit `24be0827`, then
+  create/dual-review an immutable export spec and run validate-only. Waves 0–3 through the already
+  authorized rating-blind export/bounded report may proceed without a new user decision. The first
+  mandatory user/PI decision is D1 after export PASS evidence; preflight, compute budget, 960-cell
+  feature build, rating join, clean replay and claim acceptance each retain later explicit stop gates.
+  Independent execution/HPC and science/governance reviewers both returned `NO_BLOCKER` after
+  remediation; durable review:
+  `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_execution_handoff_review_20260712.md`.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
