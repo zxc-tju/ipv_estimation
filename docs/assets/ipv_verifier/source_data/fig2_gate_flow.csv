@@ -1,0 +1,5 @@
+fold,raw_rows,category_pass_rows,gate_pass_rows,gate_definition,abstain_rows,gate_pass_rate
+train,2558374,2557510,2557510,category support reference,864,0.9996622854985237
+guard_tune,1302044,1301436,1236364,category + kNN distance,65680,0.949556236194783
+calibration,1266282,1266126,1205609,category + kNN distance,60673,0.9520857123452754
+test,1270566,1270216,1209857,category + kNN distance,60709,0.9522189323498347
