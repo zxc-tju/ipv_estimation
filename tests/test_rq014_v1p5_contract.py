@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -9,7 +8,6 @@ import pytest
 
 from scripts.rq014.materialize_registry import (
     ContractError,
-    _x02_composite,
     canonical_bytes,
     load_json,
     materialize,
@@ -26,11 +24,12 @@ from scripts.rq014.preflight import (
 
 ROOT = Path(__file__).resolve().parents[1]
 PLANS = ROOT / "reports" / "plans"
-VALID = PLANS / "RQ014_config_space_v1p5.yaml"
+VALID = PLANS / "RQ014_config_space_v1p6.yaml"
 FORENSIC = PLANS / "RQ014_forensic_registry_v1p5.yaml"
-EXTENSION = PLANS / "RQ014_recovery_extension_registry_v1p5.yaml"
+EXTENSION = PLANS / "RQ014_recovery_extension_registry_v1p6.yaml"
 EXECUTION = PLANS / "RQ014_execution_contract_v1p5.json"
-RECOVERY = PLANS / "RQ014_recovery_lane_v2.json"
+RECOVERY = PLANS / "RQ014_recovery_lane_v3.json"
+RECOVERY_V2 = PLANS / "RQ014_recovery_lane_v2.json"
 
 
 def _walk_values(value: object):
@@ -188,7 +187,7 @@ def test_v1p5_score_stripped_and_staged_manifest_contract_is_rating_blind() -> N
 
 def test_recovery_lane_searches_true_history_future_and_combined_windows_without_power_gate() -> None:
     recovery = load_json(RECOVERY)
-    assert recovery["schema_version"] == "rq014-historical-recovery-lane-v2"
+    assert recovery["schema_version"] == "rq014-historical-recovery-lane-v3"
     assert recovery["known_target"]["remembered_direction"] == "negative"
     assert recovery["known_target"]["null_hypothesis_discovery"] is False
     assert recovery["claim_boundary"]["p_values_gate_recovery"] is False
@@ -200,23 +199,25 @@ def test_recovery_lane_searches_true_history_future_and_combined_windows_without
     assert recipes["HF-W10"]["interval"] == "[tau-1.0,tau+1.0] with tau included once"
     assert {"TP", "TF"} <= set(recipes)
     assert feature_bank["feature_family_enumeration"]["registered_family_count"] == 16
-    assert feature_bank["predictor_cell_enumeration"]["registered_predictor_cell_count"] == 960
+    assert feature_bank["predictor_cell_enumeration"]["registered_predictor_cell_count"] == 320
+    assert "envelope_axis" not in feature_bank
     screen = recovery["full_data_recovery_screen"]
     assert screen["split"].startswith("none")
-    assert screen["registered_leaderboard_row_count"] == 2880
+    assert screen["registered_leaderboard_row_count"] == 960
     assert screen["ranking"]["wait_for_all_rows_terminal"] is True
     assert screen["ranking"]["top_recipe_count"] == 1
     assert recovery["optional_prospective_validation"]["gating_for_recovery"] is False
 
     execution = load_json(EXECUTION)
-    assert execution["primary_scientific_authority"]["path"] == str(RECOVERY.relative_to(ROOT))
+    registry = load_json(VALID)
+    assert registry["primary_recovery_contract"]["path"] == str(RECOVERY.relative_to(ROOT))
     operations = execution["authorization"]["registered_operations"]
     assert operations["rq014_r2_blind_feature_build"]["status"].startswith("DENY_")
     assert operations["rq014_r3_full_rating_join_and_rank"]["status"].startswith("DENY_")
     assert operations["rq014_r4_clean_replay"]["status"].startswith("DENY_")
 
 
-def test_v1p5_registry_binding_targets_cover_every_placeholder() -> None:
+def test_v1p7_registry_binding_targets_cover_every_prefilled_value() -> None:
     execution = load_json(EXECUTION)
     policy = execution["registry_binding_contract"]
     registries = {
@@ -224,37 +225,41 @@ def test_v1p5_registry_binding_targets_cover_every_placeholder() -> None:
         "forensic": load_json(FORENSIC),
         "recovery_extension": load_json(EXTENSION),
     }
-    assert policy["required_binding_count"] == 17
-    assert len(policy["required_binding_ids"]) == 17
+    assert policy["required_binding_count"] == 9
+    assert len(policy["required_binding_ids"]) == 9
     assert set(policy["binding_targets"]) == set(policy["required_binding_ids"])
-    assert sum(value == "TO_FREEZE_AT_G2" for registry in registries.values() for value in _walk_values(registry)) == 17
-    for target in policy["binding_targets"].values():
-        assert _pointer(registries[target["registry"]], target["pointer"]) == "TO_FREEZE_AT_G2"
+    assert policy["source_binding_mode"] == "VERIFY_PREFILLED_EXACT"
+    assert sum(
+        value == "TO_FREEZE_AT_G2"
+        for registry in registries.values()
+        for value in _walk_values(registry)
+    ) == 0
+    bindings = _valid_bindings()
+    for binding_id, target in policy["binding_targets"].items():
+        assert _pointer(registries[target["registry"]], target["pointer"]) == bindings[binding_id]
 
     x02 = registries["recovery_extension"]["cells"][1]
     assert x02["extension_id"] == "X02"
+    assert x02["binding_status"] == "LEGACY_INACTIVE_UNBOUND"
     gate = x02["source_definition_gate"]
-    assert gate["source_definition_sha256"] == "TO_FREEZE_AT_G2"
-    assert gate["wod_mapping_sha256"] == "TO_FREEZE_AT_G2"
-    assert gate["artifact_set_sha256"] == "TO_FREEZE_AT_G2"
+    assert gate["source_definition_sha256"] == "LEGACY_INACTIVE_UNBOUND"
+    assert gate["wod_mapping_sha256"] == "LEGACY_INACTIVE_UNBOUND"
+    assert gate["artifact_set_sha256"] == "LEGACY_INACTIVE_UNBOUND"
+    assert all("X02" not in binding_id for binding_id in policy["required_binding_ids"])
 
 
 def _valid_bindings() -> dict[str, str]:
     execution = load_json(EXECUTION)
-    values = {
-        binding_id: hashlib.sha256(binding_id.encode("utf-8")).hexdigest()
-        for binding_id in execution["registry_binding_contract"]["required_binding_ids"]
+    registries = {
+        "valid_scientific": load_json(VALID),
+        "forensic": load_json(FORENSIC),
+        "recovery_extension": load_json(EXTENSION),
     }
-    pairs = execution["registry_binding_contract"]["cross_registry_equalities"]
-    for left, right in pairs:
-        values[right] = values[left]
-    composite = _x02_composite(
-        values["extension.X02.source_definition_sha256"],
-        values["extension.X02.wod_mapping_sha256"],
-    )
-    values["extension.X02.artifact_set_sha256"] = composite
-    values["valid.statistical_contract_v1p3.X02_scale_eligibility.artifact_set_sha256"] = composite
-    return values
+    policy = execution["registry_binding_contract"]
+    return {
+        binding_id: _pointer(registries[target["registry"]], target["pointer"])
+        for binding_id, target in policy["binding_targets"].items()
+    }
 
 
 def test_registry_materialization_is_deterministic_and_never_mutates_source(tmp_path: Path) -> None:
@@ -409,10 +414,11 @@ def test_g2_input_manifest_rejects_binary_roles_and_path_aliases(tmp_path: Path)
         )
 
 
-def test_registry_materialization_rejects_wrong_x02_composite(tmp_path: Path) -> None:
+def test_registry_materialization_rejects_binding_that_differs_from_reviewed_source(
+    tmp_path: Path,
+) -> None:
     bindings = _valid_bindings()
-    bindings["extension.X02.artifact_set_sha256"] = "f" * 64
-    bindings["valid.statistical_contract_v1p3.X02_scale_eligibility.artifact_set_sha256"] = "f" * 64
+    bindings["valid.fixed_estimator.core_tree_sha"] = "f" * 64
     output = tmp_path / "out"
     output.mkdir()
     freeze = output / "registry_bindings.g2.json"
@@ -425,10 +431,16 @@ def test_registry_materialization_rejects_wrong_x02_composite(tmp_path: Path) ->
             }
         )
     )
-    with pytest.raises(ContractError, match="artifact-set digest"):
+    with pytest.raises(ContractError, match="Prefilled source binding mismatch"):
         materialize(
             repo_root=ROOT,
             contract_path=EXECUTION,
             freeze_values_path=freeze,
             output_dir=output,
         )
+
+
+def test_recovery_lane_v2_bytes_remain_frozen_history() -> None:
+    assert sha256_file(RECOVERY_V2) == (
+        "c1d3a8c4faeb04871e15d7d1d0f07edfd45b8e6904bdd5ac7e05fa3f1f412d7d"
+    )

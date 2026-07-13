@@ -11,9 +11,9 @@
     "inheritance_rule": "G0, declassification, rating isolation, provenance, and managed-execution safeguards remain inherited; the primary 12-config split/power/confirmation route is superseded for historical recovery by RQ014_recovery_lane_v2.json"
   },
   "active_registries": {
-    "valid_scientific": "reports/plans/RQ014_config_space_v1p5.yaml",
+    "valid_scientific": "reports/plans/RQ014_config_space_v1p6.yaml",
     "forensic": "reports/plans/RQ014_forensic_registry_v1p5.yaml",
-    "recovery_extension": "reports/plans/RQ014_recovery_extension_registry_v1p5.yaml"
+    "recovery_extension": "reports/plans/RQ014_recovery_extension_registry_v1p6.yaml"
   },
   "primary_scientific_authority": {
     "path": "reports/plans/RQ014_recovery_lane_v2.json",
@@ -348,15 +348,37 @@
     "run_scoped_artifact": "registry_bindings.g2.json",
     "artifact_schema_version": "rq014-registry-bindings-g2-v1",
     "binding_value_type": "lowercase_64_hex_sha256",
-    "required_binding_count": 17,
+    "source_binding_mode": "VERIFY_PREFILLED_EXACT",
+    "required_binding_count": 9,
     "required_binding_ids": [
       "valid.fixed_estimator.core_tree_sha",
       "valid.fixed_estimator.wod_adapter_sha256",
       "valid.fixed_estimator.preprocessing_contract_sha256",
       "valid.fixed_estimator.reference_builder_sha256",
-      "valid.envelope.builder_contract.contract_sha256",
-      "valid.envelope.builder_contract.source_input_manifest_sha256",
-      "valid.envelope.builder_contract.path_type_mapping_sha256",
+      "valid.envelope.frozen_m3.scorer_sha256",
+      "valid.envelope.frozen_m3.manifest_sha256",
+      "valid.envelope.frozen_m3.feature_spec_contract_sha256",
+      "valid.statistical_implementation.spearman.implementation_and_version_sha256",
+      "extension.statistical_implementation.spearman.implementation_and_version_sha256"
+    ],
+    "binding_targets": {
+      "valid.fixed_estimator.core_tree_sha": {"registry": "valid_scientific", "pointer": "/fixed_estimator/core_tree_sha"},
+      "valid.fixed_estimator.wod_adapter_sha256": {"registry": "valid_scientific", "pointer": "/fixed_estimator/wod_adapter_sha256"},
+      "valid.fixed_estimator.preprocessing_contract_sha256": {"registry": "valid_scientific", "pointer": "/fixed_estimator/preprocessing_contract_sha256"},
+      "valid.fixed_estimator.reference_builder_sha256": {"registry": "valid_scientific", "pointer": "/fixed_estimator/reference_builder_sha256"},
+      "valid.envelope.frozen_m3.scorer_sha256": {"registry": "valid_scientific", "pointer": "/envelope/frozen_m3/scorer_sha256"},
+      "valid.envelope.frozen_m3.manifest_sha256": {"registry": "valid_scientific", "pointer": "/envelope/frozen_m3/manifest_sha256"},
+      "valid.envelope.frozen_m3.feature_spec_contract_sha256": {"registry": "valid_scientific", "pointer": "/envelope/frozen_m3/feature_spec_contract_sha256"},
+      "valid.statistical_implementation.spearman.implementation_and_version_sha256": {"registry": "valid_scientific", "pointer": "/statistical_implementation_bindings/spearman/implementation_and_version_sha256"},
+      "extension.statistical_implementation.spearman.implementation_and_version_sha256": {"registry": "recovery_extension", "pointer": "/statistical_implementation_bindings/spearman/implementation_and_version_sha256"}
+    },
+    "cross_registry_equalities": [
+      [
+        "valid.statistical_implementation.spearman.implementation_and_version_sha256",
+        "extension.statistical_implementation.spearman.implementation_and_version_sha256"
+      ]
+    ],
+    "inactive_binding_ids": [
       "valid.statistical_contract_v1p3.X02_scale_eligibility.source_definition_sha256",
       "valid.statistical_contract_v1p3.X02_scale_eligibility.WOD_mapping_sha256",
       "valid.statistical_contract_v1p3.X02_scale_eligibility.artifact_set_sha256",
@@ -368,45 +390,8 @@
       "extension.X02.builder_contract_sha256",
       "extension.X02.source_input_manifest_sha256"
     ],
-    "binding_targets": {
-      "valid.fixed_estimator.core_tree_sha": {"registry": "valid_scientific", "pointer": "/fixed_estimator/core_tree_sha"},
-      "valid.fixed_estimator.wod_adapter_sha256": {"registry": "valid_scientific", "pointer": "/fixed_estimator/wod_adapter_sha256"},
-      "valid.fixed_estimator.preprocessing_contract_sha256": {"registry": "valid_scientific", "pointer": "/fixed_estimator/preprocessing_contract_sha256"},
-      "valid.fixed_estimator.reference_builder_sha256": {"registry": "valid_scientific", "pointer": "/fixed_estimator/reference_builder_sha256"},
-      "valid.envelope.builder_contract.contract_sha256": {"registry": "valid_scientific", "pointer": "/envelope/builder_contract/contract_sha256"},
-      "valid.envelope.builder_contract.source_input_manifest_sha256": {"registry": "valid_scientific", "pointer": "/envelope/builder_contract/source_input_manifest_sha256"},
-      "valid.envelope.builder_contract.path_type_mapping_sha256": {"registry": "valid_scientific", "pointer": "/envelope/builder_contract/path_type_mapping_sha256"},
-      "valid.statistical_contract_v1p3.X02_scale_eligibility.source_definition_sha256": {"registry": "valid_scientific", "pointer": "/statistical_contract_v1p3/X02_scale_eligibility/source_definition_gate/artifacts/source_definition_sha256"},
-      "valid.statistical_contract_v1p3.X02_scale_eligibility.WOD_mapping_sha256": {"registry": "valid_scientific", "pointer": "/statistical_contract_v1p3/X02_scale_eligibility/source_definition_gate/artifacts/WOD_mapping_sha256"},
-      "valid.statistical_contract_v1p3.X02_scale_eligibility.artifact_set_sha256": {"registry": "valid_scientific", "pointer": "/statistical_contract_v1p3/X02_scale_eligibility/source_definition_gate/artifacts/artifact_set_sha256"},
-      "valid.statistical_contract_v1p3.X02_scale_eligibility.implementation_and_version_sha": {"registry": "valid_scientific", "pointer": "/statistical_contract_v1p3/X02_scale_eligibility/scale_metrics/rank_correlation_contract/implementation_and_version_sha"},
-      "extension.X02.source_definition_sha256": {"registry": "recovery_extension", "pointer": "/cells/1/source_definition_gate/source_definition_sha256"},
-      "extension.X02.wod_mapping_sha256": {"registry": "recovery_extension", "pointer": "/cells/1/source_definition_gate/wod_mapping_sha256"},
-      "extension.X02.artifact_set_sha256": {"registry": "recovery_extension", "pointer": "/cells/1/source_definition_gate/artifact_set_sha256"},
-      "extension.X02.implementation_and_version_sha": {"registry": "recovery_extension", "pointer": "/cells/1/overrides/scale_compatibility/spearman_contract/implementation_and_version_sha"},
-      "extension.X02.builder_contract_sha256": {"registry": "recovery_extension", "pointer": "/cells/1/overrides/builder_contract_sha256"},
-      "extension.X02.source_input_manifest_sha256": {"registry": "recovery_extension", "pointer": "/cells/1/overrides/source_input_manifest_sha256"}
-    },
-    "cross_registry_equalities": [
-      [
-        "valid.statistical_contract_v1p3.X02_scale_eligibility.source_definition_sha256",
-        "extension.X02.source_definition_sha256"
-      ],
-      [
-        "valid.statistical_contract_v1p3.X02_scale_eligibility.WOD_mapping_sha256",
-        "extension.X02.wod_mapping_sha256"
-      ],
-      [
-        "valid.statistical_contract_v1p3.X02_scale_eligibility.artifact_set_sha256",
-        "extension.X02.artifact_set_sha256"
-      ],
-      [
-        "valid.statistical_contract_v1p3.X02_scale_eligibility.implementation_and_version_sha",
-        "extension.X02.implementation_and_version_sha"
-      ]
-    ],
-    "x02_artifact_set_rule": "sha256 of UTF-8 canonical JSON without trailing newline, sorted keys and compact separators, mapping source_definition_sha256 and wod_mapping_sha256 to their component values",
-    "materialization_result": "a manifest that binds immutable source-registry hashes to the complete binding ledger; it does not rewrite YAML"
+    "inactive_binding_value": "LEGACY_INACTIVE_UNBOUND",
+    "materialization_result": "a manifest that binds immutable source-registry hashes to the complete prefilled binding ledger; it never rewrites reviewed science values"
   },
   "managed_hpc_contract": {
     "base": "/share/home/u25310231/ZXC/sociality_estimation",
@@ -420,9 +405,9 @@
     "wrapper_capability_contract": "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at /share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, opens fd9 at the exact managed submit_research_run.sh, hashes and executes that retained fd9; the wrapper must inherit both descriptors and may not create them; before any RQ014 registry-materializer or preflight preload, the launcher requires exact /proc/self/fd targets, regular non-symlink fixed paths, and fstat st_dev/st_ino/st_mode equality; this is not a cryptographic secret against deliberate same-account descriptor emulation",
     "production_spec_root": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs",
     "production_spec_contract": "direct-child regular non-symlink read-only canonical JSON; one O_NOFOLLOW descriptor read with retained exact bytes passed through validation, sealing and submission; no path reopen",
-    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 76502c36008dd5265d88a9d60c89c151704791d719f9eb7357a8377462e68dc9 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
+    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 6f8e4310c3124a769ca47532ea0a7f689cca94f975464c383837cbad456d85b3 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
     "operator_wrapper_size_bytes": 8108,
-    "operator_wrapper_sha256": "76502c36008dd5265d88a9d60c89c151704791d719f9eb7357a8377462e68dc9",
+    "operator_wrapper_sha256": "6f8e4310c3124a769ca47532ea0a7f689cca94f975464c383837cbad456d85b3",
     "operator_environment_boundary": "BASH_ENV ENV LD_PRELOAD PYTHONHOME PYTHONPATH HPC_SOCIALITY_ROOT and every SBATCH_* variable are rejected; launcher then re-execs in an empty environment",
     "slurm_environment_export": "NIL_ON_DIRECTIVE_AND_SBATCH_COMMAND; NONE_IS_FORBIDDEN_BECAUSE_IT_CAN_RECONSTRUCT_THE_LOGIN_ENVIRONMENT",
     "code_execution_surface": "read only final-contract-bundle registered regular-file blobs from the exact declared published Git commit tree into a closed run-root snapshot; verify each blob against the registered digest and hash the snapshot receipt and bundle manifest before execution; dirty or untracked worktree bytes, Git worktree checkout, hooks, filters and unregistered files are forbidden",

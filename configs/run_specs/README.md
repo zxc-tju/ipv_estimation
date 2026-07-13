@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 76502c36008dd5265d88a9d60c89c151704791d719f9eb7357a8377462e68dc9 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 6f8e4310c3124a769ca47532ea0a7f689cca94f975464c383837cbad456d85b3 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -95,8 +95,9 @@ It does not create a snapshot receipt, run root or rendered sbatch script. Those
 artifacts, including both concrete `--export=NIL` controls, are created and
 revalidated only inside the authorized submit path.
 
-The primary recovery route is defined in `reports/plans/RQ014_recovery_lane_v2.json`.
-Resource pilot, the 960-cell rating-blind feature build, the 2,880-row full-data
+The current review-candidate recovery route is defined in `reports/plans/RQ014_recovery_lane_v3.json`.
+It fixes the checksum-bound RQ009 M3 conformal model as the sole envelope and defines a 320-cell
+rating-blind feature grid followed by a 960-row full-data screen. Resource pilot, feature build,
 rating recovery screen, clean replay, optional power/stability, and every other
 rating-bearing operation remain centrally unauthorized.
 

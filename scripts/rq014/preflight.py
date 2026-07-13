@@ -1261,9 +1261,9 @@ def validate_materialization_ledger(
     contract: dict[str, Any],
 ) -> dict[str, Any]:
     from scripts.rq014.materialize_registry import (
-        _x02_composite,
         canonical_bytes,
         count_placeholder,
+        get_pointer,
         set_pointer,
     )
 
@@ -1296,13 +1296,6 @@ def validate_materialization_ledger(
     for left, right in policy["cross_registry_equalities"]:
         if ledger["bindings"][left] != ledger["bindings"][right]:
             raise ContractError(f"Materialization cross-registry binding mismatch: {left} != {right}")
-    expected_composite = _x02_composite(
-        ledger["bindings"]["extension.X02.source_definition_sha256"],
-        ledger["bindings"]["extension.X02.wod_mapping_sha256"],
-    )
-    if ledger["bindings"]["extension.X02.artifact_set_sha256"] != expected_composite:
-        raise ContractError("Materialization X02 artifact-set digest is invalid")
-
     execution_contract_path = repo_root / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
     require_exact_keys(ledger["execution_contract"], {"path", "sha256"}, "ledger execution contract")
     if ledger["execution_contract"]["path"] != str(execution_contract_path.relative_to(repo_root)):
@@ -1349,13 +1342,23 @@ def validate_materialization_ledger(
         sources[name] = load_json(path)
 
     expected_documents = copy.deepcopy(sources)
-    for binding_id in policy["required_binding_ids"]:
-        target = policy["binding_targets"][binding_id]
-        set_pointer(
-            expected_documents[target["registry"]],
-            target["pointer"],
-            ledger["bindings"][binding_id],
-        )
+    binding_mode = policy.get("source_binding_mode", "MATERIALIZE_PLACEHOLDERS")
+    if binding_mode == "VERIFY_PREFILLED_EXACT":
+        for binding_id in policy["required_binding_ids"]:
+            target = policy["binding_targets"][binding_id]
+            actual = get_pointer(expected_documents[target["registry"]], target["pointer"])
+            if actual != ledger["bindings"][binding_id]:
+                raise ContractError(f"Prefilled source binding mismatch: {binding_id}")
+    elif binding_mode == "MATERIALIZE_PLACEHOLDERS":
+        for binding_id in policy["required_binding_ids"]:
+            target = policy["binding_targets"][binding_id]
+            set_pointer(
+                expected_documents[target["registry"]],
+                target["pointer"],
+                ledger["bindings"][binding_id],
+            )
+    else:
+        raise ContractError(f"Unknown registry source-binding mode: {binding_mode}")
     if any(count_placeholder(document) for document in expected_documents.values()):
         raise ContractError("Expected materialized registry retains a placeholder")
 
