@@ -12,8 +12,8 @@
     "authority_path": "configs/research_authorization.json",
     "authority_rq_id": "RQ014",
     "operation_contract_path": "reports/plans/RQ014_execution_contract_v1p5.json",
-    "formal_g1_ref": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p5_20260712.yaml",
-    "scoped_decision_ref": "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
+    "formal_g1_ref": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
+    "scoped_decision_ref": "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",
     "extension_operations_registered_in_v1p6": false
   },
   "scientific_promotion_allowed": false,

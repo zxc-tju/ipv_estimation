@@ -38,7 +38,7 @@
     "source": "canonical score-stripped WOD bundle plus the frozen checksum-bound RQ009 M3 artifact set",
     "frozen_envelope": {
       "kind": "RQ009_M3_CONFORMAL",
-      "scorer_path": "models/rq009_m3/m3_scorer.joblib",
+      "scorer_path": "/share/home/u25310231/ZXC/sociality_estimation/checkpoints/rq009_m3/m3_scorer.joblib",
       "scorer_sha256": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253",
       "scorer_size_bytes": 88306301,
       "manifest_path": "models/rq009_m3/manifest.json",
@@ -47,9 +47,23 @@
       "feature_spec_contract_sha256": "3ad8ba8ab4c51422a7b2ef208683b7552b68f9e949f0087542ba208065677cce",
       "center_output": "q_0p5",
       "interval_outputs": ["lo_90", "hi_90"],
+      "quantile_consumption": "consume q_0p5, lo_90, and hi_90 from the scorer's pre-OOD-mask prediction result; post-mask NaN outputs are forbidden as G2R scoring inputs",
       "support_semantics": "score every otherwise eligible WOD row; support_gate_pass and ood_abstain are diagnostics only and never mask, drop, or invalidate a row",
       "wod_transfer_semantics": "PI-acknowledged out-of-support extrapolation; historical bounded pilot recorded 0/228 in-support",
       "derivative_authority": "reports/plans/RQ014_envelope_builder_contract_v2.json#/timeline_and_state_contract remains the exact-window-local state authority only; its InterHub builder and envelope-axis clauses are superseded"
+    },
+    "m3_artifact_mismatch_policy": {
+      "status": "M3_ARTIFACT_MISMATCH",
+      "action": "GLOBAL_ABORT",
+      "must_precede": [
+        "input_manifest_processing",
+        "materialization_ledger_processing",
+        "predictor_cell_processing",
+        "rating_access"
+      ],
+      "predictor_cells_emitted": 0,
+      "ledger_rows_emitted": 0,
+      "rating_values_read": 0
     },
     "fixed_estimator": {
       "solver_mode": "exact",
@@ -521,7 +535,6 @@
         {"upstream_status": "INELIGIBLE_STATE_NONFINITE", "stage": "F", "reason_priority": 44, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_STATE_NONFINITE"},
         {"upstream_status": "INELIGIBLE_UNDEFINED_HEADING", "stage": "F", "reason_priority": 45, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_UNDEFINED_HEADING"},
         {"upstream_status": "INELIGIBLE_IPV_NUMERICAL", "stage": "F", "reason_priority": 50, "ledger_status": "NUMERICAL_FAILURE", "reason_code": "F_IPV_NUMERICAL"},
-        {"upstream_status": "M3_ARTIFACT_MISMATCH", "stage": "F", "reason_priority": 60, "ledger_status": "INELIGIBLE_REFERENCE", "reason_code": "F_M3_ARTIFACT_MISMATCH"},
         {"upstream_status": "M3_SCORING_NUMERICAL_FAILURE", "stage": "F", "reason_priority": 61, "ledger_status": "NUMERICAL_FAILURE", "reason_code": "F_M3_SCORING_NUMERICAL_FAILURE"},
         {"upstream_status": "RATING_JOIN_KEY_MISSING", "stage": "K", "reason_priority": 10, "ledger_status": "INELIGIBLE_RATING_COMPLETENESS", "reason_code": "K_RATING_JOIN_KEY_MISSING"},
         {"upstream_status": "RATING_JOIN_KEY_AMBIGUOUS", "stage": "K", "reason_priority": 20, "ledger_status": "INELIGIBLE_RATING_COMPLETENESS", "reason_code": "K_RATING_JOIN_KEY_AMBIGUOUS"},

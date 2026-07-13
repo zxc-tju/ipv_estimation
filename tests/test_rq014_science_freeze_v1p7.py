@@ -108,3 +108,50 @@ def test_x02_sites_are_legacy_inactive_and_not_active_bindings() -> None:
     assert x02_extension["binding_status"] == "LEGACY_INACTIVE_UNBOUND"
     assert all("X02" not in item for item in contract["registry_binding_contract"]["required_binding_ids"])
     assert contract["registry_binding_contract"]["required_binding_count"] == 9
+
+
+def test_v1p6_registries_forward_bind_authority_and_revert_non_m3_state_change() -> None:
+    valid = _load(PLANS / "RQ014_config_space_v1p6.yaml")
+    extension = _load(PLANS / "RQ014_recovery_extension_registry_v1p6.yaml")
+    historical = _load(PLANS / "RQ014_config_space_v1p5.yaml")
+    formal = (
+        "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/"
+        "RQ014_formal_G1_v1p6_preflight_20260713.yaml"
+    )
+    decision = "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
+    for registry in (valid, extension):
+        authority = registry["execution_authorization_contract"]
+        assert authority["formal_g1_ref"] == formal
+        assert authority["scoped_decision_ref"] == decision
+    assert valid["sequence_contract"]["state_derivation"] == historical["sequence_contract"][
+        "state_derivation"
+    ]
+
+
+def test_round6_amendment_closes_runtime_quantile_and_byte_change_rulings() -> None:
+    text = (PLANS / "RQ014_plan_v1p7_amendment_20260713.md").read_text(encoding="utf-8")
+    for required in (
+        "managed-environment closure v4",
+        "joblib",
+        "numpy",
+        "pandas",
+        "scipy",
+        "scikit-learn",
+        "preflight never deserializes or scores M3",
+        "pre-OOD-mask",
+        "scripts/rq014/preflight.py",
+        "scripts/rq014/materialize_registry.py",
+        "/sequence_contract/state_derivation",
+        "/envelope/source",
+        "/envelope/form",
+        "/envelope/path_types",
+        "/envelope/quantiles",
+        "/envelope/matched_fields",
+        "/envelope/human_episode_weighting",
+        "/envelope/builder_contract",
+        "/envelope/envelope_gate",
+        "/envelope/support_semantics",
+        "/envelope/wod_transfer_semantics",
+        "/envelope/frozen_m3",
+    ):
+        assert required in text

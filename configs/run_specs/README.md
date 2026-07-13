@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 6f8e4310c3124a769ca47532ea0a7f689cca94f975464c383837cbad456d85b3 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" f60d52d48a40e10b703ac2ff292ae103ca1419f98a166e9712ebd98406bbc0c3 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -64,6 +64,19 @@ source or environment hash is rejected. Contract preflight additionally
 requires the prior export PASS receipt and `DONE.json`. Its required
 `declassification_export_commit` field binds the exporter provenance to the
 published prior-export commit independently of the current preflight `git_commit`.
+Schema v2 also defines an exact `m3_artifact` block containing path, size
+`88306301`, and SHA-256 `b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253`.
+The block is required for contract preflight and optional for export. When present,
+the launcher opens the fixed managed checkpoint once with no-follow/nonblocking
+flags, requires containment and a regular file, verifies size and SHA-256 before
+any input-manifest or materialization-ledger processing, and never deserializes or
+scores it. The generated job repeats the byte check at start; Python repeats the
+retained-descriptor verification and binds it into the read-only preflight receipt.
+`M3_ARTIFACT_MISMATCH` is a global abort with zero cell/ledger/rating processing.
+InterHub is retained only as historical provenance: active G2 instead requires a
+separately checksum-pinned WOD path-type mapping manifest. Scientific G2R remains
+denied until a future managed-environment closure v4 separately freezes and reviews
+the required joblib/numpy/pandas/scipy/scikit-learn runtime.
 
 The preflight authorization chain is forward-bound to these exact v1.6 paths:
 
@@ -90,7 +103,8 @@ dirty/untracked worktree bytes, and unregistered commit files therefore cannot
 enter the execution tree.
 
 Validate-only is side-effect free: it emits the exact commit-blob
-`code_snapshot_files` plan, job/resource/thread plan and pinned runtime metadata.
+`code_snapshot_files` plan, M3 path/size/hash plus retained-descriptor verification
+evidence, job/resource/thread plan and pinned runtime metadata.
 It does not create a snapshot receipt, run root or rendered sbatch script. Those
 artifacts, including both concrete `--export=NIL` controls, are created and
 revalidated only inside the authorized submit path.

@@ -229,13 +229,15 @@ question index in `STUDIES.md`.
   `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 74 rows, SHA-256
   `999ad5529241ca1a8197b525ba84abde9c570d298c0478d0e1e78e8b8d136d3c`; the v1.5 baseline remains at
   `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
-- **RQ014 W4d Phase B is a review candidate, not executable authority.** The PI identified the lost
-  envelope as frozen RQ009 M3 and acknowledged WOD out-of-support extrapolation. The candidate v1.7
-  amendment, v3 lane, v1p6 registries, nine-value science binding contract, and managed estimator/statistics
-  bytes are pending fresh dual review; no new G1, verdict, or final bundle exists for these bytes. HPC was
-  checked read-only at detached `1c1a0379` with remote-main `40d34942`; no HPC write or job occurred.
-  The stale mandatory InterHub preflight-manifest role is an explicit reviewer/Lead resolution item before
-  any publishable preflight can pass.
+- **RQ014 W4d Round 6 is a review candidate, not executable authority.** After round-5 dual review blocked
+  Phase B, the candidate now binds the active contract consistently to lane v3 (320 cells/960 rows), removes
+  InterHub from active G2/G2R while retaining it as provenance, and requires a separately pinned WOD path
+  mapping. The external M3 scorer has an exact schema-v2 path/size/SHA binding, retained no-follow verification,
+  job-start rehash, and immutable receipt; mismatch globally aborts before input/ledger/cell/rating processing.
+  Contract preflight never deserializes M3, and G2R remains denied pending a separately reviewed scientific
+  managed-environment closure v4. The v1.7 amendment, v3 lane, v1p6 registries, nine-value science bindings,
+  runtime changes, and rebuilt candidate manifest require fresh dual review; no new G1, verdict, final bundle,
+  HPC write, launcher invocation, rating access, or job occurred.
 - RQ007 held-out remains sealed. RQ009 must freeze all rules and stop at
   `READY_FOR_SEALED_TEST` until a new PI authorization opens it.
 - RQ008B is not authorized; no RQ008 motif may enter RQ009.

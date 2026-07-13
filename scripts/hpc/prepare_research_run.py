@@ -131,9 +131,12 @@ if __name__ != "__main__" or _RQ014_DIRECT_INTERNAL_MODE_REQUESTED:
         _RQ014_PREFLIGHT.validate_declassification_export_receipts
     )
     validate_input_manifest_g2 = _RQ014_PREFLIGHT.validate_input_manifest_g2
-    validate_interhub_source_manifest = _RQ014_PREFLIGHT.validate_interhub_source_manifest
+    validate_m3_artifact_ref = _RQ014_PREFLIGHT.validate_m3_artifact_ref
     validate_materialization_ledger = _RQ014_PREFLIGHT.validate_materialization_ledger
     validate_score_stripped_bundle = _RQ014_PREFLIGHT.validate_score_stripped_bundle
+    validate_wod_path_type_mapping_manifest = (
+        _RQ014_PREFLIGHT.validate_wod_path_type_mapping_manifest
+    )
 
 DEFAULT_BASE = RQ014_MANAGED_BASE
 SYSTEM_GIT = "/usr/bin/git"
@@ -160,6 +163,8 @@ GIT_COMMAND_ENV = {
     "GIT_TERMINAL_PROMPT": "0",
 }
 MODEL_SHA256 = "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
+M3_ARTIFACT_PATH = str(RQ014_MANAGED_BASE / "checkpoints" / "rq009_m3" / "m3_scorer.joblib")
+M3_ARTIFACT_SIZE_BYTES = 88306301
 SAFE_ID = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?$")
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -512,6 +517,7 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
                 "created_at_utc",
             }
             ref_keys = common_ref_keys + ("readiness_table", "counterpart_tracks")
+            allowed = required | {"m3_artifact"}
             if not isinstance(spec.get("scene_bundles"), list) or len(spec["scene_bundles"]) != 8:
                 raise ValueError("RQ014 declassification export requires exactly eight scene bundles")
             for index, ref in enumerate(spec["scene_bundles"]):
@@ -530,6 +536,7 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
         elif spec.get("operation") == RQ014_PREFLIGHT_OPERATION:
             required = common | {
                 "declassification_export_commit",
+                "m3_artifact",
                 "input_manifest",
                 "sanitization_receipt",
                 "materialization_ledger",
@@ -545,12 +552,13 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
             )
             if spec.get("resource_profile_id") != RQ014_PREFLIGHT_RESOURCE_PROFILE:
                 raise ValueError("Unknown RQ014 preflight resource profile")
+            allowed = required
         else:
             raise ValueError("Unsupported RQ014 v2 operation")
-        if set(spec) != required:
+        if not required <= set(spec) or not set(spec) <= allowed:
             raise ValueError(
                 f"Run spec v2 keys differ; missing={sorted(required - set(spec))}, "
-                f"unexpected={sorted(set(spec) - required)}"
+                f"unexpected={sorted(set(spec) - allowed)}"
             )
         for key in ref_keys:
             if not isinstance(spec[key], dict) or set(spec[key]) != {"path", "sha256"}:
@@ -559,6 +567,16 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
                 raise ValueError(f"Run spec v2 {key}.sha256 is malformed")
             if spec[key]["sha256"] == "0" * 64:
                 raise ValueError(f"Run spec v2 {key}.sha256 is a placeholder")
+        if "m3_artifact" in spec:
+            m3_ref = spec["m3_artifact"]
+            if (
+                not isinstance(m3_ref, dict)
+                or set(m3_ref) != {"path", "size_bytes", "sha256"}
+                or m3_ref.get("path") != M3_ARTIFACT_PATH
+                or m3_ref.get("size_bytes") != M3_ARTIFACT_SIZE_BYTES
+                or m3_ref.get("sha256") != MODEL_SHA256
+            ):
+                raise ValueError("Run spec v2 m3_artifact differs from the frozen delivery binding")
         if spec["rq_id"] != "RQ014":
             raise ValueError("Run spec v2 supports only RQ014")
         if not isinstance(spec["git_commit"], str) or not HEX40.fullmatch(spec["git_commit"]):
@@ -1522,6 +1540,20 @@ def _validate_rq014_export_inputs(
 def _with_rq014_validate_only_plan(validated: dict[str, Any]) -> dict[str, Any]:
     """Expose deterministic planning evidence without creating submit-only artifacts."""
 
+    runtime_metadata = {
+        "environment_manifest_path": validated["environment_manifest_path"],
+        "environment_manifest_sha256": validated["environment_manifest_sha256"],
+        "python_executable_path": validated["python_executable_path"],
+        "python_executable_sha256": validated["python_executable_sha256"],
+        "python_version": validated["python_version"],
+        "isolated_sys_path": validated["isolated_sys_path"],
+        "stdlib_checksum_manifest_sha256": validated["stdlib_checksum_manifest_sha256"],
+        "native_library_manifest_sha256": validated["native_library_manifest_sha256"],
+    }
+    if "m3_artifact_verification" in validated:
+        runtime_metadata["m3_artifact_verification"] = validated[
+            "m3_artifact_verification"
+        ]
     return {
         **validated,
         "code_snapshot_plan": {
@@ -1542,20 +1574,7 @@ def _with_rq014_validate_only_plan(validated: dict[str, Any]) -> dict[str, Any]:
                 "rendered_script_state": "SUBMIT_ONLY_NOT_CREATED_BY_VALIDATE",
             },
         },
-        "runtime_metadata": {
-            "environment_manifest_path": validated["environment_manifest_path"],
-            "environment_manifest_sha256": validated["environment_manifest_sha256"],
-            "python_executable_path": validated["python_executable_path"],
-            "python_executable_sha256": validated["python_executable_sha256"],
-            "python_version": validated["python_version"],
-            "isolated_sys_path": validated["isolated_sys_path"],
-            "stdlib_checksum_manifest_sha256": validated[
-                "stdlib_checksum_manifest_sha256"
-            ],
-            "native_library_manifest_sha256": validated[
-                "native_library_manifest_sha256"
-            ],
-        },
+        "runtime_metadata": runtime_metadata,
     }
 
 
@@ -1598,6 +1617,7 @@ def _validate_rq014_operation_contract(
             "declassification_export_receipt",
             "declassification_export_done",
             "environment_manifest",
+            "m3_artifact",
         ]
     ):
         raise ValueError("RQ014 preflight prior-receipt predicate drift")
@@ -1707,6 +1727,16 @@ def _validate_rq014_spec(
         operation_name=spec["operation"],
         resource_profile_id=spec["resource_profile_id"],
     )
+    m3_verification = None
+    if "m3_artifact" in spec:
+        try:
+            m3_verification = validate_m3_artifact_ref(
+                spec["m3_artifact"],
+                base=base,
+                contract=contract,
+            )
+        except RQ014ContractError as exc:
+            raise ValueError(str(exc)) from exc
     inventory = _load_rq014_source_inventory(repo)
     managed_contract = contract["managed_hpc_contract"]
     if (
@@ -1780,9 +1810,10 @@ def _validate_rq014_spec(
         or managed_contract.get("validate_only_contract")
         != (
             "side-effect-free output contains rq/run/operation, exact code_snapshot_files and "
-            "commit-blob materialization plan, job/resource/thread plan and pinned runtime "
-            "metadata; code_snapshot receipt and rendered NIL sbatch script are submit-only "
-            "artifacts"
+            "commit-blob materialization plan, M3 artifact path/size/SHA-256 and retained-"
+            "descriptor verification evidence, job/resource/thread plan and pinned runtime "
+            "metadata; code_snapshot receipt, immutable M3 input receipt and rendered NIL "
+            "sbatch script are submit-only artifacts"
         )
         or "Git worktree checkout" not in str(managed_contract.get("code_execution_surface"))
         or not str(managed_contract.get("code_execution_surface")).endswith("are forbidden")
@@ -1826,6 +1857,15 @@ def _validate_rq014_spec(
         "execution_contract_sha256": sha256_file(execution_contract_path),
         "rating_access": "FORBIDDEN",
     }
+    if m3_verification is not None:
+        common_validated.update(
+            {
+                "m3_artifact_path": m3_verification["path"],
+                "m3_artifact_size_bytes": m3_verification["size_bytes"],
+                "m3_artifact_sha256": m3_verification["sha256"],
+                "m3_artifact_verification": m3_verification,
+            }
+        )
     if spec["operation"] == RQ014_EXPORT_OPERATION:
         export_inputs = _validate_rq014_export_inputs(
             spec,
@@ -1885,7 +1925,6 @@ def _validate_rq014_spec(
     )
     allowed_input_roots = [
         base / "inputs" / "RQ014",
-        base / "data" / "interhub" / "snapshots",
         base / "manifests" / "RQ014",
         repo / "reports" / "plans",
     ]
@@ -1897,9 +1936,9 @@ def _validate_rq014_spec(
     if roles["wod_score_stripped_sanitization_receipt"] != sanitization_path:
         raise ValueError("Run spec and G2 manifest bind different sanitization receipts")
     validate_anchor_receipt(roles["blind_anchor_receipt"])
-    validate_interhub_source_manifest(
-        roles["interhub_human_ipv_source_manifest"],
-        snapshot_root=base / "data" / "interhub" / "snapshots",
+    path_mapping = validate_wod_path_type_mapping_manifest(
+        roles["wod_path_type_mapping_manifest"],
+        mapping_root=base / "inputs" / "RQ014" / "wod_path_type_mapping" / "v1",
     )
     bundle_manifest = roles["wod_score_stripped_bundle_manifest"]
     bundle_root = base / "inputs" / "RQ014" / "wod_rated479_score_stripped" / "v1"
@@ -1944,6 +1983,7 @@ def _validate_rq014_spec(
         "declassification_export_done_path": str(export_done_path),
         "declassification_export_done_sha256": spec["declassification_export_done"]["sha256"],
         "declassification_export_commit": spec["declassification_export_commit"],
+        "wod_path_type_mapping": path_mapping,
         "resource_profile_id": RQ014_PREFLIGHT_RESOURCE_PROFILE,
         "job_name": job_name,
         "entrypoint": "scripts/rq014/run_managed_g2.py",
@@ -2307,6 +2347,12 @@ def render_rq014_sbatch(
             str(code),
             "--execution-contract",
             str(execution_contract),
+            "--m3-artifact",
+            validated["m3_artifact_path"],
+            "--m3-artifact-size-bytes",
+            str(validated["m3_artifact_size_bytes"]),
+            "--m3-artifact-sha256",
+            validated["m3_artifact_sha256"],
             "--input-manifest",
             validated["input_manifest_path"],
             "--sanitization-receipt",
@@ -2324,8 +2370,17 @@ def render_rq014_sbatch(
             "--output-root",
             str(run_root / "outputs"),
         ]
+        m3_path = shlex.quote(validated["m3_artifact_path"])
         source_checks = (
-            _shell_digest_check(
+            f"test ! -L {m3_path}\n"
+            f"test -f {m3_path}\n"
+            f'test "$({SYSTEM_READLINK} -f {m3_path})" = {m3_path}\n'
+            f'test "$({SYSTEM_STAT} -c %s {m3_path})" = '
+            f"{validated['m3_artifact_size_bytes']}\n"
+            + _shell_digest_check(
+                validated["m3_artifact_path"], validated["m3_artifact_sha256"]
+            )
+            + _shell_digest_check(
                 validated["input_manifest_path"], validated["input_manifest_sha256"]
             )
             + _shell_digest_check(

@@ -63,15 +63,40 @@ def test_v3_dependent_row_counts_and_domains_are_consistent() -> None:
 
 
 def test_v3_uses_one_frozen_m3_envelope_with_extrapolation_semantics() -> None:
-    frozen = _load(LANE)["rating_blind_feature_bank"]["frozen_envelope"]
+    lane = _load(LANE)
+    frozen = lane["rating_blind_feature_bank"]["frozen_envelope"]
     assert frozen["kind"] == "RQ009_M3_CONFORMAL"
     assert frozen["scorer_sha256"] == "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
     assert frozen["manifest_sha256"] == "2efbdd0c39edabc419aad815a1eb7529af3623a06c4d3a0b0a99782bcb2f40f4"
     assert frozen["feature_spec_contract_sha256"] == "3ad8ba8ab4c51422a7b2ef208683b7552b68f9e949f0087542ba208065677cce"
     assert frozen["center_output"] == "q_0p5"
     assert frozen["interval_outputs"] == ["lo_90", "hi_90"]
+    assert frozen["quantile_consumption"] == (
+        "consume q_0p5, lo_90, and hi_90 from the scorer's pre-OOD-mask prediction "
+        "result; post-mask NaN outputs are forbidden as G2R scoring inputs"
+    )
     assert "diagnostics only" in frozen["support_semantics"]
     assert "0/228" in frozen["wod_transfer_semantics"]
+
+
+def test_m3_artifact_mismatch_is_a_global_pre_cell_abort() -> None:
+    lane = _load(LANE)
+    policy = lane["rating_blind_feature_bank"]["m3_artifact_mismatch_policy"]
+    assert policy == {
+        "status": "M3_ARTIFACT_MISMATCH",
+        "action": "GLOBAL_ABORT",
+        "must_precede": [
+            "input_manifest_processing",
+            "materialization_ledger_processing",
+            "predictor_cell_processing",
+            "rating_access",
+        ],
+        "predictor_cells_emitted": 0,
+        "ledger_rows_emitted": 0,
+        "rating_values_read": 0,
+    }
+    rows = lane["full_data_recovery_screen"]["upstream_terminal_rollup"]["rows"]
+    assert all(row["upstream_status"] != "M3_ARTIFACT_MISMATCH" for row in rows)
 
 
 def test_v3_replay_loads_m3_and_rewrites_everything_else() -> None:

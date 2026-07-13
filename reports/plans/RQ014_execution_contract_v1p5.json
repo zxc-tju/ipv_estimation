@@ -2,13 +2,13 @@
   "schema_version": "rq014-execution-contract-v1p5",
   "contract_date": "2026-07-12",
   "canonical_plan": "reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md",
-  "amendment": "reports/plans/RQ014_plan_v1p5_amendment_20260712.md",
+  "amendment": "reports/plans/RQ014_plan_v1p7_amendment_20260713.md",
   "base_scientific_bundle": {
     "config_registry": "reports/plans/RQ014_config_space_v1p3.yaml",
     "forensic_registry": "reports/plans/RQ014_forensic_registry_v1p3.yaml",
     "extension_registry": "reports/plans/RQ014_recovery_extension_registry_v1p3.yaml",
     "checksum_manifest": "reports/plans/RQ014_plan_v1p3_checksums_20260711.sha256",
-    "inheritance_rule": "G0, declassification, rating isolation, provenance, and managed-execution safeguards remain inherited; the primary 12-config split/power/confirmation route is superseded for historical recovery by RQ014_recovery_lane_v2.json"
+    "inheritance_rule": "G0, declassification, rating isolation, provenance, and managed-execution safeguards remain inherited; the primary 12-config split/power/confirmation route is superseded for historical recovery by RQ014_recovery_lane_v3.json"
   },
   "active_registries": {
     "valid_scientific": "reports/plans/RQ014_config_space_v1p6.yaml",
@@ -16,8 +16,8 @@
     "recovery_extension": "reports/plans/RQ014_recovery_extension_registry_v1p6.yaml"
   },
   "primary_scientific_authority": {
-    "path": "reports/plans/RQ014_recovery_lane_v2.json",
-    "schema_version": "rq014-historical-recovery-lane-v2",
+    "path": "reports/plans/RQ014_recovery_lane_v3.json",
+    "schema_version": "rq014-historical-recovery-lane-v3",
     "purpose": "known-result specification recovery",
     "legacy_v1p3_inference_role": "optional non-gating follow-up only"
   },
@@ -97,11 +97,14 @@
         "required_run_spec_refs": [
           "declassification_export_receipt",
           "declassification_export_done",
-          "environment_manifest"
+          "environment_manifest",
+          "m3_artifact"
         ],
         "allowed_effects": [
           "verify reviewed contract bytes",
           "verify managed score-stripped input manifests and attestations",
+          "verify the separately pinned WOD path-type mapping manifest",
+          "verify the exact external M3 scorer by retained no-follow descriptor without deserializing it and bind the evidence in an immutable receipt",
           "verify run-scoped registry binding protocol",
           "verify public blind anchor receipt without recomputing rho",
           "write a bounded preflight report and receipt"
@@ -112,7 +115,7 @@
         "required_prior_receipts": ["rq014-g2-contract-preflight-v1"]
       },
       "rq014_g2_blind_build": {
-        "status": "DENY_DEPRECATED_BY_RECOVERY_LANE_V2",
+        "status": "DENY_DEPRECATED_BY_RECOVERY_LANE_V3",
         "required_prior_receipts": [
           "rq014-g2-contract-preflight-v1",
           "rq014-g2-resource-pilot-v1",
@@ -128,8 +131,7 @@
         "rating_access": "FORBIDDEN",
         "rating_join": "FORBIDDEN",
         "scientific_contracts": [
-          "reports/plans/RQ014_recovery_lane_v2.json",
-          "reports/plans/RQ014_envelope_builder_contract_v2.json"
+          "reports/plans/RQ014_recovery_lane_v3.json"
         ],
         "required_prior_receipts": [
           "rq014-g2-contract-preflight-receipt-v1",
@@ -139,11 +141,11 @@
       },
       "rq014_r3_full_rating_join_and_rank": {
         "status": "DENY_PENDING_FROZEN_RATING_BLIND_FEATURE_BANK_AND_SEPARATE_RATING_AUTHORIZATION",
-        "scientific_contract": "reports/plans/RQ014_recovery_lane_v2.json"
+        "scientific_contract": "reports/plans/RQ014_recovery_lane_v3.json"
       },
       "rq014_r4_clean_replay": {
         "status": "DENY_PENDING_SELECTED_RECIPE_FREEZE",
-        "scientific_contract": "reports/plans/RQ014_recovery_lane_v2.json"
+        "scientific_contract": "reports/plans/RQ014_recovery_lane_v3.json"
       },
       "rq014_optional_prospective_power": {
         "status": "DENY_OPTIONAL_NON_GATING"
@@ -283,7 +285,7 @@
       "required_roles": [
         "wod_score_stripped_bundle_manifest",
         "wod_score_stripped_sanitization_receipt",
-        "interhub_human_ipv_source_manifest",
+        "wod_path_type_mapping_manifest",
         "blind_anchor_receipt"
       ],
       "forbidden_roles": ["ratings_manifest", "rating_table", "selected_split_manifest"]
@@ -302,14 +304,18 @@
       "adds_roles": ["ratings_manifest", "rating_access_receipt"],
       "availability": "LEGACY_OPTIONAL_UNREGISTERED_AND_UNAUTHORIZED_IN_V1P5"
     },
-    "recovery_lane_v2": {
-      "G2R": "rating-blind frozen feature bank and 960 predictor cells under RQ014_recovery_lane_v2.json plus RQ014_envelope_builder_contract_v2.json; safe-primitive profile, golden fixtures, WOD/InterHub path mappings and envelope queries must be hashed first",
-      "G3R": "single full-rated479 recovery join and 2880 terminal leaderboard rows; separately authorized",
+    "recovery_lane_v3": {
+      "scientific_contract": "reports/plans/RQ014_recovery_lane_v3.json",
+      "predictor_cell_count": 320,
+      "terminal_leaderboard_row_count": 960,
+      "G2R": "future separately gated rating-blind frozen feature bank and 320 predictor cells under RQ014_recovery_lane_v3.json; safe-primitive profile, golden fixtures, the separately pinned WOD path-type mapping, and the exact M3 delivery receipt must be frozen first",
+      "G3R": "single full-rated479 recovery join and 960 terminal leaderboard rows; separately authorized",
       "G4R": "clean independent replay of the one frozen top recipe",
       "G5_NEW_DATA": "optional true confirmation on unseen ratings"
     }
   },
   "interhub_source_manifest_contract": {
+    "authority_status": "HISTORICAL_PROVENANCE_ONLY_NOT_AN_ACTIVE_G2_OR_G2R_INPUT",
     "schema_version": "rq014-interhub-human-ipv-source-manifest-v1",
     "dataset_id": "InterHub",
     "cohort": "pure_hv_hv",
@@ -329,6 +335,32 @@
       "episode_grid_origin_ns"
     ],
     "envelope_builder_contract": "reports/plans/RQ014_envelope_builder_contract_v2.json"
+  },
+  "wod_path_type_mapping_manifest_contract": {
+    "schema_version": "rq014-wod-path-type-mapping-manifest-v1",
+    "contains_rating": false,
+    "file_root": "/share/home/u25310231/ZXC/sociality_estimation/inputs/RQ014/wod_path_type_mapping/v1",
+    "mapping_filename": "wod_path_type_mapping.csv",
+    "format": "RFC4180_CSV",
+    "required_columns": ["segment_id", "tstar_context_step", "path_type"],
+    "primary_key": ["segment_id", "tstar_context_step"],
+    "allowed_path_types": ["CP", "HO", "MP", "F"],
+    "symlinks": "FORBIDDEN",
+    "regular_file_only": true
+  },
+  "m3_artifact_delivery_contract": {
+    "spec_ref_field": "m3_artifact",
+    "required_for_operation": "rq014_g2_contract_preflight",
+    "optional_for_operation": "rq014_g2_declassification_export",
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/checkpoints/rq009_m3/m3_scorer.joblib",
+    "allowed_root": "/share/home/u25310231/ZXC/sociality_estimation/checkpoints/rq009_m3",
+    "size_bytes": 88306301,
+    "sha256": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253",
+    "open_policy": "SINGLE_RETAINED_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
+    "verification_order": "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION",
+    "deserialization_in_contract_preflight": "FORBIDDEN",
+    "immutable_receipt_schema": "rq014-m3-artifact-input-receipt-v1",
+    "job_start_reverification": true
   },
   "blind_anchor_contract": {
     "receipt": "reports/plans/RQ014_blind_anchor_receipt_v1p5.json",
@@ -405,12 +437,12 @@
     "wrapper_capability_contract": "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at /share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, opens fd9 at the exact managed submit_research_run.sh, hashes and executes that retained fd9; the wrapper must inherit both descriptors and may not create them; before any RQ014 registry-materializer or preflight preload, the launcher requires exact /proc/self/fd targets, regular non-symlink fixed paths, and fstat st_dev/st_ino/st_mode equality; this is not a cryptographic secret against deliberate same-account descriptor emulation",
     "production_spec_root": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs",
     "production_spec_contract": "direct-child regular non-symlink read-only canonical JSON; one O_NOFOLLOW descriptor read with retained exact bytes passed through validation, sealing and submission; no path reopen",
-    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 6f8e4310c3124a769ca47532ea0a7f689cca94f975464c383837cbad456d85b3 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
+    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" f60d52d48a40e10b703ac2ff292ae103ca1419f98a166e9712ebd98406bbc0c3 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
     "operator_wrapper_size_bytes": 8108,
-    "operator_wrapper_sha256": "6f8e4310c3124a769ca47532ea0a7f689cca94f975464c383837cbad456d85b3",
+    "operator_wrapper_sha256": "f60d52d48a40e10b703ac2ff292ae103ca1419f98a166e9712ebd98406bbc0c3",
     "operator_environment_boundary": "BASH_ENV ENV LD_PRELOAD PYTHONHOME PYTHONPATH HPC_SOCIALITY_ROOT and every SBATCH_* variable are rejected; launcher then re-execs in an empty environment",
     "slurm_environment_export": "NIL_ON_DIRECTIVE_AND_SBATCH_COMMAND; NONE_IS_FORBIDDEN_BECAUSE_IT_CAN_RECONSTRUCT_THE_LOGIN_ENVIRONMENT",
-    "code_execution_surface": "read only final-contract-bundle registered regular-file blobs from the exact declared published Git commit tree into a closed run-root snapshot; verify each blob against the registered digest and hash the snapshot receipt and bundle manifest before execution; dirty or untracked worktree bytes, Git worktree checkout, hooks, filters and unregistered files are forbidden",
+    "code_execution_surface": "read only final-contract-bundle registered regular-file blobs from the exact declared published Git commit tree into a closed run-root snapshot; verify each blob against the registered digest and hash the snapshot receipt and bundle manifest before execution; the sole external scientific byte is the separately spec-bound M3 scorer, which is retained-descriptor verified and never deserialized by contract preflight; dirty or untracked worktree bytes, Git worktree checkout, hooks, filters and unregistered files are forbidden",
     "absolute_runtime_tools": [
       "/bin/sh",
       "/bin/bash",
@@ -428,7 +460,7 @@
     "python_startup_flags": ["-I", "-S", "-B", "-X", "utf8"],
     "python_import_surface": "before the first managed-Python process, the wrapper uses absolute system tools to verify the pinned launcher, preflight and registry-materializer bytes, Python executable, v3 environment manifest, exact stdlib checksum manifest, zip absence, zero stdlib symlinks, complete stdlib regular-file set/count/size/hash, pinned consumer-derived native dependency set, exact loader links/final bytes and exact isolated sys.path; /lib64 is the explicit operating-system ABI trust boundary; the closed-snapshot registry materializer is explicitly preloaded by spec_from_file_location as scripts.rq014.materialize_registry, then preflight and the fixed scientific entrypoint are loaded only by exact reviewed closed-snapshot paths; scripts and scripts.rq014 keep empty __path__, so ordinary path import, checkout/root/src/sitecustomize/usercustomize/PYTHONPATH/local shadows remain unavailable",
     "submission_failure_policy": "pre-submit failures remove every partial code snapshot and run root and write a retryable FAILED receipt; any failure after sbatch starts preserves the run root, raw response and known job ID when available, and writes a non-retryable SUBMISSION_STATE_UNKNOWN receipt",
-    "validate_only_contract": "side-effect-free output contains rq/run/operation, exact code_snapshot_files and commit-blob materialization plan, job/resource/thread plan and pinned runtime metadata; code_snapshot receipt and rendered NIL sbatch script are submit-only artifacts",
+    "validate_only_contract": "side-effect-free output contains rq/run/operation, exact code_snapshot_files and commit-blob materialization plan, M3 artifact path/size/SHA-256 and retained-descriptor verification evidence, job/resource/thread plan and pinned runtime metadata; code_snapshot receipt, immutable M3 input receipt and rendered NIL sbatch script are submit-only artifacts",
     "environment_manifest_schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
     "environment_manifest_path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json",
     "environment_manifest_size_bytes": 2229,

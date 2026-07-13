@@ -30,8 +30,8 @@
     "authority_path": "configs/research_authorization.json",
     "authority_rq_id": "RQ014",
     "operation_contract_path": "reports/plans/RQ014_execution_contract_v1p5.json",
-    "formal_g1_ref": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p5_20260712.yaml",
-    "scoped_decision_ref": "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
+    "formal_g1_ref": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
+    "scoped_decision_ref": "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",
     "effective_rule": "all_authorities_gates_hashes_and_operation_prohibitions_must_allow_else_deny",
     "derived_non_authoritative_summary": {
       "g0_readonly_forensics": "DENY",
@@ -106,7 +106,7 @@
     "trailing_only_note": "trailing_only is the canonical name of the W=1.0 alias class where future_only and history_future coincide for all tau>=1.0; execution rule identical to future_only.",
     "concat_rule": "history_timestamps_le_0_plus_effective_candidate_timestamps_gt_0; tstar_zero_owned_once_by_history",
     "sampling_phase": "both R04N and R10L are tstar-anchored",
-    "state_derivation": "slice each exact closed recipe position window first, then derive velocity, acceleration, and heading only inside that window; derivative halos, source dynamics, and cross-window state reuse are forbidden",
+    "state_derivation": "derive once on each complete resampled branch before temporal-window slicing; window-boundary rederivation forbidden",
     "evaluation_start_s": 1.0,
     "local_window_estimator_rule": {
       "local_span_future_only_s": "min_W_and_tau",
@@ -174,7 +174,7 @@
       "no_envelope_queried",
       "no_rating_read"
     ],
-    "role": "sole_input_to_required_envelope_cell_materialization"
+    "role": "eligible_WOD_input_to_checksum_bound_frozen_M3_scoring; WOD path type is supplied by a separate pinned input"
   },
   "envelope": {
     "source": "frozen_rq009_m3_conformal",
@@ -183,7 +183,7 @@
     "wod_transfer_semantics": "out_of_support_extrapolation_acknowledged_by_PI",
     "rating_fields_allowed": false,
     "frozen_m3": {
-      "scorer_path": "models/rq009_m3/m3_scorer.joblib",
+      "scorer_path": "/share/home/u25310231/ZXC/sociality_estimation/checkpoints/rq009_m3/m3_scorer.joblib",
       "scorer_sha256": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253",
       "scorer_size_bytes": 88306301,
       "manifest_path": "models/rq009_m3/manifest.json",
@@ -194,7 +194,8 @@
       "interval_output": "central_90",
       "lower_output": "lo_90",
       "upper_output": "hi_90"
-    }
+    },
+    "quantile_consumption": "consume q_0p5, lo_90, and hi_90 from the scorer's pre-OOD-mask prediction result; post-mask NaN outputs are forbidden as G2R scoring inputs"
   },
   "legacy_valid_family_scope": {
     "config_ids": "V01_to_V12",
@@ -269,7 +270,7 @@
   "statistical_contract_v1p3": {
     "schema_version": "rq014-statistical-contract-v1p3",
     "status": "DESIGN_REVIEW_PASS_NOT_EXECUTABLE",
-    "role_after_recovery_lane_v2": "optional_non_gating_prospective_validation_only",
+    "role_after_recovery_lane_v3": "optional_non_gating_prospective_validation_only",
     "gating_for_historical_recovery": false,
     "execution_authorization_ref": "reports/plans/RQ014_execution_contract_v1p5.json",
     "nominal_one_sided_alpha": 0.025,

@@ -19,6 +19,7 @@ from scripts.rq014.preflight import (
     validate_anchor_receipt,
     validate_input_manifest_g2,
     validate_materialization_ledger,
+    validate_wod_path_type_mapping_manifest,
 )
 
 
@@ -210,11 +211,37 @@ def test_recovery_lane_searches_true_history_future_and_combined_windows_without
 
     execution = load_json(EXECUTION)
     registry = load_json(VALID)
-    assert registry["primary_recovery_contract"]["path"] == str(RECOVERY.relative_to(ROOT))
+    recovery_path = str(RECOVERY.relative_to(ROOT))
+    recovery_schema = recovery["schema_version"]
+    assert (
+        execution["primary_scientific_authority"]["path"]
+        == registry["primary_recovery_contract"]["path"]
+        == recovery_path
+    )
+    assert (
+        execution["primary_scientific_authority"]["schema_version"]
+        == registry["primary_recovery_contract"]["schema_version"]
+        == recovery_schema
+    )
     operations = execution["authorization"]["registered_operations"]
     assert operations["rq014_r2_blind_feature_build"]["status"].startswith("DENY_")
     assert operations["rq014_r3_full_rating_join_and_rank"]["status"].startswith("DENY_")
     assert operations["rq014_r4_clean_replay"]["status"].startswith("DENY_")
+    assert operations["rq014_r2_blind_feature_build"]["scientific_contracts"] == [recovery_path]
+    assert operations["rq014_r3_full_rating_join_and_rank"]["scientific_contract"] == recovery_path
+    assert operations["rq014_r4_clean_replay"]["scientific_contract"] == recovery_path
+    g2 = execution["staged_input_manifests"]["G2"]
+    assert g2["required_roles"] == [
+        "wod_score_stripped_bundle_manifest",
+        "wod_score_stripped_sanitization_receipt",
+        "wod_path_type_mapping_manifest",
+        "blind_anchor_receipt",
+    ]
+    staged = execution["staged_input_manifests"]["recovery_lane_v3"]
+    assert staged["scientific_contract"] == recovery_path
+    assert staged["predictor_cell_count"] == 320
+    assert staged["terminal_leaderboard_row_count"] == 960
+    assert "InterHub" not in json.dumps({"g2": g2, "staged": staged})
 
 
 def test_v1p7_registry_binding_targets_cover_every_prefilled_value() -> None:
@@ -356,7 +383,7 @@ def test_g2_input_manifest_rejects_binary_roles_and_path_aliases(tmp_path: Path)
     roles = [
         "wod_score_stripped_bundle_manifest",
         "wod_score_stripped_sanitization_receipt",
-        "interhub_human_ipv_source_manifest",
+        "wod_path_type_mapping_manifest",
         "blind_anchor_receipt",
     ]
     entries = []
@@ -412,6 +439,51 @@ def test_g2_input_manifest_rejects_binary_roles_and_path_aliases(tmp_path: Path)
             contract=load_json(EXECUTION),
             allowed_roots=[root],
         )
+
+
+def test_wod_path_type_mapping_manifest_is_checksum_bound_and_canonical(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "inputs" / "RQ014" / "wod_path_type_mapping" / "v1"
+    root.mkdir(parents=True)
+    mapping = root / "wod_path_type_mapping.csv"
+    mapping.write_text(
+        "segment_id,tstar_context_step,path_type\nseg-1,4,CP\nseg-1,8,HO\n",
+        encoding="utf-8",
+    )
+    manifest = root / "manifest.json"
+    manifest.write_bytes(
+        canonical_json_bytes(
+            {
+                "schema_version": "rq014-wod-path-type-mapping-manifest-v1",
+                "contains_rating": False,
+                "mapping": {
+                    "path": str(mapping),
+                    "size_bytes": mapping.stat().st_size,
+                    "sha256": sha256_file(mapping),
+                    "format": "RFC4180_CSV",
+                },
+                "row_count": 2,
+                "key_columns": ["segment_id", "tstar_context_step"],
+                "value_column": "path_type",
+                "allowed_values": ["CP", "HO", "MP", "F"],
+            }
+        )
+    )
+    validated = validate_wod_path_type_mapping_manifest(manifest, mapping_root=root)
+    assert validated["mapping_sha256"] == sha256_file(mapping)
+    assert validated["row_count"] == 2
+
+    mapping.write_text(
+        "segment_id,tstar_context_step,path_type\nseg-1,4,CP\nseg-1,4,HO\n",
+        encoding="utf-8",
+    )
+    payload = load_json(manifest)
+    payload["mapping"]["size_bytes"] = mapping.stat().st_size
+    payload["mapping"]["sha256"] = sha256_file(mapping)
+    manifest.write_bytes(canonical_json_bytes(payload))
+    with pytest.raises(PreflightContractError, match="Duplicate WOD path-type mapping"):
+        validate_wod_path_type_mapping_manifest(manifest, mapping_root=root)
 
 
 def test_registry_materialization_rejects_binding_that_differs_from_reviewed_source(

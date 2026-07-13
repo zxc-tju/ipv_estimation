@@ -14,8 +14,10 @@ def _write_once(path: Path, payload: bytes) -> None:
     if path.exists():
         if path.read_bytes() != payload:
             raise ValueError(f"Refusing to overwrite non-identical receipt: {path}")
+        path.chmod(0o444)
         return
     path.write_bytes(payload)
+    path.chmod(0o444)
 
 
 def main() -> int:
@@ -24,6 +26,9 @@ def main() -> int:
     parser.add_argument("--base", type=Path, required=True)
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--execution-contract", type=Path, required=True)
+    parser.add_argument("--m3-artifact", type=Path, required=True)
+    parser.add_argument("--m3-artifact-size-bytes", type=int, required=True)
+    parser.add_argument("--m3-artifact-sha256", required=True)
     parser.add_argument("--input-manifest", type=Path, required=True)
     parser.add_argument("--sanitization-receipt", type=Path, required=True)
     parser.add_argument("--materialization-ledger", type=Path, required=True)
@@ -38,6 +43,11 @@ def main() -> int:
         base=args.base.resolve(),
         repo_root=args.repo_root.resolve(),
         execution_contract_path=args.execution_contract.resolve(),
+        m3_artifact_ref={
+            "path": str(args.m3_artifact),
+            "size_bytes": args.m3_artifact_size_bytes,
+            "sha256": args.m3_artifact_sha256,
+        },
         input_manifest_path=args.input_manifest.resolve(),
         sanitization_receipt_path=args.sanitization_receipt.resolve(),
         materialization_ledger_path=args.materialization_ledger.resolve(),
