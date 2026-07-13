@@ -126,11 +126,10 @@ if __name__ != "__main__" or _RQ014_DIRECT_INTERNAL_MODE_REQUESTED:
     RQ014ContractError = _RQ014_PREFLIGHT.ContractError
     load_rq014_json = _RQ014_PREFLIGHT.load_json
     require_contained_regular_file = _RQ014_PREFLIGHT.require_contained_regular_file
-    validate_anchor_receipt = _RQ014_PREFLIGHT.validate_anchor_receipt
     validate_declassification_export_receipts = (
         _RQ014_PREFLIGHT.validate_declassification_export_receipts
     )
-    validate_input_manifest_g2 = _RQ014_PREFLIGHT.validate_input_manifest_g2
+    validate_g2_input_roles = _RQ014_PREFLIGHT.validate_g2_input_roles
     validate_m3_artifact_ref = _RQ014_PREFLIGHT.validate_m3_artifact_ref
     validate_materialization_ledger = _RQ014_PREFLIGHT.validate_materialization_ledger
     validate_score_stripped_bundle = _RQ014_PREFLIGHT.validate_score_stripped_bundle
@@ -1934,19 +1933,13 @@ def _validate_rq014_spec(
         roots=[base / "work_dirs" / "RQ014"],
         label="declassification export DONE receipt",
     )
-    allowed_input_roots = [
-        base / "inputs" / "RQ014",
-        base / "manifests" / "RQ014",
-        repo / "reports" / "plans",
-    ]
-    roles = validate_input_manifest_g2(
+    roles = validate_g2_input_roles(
         manifest_path=input_path,
         contract=contract,
-        allowed_roots=allowed_input_roots,
+        base=base,
     )
     if roles["wod_score_stripped_sanitization_receipt"] != sanitization_path:
         raise ValueError("Run spec and G2 manifest bind different sanitization receipts")
-    validate_anchor_receipt(roles["blind_anchor_receipt"])
     path_mapping = validate_wod_path_type_mapping_manifest(
         roles["wod_path_type_mapping_manifest"],
         mapping_root=base / "inputs" / "RQ014" / "wod_path_type_mapping" / "v1",

@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" a504e4f1593575ca28251fe1b1d4ac7d959ea9257d0c2e4984a30ba42020106e /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 3ad13e1180729a3a72bb0b914fe194ed0b45c3554f095b92c0d5b9e6b7a6119d /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -84,6 +84,11 @@ table must equal the `valid.envelope.wod_path_type_mapping.mapping_table_sha256`
 materialization binding. The 3 structural no-geometry scenes terminate at K/X_K before
 lookup; only the 222 geometry-available `UNMAPPED_EXCLUDED` scenes fail closed at F as
 `MISSING_WOD_PATH_TYPE / INELIGIBLE_BLIND`. Preflight never infers a replacement class.
+The G2 blind-anchor role likewise names only the fixed installed receipt
+`/share/home/u25310231/ZXC/sociality_estimation/inputs/RQ014/blind_anchor/v1/RQ014_blind_anchor_receipt_v1p5.json`
+(1,752 bytes; SHA-256 `80e393f73e353e19da4d280ca946a6e7dcee3197824f723155944829f295496a`).
+Launcher validation and job execution call the same root/path/size/hash/schema validator. The reviewed
+`reports/plans` copy remains snapshot provenance and is rejected as a runtime input-manifest path.
 
 The preflight authorization chain is forward-bound to these exact v1.6 paths:
 
