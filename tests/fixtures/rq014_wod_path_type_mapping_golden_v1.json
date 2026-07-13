@@ -1,0 +1,61 @@
+{
+  "schema_version": "rq014-wod-path-type-golden-v1",
+  "contains_rating": false,
+  "cases": [
+    {
+      "case_id": "CP_CROSSING",
+      "route_intent_code": 1,
+      "route_intent_name": "GO_STRAIGHT",
+      "tstar_pose_row_major": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+      "ego_history": [[-0.5, -2.0, 0.0], [-0.25, -1.0, 0.0], [0.0, 0.0, 0.0]],
+      "ego_future": [[0.25, 1.0, 0.0], [0.5, 2.0, 0.0], [0.75, 3.0, 0.0], [1.0, 4.0, 0.0]],
+      "counterpart_observed": [[-0.5, 2.0, -4.0, 0.0, 4.0], [-0.25, 2.0, -3.0, 0.0, 4.0], [0.0, 2.0, -2.0, 0.0, 4.0]],
+      "expected_path_type": "CP",
+      "expected_status": "MAPPED_CROSSING"
+    },
+    {
+      "case_id": "HO_OPPOSING",
+      "route_intent_code": 1,
+      "route_intent_name": "GO_STRAIGHT",
+      "tstar_pose_row_major": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+      "ego_history": [[-0.5, -2.0, 0.0], [-0.25, -1.0, 0.0], [0.0, 0.0, 0.0]],
+      "ego_future": [[0.25, 1.0, 0.0], [0.5, 2.0, 0.0], [0.75, 3.0, 0.0], [1.0, 4.0, 0.0]],
+      "counterpart_observed": [[-0.5, 6.0, 0.0, -4.0, 0.0], [-0.25, 5.0, 0.0, -4.0, 0.0], [0.0, 4.0, 0.0, -4.0, 0.0]],
+      "expected_path_type": "HO",
+      "expected_status": "MAPPED_OPPOSING"
+    },
+    {
+      "case_id": "MP_LEADING_OR_MERGING",
+      "route_intent_code": 1,
+      "route_intent_name": "GO_STRAIGHT",
+      "tstar_pose_row_major": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+      "ego_history": [[-0.5, -2.0, 0.0], [-0.25, -1.0, 0.0], [0.0, 0.0, 0.0]],
+      "ego_future": [[0.25, 1.0, 0.0], [0.5, 2.0, 0.0], [0.75, 3.0, 0.0], [1.0, 4.0, 0.0]],
+      "counterpart_observed": [[-0.5, 1.0, 1.0, 4.0, 0.0], [-0.25, 2.0, 1.0, 4.0, 0.0], [0.0, 3.0, 1.0, 4.0, 0.0]],
+      "expected_path_type": "MP",
+      "expected_status": "MAPPED_LEADING_OR_MERGING"
+    },
+    {
+      "case_id": "F_SAME_LANE_OR_FOLLOWING",
+      "route_intent_code": 1,
+      "route_intent_name": "GO_STRAIGHT",
+      "tstar_pose_row_major": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+      "ego_history": [[-0.5, -2.0, 0.0], [-0.25, -1.0, 0.0], [0.0, 0.0, 0.0]],
+      "ego_future": [[0.25, 1.0, 0.0], [0.5, 2.0, 0.0], [0.75, 3.0, 0.0], [1.0, 4.0, 0.0]],
+      "counterpart_observed": [[-0.5, -12.0, 1.0, 4.0, 0.0], [-0.25, -11.0, 1.0, 4.0, 0.0], [0.0, -10.0, 1.0, 4.0, 0.0]],
+      "expected_path_type": "F",
+      "expected_status": "MAPPED_SAME_LANE_OR_FOLLOWING"
+    },
+    {
+      "case_id": "UNMAPPED_PARALLEL_NEARBY",
+      "route_intent_code": 1,
+      "route_intent_name": "GO_STRAIGHT",
+      "tstar_pose_row_major": [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+      "ego_history": [[-0.5, -2.0, 0.0], [-0.25, -1.0, 0.0], [0.0, 0.0, 0.0]],
+      "ego_future": [[0.25, 1.0, 0.0], [0.5, 2.0, 0.0], [0.75, 3.0, 0.0], [1.0, 4.0, 0.0]],
+      "counterpart_observed": [[-0.5, -2.0, 6.0, 4.0, 0.0], [-0.25, -1.0, 6.0, 4.0, 0.0], [0.0, 0.0, 6.0, 4.0, 0.0]],
+      "expected_path_type": null,
+      "expected_status": "UNMAPPED_EXCLUDED_PARALLEL_NEARBY"
+    }
+  ]
+}

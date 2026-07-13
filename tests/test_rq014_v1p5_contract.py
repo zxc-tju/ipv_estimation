@@ -19,6 +19,7 @@ from scripts.rq014.preflight import (
     validate_anchor_receipt,
     validate_input_manifest_g2,
     validate_materialization_ledger,
+    validate_wod_mapping_registry_binding,
     validate_wod_path_type_mapping_manifest,
 )
 
@@ -252,8 +253,8 @@ def test_v1p7_registry_binding_targets_cover_every_prefilled_value() -> None:
         "forensic": load_json(FORENSIC),
         "recovery_extension": load_json(EXTENSION),
     }
-    assert policy["required_binding_count"] == 9
-    assert len(policy["required_binding_ids"]) == 9
+    assert policy["required_binding_count"] == 12
+    assert len(policy["required_binding_ids"]) == 12
     assert set(policy["binding_targets"]) == set(policy["required_binding_ids"])
     assert policy["source_binding_mode"] == "VERIFY_PREFILLED_EXACT"
     assert sum(
@@ -473,6 +474,16 @@ def test_wod_path_type_mapping_manifest_is_checksum_bound_and_canonical(
     validated = validate_wod_path_type_mapping_manifest(manifest, mapping_root=root)
     assert validated["mapping_sha256"] == sha256_file(mapping)
     assert validated["row_count"] == 2
+    binding_id = "valid.envelope.wod_path_type_mapping.mapping_table_sha256"
+    validate_wod_mapping_registry_binding(
+        validated,
+        {"bindings": {binding_id: validated["mapping_sha256"]}},
+    )
+    with pytest.raises(PreflightContractError, match="differs from reviewed registry binding"):
+        validate_wod_mapping_registry_binding(
+            validated,
+            {"bindings": {binding_id: "f" * 64}},
+        )
 
     mapping.write_text(
         "segment_id,tstar_context_step,path_type\nseg-1,4,CP\nseg-1,4,HO\n",

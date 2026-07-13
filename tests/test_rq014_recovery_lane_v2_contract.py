@@ -287,7 +287,12 @@ def test_interhub_roles_path_types_and_envelope_cells_are_frozen():
     assert "exact one-to-one lookup only" in path_types["interhub_mapping"]["rule"]
     assert "exact one-to-one lookup only" in path_types["wod_mapping"]["rule"]
     assert "materialized rating-blind before G2R" in path_types["wod_mapping"]["source"]
-    assert "SHA-256 frozen" in path_types["wod_mapping"]["builder_binding"]
+    builder_binding = path_types["wod_mapping"]["builder_binding"]
+    assert builder_binding["registry_pointer"].endswith(
+        "RQ014_config_space_v1p6.yaml#/envelope/wod_path_type_mapping"
+    )
+    for artifact in ("source_definition", "implementation", "mapping_table"):
+        assert len(builder_binding[artifact]["sha256"]) == 64
     assert [row["role_id"] for row in roles["directed_roles_in_order"]] == [
         "A_AS_FOCAL",
         "B_AS_FOCAL",
