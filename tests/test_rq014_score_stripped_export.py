@@ -212,7 +212,7 @@ def _source_expectations(
     }
 
 
-def _export(tmp_path: Path) -> Path:
+def _export(tmp_path: Path, *, exporter_git_commit: str = "a" * 40) -> Path:
     tmp_path.mkdir(parents=True, exist_ok=True)
     bundles, readiness, counterpart = _write_sources(tmp_path)
     output = tmp_path / "base" / "inputs" / "RQ014" / "wod_rated479_score_stripped" / "v1"
@@ -222,12 +222,41 @@ def _export(tmp_path: Path) -> Path:
         counterpart_path=counterpart,
         schema_path=SCHEMA,
         output_root=output,
-        exporter_git_commit="a" * 40,
+        exporter_git_commit=exporter_git_commit,
         exporter_environment_sha256="b" * 64,
         created_at_utc="2026-07-12T00:00:00Z",
         source_expectations=_source_expectations(bundles, readiness, counterpart),
     )
     return output
+
+
+def test_preflight_provenance_accepts_receipt_commit_distinct_from_current_head(
+    tmp_path: Path,
+) -> None:
+    export_commit = "a" * 40
+    current_head = "b" * 40
+    output = _export(tmp_path, exporter_git_commit=export_commit)
+    result = validate_score_stripped_bundle(
+        bundle_root=output,
+        schema_path=SCHEMA,
+        file_manifest_path=output / "file_manifest.json",
+        receipt_path=output / "sanitization_receipt.json",
+        expected_exporter_git_commit=export_commit,
+    )
+    assert result["sanitization_receipt_sha256"]
+    assert export_commit != current_head
+
+
+def test_preflight_provenance_rejects_receipt_commit_mismatch(tmp_path: Path) -> None:
+    output = _export(tmp_path, exporter_git_commit="a" * 40)
+    with pytest.raises(ContractError, match="exporter_git_commit"):
+        validate_score_stripped_bundle(
+            bundle_root=output,
+            schema_path=SCHEMA,
+            file_manifest_path=output / "file_manifest.json",
+            receipt_path=output / "sanitization_receipt.json",
+            expected_exporter_git_commit="b" * 40,
+        )
 
 
 def _replace_once(path: Path, old: str, new: str) -> None:

@@ -206,25 +206,28 @@ question index in `STUDIES.md`.
   `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_1_declassification_export_20260712T165224Z_0e6ca130/`.
   PI accepted the export through the Lead session's interactive D1 prompt on 2026-07-13 and authorized starting
   the `rq014_g2_contract_preflight` authorization loop only. The scoped decision, exact two-operation candidate
-  allowlist and candidate review manifest implement §8.1 steps 1–3; fresh dual review, a new Formal G1, final bundle,
-  published commit, immutable spec, validate-only PASS and one more explicit user confirmation before submit remain
-  mandatory. Round-3 fresh statistics and execution/governance reviews both returned `NO_BLOCKER`; the exact
-  forward-bound verdicts, `RQ014_formal_G1_v1p6_preflight_20260713.yaml` (`FORMAL_G1_PASS`) and 74-row final bundle
-  now exist. Formal G1 does not grant execution: publication/sync, immutable spec, validate-only PASS, fresh
-  validation and explicit user confirmation remain mandatory before preflight submit. No rating value was read.
+  allowlist and W4b candidate review manifest implement §8.1 steps 1–3. W4b fixed the cross-commit
+  exporter-provenance defect with a required preflight-only
+  `declassification_export_commit`; round-4 fresh statistics and execution/governance reviews both returned
+  `NO_BLOCKER` on the exact 70-row manifest `4e06316aa35a95c85a330bf6d82a6ba87642f0d3e47a12810519c34f284b17a7`.
+  The same-named Formal G1 is regenerated at SHA-256 `6bbdcd08107f0d93119191177bdf53419b5b2fb7fc511a16f0cad1870e30fcd7`
+  with `FORMAL_G1_PASS`; the 74-row final bundle is regenerated at SHA-256
+  `999ad5529241ca1a8197b525ba84abde9c570d298c0478d0e1e78e8b8d136d3c`. Formal G1 does not grant execution:
+  publication/sync, immutable-spec validate-only, fresh validation and explicit user confirmation remain mandatory.
+  No rating value was read.
   Fleet evidence: `.codex-fleet/rq014-execution-v1p6/board/`.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
   tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Current
-  final release result: `194 passed`; broader non-shortcut regression excluding the locally absent
+  W4b final-assembly result: `128 passed`; prior final release result: `194 passed`; broader non-shortcut regression excluding the locally absent
   ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
   Python compilation, shell syntax and `git diff --check` also pass. No rating value was read,
   no production run root was created, and no Slurm job was submitted.
-- RQ014 current preflight authority bundle is
+- RQ014 current W4b preflight authority bundle is
   `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 74 rows, SHA-256
-  `4167c14be4db09092fb03896996b6576185e661daa0d9da092c4b6759e100e2b`. The v1.5 baseline bundle remains
-  addressable at `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
+  `999ad5529241ca1a8197b525ba84abde9c570d298c0478d0e1e78e8b8d136d3c`; the v1.5 baseline remains at
+  `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
 - RQ007 held-out remains sealed. RQ009 must freeze all rules and stop at
   `READY_FOR_SEALED_TEST` until a new PI authorization opens it.
 - RQ008B is not authorized; no RQ008 motif may enter RQ009.
