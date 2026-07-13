@@ -1,1 +1,48 @@
-{"findings":[{"evidence":["Round ledger: round 1 statistics BLOCKED and execution BLOCKED; round 2 statistics NO_BLOCKER and execution BLOCKED; round 3 statistics NO_BLOCKER and execution NO_BLOCKER on commit 1d9b5dba before W4b; round 4 statistics NO_BLOCKER and execution NO_BLOCKER on commit a480cf07 after W4b.","Round 4 reviewed the exact 70-row manifest at SHA-256 4e06316aa35a95c85a330bf6d82a6ba87642f0d3e47a12810519c34f284b17a7 and found the cross-commit exporter-provenance defect resolved."],"finding_id":"W4S-R01","severity":"BLOCKER","status":"RESOLVED","summary":"The four-round authorization ledger closes with dual NO_BLOCKER on the W4b manifest."},{"evidence":["All five protected science files remain byte-identical to commit 6007d1d6.","Authority remains exactly rq014_g2_declassification_export plus rq014_g2_contract_preflight; resource pilot, G2R, G3R, G4R and rating access remain denied.","The required declassification_export_commit field adds provenance binding only and grants no data-access, rating-join, statistical or code-selection capability."],"finding_id":"W4S-N01","severity":"NOTE","status":"NO_FINDING","summary":"W4b preserves protected science bytes, rating blindness and the single-operation authority scope."},{"evidence":["The persisted round-4 statistics report records 70 unique manifest rows with 70/70 hashes verified and no new defect.","No workspace, launcher or HPC action occurred; no rating value was accessed and no HPC job was submitted during statistics review."],"finding_id":"W4S-N02","severity":"NOTE","status":"NO_FINDING","summary":"The round-4 statistics review stayed inside the rating-blind, no-execution boundary."}],"fresh_reviewer_attested":true,"hpc_jobs_submitted":false,"rating_values_accessed":false,"review_role":"statistics","reviewed_at_utc":"2026-07-13T02:20:06Z","reviewed_manifest_path":"reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256","reviewed_manifest_sha256":"4e06316aa35a95c85a330bf6d82a6ba87642f0d3e47a12810519c34f284b17a7","reviewer_agent":"codex/w4-stat-reviewer","schema_version":"rq014-formal-review-v1p5","unresolved_blockers":0,"unresolved_majors":0,"verdict":"NO_BLOCKER"}
+{
+  "findings": [
+    {
+      "evidence": [
+        "W4d round ledger: round 5 on fe9374d4 returned statistics BLOCKED and execution BLOCKED; round 6 remediation produced ffd9c6ad; round 7 returned statistics NO_BLOCKER and execution BLOCKED on the sole preflight/export M3 exact-key defect; round 8 fixed that defect in 979a24ba; round 9 returned statistics BLOCKED on optional-for-export wording and execution NO_BLOCKER; round 10 fixed the wording in 5abdad5a; round-10 confirmation returned statistics NO_BLOCKER and execution NO_BLOCKER.",
+        "The terminal confirmation binds the exact 93-row review manifest at SHA-256 6103df8842b467321fb8273991380059bbd37aae9edf7425b8673db06d67ab98 with zero unresolved blockers or majors."
+      ],
+      "finding_id": "W4D-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The W4d review ledger closes all science and consistency blockers with dual NO_BLOCKER on the round-10 manifest."
+    },
+    {
+      "evidence": [
+        "The active recovery authority is consistently lane v3: the M3 envelope is fixed, the grid is 320 cells with 960 terminal rows, InterHub is provenance-only, and the separately pinned WOD path mapping remains an active input.",
+        "M3 source drift is a global pre-cell and pre-ledger abort; delivery is bound by exact managed path, 88,306,301-byte size, SHA-256 b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253, retained no-follow verification, job-start rehash and an immutable receipt.",
+        "G2R remains separately denied pending the future managed scientific-environment v4 gate, and the amendment fixes unmasked q_0p5, lo_90 and hi_90 consumption before any OOD mask."
+      ],
+      "finding_id": "W4D-S-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The 320-cell science authority and bounded M3 preflight role are internally coherent."
+    },
+    {
+      "evidence": [
+        "Round 8 made m3_artifact required for contract preflight and rejected for declassification export; round 10 aligned the normative contract, README and preflight validation wording with that exact-key behavior.",
+        "Historical v1p5 registries and lane v2 remain byte-addressable; X02 remains LEGACY_INACTIVE_UNBOUND, and any fallback requires a new checksum-bound amendment.",
+        "No rating value was accessed and no HPC job was submitted during any statistics review in this W4d ledger."
+      ],
+      "finding_id": "W4D-S-N02",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The terminal review preserves rating blindness, frozen history and the amendment boundary."
+    }
+  ],
+  "fresh_reviewer_attested": true,
+  "hpc_jobs_submitted": false,
+  "rating_values_accessed": false,
+  "review_role": "statistics",
+  "reviewed_at_utc": "2026-07-13T08:08:19Z",
+  "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
+  "reviewed_manifest_sha256": "6103df8842b467321fb8273991380059bbd37aae9edf7425b8673db06d67ab98",
+  "reviewer_agent": "codex/w4-stat-reviewer",
+  "schema_version": "rq014-formal-review-v1p5",
+  "unresolved_blockers": 0,
+  "unresolved_majors": 0,
+  "verdict": "NO_BLOCKER"
+}

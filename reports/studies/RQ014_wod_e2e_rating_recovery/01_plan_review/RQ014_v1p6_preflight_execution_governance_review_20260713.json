@@ -1,1 +1,48 @@
-{"findings":[{"evidence":["Round ledger: round 1 statistics BLOCKED and execution BLOCKED; round 2 statistics NO_BLOCKER and execution BLOCKED; round 3 statistics NO_BLOCKER and execution NO_BLOCKER on commit 1d9b5dba before W4b; round 4 statistics NO_BLOCKER and execution NO_BLOCKER on commit a480cf07 after W4b.","Round 4 reviewed the exact 70-row manifest at SHA-256 4e06316aa35a95c85a330bf6d82a6ba87642f0d3e47a12810519c34f284b17a7 and found no remaining blocker."],"finding_id":"W4E-R01","severity":"BLOCKER","status":"RESOLVED","summary":"The four-round execution-governance ledger closes with dual NO_BLOCKER on W4b."},{"evidence":["Launcher SHA-256 673c04801eeaeaae1643274401eb50a5422a5291c2e10cc1a23fd0f31e4379c6 at 118469 bytes matches the wrapper pins.","Wrapper SHA-256 76502c36008dd5265d88a9d60c89c151704791d719f9eb7357a8377462e68dc9 at 8108 bytes matches the README and execution-contract operator pins.","The preflight-only field is validated as nonzero lowercase 40-hex, checked as a published origin/main ancestor, passed to receipt validation and rendered job argv, while export specs reject it."],"finding_id":"W4E-N01","severity":"NOTE","status":"NO_FINDING","summary":"The W4b provenance path and launcher-wrapper pin cascade are coherent and fail closed."},{"evidence":["The detached-clone focused suite passed 128 tests; git show --check passed; the 70-row manifest was sorted, unique, 70/70 valid and deterministic across two builds.","No launcher or HPC operation occurred; no rating value was accessed and no HPC job was submitted during execution/governance review."],"finding_id":"W4E-N02","severity":"NOTE","status":"NO_FINDING","summary":"Round-4 execution verification passed without crossing submit, HPC or rating boundaries."}],"fresh_reviewer_attested":true,"hpc_jobs_submitted":false,"rating_values_accessed":false,"review_role":"execution_governance","reviewed_at_utc":"2026-07-13T02:24:29Z","reviewed_manifest_path":"reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256","reviewed_manifest_sha256":"4e06316aa35a95c85a330bf6d82a6ba87642f0d3e47a12810519c34f284b17a7","reviewer_agent":"codex/w4-exec-reviewer","schema_version":"rq014-formal-review-v1p5","unresolved_blockers":0,"unresolved_majors":0,"verdict":"NO_BLOCKER"}
+{
+  "findings": [
+    {
+      "evidence": [
+        "W4d round ledger: round 5 on fe9374d4 returned statistics BLOCKED and execution BLOCKED; round 6 remediation produced ffd9c6ad; round 7 returned statistics NO_BLOCKER and execution BLOCKED on the sole preflight/export M3 exact-key defect; round 8 fixed that defect in 979a24ba; round 9 returned statistics BLOCKED on optional-for-export wording and execution NO_BLOCKER; round 10 fixed the wording in 5abdad5a; round-10 confirmation returned statistics NO_BLOCKER and execution NO_BLOCKER.",
+        "The terminal confirmation binds the exact 93-row review manifest at SHA-256 6103df8842b467321fb8273991380059bbd37aae9edf7425b8673db06d67ab98 with zero unresolved blockers or majors."
+      ],
+      "finding_id": "W4D-E-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The W4d execution-governance ledger closes with dual NO_BLOCKER on the round-10 manifest."
+    },
+    {
+      "evidence": [
+        "Round 6 completed the lane-v3 migration, made M3_ARTIFACT_MISMATCH a global abort before input, ledger or cell work, and added retained no-follow path/containment/regular-file/size/SHA verification plus immutable receipt and job-start rehash.",
+        "Round 8 made m3_artifact preflight-only in launcher exact-key validation and JSON Schema and dispatches artifact verification only for rq014_g2_contract_preflight; export specs carrying the field fail closed.",
+        "Round 10 renamed the reviewed delivery metadata to prohibited_for_operation for rq014_g2_declassification_export and aligned all active operator prose without changing operation branching."
+      ],
+      "finding_id": "W4D-E-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The M3 delivery and operation-scope controls are explicit, coherent and fail closed."
+    },
+    {
+      "evidence": [
+        "Current pins are launcher SHA-256 68201efe27e39c81e90eb1543b3ba915a4e40f79f0554877d85574d289c621c6 at 122,208 bytes, preflight SHA-256 e188c5b25c8f71bd60325f6d82a959e8332f033c61f5baf1d33a04bb9d1d3fb4 at 79,028 bytes, and wrapper SHA-256 203c1dca17a85381a7e5deda98e54886937356b126d34ae4c10e57b41fa2f058 at 8,108 bytes; wrapper, README and execution-contract operator pins agree.",
+        "The terminal review manifest is sorted, unique, deterministic at 93 rows and binds the exact execution, science, schema, authority and test bytes under adjudication.",
+        "No launcher invocation, HPC operation, rating access or Slurm submission occurred during execution-governance review."
+      ],
+      "finding_id": "W4D-E-N02",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The reviewed pin chain, manifest closure and no-execution boundary are intact."
+    }
+  ],
+  "fresh_reviewer_attested": true,
+  "hpc_jobs_submitted": false,
+  "rating_values_accessed": false,
+  "review_role": "execution_governance",
+  "reviewed_at_utc": "2026-07-13T08:08:20Z",
+  "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
+  "reviewed_manifest_sha256": "6103df8842b467321fb8273991380059bbd37aae9edf7425b8673db06d67ab98",
+  "reviewer_agent": "codex/w4-exec-reviewer",
+  "schema_version": "rq014-formal-review-v1p5",
+  "unresolved_blockers": 0,
+  "unresolved_majors": 0,
+  "verdict": "NO_BLOCKER"
+}
