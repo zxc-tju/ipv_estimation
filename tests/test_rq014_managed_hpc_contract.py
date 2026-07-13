@@ -344,10 +344,7 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, str]:
             "reviewer_agent": "fixture-execution-governance-agent",
         },
     )
-    formal_relative = (
-        "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/"
-        "RQ014_formal_G1_v1p5_20260712.yaml"
-    )
+    formal_relative = launcher.RQ014_FORMAL_G1
     formal = _write_json(
         repo / formal_relative,
         {
@@ -376,7 +373,7 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, str]:
         },
     )
 
-    final_bundle_relative = "reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256"
+    final_bundle_relative = launcher.RQ014_FINAL_BUNDLE
     final_paths = copied + [formal_relative, stats_relative, execution_relative, review_manifest_relative]
     final_bundle = _checksum_manifest(repo / final_bundle_relative, repo, final_paths)
     commit = _init_fixture_git_repo(repo)
@@ -665,12 +662,17 @@ def test_reviewed_runtime_references_use_the_same_v3_environment_lock() -> None:
 
 def test_authoritative_rq014_operator_docs_require_the_same_clean_bootstrap() -> None:
     wrapper_sha256 = sha256_file(ROOT / "scripts" / "hpc" / "submit_research_run.sh")
+    historical_wrapper_sha256 = (
+        "d8036336c354b202f388c5fd9dbc05a80a1e8292a574cc4c47400d0a772d7a1d"
+    )
+    readme = (ROOT / "configs" / "run_specs" / "README.md").read_text(encoding="utf-8")
+    assert wrapper_sha256 in readme
     for relative in (
         "reports/plans/RQ014_plan_v1p5_amendment_20260712.md",
         "reports/plans/prompts/RQ014_G2_kickoff_prompt_v1p5_20260712.md",
     ):
         text = (ROOT / relative).read_text(encoding="utf-8")
-        assert wrapper_sha256 in text
+        assert historical_wrapper_sha256 in text
         assert "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c" in text
         assert 'exec 8>"$lock" && /usr/bin/flock -s 8' in text
         assert 'exec 9<"$wrapper"' in text
@@ -700,7 +702,7 @@ def test_authoritative_rq014_operator_docs_require_the_same_clean_bootstrap() ->
     assert "submit_research_run.sh --spec" not in decision
 
 
-def test_preflight_is_conditionally_registered_but_centrally_denied_until_receipts() -> None:
+def test_preflight_is_conditionally_registered_and_centrally_allowlisted_for_review() -> None:
     execution = json.loads(
         (ROOT / "reports" / "plans" / "RQ014_execution_contract_v1p5.json").read_text(
             encoding="utf-8"
@@ -719,36 +721,50 @@ def test_preflight_is_conditionally_registered_but_centrally_denied_until_receip
         (ROOT / "configs" / "research_authorization.json").read_text(encoding="utf-8")
     )
     assert authorization["authorizations"]["RQ014"]["allowed_operations"] == [
-        "rq014_g2_declassification_export"
+        "rq014_g2_declassification_export",
+        "rq014_g2_contract_preflight",
     ]
-
-
-def test_current_central_allowlist_denies_preflight_before_receipt_access(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    base, spec_path, _ = _build_fixture(tmp_path)
-    payload = json.loads(spec_path.read_text(encoding="utf-8"))
-    for key in ("scene_bundles", "readiness_table", "counterpart_tracks", "created_at_utc"):
-        payload.pop(key)
-    placeholder_ref = dict(payload["environment_manifest"])
-    payload.update(
-        operation="rq014_g2_contract_preflight",
-        resource_profile_id="rq014-g2-preflight-cpu-v1",
-        input_manifest=dict(placeholder_ref),
-        sanitization_receipt=dict(placeholder_ref),
-        materialization_ledger=dict(placeholder_ref),
-        declassification_export_receipt=dict(placeholder_ref),
-        declassification_export_done=dict(placeholder_ref),
+    assert authorization["authorizations"]["RQ014"]["preflight_decision_path"] == (
+        "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
     )
-    _write_json(spec_path, payload)
-    monkeypatch.setattr(launcher, "DEFAULT_BASE", base)
-    with pytest.raises(ValueError, match="Operation is not authorized"):
-        launcher.validate_spec(
-            launcher.load_spec(spec_path),
-            base=base,
-            repo=base / "code" / "repo",
-            spec_path=spec_path,
+    assert authorization["authorizations"]["RQ014"]["formal_g1_path"] == (
+        launcher.RQ014_FORMAL_G1
+    )
+    assert execution["gate_contract"]["formal_g1_source"] == launcher.RQ014_FORMAL_G1
+    assert execution["gate_contract"]["formal_g1_review_manifest"] == (
+        launcher.RQ014_REVIEW_MANIFEST
+    )
+    template_path = (
+        ROOT / "configs" / "run_specs" / "RQ014_g2_contract_preflight.template.json"
+    )
+    template = json.loads(template_path.read_text(encoding="utf-8"))
+    assert template["formal_g1"]["path"].endswith(launcher.RQ014_FORMAL_G1)
+    assert template["formal_g1"]["sha256"] == "0" * 64
+    assert template["contract_bundle"]["path"].endswith(launcher.RQ014_FINAL_BUNDLE)
+    assert template["contract_bundle"]["sha256"] == "0" * 64
+
+
+def test_allowlist_change_invalidates_old_formal_g1_before_preflight_submit() -> None:
+    formal_path = (
+        ROOT
+        / "reports"
+        / "studies"
+        / "RQ014_wod_e2e_rating_recovery"
+        / "01_plan_review"
+        / "RQ014_formal_G1_v1p5_20260712.yaml"
+    )
+    formal = json.loads(formal_path.read_text(encoding="utf-8"))
+    old_review_manifest = ROOT / formal["reviewed_manifest_path"]
+    with pytest.raises(
+        ValueError,
+        match="Checksum manifest mismatch: configs/research_authorization.json",
+    ):
+        launcher._verify_checksum_manifest(old_review_manifest, repo=ROOT)
+    with pytest.raises(ValueError, match="Formal G1 reviewer path drift"):
+        launcher._validate_formal_g1(
+            formal_path,
+            repo=ROOT,
+            expected_review_manifest=formal["reviewed_manifest_path"],
         )
 
 

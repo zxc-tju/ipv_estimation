@@ -67,4 +67,26 @@ remain separately authorized future operations.
   governance reviewers returned `NO_BLOCKER_AFTER_REMEDIATION`; review record:
   `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_execution_handoff_review_20260712.md`.
 
+## v1.6 Waves 0–3 execution record (2026-07-13)
+
+- Managed checkout synced by reviewed incremental git bundle: HPC HEAD detached at exact `24be0827…`,
+  `refs/remotes/origin/main` CAS-updated `b1476bd0…` → `eb1ade2b…` under the exclusive maintenance lock;
+  sync script survived four adversarial review rounds before GO; attestation + bundle retained.
+- Immutable spec `RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1.json` (SHA-256 `0e6ca130…31f62b`)
+  derived byte-identically by two independent agents, published read-only via staging hard-link no-replace.
+- Validate-only evidence matched the frozen expected table (Lead + W1-A + fresh W1-D, 14/14; zero side effects).
+- Single authorized submission: Slurm `1919412` `zxc-rq014-export-0e6ca13094ad`, COMPLETED 0:0 in 3m52s.
+- Output: nine-file score-stripped bundle under the managed input root; universe 479, geometry 476,
+  structural attrition 3 (reasons `MISSING_DECLASSIFIED_PHASE1_SCENE`), candidate distribution {0:3, 3:476};
+  forbidden/unexpected/duplicate/nonfinite scans all zero; receipts hash-chained DONE→export→{sanitization,
+  file_manifest}; sanitization receipt carries the 17 contract attestation fields 1:1.
+- Dual W3 review (distinct fresh identities): statistics NO_BLOCKER (science primitives preserved; no
+  association computed), execution/governance NO_BLOCKER (receipt schema conform; W2-C literal checklist
+  items adjudicated as overreach with blob citations; one record-keeping deviation — W1-B round-2 verdict
+  persisted late — disclosed and accepted on timeline evidence).
+- Bounded report:
+  `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_1_declassification_export_20260712T165224Z_0e6ca130/report.md`.
+- Status: `PASS_RATING_BLIND_EXPORT_READY_FOR_PI_DECISION`; execution stopped at D1. No rating value was
+  read; contract preflight remains centrally DENIED pending D1 and its own authorization loop.
+
 No `decision.md` should be created until empirical evidence reaches the registered claim gates.

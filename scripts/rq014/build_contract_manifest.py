@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import os
+import sys
 from pathlib import Path
 
 
@@ -32,6 +33,9 @@ def parse_manifest(path: Path) -> dict[str, str]:
 
 
 def review_paths(repo_root: Path) -> set[str]:
+    repo_root_string = str(repo_root)
+    if repo_root_string not in sys.path:
+        sys.path.insert(0, repo_root_string)
     from scripts.hpc.prepare_research_run import RQ014_REVIEW_REQUIRED_PATHS
 
     paths = set(RQ014_REVIEW_REQUIRED_PATHS)
@@ -80,7 +84,7 @@ def main() -> int:
         review_manifest = args.review_manifest.resolve()
         paths = set(parse_manifest(review_manifest))
         paths.add(str(review_manifest.relative_to(repo_root)))
-        paths.update(args.extra)
+    paths.update(args.extra)
     payload = build_manifest(repo_root, paths)
     output = args.output if args.output.is_absolute() else repo_root / args.output
     atomic_write(output.resolve(), payload)
