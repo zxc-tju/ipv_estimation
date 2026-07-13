@@ -221,25 +221,30 @@ question index in `STUDIES.md`.
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
   tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Current
-  W4f round-3 review-candidate result: `241 passed`; prior final release result: `194 passed`; broader non-shortcut regression excluding the locally absent
+  W4h review-candidate result: `244 passed`; prior W4f result: `241 passed`; broader non-shortcut regression excluding the locally absent
   ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
   Python compilation, shell syntax and `git diff --check` also pass. No rating value was read,
   no production run root was created, and no Slurm job was submitted.
-- RQ014 current W4b preflight authority bundle is
-  `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 74 rows, SHA-256
-  `999ad5529241ca1a8197b525ba84abde9c570d298c0478d0e1e78e8b8d136d3c`; the v1.5 baseline remains at
+- RQ014 last adjudicated W4f preflight authority bundle is
+  `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 105 rows, SHA-256
+  `bdad1e4c6d45897e70df769c17c269832e13ee0c1a0b180535b432e35c47635d`; the v1.5 baseline remains at
   `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
-- **RQ014 W4f is a review candidate, not executable authority.** The rating-blind WOD mapping addendum freezes
+- **RQ014 W4h is a review candidate, not executable authority.** The adjudicated W4f rating-blind WOD mapping
+  contains 254 mappings (`CP=115, HO=90, MP=48, F=1`). The first preflight submit at published commit `218d8bd2`
+  failed closed before scientific work because validate-only accepted the managed-checkout blind-anchor path while
+  the job required its run-snapshot counterpart. W4h removes that cross-phase exception: both phases now require
+  the exact 1,752-byte receipt (SHA-256 `80e393f7…95496a`) installed at
+  `inputs/RQ014/blind_anchor/v1/RQ014_blind_anchor_receipt_v1p5.json`; the repository copy is provenance only.
+  The failed run root remains preserved, no rating was accessed, and the W4f Formal G1/final bundle do not cover
+  W4h bytes. Fresh dual review, regenerated verdicts/G1/final bundle, publication/sync, a new immutable spec and
+  explicit confirmation are mandatory before another submit. The mapping addendum freezes
   the recovered full479 conflict-geometry rule over the published nine-file score-stripped bundle. Its deterministic
-  scene-level candidate contains 254 mappings (`CP=115, HO=90, MP=48, F=1`), 222 geometry-available
+  scene-level candidate has 222 geometry-available
   `UNMAPPED_EXCLUDED` scenes that fail closed at F, and 3 structural no-geometry scenes that terminate at K before
   lookup. The v1p6 registry and execution contract checksum-bind the definition, stdlib implementation, and table, increasing
   the exact active science-binding count from 9 to 12. Round 2 restores the protected envelope-builder v2 bytes at
   SHA-256 `407d6320…b8c8a4` and freezes the binary64/OLS tolerances plus ten boundary/exclusion fixtures (15 total) in the
-  addendum/registry instead. The existing W4d Formal G1/final bundle do not cover these
-  new bytes: fresh dual review, regenerated verdicts/G1/final bundle, publication/sync, immutable-spec validation,
-  and explicit confirmation remain mandatory. No managed-input installation, HPC write, launcher invocation,
-  rating access, or job occurred.
+  addendum/registry instead.
 - RQ007 held-out remains sealed. RQ009 must freeze all rules and stop at
   `READY_FOR_SEALED_TEST` until a new PI authorization opens it.
 - RQ008B is not authorized; no RQ008 motif may enter RQ009.

@@ -120,6 +120,146 @@ def write_managed_v2_spec(base: Path, **overrides: object) -> Path:
     return path
 
 
+def write_g2_manifest_with_anchor(base: Path, anchor: Path) -> tuple[Path, dict[str, Path]]:
+    role_paths = {
+        "wod_score_stripped_bundle_manifest": (
+            base / "inputs" / "RQ014" / "wod_rated479_score_stripped" / "v1" / "file_manifest.json"
+        ),
+        "wod_score_stripped_sanitization_receipt": (
+            base
+            / "inputs"
+            / "RQ014"
+            / "wod_rated479_score_stripped"
+            / "v1"
+            / "sanitization_receipt.json"
+        ),
+        "wod_path_type_mapping_manifest": (
+            base / "inputs" / "RQ014" / "wod_path_type_mapping" / "v1" / "manifest.json"
+        ),
+        "blind_anchor_receipt": anchor,
+    }
+    for role, path in role_paths.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if role != "blind_anchor_receipt":
+            path.write_bytes(b"{}\n")
+    manifest = base / "manifests" / "RQ014" / "fixture" / "input_manifest.g2.json"
+    manifest.parent.mkdir(parents=True, exist_ok=True)
+    manifest.write_bytes(
+        rq014_preflight.canonical_json_bytes(
+            {
+                "schema_version": "rq014-input-manifest-g2-v1",
+                "stage": "G2",
+                "parent_manifest_sha256": None,
+                "entries": [
+                    {
+                        "input_id": role,
+                        "role": role,
+                        "absolute_path": str(path),
+                        "sha256": launcher.sha256_file(path),
+                        "contains_rating": False,
+                    }
+                    for role, path in role_paths.items()
+                ],
+            }
+        )
+    )
+    return manifest, role_paths
+
+
+def install_blind_anchor(base: Path, payload: bytes | None = None) -> Path:
+    anchor = base / rq014_preflight.BLIND_ANCHOR_RUNTIME_PATH
+    anchor.parent.mkdir(parents=True, exist_ok=True)
+    anchor.write_bytes(
+        payload
+        if payload is not None
+        else (ROOT / "reports" / "plans" / "RQ014_blind_anchor_receipt_v1p5.json").read_bytes()
+    )
+    return anchor
+
+
+def test_launcher_and_runtime_accept_same_installed_blind_anchor(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    anchor = install_blind_anchor(base)
+    manifest, roles = write_g2_manifest_with_anchor(base, anchor)
+    contract_path = ROOT / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
+    contract = rq014_preflight.load_json(contract_path)
+
+    launcher_roles = launcher.validate_g2_input_roles(
+        manifest_path=manifest,
+        contract=contract,
+        base=base,
+    )
+    runtime_roles = rq014_preflight.validate_g2_input_roles(
+        manifest_path=manifest,
+        contract=contract,
+        base=base,
+    )
+    assert launcher_roles == runtime_roles
+    assert runtime_roles["blind_anchor_receipt"] == anchor.resolve()
+
+    class ReachedPostAnchorGate(RuntimeError):
+        pass
+
+    monkeypatch.setattr(rq014_preflight, "validate_m3_artifact_ref", lambda *args, **kwargs: {})
+
+    def stop_after_anchor(*args: object, **kwargs: object) -> dict[str, object]:
+        raise ReachedPostAnchorGate
+
+    monkeypatch.setattr(
+        rq014_preflight,
+        "validate_wod_path_type_mapping_manifest",
+        stop_after_anchor,
+    )
+    with pytest.raises(ReachedPostAnchorGate):
+        rq014_preflight.run_preflight(
+            base=base,
+            repo_root=ROOT,
+            execution_contract_path=contract_path,
+            m3_artifact_ref={},
+            input_manifest_path=manifest,
+            sanitization_receipt_path=roles["wod_score_stripped_sanitization_receipt"],
+            materialization_ledger_path=tmp_path / "ledger.json",
+            declassification_export_receipt_path=tmp_path / "export-receipt.json",
+            declassification_export_done_path=tmp_path / "DONE.json",
+            expected_exporter_git_commit="1" * 40,
+            expected_exporter_environment_sha256="2" * 64,
+        )
+
+
+def test_blind_anchor_wrong_bytes_fail_even_when_manifest_hash_matches(tmp_path: Path) -> None:
+    base = tmp_path / "sociality_estimation"
+    payload = bytearray(
+        (ROOT / "reports" / "plans" / "RQ014_blind_anchor_receipt_v1p5.json").read_bytes()
+    )
+    offset = payload.index(b"2026-07-12")
+    payload[offset] = ord("3")
+    anchor = install_blind_anchor(base, bytes(payload))
+    manifest, _ = write_g2_manifest_with_anchor(base, anchor)
+    contract = rq014_preflight.load_json(
+        ROOT / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
+    )
+    with pytest.raises(launcher.RQ014ContractError, match="blind-anchor receipt SHA-256 drift"):
+        launcher.validate_g2_input_roles(manifest_path=manifest, contract=contract, base=base)
+
+
+def test_blind_anchor_checkout_path_is_rejected(tmp_path: Path) -> None:
+    base = tmp_path / "sociality_estimation"
+    anchor = base / "code" / "repo" / "reports" / "plans" / "RQ014_blind_anchor_receipt_v1p5.json"
+    anchor.parent.mkdir(parents=True)
+    anchor.write_bytes(
+        (ROOT / "reports" / "plans" / "RQ014_blind_anchor_receipt_v1p5.json").read_bytes()
+    )
+    manifest, _ = write_g2_manifest_with_anchor(base, anchor)
+    contract = rq014_preflight.load_json(
+        ROOT / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
+    )
+    with pytest.raises(launcher.RQ014ContractError, match="Input escapes allowed roots"):
+        launcher.validate_g2_input_roles(manifest_path=manifest, contract=contract, base=base)
+
+
 def test_v2_rejects_placeholder_hashes_and_unknown_fields(tmp_path: Path) -> None:
     zero_ref = {"path": "/managed/missing", "sha256": "0" * 64}
     with pytest.raises(ValueError, match="placeholder"):

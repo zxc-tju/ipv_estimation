@@ -48,6 +48,14 @@ STATE_OUTPUT_COLUMNS = (
 SCIENTIFIC_TIME_SERIES_CONTRACT_SHA256 = (
     "382304b384f3e6b0642059ba768cc192174c4e92ae2bd16c1b8788274868a214"
 )
+BLIND_ANCHOR_RUNTIME_ROOT = Path("inputs/RQ014/blind_anchor/v1")
+BLIND_ANCHOR_RUNTIME_PATH = (
+    BLIND_ANCHOR_RUNTIME_ROOT / "RQ014_blind_anchor_receipt_v1p5.json"
+)
+BLIND_ANCHOR_SIZE_BYTES = 1752
+BLIND_ANCHOR_SHA256 = (
+    "80e393f73e353e19da4d280ca946a6e7dcee3197824f723155944829f295496a"
+)
 
 
 class ContractError(ValueError):
@@ -1074,6 +1082,12 @@ def validate_score_stripped_bundle(
     }
 
 
+def g2_input_allowed_roots(base: Path) -> list[Path]:
+    """Return the identical managed roots used before submit and inside the job."""
+
+    return [base / "inputs" / "RQ014", base / "manifests" / "RQ014"]
+
+
 def validate_input_manifest_g2(
     *,
     manifest_path: Path,
@@ -1220,6 +1234,62 @@ def validate_anchor_receipt(path: Path) -> dict[str, Any]:
         if row["rho_tolerance"] != 0.000001:
             raise ContractError(f"Public anchor tolerance drift: {row['anchor_id']}")
     return receipt
+
+
+def validate_blind_anchor_role(
+    path: Path,
+    *,
+    base: Path,
+    contract: dict[str, Any],
+) -> Path:
+    """Bind the G2 role to one installed, reviewed blind-anchor receipt."""
+
+    policy = contract.get("blind_anchor_contract")
+    if not isinstance(policy, dict):
+        raise ContractError("Missing blind-anchor contract")
+    expected_policy = {
+        "runtime_install_root": str(BLIND_ANCHOR_RUNTIME_ROOT),
+        "runtime_receipt_path": str(BLIND_ANCHOR_RUNTIME_PATH),
+        "runtime_receipt_size_bytes": BLIND_ANCHOR_SIZE_BYTES,
+        "runtime_receipt_sha256": BLIND_ANCHOR_SHA256,
+        "snapshot_receipt_usage": "REVIEW_PROVENANCE_ONLY_NOT_RUNTIME_INPUT",
+    }
+    for key, expected in expected_policy.items():
+        if policy.get(key) != expected:
+            raise ContractError(f"Blind-anchor runtime contract drift: {key}")
+
+    root = base / BLIND_ANCHOR_RUNTIME_ROOT
+    expected_path = Path(os.path.abspath(base / BLIND_ANCHOR_RUNTIME_PATH))
+    resolved = require_contained_regular_file(path, [root])
+    if resolved != expected_path:
+        raise ContractError("G2 blind-anchor receipt is outside its fixed install path")
+    if resolved.stat().st_size != BLIND_ANCHOR_SIZE_BYTES:
+        raise ContractError("G2 blind-anchor receipt size drift")
+    if sha256_file(resolved) != BLIND_ANCHOR_SHA256:
+        raise ContractError("G2 blind-anchor receipt SHA-256 drift")
+    validate_anchor_receipt(resolved)
+    return resolved
+
+
+def validate_g2_input_roles(
+    *,
+    manifest_path: Path,
+    contract: dict[str, Any],
+    base: Path,
+) -> dict[str, Path]:
+    """Validate G2 roles through the shared launcher/job root and anchor policy."""
+
+    roles = validate_input_manifest_g2(
+        manifest_path=manifest_path,
+        contract=contract,
+        allowed_roots=g2_input_allowed_roots(base),
+    )
+    roles["blind_anchor_receipt"] = validate_blind_anchor_role(
+        roles["blind_anchor_receipt"],
+        base=base,
+        contract=contract,
+    )
+    return roles
 
 
 def validate_declassification_export_receipts(
@@ -1640,15 +1710,10 @@ def run_preflight(
     if contract.get("schema_version") != "rq014-execution-contract-v1p5":
         raise ContractError("Wrong RQ014 execution contract")
     m3_receipt = validate_m3_artifact_ref(m3_artifact_ref, base=base, contract=contract)
-    allowed_roots = [
-        base / "inputs" / "RQ014",
-        base / "manifests" / "RQ014",
-        repo_root / "reports" / "plans",
-    ]
-    roles = validate_input_manifest_g2(
+    roles = validate_g2_input_roles(
         manifest_path=input_manifest_path,
         contract=contract,
-        allowed_roots=allowed_roots,
+        base=base,
     )
     if roles["wod_score_stripped_sanitization_receipt"] != sanitization_receipt_path.resolve():
         raise ContractError("Run spec and G2 manifest name different sanitization receipts")
@@ -1659,9 +1724,6 @@ def run_preflight(
         raise ContractError("G2 WOD bundle is not at the fixed managed input root")
     if sanitization_receipt_path.resolve() != bundle_root / "sanitization_receipt.json":
         raise ContractError("G2 sanitization receipt is outside the canonical bundle")
-    anchor_path = repo_root / contract["blind_anchor_contract"]["receipt"]
-    if roles["blind_anchor_receipt"] != anchor_path.resolve():
-        raise ContractError("G2 input manifest does not bind the canonical blind-anchor receipt")
     path_mapping = validate_wod_path_type_mapping_manifest(
         roles["wod_path_type_mapping_manifest"],
         mapping_root=base / "inputs" / "RQ014" / "wod_path_type_mapping" / "v1",
@@ -1699,7 +1761,6 @@ def run_preflight(
     )
     if export_receipt["geometry_available_scene_count"] != bundle["geometry_available_scene_count"]:
         raise ContractError("Export receipt and canonical bundle geometry counts differ")
-    validate_anchor_receipt(roles["blind_anchor_receipt"])
     ledger = validate_materialization_ledger(
         ledger_path=materialization_ledger_path,
         repo_root=repo_root,

@@ -185,6 +185,19 @@ def test_v1p5_score_stripped_and_staged_manifest_contract_is_rating_blind() -> N
         ("A3", 75),
         ("A4", 47),
     ]
+    anchor_contract = execution["blind_anchor_contract"]
+    assert anchor_contract["receipt"] == "reports/plans/RQ014_blind_anchor_receipt_v1p5.json"
+    assert anchor_contract["snapshot_receipt_usage"] == (
+        "REVIEW_PROVENANCE_ONLY_NOT_RUNTIME_INPUT"
+    )
+    assert anchor_contract["runtime_install_root"] == "inputs/RQ014/blind_anchor/v1"
+    assert anchor_contract["runtime_receipt_path"] == (
+        "inputs/RQ014/blind_anchor/v1/RQ014_blind_anchor_receipt_v1p5.json"
+    )
+    assert anchor_contract["runtime_receipt_size_bytes"] == 1752
+    assert anchor_contract["runtime_receipt_sha256"] == sha256_file(
+        PLANS / "RQ014_blind_anchor_receipt_v1p5.json"
+    )
 
 
 def test_recovery_lane_searches_true_history_future_and_combined_windows_without_power_gate() -> None:

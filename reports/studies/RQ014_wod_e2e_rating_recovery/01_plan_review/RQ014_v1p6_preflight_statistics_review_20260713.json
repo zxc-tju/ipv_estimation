@@ -32,15 +32,27 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "Protected history, rating blindness, and the preflight-only authority boundary remain intact."
+    },
+    {
+      "evidence": [
+        "After the W4f Formal G1 and final bundle were published, operator preflight job 1922605 failed before any cell, ledger or science work because its G2 manifest named the blind-anchor receipt in the managed checkout while the closed job snapshot allowed a different root set.",
+        "The root-cause ruling selected defect class (b): launcher and runtime enforced incompatible path policies, so neither the checkout receipt nor an installed copy could satisfy both phases at commit 218d8bd2; the other three G2 input roles remained within their allowed roots.",
+        "Fix 7ed30065 binds the rating-free blind-anchor role to inputs/RQ014/blind_anchor/v1/RQ014_blind_anchor_receipt_v1p5.json at exactly 1,752 bytes and SHA-256 80e393f73e353e19da4d280ca946a6e7dcee3197824f723155944829f295496a through one validator shared by launcher and job execution.",
+        "The terminal W4h statistics and execution-governance reviews returned dual NO_BLOCKER on the exact 101-row manifest SHA-256 4fb4af0cfc452352e08a62ee5c8f14517e077edcaefb27310442967b2591bc68, with zero unresolved blockers or majors and no rating access during review."
+      ],
+      "finding_id": "W4H-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The W4h cross-phase blind-anchor defect is closed without changing the frozen science or rating-blind boundary."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-13T11:05:41Z",
+  "reviewed_at_utc": "2026-07-13T15:48:10Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "420699d21efa7123dbccf9c75d7401c83c1ef50368f171d350c61aa5264dff6b",
+  "reviewed_manifest_sha256": "4fb4af0cfc452352e08a62ee5c8f14517e077edcaefb27310442967b2591bc68",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

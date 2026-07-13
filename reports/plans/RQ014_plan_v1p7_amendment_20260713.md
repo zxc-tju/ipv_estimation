@@ -161,3 +161,15 @@ path-type mapping validator; require the M3 ref as the first `run_preflight` gat
 validator call; and return M3 and WOD-mapping evidence. The historical InterHub validator remains addressable but is
 not called. `scripts/rq014/materialize_registry.py` receives no Round-6 byte change. The launcher/schema/template and
 managed entrypoint propagate the exact M3 block, repeat job-start verification, and make both output receipts read-only.
+
+## W4h blind-anchor runtime-location changelog
+
+W4h changes no scientific constant. The reviewed repository receipt at
+`reports/plans/RQ014_blind_anchor_receipt_v1p5.json` remains provenance, but is no longer a runtime input. Before spec
+publication, its exact 1,752 bytes (SHA-256
+`80e393f73e353e19da4d280ca946a6e7dcee3197824f723155944829f295496a`) must be installed without replacement at
+`inputs/RQ014/blind_anchor/v1/RQ014_blind_anchor_receipt_v1p5.json`. `scripts/rq014/preflight.py` now supplies one
+shared G2-role validator to launcher validation and job execution: both allow the same managed input/manifest roots,
+require the fixed regular non-symlink installed path, and independently enforce its exact size, digest, and public
+A1–A4 schema. `scripts/hpc/prepare_research_run.py` removes its checkout-relative exception and calls that shared
+validator; checkout and code-snapshot paths are therefore provenance-only and fail closed as G2 manifest entries.
