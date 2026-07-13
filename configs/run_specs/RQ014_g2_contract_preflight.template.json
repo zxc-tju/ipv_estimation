@@ -5,11 +5,11 @@
   "operation": "rq014_g2_contract_preflight",
   "git_commit": "0000000000000000000000000000000000000000",
   "formal_g1": {
-    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p5_20260712.yaml",
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
   "contract_bundle": {
-    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256",
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256",
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
   "environment_manifest": {

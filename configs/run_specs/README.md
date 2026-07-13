@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" b43f34608e11867b22de6d702b06cb704372e8e28396f05f8446a8b5082005a7 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 6058f216c6d0d91245661b2278dd6f764f149a3c6a8ae54e646c1b6cfb5a44f7 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -62,6 +62,16 @@ Both operations bind their operation-scoped PI decision and the exact reviewed s
 inventory and `managed_python_environment_v3.json`; an arbitrary self-reported
 source or environment hash is rejected. Contract preflight additionally
 requires the prior export PASS receipt and `DONE.json`.
+
+The preflight authorization chain is forward-bound to these exact v1.6 paths:
+
+- review manifest: `reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256`;
+- statistics verdict: `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_statistics_review_20260713.json`;
+- execution/governance verdict: `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_execution_governance_review_20260713.json`;
+- Formal G1: `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml`;
+- final bundle: `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`.
+
+The verdicts, Formal G1, and final bundle do not exist before the candidate manifest passes fresh dual review.
 Adding preflight to the central allowlist changes a reviewed authority byte and
 therefore requires a rebuilt candidate manifest, fresh statistics and execution
 reviews, a new formal G1 artifact and final bundle; the already reviewed

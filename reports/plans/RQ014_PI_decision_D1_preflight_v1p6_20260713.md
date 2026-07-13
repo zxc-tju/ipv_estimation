@@ -42,4 +42,3 @@ The central machine conclusion for contract preflight remains `DENY` until the c
 This decision does not authorize the resource pilot, G2R rating-blind feature build, G3R rating join/rank screen, G4R
 clean replay, or any access to ratings, preferences, ranks, rating-bearing inputs, or rating-derived statistics. Those
 operations remain centrally denied and retain their own later scoped-decision and §8.1 authorization loops.
-

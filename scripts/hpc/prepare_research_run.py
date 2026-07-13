@@ -191,15 +191,22 @@ RQ014_PYTHON_IMPORT_SURFACE = (
     "import, checkout/root/src/sitecustomize/usercustomize/PYTHONPATH/local shadows remain "
     "unavailable"
 )
-RQ014_REVIEW_MANIFEST = "reports/plans/RQ014_plan_v1p5_review_manifest_20260712.sha256"
+RQ014_REVIEW_MANIFEST = (
+    "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256"
+)
 RQ014_STATISTICS_REVIEW = (
     "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/"
-    "RQ014_v1p5_statistics_review_20260712.json"
+    "RQ014_v1p6_preflight_statistics_review_20260713.json"
 )
 RQ014_EXECUTION_REVIEW = (
     "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/"
-    "RQ014_v1p5_execution_governance_review_20260712.json"
+    "RQ014_v1p6_preflight_execution_governance_review_20260713.json"
 )
+RQ014_FORMAL_G1 = (
+    "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/"
+    "RQ014_formal_G1_v1p6_preflight_20260713.yaml"
+)
+RQ014_FINAL_BUNDLE = "reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256"
 RQ014_REVIEW_REQUIRED_PATHS = {
     "configs/research_authorization.json",
     "configs/run_specs/README.md",
@@ -1595,6 +1602,8 @@ def _validate_rq014_spec(
     decision_relative_path = rq[decision_key]
     decision_path = (repo / decision_relative_path).resolve()
     execution_contract_path = (repo / rq["execution_contract_path"]).resolve()
+    if rq["formal_g1_path"] != RQ014_FORMAL_G1:
+        raise ValueError("RQ014 central authorization formal-G1 path drift")
     formal_authority_path = (repo / rq["formal_g1_path"]).resolve()
     for label, path in (
         ("scoped decision", decision_path),
@@ -1610,9 +1619,10 @@ def _validate_rq014_spec(
 
     repo_roots = [repo]
     contract = load_rq014_json(execution_contract_path)
-    expected_review_manifest = contract.get("gate_contract", {}).get(
-        "formal_g1_review_manifest"
-    )
+    gate_contract = contract.get("gate_contract", {})
+    if gate_contract.get("formal_g1_source") != RQ014_FORMAL_G1:
+        raise ValueError("RQ014 execution contract formal-G1 path drift")
+    expected_review_manifest = gate_contract.get("formal_g1_review_manifest")
     if expected_review_manifest != RQ014_REVIEW_MANIFEST:
         raise ValueError("RQ014 execution contract review-manifest path drift")
     formal_path = _resolve_ref(spec["formal_g1"], roots=repo_roots, label="formal G1")
@@ -1627,6 +1637,9 @@ def _validate_rq014_spec(
         raise ValueError("RQ014 scoped decision is absent from the formally reviewed bytes")
 
     bundle_path = _resolve_ref(spec["contract_bundle"], roots=repo_roots, label="contract bundle")
+    bundle_relative = str(bundle_path.relative_to(repo))
+    if bundle_relative != RQ014_FINAL_BUNDLE:
+        raise ValueError("RQ014 final contract-bundle path drift")
     registered = _verify_checksum_manifest(bundle_path, repo=repo)
     minimum_bundle_paths = set(reviewed) | {
         rq["formal_g1_path"],
@@ -1639,7 +1652,6 @@ def _validate_rq014_spec(
     for relative, digest in reviewed.items():
         if registered.get(relative) != digest:
             raise ValueError(f"Executed contract byte differs from the formally reviewed byte: {relative}")
-    bundle_relative = str(bundle_path.relative_to(repo))
     if bundle_relative in registered:
         raise ValueError("Contract bundle must not recursively register itself")
     code_snapshot_files = {**registered, bundle_relative: spec["contract_bundle"]["sha256"]}
