@@ -206,7 +206,7 @@
       "version_manifest_path": "scripts/rq014/wod_path_type_mapping_version_manifest_v1.json",
       "version_manifest_sha256": "0383201ff7ebd784a504ee084a0d2cf09a90c5eecf23479a9caf08c0e86c5791",
       "golden_fixture_path": "tests/fixtures/rq014_wod_path_type_mapping_golden_v1.json",
-      "golden_fixture_sha256": "0e6a158987b979a37c86954016c634ded19e362e479d17b0126c232e2b69edf0",
+      "golden_fixture_sha256": "3173ba240aa3528ef22ba4b60b2d0cc624e22a46c8a001d128b58a9c070dde58",
       "safe_input_file_manifest_sha256": "4c41172fd16f00d48187df711ad6435063d80c4bbeb81c5e6e07025d63c78ef9",
       "safe_input_sanitization_receipt_sha256": "4dfc81056fe97db66d0ba0df04955a9c7c3a5464237010f298f3fa64363911a3",
       "mapping_table_candidate_path": "reports/studies/RQ014_wod_e2e_rating_recovery/02_g2_preflight/wod_path_type_mapping_v1/wod_path_type_mapping.csv",

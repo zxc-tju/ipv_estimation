@@ -24,6 +24,8 @@ FIXTURE = ROOT / "tests/fixtures/rq014_wod_path_type_mapping_golden_v1.json"
 GOLDEN = json.loads(FIXTURE.read_text(encoding="utf-8"))
 BOUNDARY_CASE_IDS = {
     "BOUNDARY_ANGLE_45_CP",
+    "BOUNDARY_ANGLE_45_JUST_ABOVE_CP",
+    "BOUNDARY_ANGLE_45_JUST_BELOW_MP",
     "BOUNDARY_ANGLE_135_CP",
     "BOUNDARY_LATERAL_4_MP",
     "BOUNDARY_LATERAL_5_HO",
@@ -32,7 +34,7 @@ BOUNDARY_CASE_IDS = {
     "UNMAPPED_LOW_MOTION",
     "UNMAPPED_OPPOSING_NEARBY",
 }
-BOUNDARY_EXPECTED_MEASUREMENTS = {
+EXACT_BOUNDARY_EXPECTED_MEASUREMENTS = {
     "BOUNDARY_ANGLE_45_CP": ("angle_deg", 45.0),
     "BOUNDARY_ANGLE_135_CP": ("angle_deg", 135.0),
     "BOUNDARY_LATERAL_4_MP": ("lateral_m", 4.0),
@@ -239,13 +241,17 @@ def test_golden_path_type_case(case: dict[str, object]) -> None:
     )
     assert result["path_type"] == case["expected_path_type"]
     assert result["status"] == case["expected_status"]
-    if case["case_id"] in BOUNDARY_EXPECTED_MEASUREMENTS:
-        field, value = BOUNDARY_EXPECTED_MEASUREMENTS[case["case_id"]]
-        assert result[field] == pytest.approx(value, abs=1e-12)
+    if case["case_id"] in EXACT_BOUNDARY_EXPECTED_MEASUREMENTS:
+        field, value = EXACT_BOUNDARY_EXPECTED_MEASUREMENTS[case["case_id"]]
+        assert result[field] == value
+    if case["case_id"] == "BOUNDARY_ANGLE_45_JUST_BELOW_MP":
+        assert result["angle_deg"] < 45.0
+    if case["case_id"] == "BOUNDARY_ANGLE_45_JUST_ABOVE_CP":
+        assert result["angle_deg"] > 45.0
 
 
 def test_golden_fixture_covers_every_reviewed_boundary() -> None:
-    assert len(GOLDEN["cases"]) == 13
+    assert len(GOLDEN["cases"]) == 15
     assert BOUNDARY_CASE_IDS <= {case["case_id"] for case in GOLDEN["cases"]}
 
 
