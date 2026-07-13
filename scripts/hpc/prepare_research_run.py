@@ -234,6 +234,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "reports/plans/RQ014_plan_v1p3_checksums_20260711.sha256",
     "reports/plans/RQ014_plan_v1p5_amendment_20260712.md",
     "reports/plans/RQ014_plan_v1p7_amendment_20260713.md",
+    "reports/plans/RQ014_plan_v1p7_addendum_pathtype_20260713.md",
     "reports/plans/RQ014_plan_v1p5_review_manifest_round1_blocked_20260712.sha256",
     "reports/plans/RQ014_plan_v1p5_review_manifest_round2_blocked_20260712.sha256",
     "reports/plans/RQ014_plan_v1p5_review_manifest_round3_blocked_20260712.sha256",
@@ -249,6 +250,12 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "RQ014_declassification_source_inventory_20260712.json",
     "reports/studies/RQ014_wod_e2e_rating_recovery/02_g2_preflight/"
     "RQ014_hpc_runtime_compatibility_probe_20260712.json",
+    "reports/studies/RQ014_wod_e2e_rating_recovery/02_g2_preflight/"
+    "wod_path_type_mapping_v1/wod_path_type_mapping.csv",
+    "reports/studies/RQ014_wod_e2e_rating_recovery/02_g2_preflight/"
+    "wod_path_type_mapping_v1/manifest.json",
+    "reports/studies/RQ014_wod_e2e_rating_recovery/02_g2_preflight/"
+    "wod_path_type_mapping_v1/distribution_summary.json",
     "reports/studies/RQ014_wod_e2e_rating_recovery/00_forensics/forensics_report.md",
     "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/"
     "RQ014_v1p5_statistics_review_round1_blocked_20260712.json",
@@ -287,11 +294,13 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "scripts/rq014/materialize_registry.py",
     "scripts/rq014/preflight.py",
     "scripts/rq014/run_managed_g2.py",
+    "scripts/rq014/derive_wod_path_type_mapping.py",
     "scripts/rq014/spearman_average_midranks.py",
     "scripts/rq014/spearman_version_manifest_v1.json",
     "scripts/rq014/wod_ipv_adapter.py",
     "scripts/rq014/wod_ipv_preprocessing.py",
     "scripts/rq014/wod_reference_builder.py",
+    "scripts/rq014/wod_path_type_mapping_version_manifest_v1.json",
     "src/sociality_estimation/__init__.py",
     "src/sociality_estimation/core/__init__.py",
     "src/sociality_estimation/core/agent.py",
@@ -308,7 +317,9 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "tests/test_rq014_science_freeze_v1p7.py",
     "tests/test_rq014_score_stripped_export.py",
     "tests/test_rq014_v1p3_registry_contract.py",
+    "tests/test_rq014_wod_path_type_mapping.py",
     "tests/test_rq014_v1p5_contract.py",
+    "tests/fixtures/rq014_wod_path_type_mapping_golden_v1.json",
     "models/rq009_m3/README.md",
     "models/rq009_m3/feature_spec_contract.json",
     "models/rq009_m3/manifest.json",

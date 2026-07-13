@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 203c1dca17a85381a7e5deda98e54886937356b126d34ae4c10e57b41fa2f058 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" a504e4f1593575ca28251fe1b1d4ac7d959ea9257d0c2e4984a30ba42020106e /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -78,6 +78,12 @@ InterHub is retained only as historical provenance: active G2 instead requires a
 separately checksum-pinned WOD path-type mapping manifest. Scientific G2R remains
 denied until a future managed-environment closure v4 separately freezes and reviews
 the required joblib/numpy/pandas/scipy/scikit-learn runtime.
+The WOD mapping freeze is defined by
+`reports/plans/RQ014_plan_v1p7_addendum_pathtype_20260713.md`: its reviewed scene-level
+table must equal the `valid.envelope.wod_path_type_mapping.mapping_table_sha256`
+materialization binding. The 3 structural no-geometry scenes terminate at K/X_K before
+lookup; only the 222 geometry-available `UNMAPPED_EXCLUDED` scenes fail closed at F as
+`MISSING_WOD_PATH_TYPE / INELIGIBLE_BLIND`. Preflight never infers a replacement class.
 
 The preflight authorization chain is forward-bound to these exact v1.6 paths:
 

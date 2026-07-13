@@ -1488,6 +1488,18 @@ def validate_wod_path_type_mapping_manifest(
     }
 
 
+def validate_wod_mapping_registry_binding(
+    mapping_receipt: dict[str, Any],
+    materialization_ledger: dict[str, Any],
+) -> None:
+    """Require the installed WOD mapping table to equal its reviewed registry binding."""
+
+    binding_id = "valid.envelope.wod_path_type_mapping.mapping_table_sha256"
+    expected = materialization_ledger.get("bindings", {}).get(binding_id)
+    if expected != mapping_receipt.get("mapping_sha256"):
+        raise ContractError("WOD path-type mapping table differs from reviewed registry binding")
+
+
 def validate_materialization_ledger(
     *,
     ledger_path: Path,
@@ -1693,6 +1705,7 @@ def run_preflight(
         repo_root=repo_root,
         contract=contract,
     )
+    validate_wod_mapping_registry_binding(path_mapping, ledger)
     return {
         "schema_version": "rq014-g2-contract-preflight-receipt-v1",
         "status": "PASS",

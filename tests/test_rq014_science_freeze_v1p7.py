@@ -54,6 +54,56 @@ def test_registry_science_hashes_match_managed_files() -> None:
     assert version["options"]["implementation_sha256"] == _sha(
         ROOT / version["options"]["implementation_path"]
     )
+    mapping = valid["envelope"]["wod_path_type_mapping"]
+    for path_key, hash_key in (
+        ("source_definition_path", "source_definition_sha256"),
+        ("implementation_path", "implementation_sha256"),
+        ("version_manifest_path", "version_manifest_sha256"),
+        ("golden_fixture_path", "golden_fixture_sha256"),
+        ("mapping_table_candidate_path", "mapping_table_sha256"),
+        ("mapping_manifest_candidate_path", "mapping_manifest_sha256"),
+        ("distribution_summary_path", "distribution_summary_sha256"),
+    ):
+        assert mapping[hash_key] == _sha(ROOT / mapping[path_key])
+    assert (ROOT / mapping["implementation_path"]).stat().st_size == mapping[
+        "implementation_size_bytes"
+    ]
+    table = ROOT / mapping["mapping_table_candidate_path"]
+    assert table.stat().st_size == mapping["mapping_table_size_bytes"]
+    assert len(table.read_text(encoding="utf-8").splitlines()) - 1 == mapping[
+        "mapping_table_row_count"
+    ]
+    mapping_manifest = _load(ROOT / mapping["mapping_manifest_candidate_path"])
+    assert mapping_manifest["mapping"]["sha256"] == mapping["mapping_table_sha256"]
+    assert mapping_manifest["row_count"] == mapping["mapping_table_row_count"]
+    assert mapping_manifest["contains_rating"] is False
+    implementation_version = _load(ROOT / mapping["version_manifest_path"])
+    assert implementation_version["options"]["implementation_sha256"] == mapping[
+        "implementation_sha256"
+    ]
+    summary = _load(ROOT / mapping["distribution_summary_path"])
+    assert summary["attrition_stage_counts"] == {
+        "F_MISSING_WOD_PATH_TYPE": 222,
+        "K_STRUCTURAL_NO_GEOMETRY": 3,
+        "MAPPED_PATH_TYPE": 254,
+    }
+    assert mapping["f_missing_wod_path_type_count"] == 222
+    assert mapping["k_structural_no_geometry_count"] == 3
+    assert "K/X_K before lookup" in mapping["runtime_policy"]
+    execution = _load(PLANS / "RQ014_execution_contract_v1p5.json")
+    mapping_contract = execution["wod_path_type_mapping_manifest_contract"]
+    assert "builder_binding_registry_pointer" not in mapping_contract
+    assert "3 structural no-geometry scenes" in mapping_contract["unmapped_excluded_policy"]
+    assert "222 absent four-value lookup rows" in mapping_contract["unmapped_excluded_policy"]
+
+
+def test_envelope_builder_v2_remains_byte_frozen() -> None:
+    path = PLANS / "RQ014_envelope_builder_contract_v2.json"
+    assert _sha(path) == "407d63209764896a673aa94811f9dd8b60a57a047d17e8cee0a3465c55b8c8a4"
+    contract = _load(path)
+    assert "SHA-256 frozen" in contract["path_type_contract"]["wod_mapping"][
+        "builder_binding"
+    ]
 
 
 def test_m3_manifest_binds_the_frozen_artifact_set() -> None:
@@ -107,7 +157,7 @@ def test_x02_sites_are_legacy_inactive_and_not_active_bindings() -> None:
     assert x02_valid["binding_status"] == "LEGACY_INACTIVE_UNBOUND"
     assert x02_extension["binding_status"] == "LEGACY_INACTIVE_UNBOUND"
     assert all("X02" not in item for item in contract["registry_binding_contract"]["required_binding_ids"])
-    assert contract["registry_binding_contract"]["required_binding_count"] == 9
+    assert contract["registry_binding_contract"]["required_binding_count"] == 12
 
 
 def test_v1p6_registries_forward_bind_authority_and_revert_non_m3_state_change() -> None:
