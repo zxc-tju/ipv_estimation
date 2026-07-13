@@ -1,0 +1,290 @@
+{
+  "schema_version": "rq014-recovery-extension-v1p6",
+  "registry_status": "PENDING_FRESH_DUAL_REVIEW_AND_FORMAL_G1",
+  "registry_kind": "recovery_extension",
+  "created_date": "2026-07-13",
+  "supersedes": "reports/plans/RQ014_recovery_extension_registry_v1p5.yaml",
+  "canonical_plan": "reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md",
+  "amendment": "reports/plans/RQ014_plan_v1p7_amendment_20260713.md",
+  "execution_authorization_contract": {
+    "schema_version": "rq014-operation-authorization-v1",
+    "default_decision": "DENY",
+    "authority_path": "configs/research_authorization.json",
+    "authority_rq_id": "RQ014",
+    "operation_contract_path": "reports/plans/RQ014_execution_contract_v1p5.json",
+    "formal_g1_ref": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
+    "scoped_decision_ref": "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",
+    "extension_operations_registered_in_v1p6": false
+  },
+  "scientific_promotion_allowed": false,
+  "historical_recovery_authority": "reports/plans/RQ014_recovery_lane_v3.json",
+  "role_after_recovery_lane_v3": "legacy provenance and optional non-gating follow-up; these X01-X05 cells do not gate or replace the 320-cell recovery screen",
+  "statistical_implementation_bindings": {
+    "spearman": {
+      "implementation_path": "scripts/rq014/spearman_average_midranks.py",
+      "version_manifest_path": "scripts/rq014/spearman_version_manifest_v1.json",
+      "implementation_and_version_sha256": "4bfca132554b995672d51773768a40b25c4372f69109eec38f2bb6b2bd5f01a9"
+    }
+  },
+  "alpha_note": "This arm has its OWN exploratory family (within-arm maxT). The varying-support adjustment is complete-null exploratory only, not a strong-FWER claim, and it does not share alpha with the scientific or forensic families.",
+  "purpose": "Plausible legitimate old-spec variants excluded from the valid family by design. Every cell is a complete, hashable verifier contract executable without further choices.",
+  "baseline": {
+    "extension_baseline_id": "X00",
+    "baseline_valid_config_id": "V04",
+    "inherited_fields": "all_v1p3_valid_registry_fields_unless_overridden_below",
+    "note": "4hz_future_only_W2p5_HMAX5_analogue"
+  },
+  "cells": [
+    {
+      "extension_id": "X01",
+      "kind": "endpoint_bundle",
+      "overrides": {
+        "endpoint_formula": "terminal_only_normalized_exceedance_90_evaluated_at_final_common_tau",
+        "envelope": "matched_time_indexed_path_type_hv_at_final_common_tau_only"
+      },
+      "everything_else": "identical_to_X00",
+      "rationale": "old_study_may_have_scored_only_final_ipv_per_candidate"
+    },
+    {
+      "extension_id": "X02",
+      "kind": "static_sigma01_envelope_with_quantitative_scale_gate",
+      "binding_status": "LEGACY_INACTIVE_UNBOUND",
+      "provenance_note": "PI envelope identification removed X02 from the active recovery grid and binding contract; retained byte-addressable for option-(c) fallback only",
+      "availability_decided": "LEGACY_INACTIVE_UNBOUND",
+      "source_definition_gate": {
+        "required_exact_recovery": [
+          "sigma01_risk_bin_edges_and_edge_semantics",
+          "pet_proxy_formula_units_coordinate_frame",
+          "geometry_mapping_CP_HO_MP_F",
+          "legacy_estimator_solver_sigma_grid_window_semantics",
+          "static_envelope_builder_formula_and_input_manifest"
+        ],
+        "missing_or_ambiguous_policy": "INACCESSIBLE_DEFINITION",
+        "inferred_or_analyst_designed_substitute_forbidden": true,
+        "artifacts": {
+          "source_definition": "X02_source_definition.yaml",
+          "wod_mapping": "X02_wod_mapping.csv"
+        },
+        "source_definition_sha256": "LEGACY_INACTIVE_UNBOUND",
+        "wod_mapping_sha256": "LEGACY_INACTIVE_UNBOUND",
+        "artifact_set_sha256": "LEGACY_INACTIVE_UNBOUND",
+        "aggregate_digest_rule": "sha256_of_UTF8_canonical_JSON_without_trailing_newline_sorted_keys_compact_separators_name_to_sha256_map"
+      },
+      "overrides": {
+        "envelope_source": "sigma01_static_state_conditioned_quantile_bands",
+        "envelope_state_variables": {
+          "risk_bin_edges_s": [
+            "(-inf,1.0]",
+            "(1.0,1.5]",
+            "(1.5,2.0]",
+            "(2.0,inf)"
+          ],
+          "geometry": [
+            "CP",
+            "HO",
+            "MP",
+            "F"
+          ],
+          "priority_role": "marginalized_with_episode_equal_weight_in_source_builder"
+        },
+        "wod_pet_proxy_mapping": "exact_recovered_semantics_only_no_observed_rating_or_new_proxy",
+        "tau_rule": "time_pooled_static_band_horizon_enters_envelope_id",
+        "quantiles": {
+          "lower": 0.05,
+          "center": 0.5,
+          "upper": 0.95
+        },
+        "weighting": "episode_equal_total_weight_as_v1_builder",
+        "no_rescaling_affine_fit_or_offset_correction": true,
+        "support_gate": {
+          "all_eligible_rows_denominator": "every_scheduled_scene_candidate_tau_row_from_all_pre_envelope_trajectory_eligible_WOD_scenes_before_any_X02_calculability_or_finiteness_condition",
+          "calculable_rows_numerator": "all_eligible_rows_where_recovered_PET_proxy_and_geometry_are_computable",
+          "calculability_fraction": "calculable_rows_numerator_count_div_all_eligible_rows_denominator_count",
+          "minimum_calculability_fraction": 0.7,
+          "supported_finite_rows_numerator": "all_eligible_rows_mapping_to_a_recovered_static_state_cell_with_finite_L_M_U_and_finite_X02_candidate_IPV",
+          "support_coverage": "supported_finite_rows_numerator_count_div_all_eligible_rows_denominator_count",
+          "minimum_coverage": 0.7,
+          "failure": "INELIGIBLE_SUPPORT",
+          "artifact": "X02_support_coverage.csv"
+        },
+        "parity_manifest": {
+          "artifact": "X02_scale_parity_12_cases.csv",
+          "eligible_pool": "cases_from_calculable_rows_before_conditioning_on_legacy_or_X02_value_finiteness",
+          "selection": "first_3_scene_candidate_cases_per_CP_HO_MP_F_by_sha256_RQ014_v1p3_X02_parity",
+          "required_cases": 12,
+          "all_scheduled_tau_rows_required": true,
+          "frozen_and_hashed_before_scale_metrics": true
+        },
+        "scale_compatibility": {
+          "paired_values": "legacy_sigma01_full_window_IPV_vs_registered_X02_rolling_local_IPV",
+          "units": "radians",
+          "finite_fraction_denominator": "every_scheduled_tau_row_of_all_12_frozen_parity_cases_before_any_finite_filter",
+          "finite_fraction_numerator": "rows_with_finite_legacy_X02_and_static_half_width",
+          "finite_paired_fraction_min": 0.9,
+          "metric_conditioning_after_fraction_gate": "all_remaining_scale_metrics_use_only_finite_numerator_rows",
+          "spearman_contract": {
+            "finite_paired_rows_only": true,
+            "tie_handling": "average_midranks",
+            "constant_vector_fewer_than_3_distinct_pairs_or_nonfinite_result": "INELIGIBLE_SCALE_INCOMPATIBLE",
+            "implementation_and_version_sha": "LEGACY_INACTIVE_UNBOUND"
+          },
+          "distinct_paired_rows_min": 10,
+          "all_values_inside_frozen_grid_range": true,
+          "every_static_half_width_gt_rad": 1.0e-06,
+          "median_abs_difference_over_static_half_width_max": 0.5,
+          "q90_abs_difference_over_static_half_width_max": 1.0,
+          "abs_median_signed_bias_over_median_half_width_max": 0.25,
+          "spearman_min": 0.8,
+          "failure": "INELIGIBLE_SCALE_INCOMPATIBLE",
+          "artifact": "X02_scale_compatibility.json"
+        },
+        "builder_contract_sha256": "LEGACY_INACTIVE_UNBOUND",
+        "source_input_manifest_sha256": "LEGACY_INACTIVE_UNBOUND"
+      },
+      "rationale": "pre_RQ009_static_envelope_candidate_retained_only_if_definition_support_and_scale_gates_all_pass"
+    },
+    {
+      "extension_id": "X03",
+      "kind": "envelope_plus_endpoint_bundle",
+      "overrides": {
+        "envelope": "none_candidate_internal_reference",
+        "reference_series": "median3_tau_equals_median_of_three_candidate_ipv_at_each_common_tau",
+        "endpoint_formula": "D_sc_equals_trapz_abs_v_c_tau_minus_median3_tau_over_common_duration",
+        "primary_exceedance_formula_applicable": false,
+        "band_L_M_U": "not_defined_for_this_cell"
+      },
+      "everything_else": "identical_to_X00",
+      "rationale": "quick_independent_study_plausibly_used_scene_local_reference",
+      "caveat": "compositional_coupling_across_candidates_is_why_it_is_invalid_for_science"
+    },
+    {
+      "extension_id": "X04",
+      "kind": "band_level_bundle",
+      "overrides": {
+        "quantiles": {
+          "lower": 0.1,
+          "center": 0.5,
+          "upper": 0.9
+        },
+        "envelope_id_suffix": "B80",
+        "builder": "identical_v1_human_sample_weights_tau_contract",
+        "envelope_gate": "identical_v1_gates_applied_to_q10_q50_q90_half_widths"
+      },
+      "everything_else": "identical_to_X00"
+    },
+    {
+      "extension_id": "X05",
+      "kind": "band_level_bundle",
+      "overrides": {
+        "quantiles": {
+          "lower": 0.025,
+          "center": 0.5,
+          "upper": 0.975
+        },
+        "envelope_id_suffix": "B95",
+        "builder": "identical_v1_human_sample_weights_tau_contract",
+        "envelope_gate": "identical_v1_gates_applied_to_q025_q50_q975_half_widths"
+      },
+      "everything_else": "identical_to_X00"
+    }
+  ],
+  "removed_cells": [
+    {
+      "former_id": "X06_pooled_spearman",
+      "disposition": "moved_to_forensic_registry_v1p2_as_FD01",
+      "reason": "heterogeneous_statistic_cannot_join_rho_ws_maxT_family"
+    }
+  ],
+  "analysis_contract": {
+    "run_batch": "same_rating_access_event_as_valid_discovery",
+    "ledger_partition": "extension",
+    "statistic": "rho_ws_identical_definition_to_valid_family",
+    "family": "homogeneous_X01_to_X05_ratings_blind_available_cells_only",
+    "authoritative_contract_ref": "reports/plans/RQ014_config_space_v1p5.yaml#statistical_contract_v1p3.extension_X01_to_X05",
+    "alpha_one_sided": 0.025,
+    "scene_support": {
+      "analysis_partition": {
+        "artifact": "extension_analysis_partition_scene_ids.csv",
+        "powered_split_available": "selected_blind_split_discovery_partition_only",
+        "no_powered_split": "full_rated479_partition_recovery_only_no_confirmation_claim",
+        "frozen_and_hashed_at_G2P_before_any_rating_join": true,
+        "confirmation_partition_rows_forbidden": true
+      },
+      "union_master": "extension_union_master_scene_ids.csv",
+      "union_master_definition": "direct_ratings_blind_pre_envelope_feature_universe_within_frozen_extension_analysis_partition_not_a_union_of_analysis_manifests",
+      "per_cell": "extension_M_{extension_id}_pairwise_V04.csv",
+      "pairwise_v04": "exact_byte_identical_alias_of_per_cell",
+      "per_cell_materialization": "exactly_once_at_authorized_discovery_join_then_hash_before_any_statistic",
+      "post_hash_row_addition_or_removal": "forbidden",
+      "overlapping_scene_permutation_key": "sha256_domain_seed_replicate_index_scene_id_uniform_six_permutation"
+    },
+    "association_family": {
+      "method": "single_step_Westfall_Young_lower_tail_minT",
+      "scope": "complete_null_exploratory_adjustment_only_not_strong_FWER",
+      "same_pairwise_M_Xk_as_V04_contrast": "required",
+      "permutation_replicates": 9999,
+      "fixed_SE": "sample_SD_of_the_9999_rho_permutation_replicates_no_reestimation",
+      "outputs": [
+        "rho_obs_k",
+        "SE_k",
+        "T_obs_k",
+        "p_raw_k",
+        "p_adjusted_k",
+        "p_omnibus"
+      ],
+      "cell_flag_requires_p_adjusted_k_le": 0.025,
+      "omnibus_p_never_sufficient_for_cell_flag": true
+    },
+    "paired_exclusivity_vs_V04": {
+      "estimand": "delta_k_equals_rho_Xk_minus_rho_V04_on_same_pairwise_scene_set",
+      "method": "synchronized_Poisson_scene_bootstrap_centered_single_step_minT",
+      "bootstrap_replicates": 9999,
+      "scope": "complete_null_exploratory_adjustment_only_not_strong_FWER",
+      "fixed_SE": "sample_SD_of_the_9999_Poisson_scene_bootstrap_delta_replicates_no_reestimation",
+      "outputs": [
+        "rho_Xk",
+        "rho_V04",
+        "delta_k",
+        "p_adjusted_exclusivity_k",
+        "simultaneous_upper_bound_k"
+      ]
+    },
+    "numerical_policy": {
+      "post_rating_zero_or_undefined_SE": "invalidate_entire_extension_family_no_shrink",
+      "joint_undefined_replicate_fraction_max": 0.01,
+      "retry_or_member_drop": "forbidden"
+    },
+    "shrink_policy": {
+      "unavailable_cells": "only_ratings_blind_registered_definition_source_support_scale_or_envelope_reasons",
+      "minimum_family_size_for_inference": 3,
+      "below_minimum_policy": "per_cell_descriptive_rows_only_no_p_values_no_flag"
+    },
+    "exclusivity_flag": {
+      "all_required": [
+        "rho_Xk_on_pairwise_set_le_minus_0.30",
+        "rho_V04_on_same_set_gt_minus_0.10",
+        "delta_k_le_minus_0.20",
+        "p_adjusted_k_le_0.025",
+        "p_adjusted_exclusivity_k_le_0.025",
+        "simultaneous_upper_bound_delta_k_lt_0"
+      ],
+      "claim_on_flag": "EXPLORATORY_SPEC_RECOVERY_CANDIDATE"
+    },
+    "allowed_claim": "EXPLORATORY_SPEC_RECOVERY_CANDIDATE_only",
+    "strong_FWER_claim_allowed": false,
+    "forbidden": [
+      "promotion",
+      "confirmation",
+      "rq010b_amendment",
+      "post_hoc_addition_of_cells_after_any_rating_join"
+    ]
+  },
+  "freeze_requirements": [
+    "amendment_and_registries_pass_independent_review",
+    "g0_closed_no_open_surfaces",
+    "x02_definition_mapping_support_scale_and_builder_hashes_frozen_or_cell_marked_inaccessible",
+    "extension_scene_keyed_permutation_fixture_hash_matches_independent_implementation",
+    "association_and_exclusivity_numerical_policies_validated",
+    "checksums_registered"
+  ]
+}

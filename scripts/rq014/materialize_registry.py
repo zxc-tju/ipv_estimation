@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Materialize immutable RQ014 v1.5 registries from a G2 SHA binding ledger."""
+"""Verify and materialize immutable RQ014 registries from a G2 SHA ledger."""
 from __future__ import annotations
 
 import argparse
@@ -176,13 +176,6 @@ def materialize(
     for left, right in policy.get("cross_registry_equalities", []):
         if bindings[left] != bindings[right]:
             raise ContractError(f"Cross-registry binding mismatch: {left} != {right}")
-    expected_x02 = _x02_composite(
-        bindings["extension.X02.source_definition_sha256"],
-        bindings["extension.X02.wod_mapping_sha256"],
-    )
-    if bindings["extension.X02.artifact_set_sha256"] != expected_x02:
-        raise ContractError("X02 artifact-set digest does not match its components")
-
     registry_paths = contract.get("active_registries")
     if not isinstance(registry_paths, dict):
         raise ContractError("Missing active_registries")
@@ -199,23 +192,38 @@ def materialize(
         source_hashes[name] = sha256_file(source)
         source_paths[name] = str(relative)
 
+    binding_mode = policy.get("source_binding_mode", "MATERIALIZE_PLACEHOLDERS")
     placeholder_count = sum(count_placeholder(registry) for registry in registries.values())
-    if placeholder_count != policy["required_binding_count"]:
-        raise ContractError(
-            f"Expected {policy['required_binding_count']} placeholders, found {placeholder_count}"
-        )
-
     materialized = copy.deepcopy(registries)
-    for binding_id in required_ids:
-        target = targets[binding_id]
-        if set(target) != {"registry", "pointer"}:
-            raise ContractError(f"Malformed target for {binding_id}")
-        registry_name = target["registry"]
-        if registry_name not in materialized:
-            raise ContractError(f"Unknown target registry for {binding_id}")
-        if get_pointer(materialized[registry_name], target["pointer"]) != PLACEHOLDER:
-            raise ContractError(f"Target is not the registered placeholder: {binding_id}")
-        set_pointer(materialized[registry_name], target["pointer"], bindings[binding_id])
+    if binding_mode == "VERIFY_PREFILLED_EXACT":
+        if placeholder_count != 0:
+            raise ContractError("Prefilled source registries may not retain placeholders")
+        for binding_id in required_ids:
+            target = targets[binding_id]
+            if set(target) != {"registry", "pointer"}:
+                raise ContractError(f"Malformed target for {binding_id}")
+            registry_name = target["registry"]
+            if registry_name not in materialized:
+                raise ContractError(f"Unknown target registry for {binding_id}")
+            if get_pointer(materialized[registry_name], target["pointer"]) != bindings[binding_id]:
+                raise ContractError(f"Prefilled source binding mismatch: {binding_id}")
+    elif binding_mode == "MATERIALIZE_PLACEHOLDERS":
+        if placeholder_count != policy["required_binding_count"]:
+            raise ContractError(
+                f"Expected {policy['required_binding_count']} placeholders, found {placeholder_count}"
+            )
+        for binding_id in required_ids:
+            target = targets[binding_id]
+            if set(target) != {"registry", "pointer"}:
+                raise ContractError(f"Malformed target for {binding_id}")
+            registry_name = target["registry"]
+            if registry_name not in materialized:
+                raise ContractError(f"Unknown target registry for {binding_id}")
+            if get_pointer(materialized[registry_name], target["pointer"]) != PLACEHOLDER:
+                raise ContractError(f"Target is not the registered placeholder: {binding_id}")
+            set_pointer(materialized[registry_name], target["pointer"], bindings[binding_id])
+    else:
+        raise ContractError(f"Unknown registry source-binding mode: {binding_mode}")
 
     if any(count_placeholder(registry) for registry in materialized.values()):
         raise ContractError("Unresolved G2 placeholder remains")

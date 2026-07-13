@@ -17,6 +17,11 @@
     "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json",
     "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"
   },
+  "m3_artifact": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/checkpoints/rq009_m3/m3_scorer.joblib",
+    "size_bytes": 88306301,
+    "sha256": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
+  },
   "input_manifest": {
     "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/REPLACE_RUN_ID/input_manifest.g2.json",
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"

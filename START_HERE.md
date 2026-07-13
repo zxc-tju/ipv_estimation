@@ -163,9 +163,10 @@ question index in `STUDIES.md`.
   authorized rating-blind declassification export has now been executed and dual-reviewed PASS
   (2026-07-13; see the v1.6 execution bullet below). PI accepted D1 and authorized starting the
   authority-change loop for only `rq014_g2_contract_preflight`; no further RQ014 production operation may run yet.
-- RQ014 primary science authority is now
-  `reports/plans/RQ014_recovery_lane_v2.json`: a fixed 960-cell rating-blind feature grid followed by a
-  one-time, separately authorized 2,880-row full-data recovery screen and a clean independent replay of
+- RQ014 review-candidate primary science authority is now
+  `reports/plans/RQ014_recovery_lane_v3.json`: the PI-identified checksum-bound RQ009 M3 model is one
+  frozen envelope input, giving a fixed 320-cell rating-blind feature grid followed by a one-time,
+  separately authorized 960-row full-data recovery screen and a clean independent replay of
   the mechanically frozen rank-1 recipe. True causal-history, look-ahead-future, two-sided combined,
   t*-prefix and full-future semantics are distinct. Window-local state derivation forbids derivative
   halos; a checksum-bound 15,328-group per-scene anchor-domain contract is the sole membership authority.
@@ -182,11 +183,11 @@ question index in `STUDIES.md`.
   `reports/plans/RQ014_plan_v1p6_execution_handoff_20260712.md` (SHA-256
   `f007c290ea6bb1130b2df1b49c63e482e34cfc7147716f8d68dd4c918e81de0c`). It is an
   append-only operational supplement, not a new authorization and not part of the v1.5 Formal-G1
-  bundle. Current Tongji managed checkout is still `b1476bd0` and lacks the v1.5 contract; the Lead
-  Agent must first sync published Git history and detach at exact reviewed commit `24be0827`, then
+  bundle. At handoff time the Tongji managed checkout was `b1476bd0` and lacked the v1.5 contract; that
+  historical sync instruction was completed before the later W4b/W4c work. The Lead then had to
   create/dual-review an immutable export spec and run validate-only. Waves 0–3 through the already
   authorized rating-blind export/bounded report may proceed without a new user decision. The first
-  mandatory user/PI decision is D1 after export PASS evidence; preflight, compute budget, 960-cell
+  mandatory user/PI decision is D1 after export PASS evidence; preflight, compute budget, 320-cell
   feature build, rating join, clean replay and claim acceptance each retain later explicit stop gates.
   Independent execution/HPC and science/governance reviewers both returned `NO_BLOCKER` after
   remediation; durable review:
@@ -228,6 +229,15 @@ question index in `STUDIES.md`.
   `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 74 rows, SHA-256
   `999ad5529241ca1a8197b525ba84abde9c570d298c0478d0e1e78e8b8d136d3c`; the v1.5 baseline remains at
   `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
+- **RQ014 W4d Round 6 is a review candidate, not executable authority.** After round-5 dual review blocked
+  Phase B, the candidate now binds the active contract consistently to lane v3 (320 cells/960 rows), removes
+  InterHub from active G2/G2R while retaining it as provenance, and requires a separately pinned WOD path
+  mapping. The external M3 scorer has an exact schema-v2 path/size/SHA binding, retained no-follow verification,
+  job-start rehash, and immutable receipt; mismatch globally aborts before input/ledger/cell/rating processing.
+  Contract preflight never deserializes M3, and G2R remains denied pending a separately reviewed scientific
+  managed-environment closure v4. The v1.7 amendment, v3 lane, v1p6 registries, nine-value science bindings,
+  runtime changes, and rebuilt candidate manifest require fresh dual review; no new G1, verdict, final bundle,
+  HPC write, launcher invocation, rating access, or job occurred.
 - RQ007 held-out remains sealed. RQ009 must freeze all rules and stop at
   `READY_FOR_SEALED_TEST` until a new PI authorization opens it.
 - RQ008B is not authorized; no RQ008 motif may enter RQ009.

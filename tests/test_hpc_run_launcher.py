@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -10,10 +11,39 @@ from types import SimpleNamespace
 import pytest
 
 import scripts.hpc.prepare_research_run as launcher
+from scripts.rq014 import preflight as rq014_preflight
+from scripts.rq014.run_managed_g2 import _write_once
 from scripts.hpc.prepare_research_run import load_spec, render_rq014_sbatch, validate_spec
 
 
 ROOT = Path(__file__).resolve().parents[1]
+M3_PATH = (
+    "/share/home/u25310231/ZXC/sociality_estimation/checkpoints/rq009_m3/"
+    "m3_scorer.joblib"
+)
+M3_SIZE_BYTES = 88306301
+M3_SHA256 = "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
+
+
+def m3_delivery_contract(path: Path, payload: bytes) -> dict[str, object]:
+    return {
+        "m3_artifact_delivery_contract": {
+            "spec_ref_field": "m3_artifact",
+            "required_for_operation": "rq014_g2_contract_preflight",
+            "prohibited_for_operation": "rq014_g2_declassification_export",
+            "path": str(path),
+            "allowed_root": str(path.parent),
+            "size_bytes": len(payload),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+            "open_policy": "SINGLE_RETAINED_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
+            "verification_order": (
+                "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION"
+            ),
+            "deserialization_in_contract_preflight": "FORBIDDEN",
+            "immutable_receipt_schema": "rq014-m3-artifact-input-receipt-v1",
+            "job_start_reverification": True,
+        }
+    }
 
 
 def write_spec(path: Path, **overrides: object) -> Path:
@@ -63,6 +93,11 @@ def write_v2_spec(path: Path, **overrides: object) -> Path:
         "formal_g1": dict(ref),
         "contract_bundle": dict(ref),
         "environment_manifest": dict(ref),
+        "m3_artifact": {
+            "path": M3_PATH,
+            "size_bytes": M3_SIZE_BYTES,
+            "sha256": M3_SHA256,
+        },
         "input_manifest": dict(ref),
         "sanitization_receipt": dict(ref),
         "materialization_ledger": dict(ref),
@@ -112,6 +147,16 @@ def test_v2_rejects_placeholder_hashes_and_unknown_fields(tmp_path: Path) -> Non
                 )
             )
 
+    for replacement in (
+        {"path": M3_PATH, "size_bytes": M3_SIZE_BYTES},
+        {"path": M3_PATH, "size_bytes": M3_SIZE_BYTES + 1, "sha256": M3_SHA256},
+        {"path": M3_PATH, "size_bytes": M3_SIZE_BYTES, "sha256": "0" * 64},
+        {"path": "/managed/other.joblib", "size_bytes": M3_SIZE_BYTES, "sha256": M3_SHA256},
+        {"path": M3_PATH, "size_bytes": M3_SIZE_BYTES, "sha256": M3_SHA256, "extra": 1},
+    ):
+        with pytest.raises(ValueError, match="m3_artifact"):
+            load_spec(write_v2_spec(tmp_path / f"bad-m3-{len(replacement)}.json", m3_artifact=replacement))
+
 
 def test_export_spec_rejects_preflight_export_commit_field(tmp_path: Path) -> None:
     payload = json.loads(
@@ -133,6 +178,153 @@ def test_export_spec_rejects_preflight_export_commit_field(tmp_path: Path) -> No
     path.write_text(json.dumps(payload), encoding="utf-8")
     with pytest.raises(ValueError, match="unexpected.*declassification_export_commit"):
         load_spec(path)
+
+
+def test_m3_artifact_is_preflight_only_exact_key(tmp_path: Path) -> None:
+    payload = json.loads(
+        (ROOT / "configs" / "run_specs" / "RQ014_g2_declassification_export.template.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    payload["run_id"] = "RQ014_export_fixture"
+    payload["git_commit"] = "1" * 40
+    for value in payload.values():
+        if isinstance(value, dict) and "sha256" in value:
+            value["path"] = "/managed/fixture"
+            value["sha256"] = "3" * 64
+    for value in payload["scene_bundles"]:
+        value["path"] = "/managed/fixture"
+        value["sha256"] = "3" * 64
+    payload["m3_artifact"] = {
+        "path": M3_PATH,
+        "size_bytes": M3_SIZE_BYTES,
+        "sha256": M3_SHA256,
+    }
+    path = tmp_path / "export-with-m3.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(ValueError, match="unexpected.*m3_artifact"):
+        load_spec(path)
+
+    path = write_v2_spec(tmp_path / "preflight-without-m3.json")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    del payload["m3_artifact"]
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(ValueError, match="missing.*m3_artifact"):
+        load_spec(path)
+
+
+def test_m3_artifact_uses_retained_no_follow_descriptor_before_deserialization(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "checkpoints" / "rq009_m3"
+    root.mkdir(parents=True)
+    payload = b"frozen scorer fixture"
+    artifact = root / "m3_scorer.joblib"
+    artifact.write_bytes(payload)
+    contract = m3_delivery_contract(artifact, payload)
+    ref = {
+        "path": str(artifact),
+        "size_bytes": len(payload),
+        "sha256": hashlib.sha256(payload).hexdigest(),
+    }
+    receipt = rq014_preflight.validate_m3_artifact_ref(ref, base=tmp_path, contract=contract)
+    assert receipt == {
+        "schema_version": "rq014-m3-artifact-input-receipt-v1",
+        "role": "frozen_m3_scorer",
+        **ref,
+        "verification_mode": "SINGLE_RETAINED_FD_O_NOFOLLOW_PRE_DESERIALIZATION",
+        "deserialized": False,
+    }
+
+    artifact.write_bytes(b"x" * len(payload))
+    with pytest.raises(rq014_preflight.ContractError, match="M3_ARTIFACT_MISMATCH"):
+        rq014_preflight.validate_m3_artifact_ref(ref, base=tmp_path, contract=contract)
+    artifact.write_bytes(payload)
+    symlink = root / "symlink.joblib"
+    symlink.symlink_to(artifact.name)
+    symlink_contract = m3_delivery_contract(symlink, payload)
+    with pytest.raises(rq014_preflight.ContractError, match="M3_ARTIFACT_MISMATCH"):
+        rq014_preflight.validate_m3_artifact_ref(
+            {**ref, "path": str(symlink)}, base=tmp_path, contract=symlink_contract
+        )
+
+    outside = tmp_path / "outside" / "m3_scorer.joblib"
+    outside.parent.mkdir()
+    outside.write_bytes(payload)
+    outside_contract = m3_delivery_contract(outside, payload)
+    with pytest.raises(rq014_preflight.ContractError, match="M3_ARTIFACT_MISMATCH"):
+        rq014_preflight.validate_m3_artifact_ref(
+            {**ref, "path": str(outside)}, base=tmp_path, contract=outside_contract
+        )
+
+    linked_base = tmp_path / "linked"
+    linked_base.mkdir()
+    (linked_base / "checkpoints").symlink_to(tmp_path / "checkpoints", target_is_directory=True)
+    linked_artifact = linked_base / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"
+    linked_contract = m3_delivery_contract(linked_artifact, payload)
+    with pytest.raises(rq014_preflight.ContractError, match="M3_ARTIFACT_MISMATCH"):
+        rq014_preflight.validate_m3_artifact_ref(
+            {**ref, "path": str(linked_artifact)}, base=linked_base, contract=linked_contract
+        )
+
+    directory_base = tmp_path / "directory-base"
+    directory_artifact = directory_base / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"
+    directory_artifact.mkdir(parents=True)
+    directory_contract = m3_delivery_contract(directory_artifact, b"x")
+    with pytest.raises(rq014_preflight.ContractError, match="M3_ARTIFACT_MISMATCH"):
+        rq014_preflight.validate_m3_artifact_ref(
+            {
+                "path": str(directory_artifact),
+                "size_bytes": 1,
+                "sha256": hashlib.sha256(b"x").hexdigest(),
+            },
+            base=directory_base,
+            contract=directory_contract,
+        )
+
+
+def test_run_preflight_aborts_on_m3_before_input_or_ledger_processing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    artifact = tmp_path / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"
+    payload = b"missing on purpose"
+    contract = m3_delivery_contract(artifact, payload)
+    contract["schema_version"] = "rq014-execution-contract-v1p5"
+    contract_path = tmp_path / "contract.json"
+    contract_path.write_text(json.dumps(contract), encoding="utf-8")
+    monkeypatch.setattr(
+        rq014_preflight,
+        "validate_input_manifest_g2",
+        lambda **kwargs: pytest.fail("input manifest processed before M3 global gate"),
+    )
+    with pytest.raises(rq014_preflight.ContractError, match="M3_ARTIFACT_MISMATCH"):
+        rq014_preflight.run_preflight(
+            base=tmp_path,
+            repo_root=tmp_path,
+            execution_contract_path=contract_path,
+            m3_artifact_ref={
+                "path": str(artifact),
+                "size_bytes": len(payload),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+            },
+            input_manifest_path=tmp_path / "input.json",
+            sanitization_receipt_path=tmp_path / "sanitization.json",
+            materialization_ledger_path=tmp_path / "ledger.json",
+            declassification_export_receipt_path=tmp_path / "receipt.json",
+            declassification_export_done_path=tmp_path / "DONE.json",
+            expected_exporter_git_commit="1" * 40,
+            expected_exporter_environment_sha256="2" * 64,
+        )
+
+
+def test_managed_preflight_receipts_are_immutable(tmp_path: Path) -> None:
+    receipt = tmp_path / "receipt.json"
+    _write_once(receipt, b"{}\n")
+    assert receipt.stat().st_mode & 0o777 == 0o444
+    _write_once(receipt, b"{}\n")
+    with pytest.raises(ValueError, match="Refusing to overwrite"):
+        _write_once(receipt, b'{"drift":true}\n')
 
 
 def test_preflight_export_commit_uses_published_ancestor_semantics(
@@ -1081,6 +1273,9 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
             base / "work_dirs" / "RQ014" / "export" / "outputs" / "DONE.json"
         ),
         "declassification_export_done_sha256": "b" * 64,
+        "m3_artifact_path": M3_PATH,
+        "m3_artifact_size_bytes": M3_SIZE_BYTES,
+        "m3_artifact_sha256": M3_SHA256,
         "contract_bundle_path": str(ROOT / "reports" / "plans" / "RQ014_plan_v1p3_checksums_20260711.sha256"),
         "contract_bundle_relative_path": "reports/plans/RQ014_plan_v1p3_checksums_20260711.sha256",
         "contract_bundle_sha256": "e" * 64,
@@ -1111,6 +1306,9 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
     assert "--materialization-ledger" in script
     assert "--declassification-export-receipt" in script
     assert "--declassification-export-done" in script
+    assert f"--m3-artifact {M3_PATH}" in script
+    assert f"--m3-artifact-size-bytes {M3_SIZE_BYTES}" in script
+    assert f"--m3-artifact-sha256 {M3_SHA256}" in script
     assert f"--expected-exporter-git-commit {'d' * 40}" in script
     assert script.startswith("#!/bin/bash\n")
     assert "#SBATCH --export=NIL" in script
@@ -1134,6 +1332,9 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
     )
     assert bundle_check in script
     assert script.index(bundle_check) < script.index("/usr/bin/sha256sum -c")
+    assert script.index(M3_PATH) < script.index(validated["input_manifest_path"])
+    assert f'test ! -L {M3_PATH}' in script
+    assert f'test "$(/usr/bin/stat -c %s {M3_PATH})" = {M3_SIZE_BYTES}' in script
     assert script.index("/usr/bin/sha256sum --check --strict") < script.index(
         " -I -S -B -X utf8 -c "
     )

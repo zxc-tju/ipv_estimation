@@ -10,6 +10,7 @@ import json
 import math
 import os
 import re
+import stat
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterable
@@ -272,6 +273,155 @@ def require_contained_regular_file(path: Path, roots: Iterable[Path]) -> Path:
         reject_denied_path(resolved)
         return resolved
     raise ContractError(f"Input escapes allowed roots or crosses a symlink: {path}")
+
+
+def validate_m3_artifact_ref(
+    ref: dict[str, Any],
+    *,
+    base: Path,
+    contract: dict[str, Any],
+) -> dict[str, Any]:
+    """Verify preflight-required, export-prohibited M3 bytes through one retained descriptor."""
+
+    def mismatch(message: str, exc: OSError | None = None) -> None:
+        error = ContractError(f"M3_ARTIFACT_MISMATCH: {message}")
+        if exc is None:
+            raise error
+        raise error from exc
+
+    delivery = contract.get("m3_artifact_delivery_contract")
+    delivery_keys = {
+        "spec_ref_field",
+        "required_for_operation",
+        "prohibited_for_operation",
+        "path",
+        "allowed_root",
+        "size_bytes",
+        "sha256",
+        "open_policy",
+        "verification_order",
+        "deserialization_in_contract_preflight",
+        "immutable_receipt_schema",
+        "job_start_reverification",
+    }
+    if not isinstance(delivery, dict) or set(delivery) != delivery_keys:
+        mismatch("delivery contract is missing or malformed")
+    expected_constants = {
+        "spec_ref_field": "m3_artifact",
+        "required_for_operation": "rq014_g2_contract_preflight",
+        "prohibited_for_operation": "rq014_g2_declassification_export",
+        "open_policy": "SINGLE_RETAINED_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
+        "verification_order": (
+            "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION"
+        ),
+        "deserialization_in_contract_preflight": "FORBIDDEN",
+        "immutable_receipt_schema": "rq014-m3-artifact-input-receipt-v1",
+        "job_start_reverification": True,
+    }
+    if any(delivery.get(key) != value for key, value in expected_constants.items()):
+        mismatch("delivery contract must require preflight and prohibit export")
+    if not isinstance(ref, dict) or set(ref) != {"path", "size_bytes", "sha256"}:
+        mismatch("spec reference keys differ")
+    if (
+        not isinstance(delivery.get("path"), str)
+        or not isinstance(delivery.get("allowed_root"), str)
+        or not isinstance(delivery.get("size_bytes"), int)
+        or isinstance(delivery.get("size_bytes"), bool)
+        or delivery["size_bytes"] <= 0
+        or not isinstance(delivery.get("sha256"), str)
+        or HEX64.fullmatch(delivery["sha256"]) is None
+    ):
+        mismatch("delivery path, size, or digest is malformed")
+    if ref != {
+        "path": delivery["path"],
+        "size_bytes": delivery["size_bytes"],
+        "sha256": delivery["sha256"],
+    }:
+        mismatch("spec reference differs from the reviewed delivery contract")
+
+    base_absolute = Path(os.path.abspath(base))
+    expected_root = base_absolute / "checkpoints" / "rq009_m3"
+    root = Path(os.path.abspath(Path(delivery["allowed_root"])))
+    path = Path(os.path.abspath(Path(delivery["path"])))
+    if root != expected_root or path != expected_root / "m3_scorer.joblib":
+        mismatch("path or managed-root binding drifted")
+    try:
+        relative = path.relative_to(base_absolute)
+    except ValueError:
+        mismatch("path escapes the managed base")
+    current = base_absolute
+    try:
+        if current.is_symlink() or not current.is_dir():
+            mismatch("managed base is not a regular directory root")
+        for part in relative.parts:
+            current = current / part
+            if current.is_symlink():
+                mismatch(f"path crosses a symlink: {current}")
+    except OSError as exc:
+        mismatch("path-component inspection failed", exc)
+
+    flags = os.O_RDONLY
+    for name in ("O_NOFOLLOW", "O_CLOEXEC", "O_NONBLOCK"):
+        flags |= getattr(os, name, 0)
+    descriptor: int | None = None
+    directory_descriptors: list[int] = []
+    try:
+        directory_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+        directory_flags |= getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_CLOEXEC", 0)
+        directory_descriptors.append(os.open(base_absolute, directory_flags))
+        for component in ("checkpoints", "rq009_m3"):
+            directory_descriptors.append(
+                os.open(component, directory_flags, dir_fd=directory_descriptors[-1])
+            )
+        descriptor = os.open(
+            "m3_scorer.joblib",
+            flags,
+            dir_fd=directory_descriptors[-1],
+        )
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            mismatch("artifact is not a regular file")
+        if before.st_size != delivery["size_bytes"]:
+            mismatch("artifact size differs from the reviewed binding")
+        digest = hashlib.sha256()
+        remaining = delivery["size_bytes"]
+        while remaining:
+            chunk = os.read(descriptor, min(1024 * 1024, remaining))
+            if not chunk:
+                mismatch("artifact ended before the reviewed size")
+            digest.update(chunk)
+            remaining -= len(chunk)
+        if os.read(descriptor, 1):
+            mismatch("artifact exceeds the reviewed size")
+        after = os.fstat(descriptor)
+    except OSError as exc:
+        mismatch("retained no-follow open/read failed", exc)
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        for directory_descriptor in reversed(directory_descriptors):
+            os.close(directory_descriptor)
+    continuity_fields = (
+        "st_mode",
+        "st_dev",
+        "st_ino",
+        "st_size",
+        "st_mtime_ns",
+        "st_ctime_ns",
+    )
+    if any(getattr(before, field) != getattr(after, field) for field in continuity_fields):
+        mismatch("descriptor identity changed during verification")
+    if digest.hexdigest() != delivery["sha256"]:
+        mismatch("artifact SHA-256 differs from the reviewed binding")
+    return {
+        "schema_version": "rq014-m3-artifact-input-receipt-v1",
+        "role": "frozen_m3_scorer",
+        "path": delivery["path"],
+        "size_bytes": delivery["size_bytes"],
+        "sha256": delivery["sha256"],
+        "verification_mode": "SINGLE_RETAINED_FD_O_NOFOLLOW_PRE_DESERIALIZATION",
+        "deserialized": False,
+    }
 
 
 def _normalize_semantic(name: str) -> str:
@@ -1254,6 +1404,90 @@ def validate_interhub_source_manifest(
     return manifest
 
 
+def validate_wod_path_type_mapping_manifest(
+    path: Path,
+    *,
+    mapping_root: Path,
+) -> dict[str, Any]:
+    """Validate the separately frozen WOD path-type mapping input."""
+
+    manifest = load_json(path)
+    if path.read_bytes() != canonical_json_bytes(manifest):
+        raise ContractError("WOD path-type mapping manifest is not canonical JSON")
+    require_exact_keys(
+        manifest,
+        {
+            "schema_version",
+            "contains_rating",
+            "mapping",
+            "row_count",
+            "key_columns",
+            "value_column",
+            "allowed_values",
+        },
+        "WOD path-type mapping manifest",
+    )
+    if (
+        manifest["schema_version"] != "rq014-wod-path-type-mapping-manifest-v1"
+        or manifest["contains_rating"] is not False
+        or manifest["key_columns"] != ["segment_id", "tstar_context_step"]
+        or manifest["value_column"] != "path_type"
+        or manifest["allowed_values"] != ["CP", "HO", "MP", "F"]
+    ):
+        raise ContractError("WOD path-type mapping manifest identity drift")
+    reference = manifest["mapping"]
+    if not isinstance(reference, dict):
+        raise ContractError("WOD path-type mapping reference is not an object")
+    require_exact_keys(
+        reference,
+        {"path", "size_bytes", "sha256", "format"},
+        "WOD path-type mapping reference",
+    )
+    source = require_contained_regular_file(Path(reference["path"]), [mapping_root])
+    if source != (mapping_root / "wod_path_type_mapping.csv").resolve():
+        raise ContractError("WOD path-type mapping filename or root drift")
+    if (
+        reference["format"] != "RFC4180_CSV"
+        or not isinstance(reference["size_bytes"], int)
+        or isinstance(reference["size_bytes"], bool)
+        or source.stat().st_size != reference["size_bytes"]
+    ):
+        raise ContractError("WOD path-type mapping format or size mismatch")
+    require_file_hash(source, reference["sha256"], "WOD path-type mapping")
+    rows = _read_csv(
+        source,
+        expected_columns=["segment_id", "tstar_context_step", "path_type"],
+        forbidden=set(),
+    )
+    for row in rows:
+        if not SAFE_ID.fullmatch(row["segment_id"]):
+            raise ContractError("Unsafe WOD path-type mapping segment ID")
+        try:
+            step = int(row["tstar_context_step"])
+        except ValueError as exc:
+            raise ContractError("WOD path-type mapping step is not an integer") from exc
+        if str(step) != row["tstar_context_step"] or step < 0:
+            raise ContractError("WOD path-type mapping step is not canonical nonnegative integer")
+        if row["path_type"] not in {"CP", "HO", "MP", "F"}:
+            raise ContractError("Unknown WOD path type")
+    _assert_unique(
+        rows,
+        ["segment_id", "tstar_context_step"],
+        "WOD path-type mapping",
+    )
+    if (
+        not isinstance(manifest["row_count"], int)
+        or isinstance(manifest["row_count"], bool)
+        or manifest["row_count"] != len(rows)
+    ):
+        raise ContractError("WOD path-type mapping row count mismatch")
+    return {
+        "manifest_sha256": sha256_file(path),
+        "mapping_sha256": reference["sha256"],
+        "row_count": len(rows),
+    }
+
+
 def validate_materialization_ledger(
     *,
     ledger_path: Path,
@@ -1261,9 +1495,9 @@ def validate_materialization_ledger(
     contract: dict[str, Any],
 ) -> dict[str, Any]:
     from scripts.rq014.materialize_registry import (
-        _x02_composite,
         canonical_bytes,
         count_placeholder,
+        get_pointer,
         set_pointer,
     )
 
@@ -1296,13 +1530,6 @@ def validate_materialization_ledger(
     for left, right in policy["cross_registry_equalities"]:
         if ledger["bindings"][left] != ledger["bindings"][right]:
             raise ContractError(f"Materialization cross-registry binding mismatch: {left} != {right}")
-    expected_composite = _x02_composite(
-        ledger["bindings"]["extension.X02.source_definition_sha256"],
-        ledger["bindings"]["extension.X02.wod_mapping_sha256"],
-    )
-    if ledger["bindings"]["extension.X02.artifact_set_sha256"] != expected_composite:
-        raise ContractError("Materialization X02 artifact-set digest is invalid")
-
     execution_contract_path = repo_root / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
     require_exact_keys(ledger["execution_contract"], {"path", "sha256"}, "ledger execution contract")
     if ledger["execution_contract"]["path"] != str(execution_contract_path.relative_to(repo_root)):
@@ -1349,13 +1576,23 @@ def validate_materialization_ledger(
         sources[name] = load_json(path)
 
     expected_documents = copy.deepcopy(sources)
-    for binding_id in policy["required_binding_ids"]:
-        target = policy["binding_targets"][binding_id]
-        set_pointer(
-            expected_documents[target["registry"]],
-            target["pointer"],
-            ledger["bindings"][binding_id],
-        )
+    binding_mode = policy.get("source_binding_mode", "MATERIALIZE_PLACEHOLDERS")
+    if binding_mode == "VERIFY_PREFILLED_EXACT":
+        for binding_id in policy["required_binding_ids"]:
+            target = policy["binding_targets"][binding_id]
+            actual = get_pointer(expected_documents[target["registry"]], target["pointer"])
+            if actual != ledger["bindings"][binding_id]:
+                raise ContractError(f"Prefilled source binding mismatch: {binding_id}")
+    elif binding_mode == "MATERIALIZE_PLACEHOLDERS":
+        for binding_id in policy["required_binding_ids"]:
+            target = policy["binding_targets"][binding_id]
+            set_pointer(
+                expected_documents[target["registry"]],
+                target["pointer"],
+                ledger["bindings"][binding_id],
+            )
+    else:
+        raise ContractError(f"Unknown registry source-binding mode: {binding_mode}")
     if any(count_placeholder(document) for document in expected_documents.values()):
         raise ContractError("Expected materialized registry retains a placeholder")
 
@@ -1378,6 +1615,7 @@ def run_preflight(
     base: Path,
     repo_root: Path,
     execution_contract_path: Path,
+    m3_artifact_ref: dict[str, Any],
     input_manifest_path: Path,
     sanitization_receipt_path: Path,
     materialization_ledger_path: Path,
@@ -1389,9 +1627,9 @@ def run_preflight(
     contract = load_json(execution_contract_path)
     if contract.get("schema_version") != "rq014-execution-contract-v1p5":
         raise ContractError("Wrong RQ014 execution contract")
+    m3_receipt = validate_m3_artifact_ref(m3_artifact_ref, base=base, contract=contract)
     allowed_roots = [
         base / "inputs" / "RQ014",
-        base / "data" / "interhub" / "snapshots",
         base / "manifests" / "RQ014",
         repo_root / "reports" / "plans",
     ]
@@ -1412,9 +1650,9 @@ def run_preflight(
     anchor_path = repo_root / contract["blind_anchor_contract"]["receipt"]
     if roles["blind_anchor_receipt"] != anchor_path.resolve():
         raise ContractError("G2 input manifest does not bind the canonical blind-anchor receipt")
-    validate_interhub_source_manifest(
-        roles["interhub_human_ipv_source_manifest"],
-        snapshot_root=base / "data" / "interhub" / "snapshots",
+    path_mapping = validate_wod_path_type_mapping_manifest(
+        roles["wod_path_type_mapping_manifest"],
+        mapping_root=base / "inputs" / "RQ014" / "wod_path_type_mapping" / "v1",
     )
     export_receipt = validate_declassification_export_receipts(
         export_receipt_path=declassification_export_receipt_path,
@@ -1470,6 +1708,8 @@ def run_preflight(
         "input_manifest_sha256": sha256_file(input_manifest_path),
         "execution_contract_sha256": sha256_file(execution_contract_path),
         "materialization_ledger_sha256": sha256_file(materialization_ledger_path),
+        "m3_artifact_input_receipt": m3_receipt,
+        "wod_path_type_mapping": path_mapping,
         "declassification_export_receipt_sha256": sha256_file(
             declassification_export_receipt_path
         ),

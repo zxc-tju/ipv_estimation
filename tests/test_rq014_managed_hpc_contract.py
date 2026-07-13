@@ -743,6 +743,22 @@ def test_preflight_is_conditionally_registered_and_centrally_allowlisted_for_rev
     assert template["declassification_export_commit"] == "0" * 40
     assert template["contract_bundle"]["path"].endswith(launcher.RQ014_FINAL_BUNDLE)
     assert template["contract_bundle"]["sha256"] == "0" * 64
+    assert template["m3_artifact"] == {
+        "path": (
+            "/share/home/u25310231/ZXC/sociality_estimation/checkpoints/rq009_m3/"
+            "m3_scorer.joblib"
+        ),
+        "size_bytes": 88306301,
+        "sha256": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253",
+    }
+    schema = json.loads(
+        (ROOT / "configs" / "run_specs" / "research_run_spec_v2.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert schema["properties"]["m3_artifact"] == {"$ref": "#/$defs/m3ArtifactRef"}
+    preflight_branch = schema["oneOf"][1]
+    assert "m3_artifact" in preflight_branch["required"]
 
 
 def test_allowlist_change_invalidates_old_formal_g1_before_preflight_submit() -> None:
