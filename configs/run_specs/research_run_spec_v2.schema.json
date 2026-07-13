@@ -61,7 +61,12 @@
         "environment_manifest",
         "created_at_utc"
       ],
-      "not": {"required": ["declassification_export_commit"]}
+      "not": {
+        "anyOf": [
+          {"required": ["declassification_export_commit"]},
+          {"required": ["m3_artifact"]}
+        ]
+      }
     },
     {
       "properties": {

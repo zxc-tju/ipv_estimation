@@ -517,7 +517,7 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
                 "created_at_utc",
             }
             ref_keys = common_ref_keys + ("readiness_table", "counterpart_tracks")
-            allowed = required | {"m3_artifact"}
+            allowed = required
             if not isinstance(spec.get("scene_bundles"), list) or len(spec["scene_bundles"]) != 8:
                 raise ValueError("RQ014 declassification export requires exactly eight scene bundles")
             for index, ref in enumerate(spec["scene_bundles"]):
@@ -1728,7 +1728,7 @@ def _validate_rq014_spec(
         resource_profile_id=spec["resource_profile_id"],
     )
     m3_verification = None
-    if "m3_artifact" in spec:
+    if spec["operation"] == RQ014_PREFLIGHT_OPERATION:
         try:
             m3_verification = validate_m3_artifact_ref(
                 spec["m3_artifact"],

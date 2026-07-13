@@ -31,7 +31,7 @@ STDLIB_MANIFEST=$BASE/manifests/RQ014/managed_python_stdlib_v1.sha256
 NATIVE_MANIFEST=$BASE/manifests/RQ014/managed_python_native_libs_v1.tsv
 RUNTIME_LOCK=$BASE/manifests/runtime_maintenance.lock
 PYTHON_SHA256=616aea77938978c3578ed480eac4025ef7099f4c944ab8684722bc9455f99f32
-LAUNCHER_SHA256=e48b7ea19ba04323a6f2d9d0d30c8d7238006de0b6d4d3399c0ebd7ad8248bf8
+LAUNCHER_SHA256=68201efe27e39c81e90eb1543b3ba915a4e40f79f0554877d85574d289c621c6
 PREFLIGHT_SHA256=f2d2bc2f54f421486ef10ad6ba570057b62cce9eb7fdde245cd7974e46d08607
 MATERIALIZER_SHA256=f4d4f62149d7db205ade7503db36972b65576d41594dea0931d8dad18191170d
 ENVIRONMENT_MANIFEST_SHA256=30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a
@@ -69,7 +69,7 @@ test "$(/usr/bin/stat -c %s "$PYTHON")" = 16285544
 test "$(digest_of "$PYTHON")" = "$PYTHON_SHA256"
 test -f "$LAUNCHER"
 test ! -L "$LAUNCHER"
-test "$(/usr/bin/stat -c %s "$LAUNCHER")" = 122201
+test "$(/usr/bin/stat -c %s "$LAUNCHER")" = 122208
 test "$(digest_of "$LAUNCHER")" = "$LAUNCHER_SHA256"
 test -f "$PREFLIGHT"
 test ! -L "$PREFLIGHT"

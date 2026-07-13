@@ -147,13 +147,6 @@ def test_v2_rejects_placeholder_hashes_and_unknown_fields(tmp_path: Path) -> Non
                 )
             )
 
-    path = write_v2_spec(tmp_path / "missing-m3.json")
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    del payload["m3_artifact"]
-    path.write_text(json.dumps(payload), encoding="utf-8")
-    with pytest.raises(ValueError, match="missing.*m3_artifact"):
-        load_spec(path)
-
     for replacement in (
         {"path": M3_PATH, "size_bytes": M3_SIZE_BYTES},
         {"path": M3_PATH, "size_bytes": M3_SIZE_BYTES + 1, "sha256": M3_SHA256},
@@ -187,7 +180,7 @@ def test_export_spec_rejects_preflight_export_commit_field(tmp_path: Path) -> No
         load_spec(path)
 
 
-def test_export_spec_allows_absent_or_exact_m3_delivery_ref(tmp_path: Path) -> None:
+def test_m3_artifact_is_preflight_only_exact_key(tmp_path: Path) -> None:
     payload = json.loads(
         (ROOT / "configs" / "run_specs" / "RQ014_g2_declassification_export.template.json").read_text(
             encoding="utf-8"
@@ -202,16 +195,22 @@ def test_export_spec_allows_absent_or_exact_m3_delivery_ref(tmp_path: Path) -> N
     for value in payload["scene_bundles"]:
         value["path"] = "/managed/fixture"
         value["sha256"] = "3" * 64
-    path = tmp_path / "export.json"
-    path.write_text(json.dumps(payload), encoding="utf-8")
-    load_spec(path)
     payload["m3_artifact"] = {
         "path": M3_PATH,
         "size_bytes": M3_SIZE_BYTES,
         "sha256": M3_SHA256,
     }
+    path = tmp_path / "export-with-m3.json"
     path.write_text(json.dumps(payload), encoding="utf-8")
-    load_spec(path)
+    with pytest.raises(ValueError, match="unexpected.*m3_artifact"):
+        load_spec(path)
+
+    path = write_v2_spec(tmp_path / "preflight-without-m3.json")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    del payload["m3_artifact"]
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(ValueError, match="missing.*m3_artifact"):
+        load_spec(path)
 
 
 def test_m3_artifact_uses_retained_no_follow_descriptor_before_deserialization(
