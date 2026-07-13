@@ -23,6 +23,7 @@
       "enum": ["rq014_g2_declassification_export", "rq014_g2_contract_preflight"]
     },
     "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "declassification_export_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "formal_g1": {"$ref": "#/$defs/fileRef"},
     "contract_bundle": {"$ref": "#/$defs/fileRef"},
     "resource_profile_id": {"type": "string"},
@@ -58,7 +59,8 @@
         "counterpart_tracks",
         "environment_manifest",
         "created_at_utc"
-      ]
+      ],
+      "not": {"required": ["declassification_export_commit"]}
     },
     {
       "properties": {
@@ -66,6 +68,7 @@
         "resource_profile_id": {"const": "rq014-g2-preflight-cpu-v1"}
       },
       "required": [
+        "declassification_export_commit",
         "input_manifest",
         "sanitization_receipt",
         "materialization_ledger",

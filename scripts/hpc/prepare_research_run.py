@@ -343,6 +343,26 @@ def run_git(repo: Path, *args: str) -> str:
     ).strip()
 
 
+def _require_published_commit(repo: Path, commit: str, *, label: str) -> None:
+    subprocess.run(
+        _git_command(repo, "cat-file", "-e", f"{commit}^{{commit}}"),
+        check=True,
+        env=GIT_COMMAND_ENV,
+    )
+    published = subprocess.run(
+        _git_command(
+            repo,
+            "merge-base",
+            "--is-ancestor",
+            commit,
+            "refs/remotes/origin/main",
+        ),
+        env=GIT_COMMAND_ENV,
+    )
+    if published.returncode != 0:
+        raise ValueError(f"{label} is not published on origin/main")
+
+
 def _run_git_bytes(repo: Path, *args: str) -> bytes:
     """Read Git object bytes without filters, hooks, or worktree participation."""
 
@@ -485,6 +505,7 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
                 raise ValueError("RQ014 export created_at_utc must be exact UTC seconds")
         elif spec.get("operation") == RQ014_PREFLIGHT_OPERATION:
             required = common | {
+                "declassification_export_commit",
                 "input_manifest",
                 "sanitization_receipt",
                 "materialization_ledger",
@@ -520,6 +541,16 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
             raise ValueError("Run spec v2 git_commit must be lowercase 40-hex")
         if spec["git_commit"] == "0" * 40:
             raise ValueError("Run spec v2 git_commit is a placeholder")
+        if spec["operation"] == RQ014_PREFLIGHT_OPERATION:
+            export_commit = spec["declassification_export_commit"]
+            if not isinstance(export_commit, str) or not HEX40.fullmatch(export_commit):
+                raise ValueError(
+                    "Run spec v2 declassification_export_commit must be lowercase 40-hex"
+                )
+            if export_commit == "0" * 40:
+                raise ValueError(
+                    "Run spec v2 declassification_export_commit is a placeholder"
+                )
     else:
         raise ValueError("Unsupported run spec schema")
     for key in ("rq_id", "run_id", "operation"):
@@ -1576,23 +1607,13 @@ def _validate_rq014_spec(
     commit = str(spec["git_commit"])
     if commit != run_git(repo, "rev-parse", "HEAD"):
         raise ValueError("RQ014 run commit must equal the managed-checkout HEAD")
-    subprocess.run(
-        _git_command(repo, "cat-file", "-e", f"{commit}^{{commit}}"),
-        check=True,
-        env=GIT_COMMAND_ENV,
-    )
-    published = subprocess.run(
-        _git_command(
+    _require_published_commit(repo, commit, label="Run commit")
+    if spec["operation"] == RQ014_PREFLIGHT_OPERATION:
+        _require_published_commit(
             repo,
-            "merge-base",
-            "--is-ancestor",
-            commit,
-            "refs/remotes/origin/main",
-        ),
-        env=GIT_COMMAND_ENV,
-    )
-    if published.returncode != 0:
-        raise ValueError("Run commit is not published on origin/main")
+            spec["declassification_export_commit"],
+            label="Declassification export commit",
+        )
 
     decision_key = (
         "preflight_decision_path"
@@ -1872,7 +1893,7 @@ def _validate_rq014_spec(
         file_manifest_path=bundle_manifest,
         receipt_path=sanitization_path,
         full_hash=True,
-        expected_exporter_git_commit=commit,
+        expected_exporter_git_commit=spec["declassification_export_commit"],
         expected_exporter_environment_sha256=environment["environment_manifest_sha256"],
         expected_exporter_code_sha256=sha256_file(
             repo / "scripts" / "rq014" / "export_score_stripped_bundle.py"
@@ -1898,6 +1919,7 @@ def _validate_rq014_spec(
         ],
         "declassification_export_done_path": str(export_done_path),
         "declassification_export_done_sha256": spec["declassification_export_done"]["sha256"],
+        "declassification_export_commit": spec["declassification_export_commit"],
         "resource_profile_id": RQ014_PREFLIGHT_RESOURCE_PROFILE,
         "job_name": job_name,
         "entrypoint": "scripts/rq014/run_managed_g2.py",
@@ -2272,7 +2294,7 @@ def render_rq014_sbatch(
             "--declassification-export-done",
             validated["declassification_export_done_path"],
             "--expected-exporter-git-commit",
-            validated["commit"],
+            validated["declassification_export_commit"],
             "--expected-exporter-environment-sha256",
             validated["environment_manifest_sha256"],
             "--output-root",

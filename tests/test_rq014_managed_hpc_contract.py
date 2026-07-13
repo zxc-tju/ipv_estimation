@@ -740,6 +740,7 @@ def test_preflight_is_conditionally_registered_and_centrally_allowlisted_for_rev
     template = json.loads(template_path.read_text(encoding="utf-8"))
     assert template["formal_g1"]["path"].endswith(launcher.RQ014_FORMAL_G1)
     assert template["formal_g1"]["sha256"] == "0" * 64
+    assert template["declassification_export_commit"] == "0" * 40
     assert template["contract_bundle"]["path"].endswith(launcher.RQ014_FINAL_BUNDLE)
     assert template["contract_bundle"]["sha256"] == "0" * 64
 

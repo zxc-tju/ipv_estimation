@@ -59,6 +59,7 @@ def write_v2_spec(path: Path, **overrides: object) -> Path:
         "run_id": "RQ014_preflight_fixture",
         "operation": "rq014_g2_contract_preflight",
         "git_commit": "1" * 40,
+        "declassification_export_commit": "2" * 40,
         "formal_g1": dict(ref),
         "contract_bundle": dict(ref),
         "environment_manifest": dict(ref),
@@ -94,6 +95,91 @@ def test_v2_rejects_placeholder_hashes_and_unknown_fields(tmp_path: Path) -> Non
     path.write_text(json.dumps(payload), encoding="utf-8")
     with pytest.raises(ValueError, match="unexpected"):
         load_spec(path)
+
+    path = write_v2_spec(tmp_path / "missing-export-commit.json")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    del payload["declassification_export_commit"]
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(ValueError, match="missing.*declassification_export_commit"):
+        load_spec(path)
+
+    for value in ("0" * 40, "A" * 40, "1" * 39):
+        with pytest.raises(ValueError, match="declassification_export_commit"):
+            load_spec(
+                write_v2_spec(
+                    tmp_path / f"bad-export-commit-{len(value)}-{value[0]}.json",
+                    declassification_export_commit=value,
+                )
+            )
+
+
+def test_export_spec_rejects_preflight_export_commit_field(tmp_path: Path) -> None:
+    payload = json.loads(
+        (ROOT / "configs" / "run_specs" / "RQ014_g2_declassification_export.template.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    payload["run_id"] = "RQ014_export_fixture"
+    payload["git_commit"] = "1" * 40
+    payload["declassification_export_commit"] = "2" * 40
+    for value in payload.values():
+        if isinstance(value, dict) and "sha256" in value:
+            value["path"] = "/managed/fixture"
+            value["sha256"] = "3" * 64
+    for value in payload["scene_bundles"]:
+        value["path"] = "/managed/fixture"
+        value["sha256"] = "3" * 64
+    path = tmp_path / "export-with-preflight-commit.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(ValueError, match="unexpected.*declassification_export_commit"):
+        load_spec(path)
+
+
+def test_preflight_export_commit_uses_published_ancestor_semantics(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["/usr/bin/git", "init", "-q", str(repo)], check=True)
+    subprocess.run(["/usr/bin/git", "-C", str(repo), "config", "user.name", "fixture"], check=True)
+    subprocess.run(
+        ["/usr/bin/git", "-C", str(repo), "config", "user.email", "fixture@example.invalid"],
+        check=True,
+    )
+    marker = repo / "marker"
+    marker.write_text("export\n", encoding="utf-8")
+    subprocess.run(["/usr/bin/git", "-C", str(repo), "add", "marker"], check=True)
+    subprocess.run(["/usr/bin/git", "-C", str(repo), "commit", "-q", "-m", "export"], check=True)
+    export_commit = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(repo), "rev-parse", "HEAD"], text=True
+    ).strip()
+    marker.write_text("preflight\n", encoding="utf-8")
+    subprocess.run(["/usr/bin/git", "-C", str(repo), "commit", "-qam", "preflight"], check=True)
+    current_head = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(repo), "rev-parse", "HEAD"], text=True
+    ).strip()
+    subprocess.run(
+        ["/usr/bin/git", "-C", str(repo), "update-ref", "refs/remotes/origin/main", current_head],
+        check=True,
+    )
+    spec = load_spec(
+        write_v2_spec(
+            tmp_path / "preflight.json",
+            git_commit=current_head,
+            declassification_export_commit=export_commit,
+        )
+    )
+    assert spec["declassification_export_commit"] != spec["git_commit"]
+    launcher._require_published_commit(repo, spec["declassification_export_commit"], label="Export commit")
+    tree = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(repo), "rev-parse", "HEAD^{tree}"], text=True
+    ).strip()
+    unpublished = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(repo), "commit-tree", tree, "-m", "unpublished"],
+        text=True,
+    ).strip()
+    with pytest.raises(ValueError, match="not published on origin/main"):
+        launcher._require_published_commit(repo, unpublished, label="Export commit")
 
 
 def test_v2_rejects_duplicate_json_keys(tmp_path: Path) -> None:
@@ -949,6 +1035,7 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
     validated = {
         "job_name": "zxc-rq014-pre-123456789abc",
         "commit": "a" * 40,
+        "declassification_export_commit": "d" * 40,
         "run_spec_sha256": "1" * 64,
         "authorization_sha256": "2" * 64,
         "execution_contract_sha256": "3" * 64,
@@ -1024,6 +1111,7 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
     assert "--materialization-ledger" in script
     assert "--declassification-export-receipt" in script
     assert "--declassification-export-done" in script
+    assert f"--expected-exporter-git-commit {'d' * 40}" in script
     assert script.startswith("#!/bin/bash\n")
     assert "#SBATCH --export=NIL" in script
     assert "#SBATCH --chdir=/" in script

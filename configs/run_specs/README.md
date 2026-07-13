@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 6058f216c6d0d91245661b2278dd6f764f149a3c6a8ae54e646c1b6cfb5a44f7 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 76502c36008dd5265d88a9d60c89c151704791d719f9eb7357a8377462e68dc9 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -61,7 +61,9 @@ immutable spec, validate-only PASS, and the promised explicit user confirmation.
 Both operations bind their operation-scoped PI decision and the exact reviewed source
 inventory and `managed_python_environment_v3.json`; an arbitrary self-reported
 source or environment hash is rejected. Contract preflight additionally
-requires the prior export PASS receipt and `DONE.json`.
+requires the prior export PASS receipt and `DONE.json`. Its required
+`declassification_export_commit` field binds the exporter provenance to the
+published prior-export commit independently of the current preflight `git_commit`.
 
 The preflight authorization chain is forward-bound to these exact v1.6 paths:
 

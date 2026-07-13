@@ -4,6 +4,7 @@
   "run_id": "RQ014_1_wod_rating_recovery_REPLACE_UTC_REPLACE_PLAN_SHA8",
   "operation": "rq014_g2_contract_preflight",
   "git_commit": "0000000000000000000000000000000000000000",
+  "declassification_export_commit": "0000000000000000000000000000000000000000",
   "formal_g1": {
     "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"

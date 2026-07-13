@@ -210,8 +210,11 @@ question index in `STUDIES.md`.
   published commit, immutable spec, validate-only PASS and one more explicit user confirmation before submit remain
   mandatory. Round-3 fresh statistics and execution/governance reviews both returned `NO_BLOCKER`; the exact
   forward-bound verdicts, `RQ014_formal_G1_v1p6_preflight_20260713.yaml` (`FORMAL_G1_PASS`) and 74-row final bundle
-  now exist. Formal G1 does not grant execution: publication/sync, immutable spec, validate-only PASS, fresh
-  validation and explicit user confirmation remain mandatory before preflight submit. No rating value was read.
+  now exist for the round-3 manifest. W4b subsequently fixed the cross-commit exporter-provenance defect by adding
+  a required preflight-only `declassification_export_commit`; the replacement 70-row candidate manifest is
+  `4e06316aa35a95c85a330bf6d82a6ba87642f0d3e47a12810519c34f284b17a7`. This reviewed-byte change requires fresh
+  dual review and a regenerated Formal G1/final bundle before publication/sync, immutable-spec validation or submit.
+  No rating value was read.
   Fleet evidence: `.codex-fleet/rq014-execution-v1p6/board/`.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
@@ -221,10 +224,10 @@ question index in `STUDIES.md`.
   ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
   Python compilation, shell syntax and `git diff --check` also pass. No rating value was read,
   no production run root was created, and no Slurm job was submitted.
-- RQ014 current preflight authority bundle is
+- RQ014 prior round-3 preflight authority bundle is
   `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 74 rows, SHA-256
-  `4167c14be4db09092fb03896996b6576185e661daa0d9da092c4b6759e100e2b`. The v1.5 baseline bundle remains
-  addressable at `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
+  `4167c14be4db09092fb03896996b6576185e661daa0d9da092c4b6759e100e2b`. It remains addressable but does not bind the
+  W4b candidate bytes; the v1.5 baseline remains at `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
 - RQ007 held-out remains sealed. RQ009 must freeze all rules and stop at
   `READY_FOR_SEALED_TEST` until a new PI authorization opens it.
 - RQ008B is not authorized; no RQ008 motif may enter RQ009.
