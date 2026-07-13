@@ -1,0 +1,18 @@
+== work_dirs/RQ014 ==
+ls: 无法访问'/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014': No such file or directory
+== run_specs ==
+总用量 20
+drwxr-xr-x 2 u25310231 u25310231 8192 7月  13 00:09 .
+drwxrwxr-x 5 u25310231 u25310231 8192 7月  13 00:03 ..
+-r--r--r-- 1 u25310231 u25310231 3098 7月  13 00:03 RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1.json
+== spec integrity ==
+普通文件 444 3098 95871301641
+0e6ca13094adc14286f8a1f39d57013322fa2e0e2fb9edc12494c470bb31f62b  /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1.json
+== staging ==
+总用量 12
+drwx------ 2 u25310231 u25310231 4096 7月  13 00:09 .
+drwxrwxr-x 5 u25310231 u25310231 8192 7月  13 00:03 ..
+== queue ==
+1919345 DW_export_feat RUNNING
+== no rendered sbatch ==
+(none above = ok)

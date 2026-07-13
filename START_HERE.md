@@ -159,8 +159,9 @@ question index in `STUDIES.md`.
   with five PI-waived surfaces represented as `status=INACCESSIBLE`, and replaces ambiguous
   booleans with fail-closed managed operation authorization. Sixth-round fresh statistics and
   execution/governance reviews both returned `NO_BLOCKER`; machine validation accepts
-  `RQ014_formal_G1_v1p5_20260712.yaml` as `FORMAL_G1_PASS`. The exact contract is now published;
-  launcher validate-only evidence remains the next gate, so no RQ014 production job may run yet.
+  `RQ014_formal_G1_v1p5_20260712.yaml` as `FORMAL_G1_PASS`. The exact contract is published, and the
+  authorized rating-blind declassification export has now been executed and dual-reviewed PASS
+  (2026-07-13; see the v1.6 execution bullet below). No other RQ014 production operation may run.
 - RQ014 primary science authority is now
   `reports/plans/RQ014_recovery_lane_v2.json`: a fixed 960-cell rating-blind feature grid followed by a
   one-time, separately authorized 2,880-row full-data recovery screen and a clean independent replay of
@@ -189,6 +190,24 @@ question index in `STUDIES.md`.
   Independent execution/HPC and science/governance reviewers both returned `NO_BLOCKER` after
   remediation; durable review:
   `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_execution_handoff_review_20260712.md`.
+- **RQ014 v1.6 Waves 0–3 EXECUTED (2026-07-13): rating-blind export PASS; stopped at D1.** Managed checkout
+  synced via reviewed incremental bundle (HPC HEAD detached at exact `24be0827`; remote-main CAS
+  `b1476bd0`→`eb1ade2b`; 4-round red-teamed sync script; attestation archived). Immutable spec
+  `RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1.json` (SHA-256 `0e6ca13094ad…31f62b`, 0444,
+  inode 95871301641, W1-A/W1-B byte-identical dual derivation) published by staging hard-link no-replace.
+  Validate-only evidence parsed independently by W1-A and fresh W1-D (14/14). Single authorized submit →
+  Slurm `1919412` `zxc-rq014-export-0e6ca13094ad` COMPLETED 0:0 (3m52s, amd/cpua102, 1CPU/8G, --export=NIL
+  on directive and submit line). Output: 9-file score-stripped bundle at
+  `/share/home/u25310231/ZXC/sociality_estimation/inputs/RQ014/wod_rated479_score_stripped/v1` — universe 479,
+  geometry 476, structural attrition 3, candidate distribution {0:3,3:476}, all forbidden/unexpected/duplicate/
+  nonfinite scans 0, receipts hash-chained DONE→export→{sanitization,file_manifest}. W3 statistics and
+  execution/governance reviewers (fresh, distinct) both `NO_BLOCKER`; bounded report + evidence manifest:
+  `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_1_declassification_export_20260712T165224Z_0e6ca130/`.
+  Execution is STOPPED at **D1**: PI must accept the export and separately decide whether to start the
+  `rq014_g2_contract_preflight` authorization loop (scoped decision → allowlist commit → candidate manifest →
+  fresh dual review → new Formal G1 → final bundle → immutable spec → validate-only). Default without reply:
+  STOP_AND_PRESERVE. No rating value was read at any wave; git bundle retained at
+  `manifests/RQ014/bootstrap/` until D1 acceptance. Fleet evidence: `.codex-fleet/rq014-execution-v1p6/board/`.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py

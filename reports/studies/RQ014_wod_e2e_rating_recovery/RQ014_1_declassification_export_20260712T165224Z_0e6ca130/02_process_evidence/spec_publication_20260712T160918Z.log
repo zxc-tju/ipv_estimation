@@ -1,0 +1,12 @@
+/proc/1346630/fd/9: OK
+=== SPEC PUBLICATION BEGIN 2026-07-12T16:09:30Z host=logini01 ===
+RUN_ID=RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1
+/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_spec_staging/RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1.json.candidate: OK
+LOCK_MODE=exclusive-nonblocking-fd8 identity=47:75158824211:81b4
+/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1.json: OK
+FINAL_PATH=/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1.json
+FINAL_INODE=95871301641
+FINAL_MODE=444
+FINAL_SHA256=0e6ca13094adc14286f8a1f39d57013322fa2e0e2fb9edc12494c470bb31f62b
+FINAL_SIZE=3098
+=== SPEC PUBLICATION END 2026-07-12T16:09:30Z rc=0 ===

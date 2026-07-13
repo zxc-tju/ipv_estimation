@@ -1,0 +1,46 @@
+/proc/1310025/fd/9: OK
+=== ATTESTATION BEGIN 2026-07-12T15:47:16Z host=logini01 ===
+GIT_VERSION=git version 2.31.1
+SYNC_OLD=b1476bd0b4e345c15ffdb9582bf7bf6bfa67fef0
+SYNC_NEW=eb1ade2ba6b6ba9e5f20917aedfbc865cefa2ba0
+RUN_COMMIT=24be08278adf43371fda14e7ec23a95b986b2fb1
+TEMP_REF=refs/rq014/bootstrap/origin-main-eb1ade2ba6b6
+GIT_DIR_OK=/share/home/u25310231/ZXC/sociality_estimation/code/repo/.git
+TOPLEVEL_OK=/share/home/u25310231/ZXC/sociality_estimation/code/repo
+FILTER_CONFIG=NONE
+/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/bootstrap/origin-main-eb1ade2ba6b6.bundle: OK
+BUNDLE_PATH=/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/bootstrap/origin-main-eb1ade2ba6b6.bundle
+BUNDLE_SIZE=2258209
+BUNDLE_SHA256=b0d110251d42648d2a05ad16672be85ce20871b174dcafc6f85391ee4697ee8e
+BUNDLE_PREREQUISITE=b1476bd0b4e345c15ffdb9582bf7bf6bfa67fef0
+BUNDLE_HEAD=eb1ade2ba6b6ba9e5f20917aedfbc865cefa2ba0 refs/remotes/origin/main
+/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/bootstrap/origin-main-eb1ade2ba6b6.bundle is okay
+BUNDLE_VERIFY=OK
+LOCK_PATH=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock
+LOCK_FD8_TARGET=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock
+LOCK_PATH_ID=47:75158824211:81b4
+LOCK_FD_ID=47:75158824211:81b4
+LOCK_MODE=exclusive-nonblocking-fd8-rdwr-via-fd7-procreopen-nocreate
+PRE_HEAD=b1476bd0b4e345c15ffdb9582bf7bf6bfa67fef0
+PRE_REMOTE_MAIN=b1476bd0b4e345c15ffdb9582bf7bf6bfa67fef0
+OBJECT_FETCH=OK
+TEMP_REF_OK=eb1ade2ba6b6ba9e5f20917aedfbc865cefa2ba0
+ANCESTRY_OK=SYNC_OLD,RUN_COMMIT under TEMP_REF
+CAS_RESULT=OK (refs/remotes/origin/main: b1476bd0b4e345c15ffdb9582bf7bf6bfa67fef0 -> eb1ade2ba6b6ba9e5f20917aedfbc865cefa2ba0)
+CHECKOUT=detached@24be08278adf43371fda14e7ec23a95b986b2fb1
+TEMP_REF_SHA_BEFORE_DELETE=eb1ade2ba6b6ba9e5f20917aedfbc865cefa2ba0
+TEMP_REF_DELETED=yes
+FULL_CLEAN_STDOUT=EMPTY
+/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh: OK
+WRAPPER_SHA_OK=d8036336c354b202f388c5fd9dbc05a80a1e8292a574cc4c47400d0a772d7a1d
+/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/prepare_research_run.py: OK
+REGISTERED_DIGEST_OK=6b3cf6da1d31bb4304617fe5305435fd656b9a2ca41020556ad0a8bba42bd91f  /share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/prepare_research_run.py
+/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/rq014/preflight.py: OK
+REGISTERED_DIGEST_OK=f91bbd2aef8ab6678109c1391d46672c41a41a03c5b1a9d67c35d01ce3de4102  /share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/rq014/preflight.py
+/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/rq014/materialize_registry.py: OK
+REGISTERED_DIGEST_OK=d8cac79f19e07296fef03415cca76474b48ca7b122d733ab2c3ec7146bbdecc4  /share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/rq014/materialize_registry.py
+/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/rq014/export_score_stripped_bundle.py: OK
+REGISTERED_DIGEST_OK=39e8c81214b679473a777d5ed12416779424b11ccbf31ef0584d5cde7f9ade9b  /share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/rq014/export_score_stripped_bundle.py
+FINAL_HEAD=24be08278adf43371fda14e7ec23a95b986b2fb1
+FINAL_REMOTE_MAIN=eb1ade2ba6b6ba9e5f20917aedfbc865cefa2ba0
+=== ATTESTATION END 2026-07-12T15:47:19Z rc=0 ===
