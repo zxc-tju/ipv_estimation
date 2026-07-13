@@ -30,7 +30,7 @@ def m3_delivery_contract(path: Path, payload: bytes) -> dict[str, object]:
         "m3_artifact_delivery_contract": {
             "spec_ref_field": "m3_artifact",
             "required_for_operation": "rq014_g2_contract_preflight",
-            "optional_for_operation": "rq014_g2_declassification_export",
+            "prohibited_for_operation": "rq014_g2_declassification_export",
             "path": str(path),
             "allowed_root": str(path.parent),
             "size_bytes": len(payload),

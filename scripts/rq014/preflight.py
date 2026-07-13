@@ -281,7 +281,7 @@ def validate_m3_artifact_ref(
     base: Path,
     contract: dict[str, Any],
 ) -> dict[str, Any]:
-    """Verify the frozen M3 bytes once through a retained no-follow descriptor."""
+    """Verify preflight-required, export-prohibited M3 bytes through one retained descriptor."""
 
     def mismatch(message: str, exc: OSError | None = None) -> None:
         error = ContractError(f"M3_ARTIFACT_MISMATCH: {message}")
@@ -293,7 +293,7 @@ def validate_m3_artifact_ref(
     delivery_keys = {
         "spec_ref_field",
         "required_for_operation",
-        "optional_for_operation",
+        "prohibited_for_operation",
         "path",
         "allowed_root",
         "size_bytes",
@@ -309,7 +309,7 @@ def validate_m3_artifact_ref(
     expected_constants = {
         "spec_ref_field": "m3_artifact",
         "required_for_operation": "rq014_g2_contract_preflight",
-        "optional_for_operation": "rq014_g2_declassification_export",
+        "prohibited_for_operation": "rq014_g2_declassification_export",
         "open_policy": "SINGLE_RETAINED_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
         "verification_order": (
             "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION"
@@ -319,7 +319,7 @@ def validate_m3_artifact_ref(
         "job_start_reverification": True,
     }
     if any(delivery.get(key) != value for key, value in expected_constants.items()):
-        mismatch("delivery contract semantics drifted")
+        mismatch("delivery contract must require preflight and prohibit export")
     if not isinstance(ref, dict) or set(ref) != {"path", "size_bytes", "sha256"}:
         mismatch("spec reference keys differ")
     if (
