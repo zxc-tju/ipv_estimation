@@ -81,11 +81,29 @@ def test_registry_science_hashes_match_managed_files() -> None:
     assert implementation_version["options"]["implementation_sha256"] == mapping[
         "implementation_sha256"
     ]
-    envelope_contract = _load(PLANS / "RQ014_envelope_builder_contract_v2.json")
-    builder = envelope_contract["path_type_contract"]["wod_mapping"]["builder_binding"]
-    assert builder["source_definition"]["sha256"] == mapping["source_definition_sha256"]
-    assert builder["implementation"]["sha256"] == mapping["implementation_sha256"]
-    assert builder["mapping_table"]["sha256"] == mapping["mapping_table_sha256"]
+    summary = _load(ROOT / mapping["distribution_summary_path"])
+    assert summary["attrition_stage_counts"] == {
+        "F_MISSING_WOD_PATH_TYPE": 222,
+        "K_STRUCTURAL_NO_GEOMETRY": 3,
+        "MAPPED_PATH_TYPE": 254,
+    }
+    assert mapping["f_missing_wod_path_type_count"] == 222
+    assert mapping["k_structural_no_geometry_count"] == 3
+    assert "K/X_K before lookup" in mapping["runtime_policy"]
+    execution = _load(PLANS / "RQ014_execution_contract_v1p5.json")
+    mapping_contract = execution["wod_path_type_mapping_manifest_contract"]
+    assert "builder_binding_registry_pointer" not in mapping_contract
+    assert "3 structural no-geometry scenes" in mapping_contract["unmapped_excluded_policy"]
+    assert "222 absent four-value lookup rows" in mapping_contract["unmapped_excluded_policy"]
+
+
+def test_envelope_builder_v2_remains_byte_frozen() -> None:
+    path = PLANS / "RQ014_envelope_builder_contract_v2.json"
+    assert _sha(path) == "407d63209764896a673aa94811f9dd8b60a57a047d17e8cee0a3465c55b8c8a4"
+    contract = _load(path)
+    assert "SHA-256 frozen" in contract["path_type_contract"]["wod_mapping"][
+        "builder_binding"
+    ]
 
 
 def test_m3_manifest_binds_the_frozen_artifact_set() -> None:

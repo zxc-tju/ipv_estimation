@@ -81,9 +81,9 @@ the required joblib/numpy/pandas/scipy/scikit-learn runtime.
 The WOD mapping freeze is defined by
 `reports/plans/RQ014_plan_v1p7_addendum_pathtype_20260713.md`: its reviewed scene-level
 table must equal the `valid.envelope.wod_path_type_mapping.mapping_table_sha256`
-materialization binding. `UNMAPPED_EXCLUDED` scenes are absent from the four-value
-table and fail closed as `MISSING_WOD_PATH_TYPE / INELIGIBLE_BLIND`; preflight never
-infers a replacement class.
+materialization binding. The 3 structural no-geometry scenes terminate at K/X_K before
+lookup; only the 222 geometry-available `UNMAPPED_EXCLUDED` scenes fail closed at F as
+`MISSING_WOD_PATH_TYPE / INELIGIBLE_BLIND`. Preflight never infers a replacement class.
 
 The preflight authorization chain is forward-bound to these exact v1.6 paths:
 

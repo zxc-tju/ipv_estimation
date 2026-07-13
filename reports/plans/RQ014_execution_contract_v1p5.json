@@ -345,8 +345,7 @@
     "required_columns": ["segment_id", "tstar_context_step", "path_type"],
     "primary_key": ["segment_id", "tstar_context_step"],
     "allowed_path_types": ["CP", "HO", "MP", "F"],
-    "builder_binding_registry_pointer": "reports/plans/RQ014_config_space_v1p6.yaml#/envelope/wod_path_type_mapping",
-    "unmapped_excluded_policy": "absence from the four-value mapping is MISSING_WOD_PATH_TYPE then INELIGIBLE_BLIND at stage F for every scene-level cell/readout; no fallback",
+    "unmapped_excluded_policy": "the 3 structural no-geometry scenes terminate at ordered-attrition K/X_K before path lookup; among the 476 geometry-available scenes, the 222 absent four-value lookup rows become MISSING_WOD_PATH_TYPE then INELIGIBLE_BLIND at stage F for every scene-level cell/readout; no fallback",
     "symlinks": "FORBIDDEN",
     "regular_file_only": true
   },

@@ -19,6 +19,9 @@ from typing import Any, Iterable, Optional, Sequence
 HEX64 = frozenset("0123456789abcdef")
 PATH_TYPES = ("CP", "HO", "MP", "F")
 INTENTS = {1: "GO_STRAIGHT", 2: "GO_LEFT", 3: "GO_RIGHT"}
+TSTAR_TIME_TOLERANCE_S = 1e-12
+OLS_DENOMINATOR_TOLERANCE_S2 = 1e-18
+DIRECTION_SPEED_TOLERANCE_MPS = 1e-9
 MAPPING_FILENAME = "wod_path_type_mapping.csv"
 MANIFEST_FILENAME = "manifest.json"
 SUMMARY_FILENAME = "distribution_summary.json"
@@ -290,10 +293,12 @@ def _effective_velocity(
     mean_x = math.fsum(row[1] for row in fit) / len(fit)
     mean_y = math.fsum(row[2] for row in fit) / len(fit)
     denominator = math.fsum((row[0] - mean_time) ** 2 for row in fit)
-    if denominator <= 1e-18:
+    if not math.isfinite(denominator) or denominator <= OLS_DENOMINATOR_TOLERANCE_S2:
         return 0.0, 0.0
     vx = math.fsum((row[0] - mean_time) * (row[1] - mean_x) for row in fit) / denominator
     vy = math.fsum((row[0] - mean_time) * (row[2] - mean_y) for row in fit) / denominator
+    if not math.isfinite(vx) or not math.isfinite(vy):
+        return 0.0, 0.0
     return vx, vy
 
 
@@ -337,7 +342,7 @@ def classify_rating_blind_primitives(
 
     history = _ordered_xy(ego_history, "ego history")
     future = _ordered_xy(ego_future, "ego future")
-    if len(history) < 2 or abs(history[-1][0]) > 1e-12:
+    if len(history) < 2 or abs(history[-1][0]) > TSTAR_TIME_TOLERANCE_S:
         raise FreezeError("Ego history must contain tstar=0 and at least two points")
     if len(future) < 2 or future[0][0] <= 0.0:
         raise FreezeError("Ego future must contain at least two positive-time points")
@@ -349,7 +354,7 @@ def classify_rating_blind_primitives(
         converted = tuple(
             _finite_float(value, f"counterpart observation {index}") for value in row
         )
-        if converted[0] <= 1e-12:
+        if converted[0] <= TSTAR_TIME_TOLERANCE_S:
             observations.append(converted)
     observations.sort(key=lambda row: row[0])
     if len(observations) < 2:
@@ -363,7 +368,7 @@ def classify_rating_blind_primitives(
     cp_vx, cp_vy = _effective_velocity(observations)
     cp_speed = math.hypot(cp_vx, cp_vy)
     last = observations[-1]
-    if abs(last[0]) <= 1e-12:
+    if abs(last[0]) <= TSTAR_TIME_TOLERANCE_S:
         cp_x0, cp_y0 = last[1], last[2]
     else:
         cp_x0 = last[1] - last[0] * last[3]
@@ -379,7 +384,10 @@ def classify_rating_blind_primitives(
     closest_index = min(range(len(squared_distances)), key=squared_distances.__getitem__)
     ego_vx, ego_vy = _gradient_direction(future, closest_index)
     ego_speed = math.hypot(ego_vx, ego_vy)
-    if ego_speed <= 1e-9 or cp_speed <= 1e-9:
+    if (
+        ego_speed <= DIRECTION_SPEED_TOLERANCE_MPS
+        or cp_speed <= DIRECTION_SPEED_TOLERANCE_MPS
+    ):
         return {
             "path_type": None,
             "status": "UNMAPPED_EXCLUDED_LOW_MOTION",
@@ -564,7 +572,7 @@ def derive_mapping(
                 "MISSING_DECLASSIFIED_PHASE1_SCENE"
             ):
                 raise FreezeError("Malformed structural-exclusion row")
-            statuses["UNMAPPED_EXCLUDED_STRUCTURAL"] += 1
+            statuses["K_EXCLUDED_STRUCTURAL_NO_GEOMETRY"] += 1
             continue
         if (
             row["candidate_geometry_available"] != "true"
@@ -634,6 +642,13 @@ def derive_mapping(
             )
     if sum(statuses.values()) != 479:
         raise FreezeError("Derivation did not terminate every frozen scene")
+    k_structural_count = statuses["K_EXCLUDED_STRUCTURAL_NO_GEOMETRY"]
+    f_missing_count = sum(
+        count for status, count in statuses.items() if status.startswith("UNMAPPED_EXCLUDED_")
+    )
+    mapped_count = sum(path_types.values())
+    if mapped_count + f_missing_count + k_structural_count != 479:
+        raise FreezeError("K/F mapping attrition accounting drift")
     mapping_rows.sort(key=lambda item: (item["segment_id"], int(item["tstar_context_step"])))
     mapping_payload = _mapping_csv_bytes(mapping_rows)
     mapping_sha256 = sha256_bytes(mapping_payload)
@@ -655,6 +670,11 @@ def derive_mapping(
     manifest_sha256 = sha256_bytes(manifest_payload)
     summary = {
         "algorithm_id": "rq014-wod-historical-conflict-geometry-scene-v1",
+        "attrition_stage_counts": {
+            "F_MISSING_WOD_PATH_TYPE": f_missing_count,
+            "K_STRUCTURAL_NO_GEOMETRY": k_structural_count,
+            "MAPPED_PATH_TYPE": mapped_count,
+        },
         "comparison_interpretation": (
             "The historical reference counts candidate trajectories; this freeze classifies each "
             "scene once from its actual driven ego future. Distinct units and future paths make "
@@ -662,6 +682,12 @@ def derive_mapping(
             "the single observed scene-level F mapping."
         ),
         "contains_rating": False,
+        "float_comparison_contract": {
+            "direction_speed_tolerance_mps": DIRECTION_SPEED_TOLERANCE_MPS,
+            "ols_denominator_tolerance_s2": OLS_DENOMINATOR_TOLERANCE_S2,
+            "path_type_boundaries": "direct_binary64_comparisons_without_epsilon",
+            "tstar_time_tolerance_s": TSTAR_TIME_TOLERANCE_S,
+        },
         "historical_candidate_level_reference": {
             "counts": {"CP": 90, "F": 14, "HO": 88, "MP": 36},
             "scope": "228 candidate-level rows; not an expected scene-level equality",

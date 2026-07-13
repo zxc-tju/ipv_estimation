@@ -41,20 +41,39 @@ this computation (`/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analys
 
 The following is the complete normative algorithm. Any implementation difference is source drift.
 
+All arithmetic below uses finite IEEE-754 binary64 values. Two numerical guards are normative and are not
+scientific slack around a class boundary:
+
+- `TSTAR_TIME_TOLERANCE_S = 1e-12 s`: a decoded timestamp satisfies t*=0 exactly when `abs(time_s) <= 1e-12`,
+  and the observed pre/t* filter retains `time_s <= 1e-12`. This is a binary64 serialization-equality guard more
+  than eleven orders of magnitude below the published 0.25 s cadence; positive ego-future rows still require
+  `time_s > 0` exactly.
+- `OLS_DENOMINATOR_TOLERANCE_S2 = 1e-18 s^2`: for
+  `D = math.fsum((time_s - mean_time_s)**2)`, non-finite `D`, `D <= 1e-18`, or a non-finite fitted slope yields
+  zero effective velocity and therefore `UNMAPPED_EXCLUDED_LOW_MOTION`. This is the square-scale counterpart of the historical `1e-9 s`
+  fit-span guard (`analyze_multiframe_tracking_ipv.py:365-371`); it prevents ill-conditioned OLS division while
+  remaining seventeen orders below the denominator scale of the 0.25 s source grid. It is an OLS conditioning
+  guard, not a motion or path-type tolerance.
+
+The `1e-9 m/s` direction-speed guard below is the historical binary64 norm guard
+(`analyze_multiframe_tracking_ipv.py:460-464`). Angle, lateral and longitudinal class boundaries use direct
+binary64 `<=`, `>=`, `<`, and `>` comparisons with **no** epsilon; the 45°, 135°, 4 m, 5 m and -8 m boundary
+fixtures freeze their inclusive/exclusive branches.
+
 1. Verify all nine files as regular no-follow files, their exact names, canonical JSON receipts, exact CSV headers,
    registered sizes, SHA-256 values and row counts. Require the sorted unique 479-row blind universe. Malformed or
    drifting source bytes are a **global abort**, not a scene exclusion.
 2. For a geometry-available scene require the exact route-intent code/name pair; 16 finite t*-pose elements in
-   source row-major order; 16 ordered ego-history rows ending at exactly 0 s; and 20 ordered positive-time
+   source row-major order; 16 ordered ego-history rows ending at t*=0 under the `1e-12 s` rule above; and 20 ordered positive-time
    ego-future rows. These are eligibility gates. Because the transported coordinate frame is already
    `ego_at_tstar` and the schema forbids inferring a transform convention (`RQ014_score_stripped_schema_v1.json:176-189`),
    the pose is verified but not applied a second time. Route intent is likewise verified but does not override
    observed geometry.
-3. Retain only the selected counterpart observations with `time_s<=0`. Require one track identity and at least two
+3. Retain only the selected counterpart observations with `time_s<=1e-12`. Require one track identity and at least two
    strictly time-ordered finite observations. Fit separate ordinary least-squares slopes `vx,vy` over rows whose
-   times are at least `last_observed_time-1.5`; if fewer than three rows qualify, use all retained rows. A zero or
-   non-finite denominator makes the scene undecidable.
-4. If the last retained row is at t*=0, its XY is the counterpart t* position. Otherwise propagate that last XY to
+   times are at least `last_observed_time-1.5`; if fewer than three rows qualify, use all retained rows. The exact
+   `D <= 1e-18 s^2` or non-finite-denominator rule above makes the scene low-motion undecidable.
+4. If `abs(last_retained_time_s) <= 1e-12 s`, its XY is the counterpart t* position. Otherwise propagate that last XY to
    t*=0 using that row's observed `vx_mps,vy_mps`. At every ego-future time `t>0`, set counterpart XY to t* XY plus
    `(vx*t,vy*t)`. This is the historical analytic conflict ray (`analyze_multiframe_tracking_ipv.py:401-410`), not
    a transported or emitted extrapolated observation; the input table remains observed-only.
@@ -74,10 +93,13 @@ The following is the complete normative algorithm. Any implementation difference
      `same_lane_or_following` branch.
 
 The terminology therefore aligns exactly as `crossing→CP`, `opposing→HO`, `leading_or_merging→MP`, and
-`same_lane_or_following→F`. `opposing_nearby` (lateral >5 m), `parallel_nearby` (lateral >4 m), low-motion,
-missing-counterpart, and structural-NA scenes are not forced into a class.
+`same_lane_or_following→F`. Among geometry-available scenes, `opposing_nearby` (lateral >5 m), `parallel_nearby`
+(lateral >4 m), low-motion, and missing-counterpart cases are not forced into a class. The three structural
+no-geometry scenes never enter this mapping decision.
 
-The frozen 479-scene derivation maps 254 scenes (`CP=115, HO=90, MP=48, F=1`) and excludes 225. The historical
+The frozen 479-scene derivation maps 254 scenes (`CP=115, HO=90, MP=48, F=1`), assigns 222 geometry-available
+undecidable scenes to F-stage missing-path attrition, and assigns 3 structural no-geometry scenes to K-stage
+attrition. The historical
 Phase-2f reference (`CP=90, HO=88, MP=36, F=14`) counted 228 candidate-level trajectories, whereas this table
 classifies each scene once from its actual driven ego future. Those different units and future paths make class-count
 equality inappropriate—in particular, historical candidate following alternatives need not be the scene's driven
@@ -85,17 +107,21 @@ future—so the `F=1` scene count is not by itself evidence of classifier drift.
 
 ## 3. UNMAPPED-EXCLUDED and downstream fail closure
 
-Every scene terminates as either one mapped class or an explicit derivation status beginning
-`UNMAPPED_EXCLUDED_`. The latter is represented by **absence** from `wod_path_type_mapping.csv`, because the
+Every geometry-available scene terminates as either one mapped class or an explicit derivation status beginning
+`UNMAPPED_EXCLUDED_`. The 222 latter scenes are represented by **absence** from `wod_path_type_mapping.csv`, because the
 reviewed manifest schema permits only `CP/HO/MP/F` (`reports/plans/RQ014_execution_contract_v1p5.json:339-350`).
-The canonical distribution summary counts every exclusion reason and proves mapped plus excluded equals 479.
+The 3 structural no-geometry scenes receive the separate derivation status `K_EXCLUDED_STRUCTURAL_NO_GEOMETRY`;
+they are also absent from the table, but that absence is never evaluated as a mapping failure. The canonical
+distribution summary proves `254 mapped + 222 F-missing + 3 K-structural = 479`.
 
-At runtime an absent exact lookup becomes `MISSING_WOD_PATH_TYPE`, never an inferred fallback
-(`RQ014_envelope_builder_contract_v2.json:67-74`). Lane v3 requires the checksum-bound lookup for every AVAILABLE
-scene-feature-horizon group and emits no feature/readout for a terminal group
-(`reports/plans/RQ014_recovery_lane_v3.json:194-219`). Thus an UNMAPPED-EXCLUDED scene is excluded at stage F from
-all 320 predictor cells and all ten readouts for that scene; the frozen rollup is `INELIGIBLE_BLIND / F_MISSING_WOD_PATH_TYPE`
-(`:509-530`), and the 479-scene denominator remains auditable under the ordered attrition rules (`:378-410`).
+Lane v3 retains every base scene but requires a scene without candidate geometry to fail K before F is evaluated
+(`reports/plans/RQ014_recovery_lane_v3.json:378-392`). Therefore the 3 structural scenes populate `X_K`; no WOD
+path lookup, cell, or readout is attempted for them. For each of the other 476 geometry-available scenes, the
+checksum-bound lookup is required for every AVAILABLE scene-feature-horizon group and a terminal group emits no
+feature/readout (`:194-219`). Only the 222 geometry-available absent lookups become `MISSING_WOD_PATH_TYPE` and are
+excluded at stage F from all 320 predictor cells and all ten readouts; their frozen rollup is
+`INELIGIBLE_BLIND / F_MISSING_WOD_PATH_TYPE` (`:509-530`). No fallback is permitted, and the ordered identities
+retain the 479-scene denominator (`:378-410`).
 
 ## 4. Frozen artifacts and review gate
 
@@ -117,3 +143,7 @@ The execution contract promotes exactly those three new scientific values into t
 ledger. This package neither changes the
 two-operation central allowlist nor weakens any Formal-G1, final-bundle, publication, immutable-spec, validate-only,
 explicit-confirmation, or rating-access gate.
+
+`reports/plans/RQ014_envelope_builder_contract_v2.json` remains byte-protected at SHA-256
+`407d63209764896a673aa94811f9dd8b60a57a047d17e8cee0a3465c55b8c8a4`; this addendum and
+`reports/plans/RQ014_config_space_v1p6.yaml`, rather than any v2-byte edit, carry the new mapping freeze details.

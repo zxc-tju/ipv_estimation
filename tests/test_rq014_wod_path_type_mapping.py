@@ -10,6 +10,9 @@ import pytest
 
 from scripts.rq014.derive_wod_path_type_mapping import (
     BUNDLE_HEADERS,
+    DIRECTION_SPEED_TOLERANCE_MPS,
+    OLS_DENOMINATOR_TOLERANCE_S2,
+    TSTAR_TIME_TOLERANCE_S,
     canonical_json_bytes,
     classify_rating_blind_primitives,
     derive_mapping,
@@ -19,6 +22,23 @@ from scripts.rq014.derive_wod_path_type_mapping import (
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "tests/fixtures/rq014_wod_path_type_mapping_golden_v1.json"
 GOLDEN = json.loads(FIXTURE.read_text(encoding="utf-8"))
+BOUNDARY_CASE_IDS = {
+    "BOUNDARY_ANGLE_45_CP",
+    "BOUNDARY_ANGLE_135_CP",
+    "BOUNDARY_LATERAL_4_MP",
+    "BOUNDARY_LATERAL_5_HO",
+    "BOUNDARY_LONGITUDINAL_MINUS_8_MP",
+    "UNMAPPED_MISSING_COUNTERPART",
+    "UNMAPPED_LOW_MOTION",
+    "UNMAPPED_OPPOSING_NEARBY",
+}
+BOUNDARY_EXPECTED_MEASUREMENTS = {
+    "BOUNDARY_ANGLE_45_CP": ("angle_deg", 45.0),
+    "BOUNDARY_ANGLE_135_CP": ("angle_deg", 135.0),
+    "BOUNDARY_LATERAL_4_MP": ("lateral_m", 4.0),
+    "BOUNDARY_LATERAL_5_HO": ("lateral_m", 5.0),
+    "BOUNDARY_LONGITUDINAL_MINUS_8_MP": ("longitudinal_m", -8.0),
+}
 PUBLISHED_MAPPING = (
     "/share/home/u25310231/ZXC/sociality_estimation/inputs/RQ014/"
     "wod_path_type_mapping/v1/wod_path_type_mapping.csv"
@@ -219,6 +239,25 @@ def test_golden_path_type_case(case: dict[str, object]) -> None:
     )
     assert result["path_type"] == case["expected_path_type"]
     assert result["status"] == case["expected_status"]
+    if case["case_id"] in BOUNDARY_EXPECTED_MEASUREMENTS:
+        field, value = BOUNDARY_EXPECTED_MEASUREMENTS[case["case_id"]]
+        assert result[field] == pytest.approx(value, abs=1e-12)
+
+
+def test_golden_fixture_covers_every_reviewed_boundary() -> None:
+    assert len(GOLDEN["cases"]) == 13
+    assert BOUNDARY_CASE_IDS <= {case["case_id"] for case in GOLDEN["cases"]}
+
+
+def test_addendum_normatively_defines_float_comparison_tolerances() -> None:
+    text = (
+        ROOT / "reports/plans/RQ014_plan_v1p7_addendum_pathtype_20260713.md"
+    ).read_text(encoding="utf-8")
+    for clause in ("1e-18 s^2", "1e-12 s", "binary64", "OLS conditioning"):
+        assert clause in text
+    assert OLS_DENOMINATOR_TOLERANCE_S2 == 1e-18
+    assert TSTAR_TIME_TOLERANCE_S == 1e-12
+    assert DIRECTION_SPEED_TOLERANCE_MPS == 1e-9
 
 
 def test_full_bundle_derivation_is_deterministic_and_excludes_undecidable(tmp_path: Path) -> None:
@@ -246,12 +285,23 @@ def test_full_bundle_derivation_is_deterministic_and_excludes_undecidable(tmp_pa
     assert [row["path_type"] for row in mapping_rows] == ["CP", "HO", "MP", "F"]
     assert first["path_type_counts"] == {"CP": 1, "HO": 1, "MP": 1, "F": 1}
     assert first["status_counts"] == {
+        "K_EXCLUDED_STRUCTURAL_NO_GEOMETRY": 474,
         "MAPPED_CROSSING": 1,
         "MAPPED_LEADING_OR_MERGING": 1,
         "MAPPED_OPPOSING": 1,
         "MAPPED_SAME_LANE_OR_FOLLOWING": 1,
         "UNMAPPED_EXCLUDED_PARALLEL_NEARBY": 1,
-        "UNMAPPED_EXCLUDED_STRUCTURAL": 474,
+    }
+    assert first["attrition_stage_counts"] == {
+        "F_MISSING_WOD_PATH_TYPE": 1,
+        "K_STRUCTURAL_NO_GEOMETRY": 474,
+        "MAPPED_PATH_TYPE": 4,
+    }
+    assert first["float_comparison_contract"] == {
+        "direction_speed_tolerance_mps": 1e-9,
+        "ols_denominator_tolerance_s2": 1e-18,
+        "path_type_boundaries": "direct_binary64_comparisons_without_epsilon",
+        "tstar_time_tolerance_s": 1e-12,
     }
     manifest = json.loads((tmp_path / "first/manifest.json").read_text(encoding="utf-8"))
     assert manifest["row_count"] == 4

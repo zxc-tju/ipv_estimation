@@ -221,7 +221,7 @@ question index in `STUDIES.md`.
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
   tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Current
-  W4f review-candidate result: `228 passed`; prior final release result: `194 passed`; broader non-shortcut regression excluding the locally absent
+  W4f round-2 review-candidate result: `239 passed`; prior final release result: `194 passed`; broader non-shortcut regression excluding the locally absent
   ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
   Python compilation, shell syntax and `git diff --check` also pass. No rating value was read,
   no production run root was created, and no Slurm job was submitted.
@@ -231,10 +231,12 @@ question index in `STUDIES.md`.
   `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
 - **RQ014 W4f is a review candidate, not executable authority.** The rating-blind WOD mapping addendum freezes
   the recovered full479 conflict-geometry rule over the published nine-file score-stripped bundle. Its deterministic
-  scene-level candidate contains 254 mappings (`CP=115, HO=90, MP=48, F=1`) and 225 explicit
-  `UNMAPPED_EXCLUDED` scenes; missing lookup fails closed for every lane-v3 cell/readout. The v1p6 registry and
-  envelope/execution contracts now checksum-bind the definition, stdlib implementation, and table, increasing
-  the exact active science-binding count from 9 to 12. The existing W4d Formal G1/final bundle do not cover these
+  scene-level candidate contains 254 mappings (`CP=115, HO=90, MP=48, F=1`), 222 geometry-available
+  `UNMAPPED_EXCLUDED` scenes that fail closed at F, and 3 structural no-geometry scenes that terminate at K before
+  lookup. The v1p6 registry and execution contract checksum-bind the definition, stdlib implementation, and table, increasing
+  the exact active science-binding count from 9 to 12. Round 2 restores the protected envelope-builder v2 bytes at
+  SHA-256 `407d6320…b8c8a4` and freezes the binary64/OLS tolerances plus eight boundary/exclusion fixtures in the
+  addendum/registry instead. The existing W4d Formal G1/final bundle do not cover these
   new bytes: fresh dual review, regenerated verdicts/G1/final bundle, publication/sync, immutable-spec validation,
   and explicit confirmation remain mandatory. No managed-input installation, HPC write, launcher invocation,
   rating access, or job occurred.
