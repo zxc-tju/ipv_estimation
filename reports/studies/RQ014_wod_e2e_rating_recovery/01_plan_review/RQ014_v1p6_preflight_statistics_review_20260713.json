@@ -2,44 +2,45 @@
   "findings": [
     {
       "evidence": [
-        "W4d round ledger: round 5 on fe9374d4 returned statistics BLOCKED and execution BLOCKED; round 6 remediation produced ffd9c6ad; round 7 returned statistics NO_BLOCKER and execution BLOCKED on the sole preflight/export M3 exact-key defect; round 8 fixed that defect in 979a24ba; round 9 returned statistics BLOCKED on optional-for-export wording and execution NO_BLOCKER; round 10 fixed the wording in 5abdad5a; round-10 confirmation returned statistics NO_BLOCKER and execution NO_BLOCKER.",
-        "The terminal confirmation binds the exact 93-row review manifest at SHA-256 6103df8842b467321fb8273991380059bbd37aae9edf7425b8673db06d67ab98 with zero unresolved blockers or majors."
+        "The inherited W4d ledger closed with dual NO_BLOCKER after round 10 on 5abdad5a and bound the then-current 93-row manifest; W4f subsequently opened a new adjudication over the path-type freeze package.",
+        "W4f round 1 on 9cc3a788 returned statistics BLOCKED on S1 rule/code numerical mismatch, S2 exclusion taxonomy, and S3 protected-v2 byte drift. Round 2 remediation 81c684a3 closed S2 and S3 but retained the S1 exact-boundary fixture residual. Round 3 d1dc2a30 replaced the masked 45-degree case with bit-exact and adjacent-side fixtures and made every reviewed boundary assertion strict.",
+        "Round-3 confirmation returned statistics NO_BLOCKER and execution first-look NO_BLOCKER on the exact 101-row review manifest at SHA-256 420699d21efa7123dbccf9c75d7401c83c1ef50368f171d350c61aa5264dff6b, with zero unresolved blockers or majors."
       ],
-      "finding_id": "W4D-S-R01",
+      "finding_id": "W4F-S-R01",
       "severity": "BLOCKER",
       "status": "RESOLVED",
-      "summary": "The W4d review ledger closes all science and consistency blockers with dual NO_BLOCKER on the round-10 manifest."
+      "summary": "The W4f S1-S3 review ledger closes with dual NO_BLOCKER on the bit-exact path-type freeze package."
     },
     {
       "evidence": [
-        "The active recovery authority is consistently lane v3: the M3 envelope is fixed, the grid is 320 cells with 960 terminal rows, InterHub is provenance-only, and the separately pinned WOD path mapping remains an active input.",
-        "M3 source drift is a global pre-cell and pre-ledger abort; delivery is bound by exact managed path, 88,306,301-byte size, SHA-256 b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253, retained no-follow verification, job-start rehash and an immutable receipt.",
-        "G2R remains separately denied pending the future managed scientific-environment v4 gate, and the amendment fixes unmasked q_0p5, lo_90 and hi_90 consumption before any OOD mask."
+        "The v1p7 path-type addendum and stdlib generator now share the same finite-binary64 comparison contract: tstar 1e-12 s, OLS denominator 1e-18 s^2, direction speed 1e-9 m/s, and direct class-boundary comparisons without epsilon.",
+        "The 45-degree fixture evaluates exactly to 45.0 and is bracketed by 44.999999999999986 and 45.00000000000001 outcomes; 135 degrees, lateral 4 m and 5 m, and longitudinal -8 m are also asserted by exact equality.",
+        "The rating-blind 254-row table remains CP=115, HO=90, MP=48, F=1; the other geometry-available 222 scenes terminate at F_MISSING_WOD_PATH_TYPE while three structural no-geometry scenes terminate at K before lookup."
       ],
-      "finding_id": "W4D-S-N01",
+      "finding_id": "W4F-S-N01",
       "severity": "NOTE",
       "status": "NO_FINDING",
-      "summary": "The 320-cell science authority and bounded M3 preflight role are internally coherent."
+      "summary": "The frozen classification rule, boundary semantics, and K/F attrition are single-valued and internally consistent."
     },
     {
       "evidence": [
-        "Round 8 made m3_artifact required for contract preflight and rejected for declassification export; round 10 aligned the normative contract, README and preflight validation wording with that exact-key behavior.",
-        "Historical v1p5 registries and lane v2 remain byte-addressable; X02 remains LEGACY_INACTIVE_UNBOUND, and any fallback requires a new checksum-bound amendment.",
-        "No rating value was accessed and no HPC job was submitted during any statistics review in this W4d ledger."
+        "RQ014_envelope_builder_contract_v2.json is restored to protected SHA-256 407d63209764896a673aa94811f9dd8b60a57a047d17e8cee0a3465c55b8c8a4; new mapping detail is confined to the versioned addendum and v1p6 registry.",
+        "The active 12-value science binding checksum-binds the definition, implementation and mapping table while preserving the previously reviewed M3-fixed 320-cell and 960-row lane-v3 authority.",
+        "No rating value was accessed and no HPC job was submitted during any statistics review in the W4f ledger."
       ],
-      "finding_id": "W4D-S-N02",
+      "finding_id": "W4F-S-N02",
       "severity": "NOTE",
       "status": "NO_FINDING",
-      "summary": "The terminal review preserves rating blindness, frozen history and the amendment boundary."
+      "summary": "Protected history, rating blindness, and the preflight-only authority boundary remain intact."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-13T08:08:19Z",
+  "reviewed_at_utc": "2026-07-13T11:05:41Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "6103df8842b467321fb8273991380059bbd37aae9edf7425b8673db06d67ab98",
+  "reviewed_manifest_sha256": "420699d21efa7123dbccf9c75d7401c83c1ef50368f171d350c61aa5264dff6b",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

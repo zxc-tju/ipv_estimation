@@ -2,32 +2,33 @@
   "findings": [
     {
       "evidence": [
-        "W4d round ledger: round 5 on fe9374d4 returned statistics BLOCKED and execution BLOCKED; round 6 remediation produced ffd9c6ad; round 7 returned statistics NO_BLOCKER and execution BLOCKED on the sole preflight/export M3 exact-key defect; round 8 fixed that defect in 979a24ba; round 9 returned statistics BLOCKED on optional-for-export wording and execution NO_BLOCKER; round 10 fixed the wording in 5abdad5a; round-10 confirmation returned statistics NO_BLOCKER and execution NO_BLOCKER.",
-        "The terminal confirmation binds the exact 93-row review manifest at SHA-256 6103df8842b467321fb8273991380059bbd37aae9edf7425b8673db06d67ab98 with zero unresolved blockers or majors."
+        "The inherited W4d ledger closed with dual NO_BLOCKER after round 10 on 5abdad5a. W4f then added the rating-blind WOD path-type freeze bytes and rebuilt the candidate manifest from 93 to 101 rows.",
+        "W4f round 1 on 9cc3a788 produced statistics blockers S1-S3. Round 2 remediation 81c684a3 closed the K/F taxonomy and protected-v2 findings but retained the exact-boundary fixture residual; round 3 d1dc2a30 made the 45-degree comparator operand bit-exact, added both side companions, and hardened every other threshold assertion.",
+        "The round-3 confirmation returned statistics NO_BLOCKER and execution first-look NO_BLOCKER on the exact 101-row manifest SHA-256 420699d21efa7123dbccf9c75d7401c83c1ef50368f171d350c61aa5264dff6b, with distinct reviewer identities and zero unresolved blockers or majors."
       ],
-      "finding_id": "W4D-E-R01",
+      "finding_id": "W4F-E-R01",
       "severity": "BLOCKER",
       "status": "RESOLVED",
-      "summary": "The W4d execution-governance ledger closes with dual NO_BLOCKER on the round-10 manifest."
+      "summary": "The W4f remediation ledger and terminal dual review close the path-type package for Formal-G1 assembly."
     },
     {
       "evidence": [
-        "Round 6 completed the lane-v3 migration, made M3_ARTIFACT_MISMATCH a global abort before input, ledger or cell work, and added retained no-follow path/containment/regular-file/size/SHA verification plus immutable receipt and job-start rehash.",
-        "Round 8 made m3_artifact preflight-only in launcher exact-key validation and JSON Schema and dispatches artifact verification only for rq014_g2_contract_preflight; export specs carrying the field fail closed.",
-        "Round 10 renamed the reviewed delivery metadata to prohibited_for_operation for rq014_g2_declassification_export and aligned all active operator prose without changing operation branching."
+        "The execution contract retains the fixed-root rating-blind mapping manifest schema and promotes exactly three WOD mapping hashes through the v1p6 registry, bringing the active materialization binding count to 12 without modifying the protected v2 envelope-builder bytes.",
+        "Structural no-geometry scenes terminate at K before lookup; only geometry-available absent lookup rows terminate at F. Missing, malformed, drifted or non-unique mapping bytes remain fail closed with no runtime classification or fallback.",
+        "The mapped CSV and manifest remain byte-identical at SHA-256 6e689647a6d8b22cbb8e35c7b9c0889c022798b76a34bec02da2ccb706175078 and 8c48d0eb2f8c530bc0e885b2115136fcf66f69b6f62563de88f31287255040d8."
       ],
-      "finding_id": "W4D-E-N01",
+      "finding_id": "W4F-E-N01",
       "severity": "NOTE",
       "status": "NO_FINDING",
-      "summary": "The M3 delivery and operation-scope controls are explicit, coherent and fail closed."
+      "summary": "The registry, materialization and fixed-root mapping controls remain exact and fail closed."
     },
     {
       "evidence": [
-        "Current pins are launcher SHA-256 68201efe27e39c81e90eb1543b3ba915a4e40f79f0554877d85574d289c621c6 at 122,208 bytes, preflight SHA-256 e188c5b25c8f71bd60325f6d82a959e8332f033c61f5baf1d33a04bb9d1d3fb4 at 79,028 bytes, and wrapper SHA-256 203c1dca17a85381a7e5deda98e54886937356b126d34ae4c10e57b41fa2f058 at 8,108 bytes; wrapper, README and execution-contract operator pins agree.",
-        "The terminal review manifest is sorted, unique, deterministic at 93 rows and binds the exact execution, science, schema, authority and test bytes under adjudication.",
+        "Current managed pins are launcher SHA-256 89e87fcb721e6c785803e414526ce3b751a2ccc87e3b026b02f8e23e7043f3fe at 122,879 bytes, preflight SHA-256 dce18f8c7f1fbf8f8dee2d4c5b726260a9acba988b5181e4948b991c748af794 at 79,627 bytes, and wrapper SHA-256 a504e4f1593575ca28251fe1b1d4ac7d959ea9257d0c2e4984a30ba42020106e at 8,108 bytes; wrapper, README and execution-contract pins agree.",
+        "The terminal candidate manifest is sorted, unique, deterministic at 101 rows and binds the exact execution, science, schema, decision, authority and test bytes under adjudication.",
         "No launcher invocation, HPC operation, rating access or Slurm submission occurred during execution-governance review."
       ],
-      "finding_id": "W4D-E-N02",
+      "finding_id": "W4F-E-N02",
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "The reviewed pin chain, manifest closure and no-execution boundary are intact."
@@ -37,9 +38,9 @@
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-13T08:08:20Z",
+  "reviewed_at_utc": "2026-07-13T11:05:42Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "6103df8842b467321fb8273991380059bbd37aae9edf7425b8673db06d67ab98",
+  "reviewed_manifest_sha256": "420699d21efa7123dbccf9c75d7401c83c1ef50368f171d350c61aa5264dff6b",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
