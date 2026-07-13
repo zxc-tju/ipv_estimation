@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-03.
+Last reviewed: 2026-07-13.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -161,7 +161,8 @@ question index in `STUDIES.md`.
   execution/governance reviews both returned `NO_BLOCKER`; machine validation accepts
   `RQ014_formal_G1_v1p5_20260712.yaml` as `FORMAL_G1_PASS`. The exact contract is published, and the
   authorized rating-blind declassification export has now been executed and dual-reviewed PASS
-  (2026-07-13; see the v1.6 execution bullet below). No other RQ014 production operation may run.
+  (2026-07-13; see the v1.6 execution bullet below). PI accepted D1 and authorized starting the
+  authority-change loop for only `rq014_g2_contract_preflight`; no further RQ014 production operation may run yet.
 - RQ014 primary science authority is now
   `reports/plans/RQ014_recovery_lane_v2.json`: a fixed 960-cell rating-blind feature grid followed by a
   one-time, separately authorized 2,880-row full-data recovery screen and a clean independent replay of
@@ -190,7 +191,7 @@ question index in `STUDIES.md`.
   Independent execution/HPC and science/governance reviewers both returned `NO_BLOCKER` after
   remediation; durable review:
   `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_execution_handoff_review_20260712.md`.
-- **RQ014 v1.6 Waves 0–3 EXECUTED (2026-07-13): rating-blind export PASS; stopped at D1.** Managed checkout
+- **RQ014 v1.6 Waves 0–3 EXECUTED (2026-07-13): rating-blind export PASS; D1 accepted.** Managed checkout
   synced via reviewed incremental bundle (HPC HEAD detached at exact `24be0827`; remote-main CAS
   `b1476bd0`→`eb1ade2b`; 4-round red-teamed sync script; attestation archived). Immutable spec
   `RQ014_0_score_stripped_export_20260712T154921Z_1ee1e1d1.json` (SHA-256 `0e6ca13094ad…31f62b`, 0444,
@@ -203,11 +204,11 @@ question index in `STUDIES.md`.
   nonfinite scans 0, receipts hash-chained DONE→export→{sanitization,file_manifest}. W3 statistics and
   execution/governance reviewers (fresh, distinct) both `NO_BLOCKER`; bounded report + evidence manifest:
   `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_1_declassification_export_20260712T165224Z_0e6ca130/`.
-  Execution is STOPPED at **D1**: PI must accept the export and separately decide whether to start the
-  `rq014_g2_contract_preflight` authorization loop (scoped decision → allowlist commit → candidate manifest →
-  fresh dual review → new Formal G1 → final bundle → immutable spec → validate-only). Default without reply:
-  STOP_AND_PRESERVE. No rating value was read at any wave; git bundle retained at
-  `manifests/RQ014/bootstrap/` until D1 acceptance. Fleet evidence: `.codex-fleet/rq014-execution-v1p6/board/`.
+  PI accepted the export through the Lead session's interactive D1 prompt on 2026-07-13 and authorized starting
+  the `rq014_g2_contract_preflight` authorization loop only. The scoped decision, exact two-operation candidate
+  allowlist and candidate review manifest implement §8.1 steps 1–3; fresh dual review, a new Formal G1, final bundle,
+  published commit, immutable spec, validate-only PASS and one more explicit user confirmation before submit remain
+  mandatory. No rating value was read at any wave. Fleet evidence: `.codex-fleet/rq014-execution-v1p6/board/`.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
@@ -592,9 +593,9 @@ question index in `STUDIES.md`.
   frozen in `configs/run_specs/README.md` and `RQ014_execution_contract_v1p5.json`; invoking
   `scripts/hpc/submit_research_run.sh` without that wrapper-hash gate, direct `sbatch`,
   `/share/home/u25310231/ZXC/RQ014_recovery`, the retired `ipv_estimation` checkout, and external
-  RQ010B code execution are forbidden. The current central allowlist contains only the staged
-  declassification export and remains ineffective unless formal G1, exact published commit,
-  source/env/spec hashes, and all operation prohibitions pass.
+  RQ010B code execution are forbidden. The candidate central allowlist contains exactly the staged
+  declassification export and contract preflight. Preflight remains machine-denied until fresh dual review,
+  new Formal G1/final bundle, exact published commit, immutable spec, validate-only and all operation predicates pass.
 - RQ009 Phase 4 calibration and independent Phase 4.5 calibration-integrity
   audit are now PASS. M3 test coverage reproduces at 80=`0.8162154701`,
   90=`0.8986657101`, and 95=`0.9496345436`; M3 conformal radii reproduce

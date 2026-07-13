@@ -113,7 +113,7 @@ def test_v1p5_g0_waivers_use_only_legal_terminal_states() -> None:
     }
 
 
-def test_v1p5_has_one_fail_closed_operation_authority() -> None:
+def test_v1p5_has_fail_closed_operation_authority() -> None:
     registries = [load_json(path) for path in (VALID, FORENSIC, EXTENSION)]
     for registry in registries:
         assert "execution_authorized" not in set(_walk_keys(registry))
@@ -136,15 +136,20 @@ def test_v1p5_has_one_fail_closed_operation_authority() -> None:
     ]
     authorization = load_json(ROOT / "configs" / "research_authorization.json")
     assert authorization["authorizations"]["RQ014"]["allowed_operations"] == [
-        "rq014_g2_declassification_export"
+        "rq014_g2_declassification_export",
+        "rq014_g2_contract_preflight",
     ]
+    assert authorization["authorizations"]["RQ014"]["preflight_decision_path"] == (
+        "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
+    )
     assert operations["rq014_g2_resource_pilot"]["status"].startswith("DENY_")
     assert operations["rq014_g2_blind_build"]["status"].startswith("DENY_")
     assert operations["rq014_g2p_power_simulation"]["status"].startswith("DENY_")
 
     central = load_json(ROOT / "configs" / "research_authorization.json")
     assert central["authorizations"]["RQ014"]["allowed_operations"] == [
-        "rq014_g2_declassification_export"
+        "rq014_g2_declassification_export",
+        "rq014_g2_contract_preflight",
     ]
 
 

@@ -209,6 +209,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
     "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
     "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
+    "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",
     "reports/plans/RQ014_blind_anchor_receipt_v1p5.json",
     "reports/plans/RQ014_config_space_v1p5.yaml",
     "reports/plans/RQ014_envelope_builder_contract_v2.json",
@@ -1558,6 +1559,7 @@ def _validate_rq014_spec(
     required_authority_fields = {
         "allowed_operations",
         "decision_path",
+        "preflight_decision_path",
         "formal_g1_path",
         "execution_contract_path",
     }
@@ -1585,7 +1587,13 @@ def _validate_rq014_spec(
     if published.returncode != 0:
         raise ValueError("Run commit is not published on origin/main")
 
-    decision_path = (repo / rq["decision_path"]).resolve()
+    decision_key = (
+        "preflight_decision_path"
+        if spec["operation"] == RQ014_PREFLIGHT_OPERATION
+        else "decision_path"
+    )
+    decision_relative_path = rq[decision_key]
+    decision_path = (repo / decision_relative_path).resolve()
     execution_contract_path = (repo / rq["execution_contract_path"]).resolve()
     formal_authority_path = (repo / rq["formal_g1_path"]).resolve()
     for label, path in (
@@ -1615,6 +1623,8 @@ def _validate_rq014_spec(
         repo=repo,
         expected_review_manifest=expected_review_manifest,
     )
+    if decision_relative_path not in reviewed:
+        raise ValueError("RQ014 scoped decision is absent from the formally reviewed bytes")
 
     bundle_path = _resolve_ref(spec["contract_bundle"], roots=repo_roots, label="contract bundle")
     registered = _verify_checksum_manifest(bundle_path, repo=repo)
