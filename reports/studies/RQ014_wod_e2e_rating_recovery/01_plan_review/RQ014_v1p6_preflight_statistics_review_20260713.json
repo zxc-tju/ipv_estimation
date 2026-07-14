@@ -67,16 +67,28 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The W5b three-round statistics ledger closes with exact lane axes, execution-matched loading, frozen eligibility, and support-only R04N counterpart interpolation."
+    },
+    {
+      "evidence": [
+        "W5d reviewed build commit e4d9011381066882b3ef6a8bfef188705ea383cd and the exact deterministic 111-row manifest SHA-256 d0cc07da1258833a5c961e7fbe273e7428f0030da41f3366f3dfcbbe23003a59.",
+        "The Codex review lineage ended during the engine outage: execution governance had returned NO_BLOCKER, while the Codex statistics reviewer returned BLOCKED but its reasons were lost. Per the recorded PI engine-switch directive, that incomplete round is non-adjudicable and a fresh full dual Claude review supersedes it for Formal G1.",
+        "Fresh statistics reviewer claude/w5d-stat-reviewer returned NO_BLOCKER after tracing the adopted 1e-7 parity tolerance to tests/test_verifier_runtime.py:152 and observing 286 tests pass in a detached worktree with the scorer SHA verified.",
+        "The reviewer recorded one non-blocking cleanup note: dead v3 constants at scripts/hpc/prepare_research_run.py:177-182 should be fixed or deleted in the next wiring commit. Fresh execution-governance reviewer claude/w5d-exec-reviewer independently returned NO_BLOCKER, leaving zero unresolved blockers and zero unresolved majors."
+      ],
+      "finding_id": "W5D-S-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "The fresh Claude statistics review supersedes the outage-truncated Codex round and closes W5d with NO_BLOCKER; the dead-v3-constant observation is non-blocking follow-up."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-14T10:09:31Z",
+  "reviewed_at_utc": "2026-07-14T16:35:38Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "69ffb92de18b057ab70d6805cc3d2043fd36b4f057683683f28b15e13e0c4956",
-  "reviewer_agent": "codex/w4-stat-reviewer",
+  "reviewed_manifest_sha256": "d0cc07da1258833a5c961e7fbe273e7428f0030da41f3366f3dfcbbe23003a59",
+  "reviewer_agent": "claude/w5d-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
   "unresolved_majors": 0,
