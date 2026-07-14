@@ -289,6 +289,22 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, str]:
         environment_manifest_sha256=sha256_file(environment),
         python_executable_sha256=sha256_file(python),
     )
+    fixture_v3_binding = {
+        "schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
+        "path": str(environment),
+        "size_bytes": environment.stat().st_size,
+        "sha256": sha256_file(environment),
+    }
+    execution_contract["managed_hpc_contract"]["environment_bindings_by_operation"] = {
+        launcher.RQ014_EXPORT_OPERATION: fixture_v3_binding,
+        launcher.RQ014_PREFLIGHT_OPERATION: fixture_v3_binding,
+        launcher.RQ014_RESOURCE_PILOT_OPERATION: {
+            "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+            "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v4.json"),
+            "size_bytes": launcher.RQ014_ENVIRONMENT_V4_SIZE_BYTES,
+            "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+        },
+    }
     execution_contract["managed_hpc_contract"]["stdlib_integrity"].update(
         root=str(stdlib_root),
         regular_file_count=len(stdlib_files),
@@ -558,17 +574,25 @@ def test_formal_g1_rejects_same_reviewer_identity_for_both_roles(
         )
 
 
-def test_reviewed_runtime_references_use_the_same_v3_environment_lock() -> None:
+def test_reviewed_runtime_references_use_operation_bound_environment_locks() -> None:
     for relative in (
         "configs/run_specs/RQ014_g2_declassification_export.template.json",
         "configs/run_specs/RQ014_g2_contract_preflight.template.json",
-        "configs/run_specs/RQ014_g2_resource_pilot.template.json",
     ):
         payload = json.loads((ROOT / relative).read_text(encoding="utf-8"))
         assert payload["environment_manifest"] == {
             "path": ENVIRONMENT_V3_PATH,
             "sha256": ENVIRONMENT_V3_SHA256,
         }
+    pilot_template = json.loads(
+        (ROOT / "configs/run_specs/RQ014_g2_resource_pilot.template.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert pilot_template["environment_manifest"] == {
+        "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
+        "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+    }
     inventory = json.loads(
         (
             ROOT
@@ -629,6 +653,28 @@ def test_reviewed_runtime_references_use_the_same_v3_environment_lock() -> None:
     assert 'exec /bin/sh /proc/$$/fd/9 "$@"' in contract["operator_entrypoint"]
     assert contract["environment_manifest_path"] == ENVIRONMENT_V3_PATH
     assert contract["environment_manifest_sha256"] == ENVIRONMENT_V3_SHA256
+    assert contract["environment_bindings_by_operation"] == {
+        launcher.RQ014_EXPORT_OPERATION: {
+            "schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
+            "path": ENVIRONMENT_V3_PATH, "size_bytes": 2229, "sha256": ENVIRONMENT_V3_SHA256,
+        },
+        launcher.RQ014_PREFLIGHT_OPERATION: {
+            "schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
+            "path": ENVIRONMENT_V3_PATH, "size_bytes": 2229, "sha256": ENVIRONMENT_V3_SHA256,
+        },
+        launcher.RQ014_RESOURCE_PILOT_OPERATION: {
+            "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+            "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
+            "size_bytes": 6148, "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+        },
+    }
+    assert contract["future_g2r_environment_binding"] == {
+        "status": "MANDATORY_WHEN_A_G2R_OPERATION_IS_SEPARATELY_AUTHORIZED",
+        "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+        "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
+        "size_bytes": 6148,
+        "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+    }
     assert contract["production_spec_root"].endswith("/manifests/RQ014/run_specs")
     assert "no path reopen" in contract["production_spec_contract"]
     assert "submit-only artifacts" in contract["validate_only_contract"]
@@ -659,6 +705,26 @@ def test_reviewed_runtime_references_use_the_same_v3_environment_lock() -> None:
     }
     assert "Git worktree checkout" in contract["code_execution_surface"]
     assert contract["code_execution_surface"].endswith("are forbidden")
+
+
+def test_environment_v4_schema_pins_full_scientific_closure() -> None:
+    schema = json.loads(
+        (ROOT / "configs/run_specs/rq014_managed_python_environment_v4.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    properties = schema["properties"]
+    assert schema["additionalProperties"] is False
+    assert properties["python_executable"]["const"]["sha256"] == launcher.RQ014_ENVIRONMENT_V4_PYTHON_SHA256
+    assert properties["stdlib_integrity"]["properties"]["regular_file_count"]["const"] == 1849
+    assert properties["stdlib_integrity"]["properties"]["regular_file_total_size_bytes"]["const"] == 40860773
+    assert properties["stdlib_integrity"]["properties"]["symlink_count"]["const"] == 0
+    assert properties["site_packages_integrity"]["properties"]["regular_file_count"]["const"] == 12206
+    assert properties["site_packages_integrity"]["properties"]["regular_file_total_size_bytes"]["const"] == 487535728
+    assert properties["site_packages_integrity"]["properties"]["symlink_count"]["const"] == 0
+    assert properties["native_library_integrity"]["properties"]["row_count"]["const"] == 94
+    assert properties["rating_free_parity"]["properties"]["recorded_atol"]["const"] == 1e-7
+    assert properties["build_provenance"].keys() == {"const"}
 
 
 def test_authoritative_rq014_operator_docs_require_the_same_clean_bootstrap() -> None:
@@ -745,11 +811,12 @@ def test_preflight_and_resource_pilot_are_conditionally_registered_for_review() 
         operation_name="rq014_g2_resource_pilot",
         resource_profile_id="rq014-g2-resource-pilot-cpu-v1",
     )
-    assert pilot["required_run_spec_refs"][-5:] == [
+    assert pilot["required_run_spec_refs"][-6:] == [
         "declassification_export_receipt",
         "declassification_export_done",
         "contract_preflight_receipt",
         "contract_preflight_done",
+        "m3_parity_fixture",
         "pilot_scope",
     ]
     assert authorization["authorizations"]["RQ014"]["formal_g1_path"] == (

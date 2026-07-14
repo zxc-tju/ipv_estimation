@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Measure the rating-blind, non-M3 portion of the RQ014 lane-v3 grid."""
+"""Measure the rating-blind RQ014 lane-v3 pilot, including pinned M3 scoring."""
 from __future__ import annotations
 
 import csv
 import hashlib
+import importlib.util
 import json
 import math
 import os
 import resource
 import time
+import types
+import sys
 from bisect import bisect_right
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import get_context
@@ -18,6 +21,7 @@ from typing import Any, Callable
 
 CELL_SELECTION_RULE_ID = "LANE_V3_NON_M3_COST_EXTREMES_V1"
 NON_M3_STAGES = ("source_load", "window_assembly", "feature_prep")
+M3_STAGE = "m3_scoring"
 M3_COST_SENTINEL = "EXPLICITLY_UNMEASURED"
 FAILURE_CODES = (
     "NONE",
@@ -25,6 +29,7 @@ FAILURE_CODES = (
     "SOURCE_LOAD_FAILURE",
     "WINDOW_ASSEMBLY_FAILURE",
     "FEATURE_PREP_FAILURE",
+    "M3_STAGE_FAILURE",
 )
 LIGHTEST_CELL_ID = "RR3-R04N-CH-W10-H20-NEX_MEAN"
 HEAVIEST_CELL_ID = "RR3-R10L-TF-HFEAS-NEX_MEAN"
@@ -40,6 +45,7 @@ WORKER_THREAD_LIMITS = {
     "BLIS_NUM_THREADS": "1",
 }
 _SHARED_SOURCES: dict[str, Any] | None = None
+_SHARED_M3: dict[str, Any] | None = None
 
 
 class PilotError(ValueError):
@@ -178,6 +184,8 @@ def _measure(stage_id: str, cell_id: str, function: Callable[[], Any]) -> tuple[
                 "source_load": "SOURCE_LOAD_FAILURE",
                 "window_assembly": "WINDOW_ASSEMBLY_FAILURE",
                 "feature_prep": "FEATURE_PREP_FAILURE",
+                "m3_scoring": "M3_STAGE_FAILURE",
+                "m3_model_load": "M3_STAGE_FAILURE",
             }[stage_id]
         ),
         "walltime_seconds": wall_seconds,
@@ -592,6 +600,94 @@ def _prepare_features(windows: list[tuple[list[Any], list[Any]]]) -> dict[str, A
     return {"window_count": len(windows), "state_row_count": state_rows, "feature_prep_sha256": digest.hexdigest()}
 
 
+def _load_m3_model(artifact_path: Path) -> dict[str, Any]:
+    if "sociality_estimation.verifier.model" not in sys.modules:
+        sociality_package = types.ModuleType("sociality_estimation")
+        sociality_package.__path__ = ()
+        verifier_package = types.ModuleType("sociality_estimation.verifier")
+        verifier_package.__path__ = ()
+        sociality_package.verifier = verifier_package
+        sys.modules["sociality_estimation"] = sociality_package
+        sys.modules["sociality_estimation.verifier"] = verifier_package
+        model_path = Path(__file__).resolve().parents[2] / "src" / "sociality_estimation" / "verifier" / "model.py"
+        model_spec = importlib.util.spec_from_file_location(
+            "sociality_estimation.verifier.model", model_path
+        )
+        if model_spec is None or model_spec.loader is None:
+            raise PilotError("Cannot construct exact-path portable M3 model loader")
+        model_module = importlib.util.module_from_spec(model_spec)
+        verifier_package.model = model_module
+        sys.modules["sociality_estimation.verifier.model"] = model_module
+        model_spec.loader.exec_module(model_module)
+    import joblib
+
+    scorer = joblib.load(artifact_path, mmap_mode=None)
+    required = {"tier_model", "gate_model", "radii", "feature_contract"}
+    if not isinstance(scorer, dict) or not required <= set(scorer):
+        raise PilotError("Portable M3 scorer key contract drift")
+    return scorer
+
+
+def _score_m3_stage(window_count: int, scorer: dict[str, Any]) -> dict[str, Any]:
+    """Run M3 on a deterministic rating-free, row-count-matched cost substrate."""
+
+    import numpy as np
+    import pandas as pd
+    from sociality_estimation.verifier import model
+
+    if window_count <= 0:
+        raise PilotError("M3 cost substrate row count is empty")
+    gate = scorer["gate_model"]
+    base_row = {
+        column: 0.0 for column in scorer["feature_contract"]["required_input_columns"]
+    }
+    joint = str(sorted(gate.supported_joint_cells)[0]).split("|")
+    if len(joint) != len(gate.joint_cell_columns):
+        raise PilotError("M3 frozen joint support cell is malformed")
+    base_row.update(dict(zip(gate.joint_cell_columns, joint)))
+    for column in gate.support_columns:
+        if column not in gate.joint_cell_columns:
+            base_row[column] = sorted(gate.support_levels[column])[0]
+    for tier in (scorer["tier_model"],):
+        for index, column in enumerate(tier.spec.categorical):
+            if column not in gate.support_columns:
+                base_row[column] = str(tier.preprocessor.encoder.categories_[index][0])
+    frame = pd.DataFrame([base_row] * window_count)
+    quantiles, _, _ = model.predict_tier_quantiles(scorer["tier_model"], frame)
+    category_ok = model.category_support_mask(frame, gate)
+    distances = np.full(len(frame), np.nan, dtype=np.float32)
+    if category_ok.any():
+        matrix = model.transform_gate_matrix(frame, gate)
+        values, _ = gate.tree.query(matrix[category_ok], k=model.GATE_K, workers=1)
+        distances[category_ok] = values.mean(axis=1).astype(np.float32)
+    gate_ok = category_ok & (distances <= gate.threshold)
+    calibrated: list[np.ndarray] = []
+    for alpha in model.ALPHAS:
+        lower_level, upper_level = model.QUANTILE_BY_ALPHA[alpha]
+        lower, upper = model.calibrated_bounds(
+            quantiles[:, model.Q_INDEX[lower_level]],
+            quantiles[:, model.Q_INDEX[upper_level]],
+            float(scorer["radii"][model.ALPHA_LABEL[alpha]]["c_alpha"]),
+        )
+        lower[~gate_ok] = np.nan
+        upper[~gate_ok] = np.nan
+        calibrated.extend((lower, upper))
+    digest = hashlib.sha256()
+    for index in range(len(frame)):
+        digest.update(
+            ("|".join(format(float(value), ".17g") for value in quantiles[index])
+             + "|" + "|".join(format(float(values[index]), ".17g") for values in calibrated)
+             + f"|{int(gate_ok[index])}\n").encode("ascii")
+        )
+    return {
+        "scored_row_count": len(frame),
+        "support_gate_pass_count": int(gate_ok.sum()),
+        "m3_output_sha256": digest.hexdigest(),
+        "knn_workers": 1,
+        "workload_kind": "DETERMINISTIC_RATING_FREE_FROZEN_SUPPORT_VECTOR_COST_ONLY",
+    }
+
+
 def _configure_worker_thread_limits() -> None:
     for name, value in WORKER_THREAD_LIMITS.items():
         os.environ[name] = value
@@ -600,7 +696,7 @@ def _configure_worker_thread_limits() -> None:
 def _run_pilot_cell(
     cell_id: str,
 ) -> dict[str, Any]:
-    if _SHARED_SOURCES is None:
+    if _SHARED_SOURCES is None or _SHARED_M3 is None:
         raise PilotError("Shared pilot sources were not installed before worker start")
     sources = _SHARED_SOURCES
     measurements: list[dict[str, Any]] = []
@@ -616,12 +712,24 @@ def _run_pilot_cell(
         )
         measurements.append(feature_measurement)
         if feature_detail is not None:
+            m3_detail, m3_measurement = _measure(
+                M3_STAGE,
+                cell_id,
+                lambda: _score_m3_stage(
+                    feature_detail["window_count"],
+                    _SHARED_M3["scorer"],
+                ),
+            )
+            measurements.append(m3_measurement)
             detail = {
                 "mapped_segment_count": sources["mapped_segment_count"],
                 "source_row_count": sources["source_row_count"],
                 **feature_detail,
             }
-            projection_basis = {
+            if m3_detail is not None:
+                detail.update(m3_detail)
+            if m3_detail is not None:
+                projection_basis = {
                 "per_cell_cpu_seconds": (
                     window_measurement["cpu_seconds"]
                     + feature_measurement["cpu_seconds"]
@@ -630,7 +738,9 @@ def _run_pilot_cell(
                     window_measurement["walltime_seconds"]
                     + feature_measurement["walltime_seconds"]
                 ),
-            }
+                "per_cell_m3_cpu_seconds": m3_measurement["cpu_seconds"],
+                "per_cell_m3_walltime_seconds": m3_measurement["walltime_seconds"],
+                }
     stage_timings = {
         measurement["stage_id"]: {
             "walltime_seconds": measurement["walltime_seconds"],
@@ -682,6 +792,16 @@ def _validate_preflight_chain(
         or done.get("receipt_sha256") != sha256_file(preflight_receipt_path)
     ):
         raise PilotError("Prior contract-preflight DONE chain is invalid")
+    m3_receipt = receipt.get("m3_artifact_input_receipt")
+    if (
+        not isinstance(m3_receipt, dict)
+        or m3_receipt.get("sha256") != m3_artifact_sha256
+        or m3_receipt.get("size_bytes") != m3_artifact_size_bytes
+        or m3_receipt.get("deserialized") is not False
+        or m3_artifact_path.stat().st_size != m3_artifact_size_bytes
+        or sha256_file(m3_artifact_path) != m3_artifact_sha256
+    ):
+        raise PilotError("Frozen M3 verification-only lineage differs")
     expected = {
         "input_manifest_sha256": sha256_file(input_manifest_path),
         "materialization_ledger_sha256": sha256_file(materialization_ledger_path),
@@ -693,16 +813,6 @@ def _validate_preflight_chain(
     mapping = receipt.get("wod_path_type_mapping")
     if not isinstance(mapping, dict) or mapping.get("manifest_sha256") != sha256_file(mapping_manifest_path):
         raise PilotError("Prior contract-preflight mapping lineage differs")
-    m3_receipt = receipt.get("m3_artifact_input_receipt")
-    if (
-        not isinstance(m3_receipt, dict)
-        or m3_receipt.get("sha256") != m3_artifact_sha256
-        or m3_receipt.get("size_bytes") != m3_artifact_size_bytes
-        or m3_receipt.get("deserialized") is not False
-        or m3_artifact_path.stat().st_size != m3_artifact_size_bytes
-        or sha256_file(m3_artifact_path) != m3_artifact_sha256
-    ):
-        raise PilotError("Frozen M3 verification-only lineage differs")
     return {
         "contract_preflight_receipt_sha256": sha256_file(preflight_receipt_path),
         "contract_preflight_done_sha256": sha256_file(preflight_done_path),
@@ -724,12 +834,13 @@ def run_resource_pilot(
     m3_artifact_path: Path,
     m3_artifact_size_bytes: int,
     m3_artifact_sha256: str,
+    m3_parity_fixture_path: Path,
     export_receipt_path: Path,
     export_done_path: Path,
     preflight_receipt_path: Path,
     preflight_done_path: Path,
 ) -> dict[str, Any]:
-    global _SHARED_SOURCES
+    global _SHARED_SOURCES, _SHARED_M3
     try:
         lane = _load_json(lane_path)
         selection = select_resource_pilot_cells(lane)
@@ -745,6 +856,8 @@ def run_resource_pilot(
             export_receipt_path=export_receipt_path,
             export_done_path=export_done_path,
         )
+        if sha256_file(m3_parity_fixture_path) != "ae62b9fddba53308d319ccef5a70d56a9f0ae243fe009aa3f85e36cb20fcee37":
+            raise PilotError("M3 parity fixture differs from the reviewed v4 standard")
     except Exception as exc:
         taxonomy = {code: 0 for code in FAILURE_CODES if code != "NONE"}
         taxonomy["INPUT_CONTRACT_FAILURE"] = 1
@@ -758,9 +871,9 @@ def run_resource_pilot(
             "observed_rating_statistics": "NONE",
             "pilot_scope": {
                 "non_m3_stages": list(NON_M3_STAGES),
-                "m3_stage_enabled": False,
+                "m3_stage_enabled": True,
                 "env_v4_required": True,
-                "m3_cost_estimate": M3_COST_SENTINEL,
+                "m3_cost_estimate": "MEASURED",
             },
             "cell_selection": None,
             "measurements": [],
@@ -773,6 +886,7 @@ def run_resource_pilot(
                 "worker_model": "PROCESS_POOL",
                 "worker_thread_limits": WORKER_THREAD_LIMITS,
                 "shared_source_load_walltime_seconds": M3_COST_SENTINEL,
+                "shared_m3_model_load_walltime_seconds": M3_COST_SENTINEL,
                 "worker_pool_walltime_seconds": M3_COST_SENTINEL,
                 "aggregate_walltime_seconds": M3_COST_SENTINEL,
             },
@@ -796,6 +910,7 @@ def run_resource_pilot(
         }
     lineage["sanitization_receipt_sha256"] = sha256_file(sanitization_receipt_path)
     lineage["lane_v3_sha256"] = sha256_file(lane_path)
+    lineage["m3_parity_fixture_sha256"] = sha256_file(m3_parity_fixture_path)
     measurements: list[dict[str, Any]] = []
     cell_totals: dict[str, dict[str, float]] = {}
     cell_details: dict[str, dict[str, Any]] = {}
@@ -811,13 +926,18 @@ def run_resource_pilot(
         lambda: _load_sources(bundle_root, mapping_manifest_path),
     )
     measurements.append(source_measurement)
+    scorer, m3_load_measurement = _measure(
+        "m3_model_load", "SHARED", lambda: _load_m3_model(m3_artifact_path)
+    )
+    measurements.append(m3_load_measurement)
     actual_worker_count = 0
     worker_pool_walltime: float | str = M3_COST_SENTINEL
     cell_results: list[dict[str, Any]] = []
-    if sources is not None:
+    if sources is not None and scorer is not None:
         actual_worker_count = min(MAX_PARALLEL_WORKERS, len(selected_cell_ids))
         worker_pool_started = time.monotonic()
         _SHARED_SOURCES = sources
+        _SHARED_M3 = {"scorer": scorer}
         try:
             with ProcessPoolExecutor(
                 max_workers=actual_worker_count,
@@ -832,6 +952,7 @@ def run_resource_pilot(
                 )
         finally:
             _SHARED_SOURCES = None
+            _SHARED_M3 = None
         worker_pool_walltime = time.monotonic() - worker_pool_started
     aggregate_walltime_seconds = time.monotonic() - execution_started
     for result in cell_results:
@@ -856,19 +977,38 @@ def run_resource_pilot(
         non_m3_parallel_wall: float | str = (
             source_wall + math.ceil(320 / MAX_PARALLEL_WORKERS) * per_cell_wall
         ) / 3600.0
+        per_cell_m3_cpu = max(value["per_cell_m3_cpu_seconds"] for value in cell_totals.values())
+        per_cell_m3_wall = max(value["per_cell_m3_walltime_seconds"] for value in cell_totals.values())
+        m3_cpu: float | str = (m3_load_measurement["cpu_seconds"] + 320 * per_cell_m3_cpu) / 3600.0
+        m3_wall: float | str = (m3_load_measurement["walltime_seconds"] + 320 * per_cell_m3_wall) / 3600.0
+        m3_parallel_wall: float | str = (m3_load_measurement["walltime_seconds"] + math.ceil(320 / MAX_PARALLEL_WORKERS) * per_cell_m3_wall) / 3600.0
+        combined_cpu: float | str = non_m3_cpu + m3_cpu
+        combined_wall: float | str = non_m3_wall + m3_wall
+        combined_parallel_wall: float | str = non_m3_parallel_wall + m3_parallel_wall
     else:
         non_m3_cpu = M3_COST_SENTINEL
         non_m3_wall = M3_COST_SENTINEL
         non_m3_parallel_wall = M3_COST_SENTINEL
+        m3_cpu = m3_wall = m3_parallel_wall = M3_COST_SENTINEL
+        combined_cpu = combined_wall = combined_parallel_wall = M3_COST_SENTINEL
     projection = {
         "formula": "shared_source_load_once + 320 * max_endpoint_window_assembly_plus_feature_prep",
         "parallel_formula": "shared_source_load_once + ceil(320 / 16) * max_endpoint_window_assembly_plus_feature_prep",
+        "m3_formula": "shared_m3_model_load_once + 320 * max_endpoint_m3_scoring",
+        "m3_parallel_formula": "shared_m3_model_load_once + ceil(320 / 16) * max_endpoint_m3_scoring",
+        "combined_formula": "non_m3_projection + m3_projection",
         "parallel_worker_count": MAX_PARALLEL_WORKERS,
         "projected_non_m3_cpu_hours": non_m3_cpu,
         "projected_non_m3_serial_walltime_hours": non_m3_wall,
         "projected_non_m3_parallel_walltime_hours": non_m3_parallel_wall,
-        "m3_cost_estimate": M3_COST_SENTINEL,
-        "combined_g2r_cost_estimate": M3_COST_SENTINEL,
+        "projected_m3_cpu_hours": m3_cpu,
+        "projected_m3_serial_walltime_hours": m3_wall,
+        "projected_m3_parallel_walltime_hours": m3_parallel_wall,
+        "m3_cost_estimate": "MEASURED" if not failures and len(cell_totals) == 2 else M3_COST_SENTINEL,
+        "projected_combined_cpu_hours": combined_cpu,
+        "projected_combined_serial_walltime_hours": combined_wall,
+        "projected_combined_parallel_walltime_hours": combined_parallel_wall,
+        "combined_g2r_cost_estimate": "MEASURED" if not failures and len(cell_totals) == 2 else M3_COST_SENTINEL,
         "env_v4_required": True,
     }
     return {
@@ -881,9 +1021,9 @@ def run_resource_pilot(
         "observed_rating_statistics": "NONE",
         "pilot_scope": {
             "non_m3_stages": list(NON_M3_STAGES),
-            "m3_stage_enabled": False,
+            "m3_stage_enabled": True,
             "env_v4_required": True,
-            "m3_cost_estimate": M3_COST_SENTINEL,
+            "m3_cost_estimate": "MEASURED",
         },
         "cell_selection": selection,
         "measurements": measurements,
@@ -896,6 +1036,9 @@ def run_resource_pilot(
             "worker_model": "PROCESS_POOL",
             "worker_thread_limits": WORKER_THREAD_LIMITS,
             "shared_source_load_walltime_seconds": source_measurement[
+                "walltime_seconds"
+            ],
+            "shared_m3_model_load_walltime_seconds": m3_load_measurement[
                 "walltime_seconds"
             ],
             "worker_pool_walltime_seconds": worker_pool_walltime,

@@ -138,19 +138,21 @@
           "declassification_export_done",
           "contract_preflight_receipt",
           "contract_preflight_done",
+          "m3_parity_fixture",
           "pilot_scope"
         ],
         "m3_stage_contract": {
-          "m3_stage_enabled": false,
+          "m3_stage_enabled": true,
           "env_v4_required": true,
-          "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
-          "combined_g2r_cost_estimate": "EXPLICITLY_UNMEASURED",
-          "deserialization": "FORBIDDEN"
+          "m3_cost_estimate": "MEASURED",
+          "combined_g2r_cost_estimate": "MEASURED",
+          "deserialization": "REQUIRED_AFTER_V4_RUNTIME_GATE",
+        "verification_failure": "GLOBAL_ABORT_FAIL_RECEIPT_NO_DONE_NO_NUMERIC_COST"
         },
         "allowed_effects": [
-          "verify reviewed rating-blind lineage and the frozen M3 bytes without deserializing them",
-          "measure source_load window_assembly and feature_prep for the frozen lightest and heaviest lane-v3 cells",
-          "write walltime CPU peak-RSS IO failure-taxonomy and non-M3-only projection evidence",
+          "verify reviewed rating-blind lineage and the frozen M3 bytes before deserializing them under v4",
+          "measure source_load window_assembly feature_prep and M3 scoring for the frozen lightest and heaviest lane-v3 cells",
+          "write walltime CPU peak-RSS IO failure-taxonomy and non-M3 plus M3-inclusive projection evidence",
           "write an immutable pilot receipt and PASS-only managed DONE chain"
         ]
       },
@@ -401,7 +403,7 @@
     "verification_order": "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION",
     "deserialization_in_contract_preflight": "FORBIDDEN",
     "verification_only_for_operation": "rq014_g2_resource_pilot",
-    "deserialization_in_resource_pilot": "FORBIDDEN_PENDING_ENVIRONMENT_V4",
+    "deserialization_in_resource_pilot": "REQUIRED_AFTER_OPERATION_BOUND_V4_CLOSURE_GATE; FAILURE_IS_GLOBAL_ABORT_WITH_NO_DONE",
     "immutable_receipt_schema": "rq014-m3-artifact-input-receipt-v1",
     "job_start_reverification": true
   },
@@ -491,9 +493,9 @@
     "wrapper_capability_contract": "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at /share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, opens fd9 at the exact managed submit_research_run.sh, hashes and executes that retained fd9; the wrapper must inherit both descriptors and may not create them; before any RQ014 registry-materializer or preflight preload, the launcher requires exact /proc/self/fd targets, regular non-symlink fixed paths, and fstat st_dev/st_ino/st_mode equality; this is not a cryptographic secret against deliberate same-account descriptor emulation",
     "production_spec_root": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs",
     "production_spec_contract": "direct-child regular non-symlink read-only canonical JSON; one O_NOFOLLOW descriptor read with retained exact bytes passed through validation, sealing and submission; no path reopen",
-    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 78caf93a489a7c2ee4d0d445ebc63ce0cc77b61316cda637151e68f20dff3b03 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
+    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 6a73d129a63eecc2b84e58d09641627ee5bc557847fa56488e854435294358a1 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
     "operator_wrapper_size_bytes": 8108,
-    "operator_wrapper_sha256": "78caf93a489a7c2ee4d0d445ebc63ce0cc77b61316cda637151e68f20dff3b03",
+    "operator_wrapper_sha256": "6a73d129a63eecc2b84e58d09641627ee5bc557847fa56488e854435294358a1",
     "operator_environment_boundary": "BASH_ENV ENV LD_PRELOAD PYTHONHOME PYTHONPATH HPC_SOCIALITY_ROOT and every SBATCH_* variable are rejected; launcher then re-execs in an empty environment",
     "slurm_environment_export": "NIL_ON_DIRECTIVE_AND_SBATCH_COMMAND; NONE_IS_FORBIDDEN_BECAUSE_IT_CAN_RECONSTRUCT_THE_LOGIN_ENVIRONMENT",
     "code_execution_surface": "read only final-contract-bundle registered regular-file blobs from the exact declared published Git commit tree into a closed run-root snapshot; verify each blob against the registered digest and hash the snapshot receipt and bundle manifest before execution; the sole external scientific byte is the separately spec-bound M3 scorer, which is retained-descriptor verified and never deserialized by contract preflight; dirty or untracked worktree bytes, Git worktree checkout, hooks, filters and unregistered files are forbidden",
@@ -512,7 +514,7 @@
       "/usr/bin/sbatch"
     ],
     "python_startup_flags": ["-I", "-S", "-B", "-X", "utf8"],
-    "python_import_surface": "before the first managed-Python process, the wrapper uses absolute system tools to verify the pinned launcher, preflight and registry-materializer bytes, Python executable, v3 environment manifest, exact stdlib checksum manifest, zip absence, zero stdlib symlinks, complete stdlib regular-file set/count/size/hash, pinned consumer-derived native dependency set, exact loader links/final bytes and exact isolated sys.path; /lib64 is the explicit operating-system ABI trust boundary; the closed-snapshot registry materializer is explicitly preloaded by spec_from_file_location as scripts.rq014.materialize_registry, then preflight, the stdlib-only resource-pilot helper and the fixed scientific entrypoint are loaded only by exact reviewed closed-snapshot paths; scripts and scripts.rq014 keep empty __path__, so ordinary path import, checkout/root/src/sitecustomize/usercustomize/PYTHONPATH/local shadows remain unavailable",
+    "python_import_surface": "before the first managed-Python process, the wrapper uses absolute system tools to verify the pinned launcher, preflight and registry-materializer bytes, Python executable, operation-bound v3 or v4 environment manifest, exact stdlib checksum manifest, zip absence, zero stdlib symlinks, complete stdlib regular-file set/count/size/hash, and for v4 the exact site-packages and distribution manifests with zero symlinks/special files; the pinned consumer-derived native dependency set, exact loader links/final bytes and exact isolated sys.path; /lib64 (v3) and /usr/lib64 (v4) are the explicit operating-system ABI trust boundaries; only after the v4 gate, the pinned site-packages root is appended manually and verifier.model is loaded from its exact closed-snapshot path; the closed-snapshot registry materializer is explicitly preloaded by spec_from_file_location as scripts.rq014.materialize_registry, then preflight, the resource-pilot helper and the fixed scientific entrypoint are loaded only by exact reviewed closed-snapshot paths; scripts and scripts.rq014 keep empty __path__, so ordinary path import, checkout/root/src/sitecustomize/usercustomize/PYTHONPATH/local shadows remain unavailable",
     "submission_failure_policy": "pre-submit failures remove every partial code snapshot and run root and write a retryable FAILED receipt; any failure after sbatch starts preserves the run root, raw response and known job ID when available, and writes a non-retryable SUBMISSION_STATE_UNKNOWN receipt",
     "validate_only_contract": "side-effect-free output contains rq/run/operation, exact code_snapshot_files and commit-blob materialization plan, M3 artifact path/size/SHA-256 and retained-descriptor verification evidence, job/resource/thread plan and pinned runtime metadata; code_snapshot receipt, immutable M3 input receipt and rendered NIL sbatch script are submit-only artifacts",
     "environment_manifest_schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
@@ -520,6 +522,33 @@
     "environment_manifest_size_bytes": 2229,
     "environment_manifest_sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a",
     "python_executable_sha256": "616aea77938978c3578ed480eac4025ef7099f4c944ab8684722bc9455f99f32",
+    "environment_bindings_by_operation": {
+      "rq014_g2_declassification_export": {
+        "schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
+        "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json",
+        "size_bytes": 2229,
+        "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"
+      },
+      "rq014_g2_contract_preflight": {
+        "schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
+        "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json",
+        "size_bytes": 2229,
+        "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"
+      },
+      "rq014_g2_resource_pilot": {
+        "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+        "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v4.json",
+        "size_bytes": 6148,
+        "sha256": "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"
+      }
+    },
+    "future_g2r_environment_binding": {
+      "status": "MANDATORY_WHEN_A_G2R_OPERATION_IS_SEPARATELY_AUTHORIZED",
+      "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+      "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v4.json",
+      "size_bytes": 6148,
+      "sha256": "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"
+    },
     "stdlib_integrity": {
       "root": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9",
       "zip_path_status": "python39.zip ABSENT",
@@ -542,7 +571,8 @@
     },
     "job_name_prefix_by_operation": {
       "rq014_g2_declassification_export": "zxc-rq014-export-",
-      "rq014_g2_contract_preflight": "zxc-rq014-pre-"
+      "rq014_g2_contract_preflight": "zxc-rq014-pre-",
+      "rq014_g2_resource_pilot": "zxc-rq014-pilot-"
     },
     "thread_limits": {
       "OMP_NUM_THREADS": "1",

@@ -174,6 +174,57 @@ RQ014_RESOURCE_PILOT_OPERATION = "rq014_g2_resource_pilot"
 RQ014_EXPORT_RESOURCE_PROFILE = "rq014-g2-declassify-cpu-v1"
 RQ014_PREFLIGHT_RESOURCE_PROFILE = "rq014-g2-preflight-cpu-v1"
 RQ014_RESOURCE_PILOT_PROFILE = "rq014-g2-resource-pilot-cpu-v1"
+RQ014_ENVIRONMENT_V3_PATH = str(
+    RQ014_MANAGED_BASE / "manifests" / "RQ014" / "managed_python_environment_v3.json"
+)
+RQ014_ENVIRONMENT_V3_SHA256 = (
+    "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"
+)
+RQ014_ENVIRONMENT_V4_PATH = str(
+    RQ014_MANAGED_BASE / "manifests" / "RQ014" / "managed_python_environment_v4.json"
+)
+RQ014_ENVIRONMENT_V4_SHA256 = (
+    "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"
+)
+RQ014_M3_PARITY_FIXTURE = "tests/fixtures/m3_verifier_portable_fixture.json"
+RQ014_M3_PARITY_FIXTURE_SHA256 = (
+    "ae62b9fddba53308d319ccef5a70d56a9f0ae243fe009aa3f85e36cb20fcee37"
+)
+RQ014_ENVIRONMENT_V4_SIZE_BYTES = 6148
+RQ014_ENVIRONMENT_V4_PYTHON_SHA256 = (
+    "347ef80f613d30f53a137545e6f68dae65d18554cee376c129aa1aaaab9270f7"
+)
+RQ014_ENVIRONMENT_V4_STDLIB = {
+    "regular_file_count": 1849,
+    "regular_file_total_size_bytes": 40860773,
+    "symlink_count": 0,
+    "special_file_count": 0,
+    "checksum_manifest_size_bytes": 360696,
+    "checksum_manifest_sha256": "0e9f0cad3d576fcacfbcbc093e813aabafc432df453a15e2bc872f832bc692e7",
+}
+RQ014_ENVIRONMENT_V4_SITE_PACKAGES = {
+    "regular_file_count": 12206,
+    "regular_file_total_size_bytes": 487535728,
+    "symlink_count": 0,
+    "special_file_count": 0,
+    "checksum_manifest_size_bytes": 2687140,
+    "checksum_manifest_sha256": "fe420c24a554e640544724b9db17353675b6d17d3d01190a2cc22a7dd103852a",
+    "distribution_manifest_size_bytes": 222929,
+    "distribution_manifest_sha256": "de30460a5c1949b7e23de732a59a4c414c2dd5738059ef39339fe758f79fd737",
+}
+RQ014_ENVIRONMENT_V4_NATIVE = {
+    "consumer_count": 369,
+    "row_count": 94,
+    "resolved_regular_file_count": 45,
+    "resolved_regular_file_total_size_bytes": 209669255,
+    "symlink_row_count": 31,
+    "multi_hop_count": 0,
+    "manifest_size_bytes": 31328,
+    "manifest_sha256": "02a4f2e46b47f847027a066f075c91b59b536728764e0bebca97614b31980918",
+}
+RQ014_ENVIRONMENT_V4_PARITY_SHA256 = (
+    "4c5e4c57aad4e765771440024f33e171e68e73aae8036f7c2f6275f3a2f86306"
+)
 RQ014_WRAPPER_CAPABILITY_CONTRACT = (
     "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at "
     "/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, "
@@ -186,14 +237,17 @@ RQ014_WRAPPER_CAPABILITY_CONTRACT = (
 RQ014_PYTHON_IMPORT_SURFACE = (
     "before the first managed-Python process, the wrapper uses absolute system tools to "
     "verify the pinned launcher, preflight and registry-materializer bytes, Python executable, "
-    "v3 environment "
-    "manifest, exact stdlib checksum manifest, zip absence, zero stdlib symlinks, complete "
-    "stdlib regular-file set/count/size/hash, pinned consumer-derived native dependency set, "
-    "exact loader links/final bytes and exact isolated sys.path; /lib64 is the explicit "
-    "operating-system ABI trust boundary; the closed-snapshot registry materializer is "
+    "operation-bound v3 or v4 environment manifest, exact stdlib checksum manifest, zip "
+    "absence, zero stdlib symlinks, complete stdlib regular-file set/count/size/hash, and for "
+    "v4 the exact site-packages and distribution manifests with zero symlinks/special files; "
+    "the pinned consumer-derived native dependency set, exact loader links/final bytes and "
+    "exact isolated sys.path; /lib64 (v3) and /usr/lib64 (v4) are the explicit operating-"
+    "system ABI trust boundaries; only after the v4 gate, the pinned site-packages root is "
+    "appended manually and verifier.model is loaded from its exact closed-snapshot path; "
+    "the closed-snapshot registry materializer is "
     "explicitly preloaded by spec_from_file_location as scripts.rq014.materialize_registry, "
-    "then preflight, the stdlib-only resource-pilot helper and the fixed scientific entrypoint "
-    "are loaded only by exact reviewed "
+    "then preflight, the resource-pilot helper and the fixed scientific entrypoint are loaded "
+    "only by exact reviewed "
     "closed-snapshot paths; scripts and scripts.rq014 keep empty __path__, so ordinary path "
     "import, checkout/root/src/sitecustomize/usercustomize/PYTHONPATH/local shadows remain "
     "unavailable"
@@ -223,6 +277,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "configs/run_specs/RQ014_g2_resource_pilot.template.json",
     "configs/run_specs/research_run_spec_v2.schema.json",
     "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
+    "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
     "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
     "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
     "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",
@@ -314,6 +369,8 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "src/sociality_estimation/planning/Lattice.py",
     "src/sociality_estimation/planning/__init__.py",
     "src/sociality_estimation/planning/utility.py",
+    "src/sociality_estimation/verifier/__init__.py",
+    "src/sociality_estimation/verifier/model.py",
     "tests/test_hpc_run_launcher.py",
     "tests/test_rq014_fl05_indexer.py",
     "tests/test_rq014_g0_closure_scripts.py",
@@ -328,6 +385,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "tests/test_rq014_v1p5_contract.py",
     "tests/fixtures/rq014_wod_path_type_mapping_golden_v1.json",
     "tests/fixtures/rq014_resource_pilot_cells_v1.json",
+    "tests/fixtures/m3_verifier_portable_fixture.json",
     "models/rq009_m3/README.md",
     "models/rq009_m3/feature_spec_contract.json",
     "models/rq009_m3/manifest.json",
@@ -584,6 +642,7 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
                 "declassification_export_done",
                 "contract_preflight_receipt",
                 "contract_preflight_done",
+                "m3_parity_fixture",
                 "pilot_scope",
             }
             ref_keys = common_ref_keys + (
@@ -595,18 +654,19 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
                 "declassification_export_done",
                 "contract_preflight_receipt",
                 "contract_preflight_done",
+                "m3_parity_fixture",
             )
             if spec.get("resource_profile_id") != RQ014_RESOURCE_PILOT_PROFILE:
                 raise ValueError("Unknown RQ014 resource-pilot resource profile")
             expected_scope = {
                 "cell_selection_rule_id": "LANE_V3_NON_M3_COST_EXTREMES_V1",
                 "non_m3_stages": ["source_load", "window_assembly", "feature_prep"],
-                "m3_stage_enabled": False,
+                "m3_stage_enabled": True,
                 "env_v4_required": True,
-                "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
+                "m3_cost_estimate": "MEASURED",
             }
             if "pilot_scope" in spec and spec.get("pilot_scope") != expected_scope:
-                raise ValueError("Run spec v2 pilot_scope differs from the frozen env-v4 split")
+                raise ValueError("Run spec v2 pilot_scope differs from the frozen env-v4 M3 contract")
             allowed = required
         else:
             raise ValueError("Unsupported RQ014 v2 operation")
@@ -1115,6 +1175,7 @@ def _validate_stdlib_checksum_manifest(
     stdlib_root: Path,
     expected_count: int,
     expected_total_size: int,
+    excluded_root: Path | None = None,
 ) -> None:
     lines = manifest_path.read_text(encoding="utf-8").splitlines()
     if len(lines) != expected_count * 2:
@@ -1151,6 +1212,10 @@ def _validate_stdlib_checksum_manifest(
     actual: list[Path] = []
     for directory, dirnames, filenames in os.walk(stdlib_root, followlinks=False):
         current = Path(directory)
+        if excluded_root is not None:
+            dirnames[:] = [
+                name for name in dirnames if (current / name) != excluded_root
+            ]
         for name in list(dirnames):
             candidate = current / name
             if candidate.is_symlink():
@@ -1173,18 +1238,38 @@ def _validate_native_library_manifest(
     expected_count: int,
     expected_total_size: int,
     expected_symlink_count: int,
+    manifest_version: int = 1,
+    expected_consumer_count: int | None = None,
+    expected_resolved_count: int | None = None,
 ) -> None:
     lines = manifest_path.read_text(encoding="utf-8").splitlines()
-    expected_headers = [
-        "# rq014-managed-python-native-libs-v1",
-        (
-            "# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>"
-            "resolved_path<TAB>size_bytes<TAB>sha256"
-        ),
-        "# discovery=ldd_python3.9_plus_every_regular_lib-dynload_so",
-        f"# managed_environment_root={environment_root}",
-        f"# row_count={expected_count}",
-    ]
+    if manifest_version == 1:
+        expected_headers = [
+            "# rq014-managed-python-native-libs-v1",
+            (
+                "# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>"
+                "resolved_path<TAB>size_bytes<TAB>sha256"
+            ),
+            "# discovery=ldd_python3.9_plus_every_regular_lib-dynload_so",
+            f"# managed_environment_root={environment_root}",
+            f"# row_count={expected_count}",
+        ]
+    elif manifest_version == 4 and expected_consumer_count is not None:
+        expected_headers = [
+            "# rq014-managed-python-native-libs-v4",
+            (
+                "# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>"
+                "resolved_path<TAB>size_bytes<TAB>sha256"
+            ),
+            (
+                "# discovery=recursive_ldd_plus_same_directory_then_unique_managed_root_"
+                "resolution_for_context_dependent_bundled_SONAMEs"
+            ),
+            f"# consumer_count={expected_consumer_count}",
+            f"# row_count={expected_count}",
+        ]
+    else:
+        raise ValueError("Unsupported RQ014 native-library manifest version")
     if lines[:5] != expected_headers:
         raise ValueError("RQ014 native-library manifest header drift")
     data_lines = lines[5:]
@@ -1193,7 +1278,10 @@ def _validate_native_library_manifest(
     previous_soname = ""
     loader_paths: set[Path] = set()
     resolved_paths: set[Path] = set()
-    allowed_roots = [environment_root, Path("/lib64").resolve(strict=False)]
+    allowed_roots = [
+        environment_root,
+        Path("/usr/lib64" if manifest_version == 4 else "/lib64").resolve(strict=False),
+    ]
     total_size = 0
     symlink_count = 0
     for index, line in enumerate(data_lines):
@@ -1203,13 +1291,16 @@ def _validate_native_library_manifest(
         soname, raw_loader, link_target, raw_resolved, raw_size, digest = fields
         if (
             re.fullmatch(r"[A-Za-z0-9_.+-]+", soname) is None
-            or soname <= previous_soname
+            or (soname < previous_soname if manifest_version == 4 else soname <= previous_soname)
             or re.fullmatch(r"[0-9]+", raw_size) is None
             or HEX64.fullmatch(digest) is None
         ):
             raise ValueError(f"Malformed or unsorted RQ014 native-library row: {index}")
         previous_soname = soname
-        if os.path.normpath(raw_loader) != raw_loader or os.path.normpath(raw_resolved) != raw_resolved:
+        if (
+            (manifest_version == 1 and os.path.normpath(raw_loader) != raw_loader)
+            or os.path.normpath(raw_resolved) != raw_resolved
+        ):
             raise ValueError(f"Non-normalized RQ014 native-library path: {index}")
         loader_path = Path(raw_loader)
         resolved_path = Path(raw_resolved)
@@ -1224,10 +1315,11 @@ def _validate_native_library_manifest(
                     f"RQ014 native {label} path escapes the managed/runtime trust roots: "
                     f"{candidate}"
                 )
-        if loader_path in loader_paths or resolved_path in resolved_paths:
+        if loader_path in loader_paths or (
+            manifest_version == 1 and resolved_path in resolved_paths
+        ):
             raise ValueError("Duplicate RQ014 native loader or resolved path")
         loader_paths.add(loader_path)
-        resolved_paths.add(resolved_path)
         if link_target == "-":
             if loader_path.is_symlink() or not loader_path.is_file():
                 raise ValueError(f"RQ014 native loader must be a regular file: {loader_path}")
@@ -1258,11 +1350,19 @@ def _validate_native_library_manifest(
         size_bytes = int(raw_size)
         if resolved.stat().st_size != size_bytes or sha256_file(resolved) != digest:
             raise ValueError(f"RQ014 native resolved-library bytes drift: {resolved}")
-        total_size += size_bytes
+        if resolved_path not in resolved_paths:
+            total_size += size_bytes
+        elif manifest_version == 1:
+            raise ValueError("Duplicate RQ014 native resolved path")
+        elif resolved_path.stat().st_size != size_bytes or sha256_file(resolved_path) != digest:
+            raise ValueError("Duplicate RQ014 native resolved path metadata differs")
+        resolved_paths.add(resolved_path)
     if total_size != expected_total_size:
         raise ValueError("RQ014 native-library total size drift")
     if symlink_count != expected_symlink_count:
         raise ValueError("RQ014 native-library symlink count drift")
+    if expected_resolved_count is not None and len(resolved_paths) != expected_resolved_count:
+        raise ValueError("RQ014 native-library resolved-file count drift")
 
 
 def _validate_rq014_environment_manifest(
@@ -1496,6 +1596,211 @@ def _validate_rq014_environment_manifest(
         "native_library_row_count": native_count,
         "native_library_total_size_bytes": native_total_size,
         "native_library_symlink_row_count": native_symlink_count,
+        "native_library_manifest_version": 1,
+    }
+
+
+def _validate_rq014_environment_manifest_v4(
+    ref: dict[str, str],
+    *,
+    base: Path,
+) -> dict[str, Any]:
+    """Validate the W5c scientific runtime candidate and every executable closure."""
+
+    path = _resolve_ref(
+        ref,
+        roots=[base / "manifests" / "RQ014"],
+        label="RQ014 managed Python environment v4 manifest",
+    )
+    if (
+        path != Path(RQ014_ENVIRONMENT_V4_PATH).resolve()
+        or ref["sha256"] != RQ014_ENVIRONMENT_V4_SHA256
+        or path.stat().st_size != RQ014_ENVIRONMENT_V4_SIZE_BYTES
+    ):
+        raise ValueError("RQ014 environment v4 manifest differs from the reviewed candidate")
+    manifest = load_rq014_json(path)
+    if path.read_bytes() != _canonical_spec_bytes(manifest):
+        raise ValueError("RQ014 environment v4 manifest is not canonical JSON")
+    required = {
+        "schema_version", "environment_id", "python_executable",
+        "execution_dependencies", "isolated_python_flags", "isolated_sys_path",
+        "site_packages_bootstrap_root", "package_versions", "stdlib_integrity",
+        "site_packages_integrity", "native_library_integrity", "model_binding",
+        "rating_free_parity", "build_provenance", "captured_at_utc",
+    }
+    if set(manifest) != required:
+        raise ValueError("RQ014 environment v4 manifest exact-key drift")
+    environment_root = base / "envs" / "ipv-m3-v4"
+    python = environment_root / "bin" / "python3.9"
+    stdlib_root = environment_root / "lib" / "python3.9"
+    lib_dynload = stdlib_root / "lib-dynload"
+    site_root = stdlib_root / "site-packages"
+    zip_path = environment_root / "lib" / "python39.zip"
+    expected_sys_path = [str(zip_path), str(stdlib_root), str(lib_dynload)]
+    if (
+        manifest["schema_version"] != "rq014-managed-python-environment-v4-candidate"
+        or manifest["environment_id"] != "ipv-m3-v4"
+        or manifest["execution_dependencies"]
+        != "PYTHON_STANDARD_LIBRARY_PLUS_PINNED_SITE_PACKAGES_AND_RECURSIVE_NATIVE_CLOSURE"
+        or manifest["isolated_python_flags"] != ["-I", "-S", "-B", "-X", "utf8"]
+        or manifest["isolated_sys_path"] != expected_sys_path
+        or manifest["site_packages_bootstrap_root"] != str(site_root)
+        or not UTC_SECONDS.fullmatch(str(manifest["captured_at_utc"]))
+    ):
+        raise ValueError("RQ014 environment v4 runtime contract drift")
+    expected_python = {
+        "path": str(python), "version": "Python 3.9.6", "size_bytes": 15742400,
+        "sha256": RQ014_ENVIRONMENT_V4_PYTHON_SHA256,
+    }
+    if manifest["python_executable"] != expected_python:
+        raise ValueError("RQ014 environment v4 Python binding drift")
+    python = require_contained_regular_file(python, [environment_root / "bin"])
+    if python.stat().st_size != 15742400 or sha256_file(python) != RQ014_ENVIRONMENT_V4_PYTHON_SHA256:
+        raise ValueError("RQ014 environment v4 Python bytes drift")
+    version = subprocess.check_output(
+        [str(python), "-I", "-S", "-B", "--version"], text=True,
+        stderr=subprocess.STDOUT, env=MINIMAL_COMMAND_ENV,
+    ).strip()
+    if version != "Python 3.9.6":
+        raise ValueError("RQ014 environment v4 Python version drift")
+
+    stdlib = manifest["stdlib_integrity"]
+    if not isinstance(stdlib, dict) or set(stdlib) != {
+        "stdlib_root", "lib_dynload_root", "zip_path", "zip_path_status",
+        "site_packages_excluded", "symlink_count", "special_file_count",
+        "regular_file_count", "regular_file_total_size_bytes", "checksum_manifest_path",
+        "checksum_manifest_size_bytes", "checksum_manifest_sha256",
+    } or any(stdlib.get(key) != value for key, value in RQ014_ENVIRONMENT_V4_STDLIB.items()):
+        raise ValueError("RQ014 environment v4 stdlib closure metadata drift")
+    if (
+        stdlib["stdlib_root"] != str(stdlib_root)
+        or stdlib["lib_dynload_root"] != str(lib_dynload)
+        or stdlib["zip_path"] != str(zip_path)
+        or stdlib["zip_path_status"] != "ABSENT"
+        or stdlib["site_packages_excluded"] != str(site_root)
+        or zip_path.exists() or not lib_dynload.is_dir() or not site_root.is_dir()
+    ):
+        raise ValueError("RQ014 environment v4 stdlib roots drift")
+    stdlib_manifest = require_contained_regular_file(
+        Path(stdlib["checksum_manifest_path"]), [base / "manifests" / "RQ014"]
+    )
+    if (stdlib_manifest.stat().st_size != stdlib["checksum_manifest_size_bytes"]
+            or sha256_file(stdlib_manifest) != stdlib["checksum_manifest_sha256"]):
+        raise ValueError("RQ014 environment v4 stdlib manifest bytes drift")
+    _validate_stdlib_checksum_manifest(
+        manifest_path=stdlib_manifest, stdlib_root=stdlib_root,
+        excluded_root=site_root, expected_count=stdlib["regular_file_count"],
+        expected_total_size=stdlib["regular_file_total_size_bytes"],
+    )
+
+    site = manifest["site_packages_integrity"]
+    if not isinstance(site, dict) or set(site) != {
+        "site_packages_root", "pth_execution", "symlink_count", "special_file_count",
+        "regular_file_count", "regular_file_total_size_bytes", "checksum_manifest_path",
+        "checksum_manifest_size_bytes", "checksum_manifest_sha256",
+        "distribution_manifest_path", "distribution_manifest_size_bytes",
+        "distribution_manifest_sha256",
+    } or any(site.get(key) != value for key, value in RQ014_ENVIRONMENT_V4_SITE_PACKAGES.items()):
+        raise ValueError("RQ014 environment v4 site-packages closure metadata drift")
+    if site["site_packages_root"] != str(site_root) or site["pth_execution"] != "FORBIDDEN_BY_-S_MANUAL_PATH_APPEND_ONLY":
+        raise ValueError("RQ014 environment v4 site-packages bootstrap drift")
+    site_manifest = require_contained_regular_file(
+        Path(site["checksum_manifest_path"]), [base / "manifests" / "RQ014"]
+    )
+    distributions = require_contained_regular_file(
+        Path(site["distribution_manifest_path"]), [base / "manifests" / "RQ014"]
+    )
+    if (site_manifest.stat().st_size != site["checksum_manifest_size_bytes"]
+            or sha256_file(site_manifest) != site["checksum_manifest_sha256"]
+            or distributions.stat().st_size != site["distribution_manifest_size_bytes"]
+            or sha256_file(distributions) != site["distribution_manifest_sha256"]):
+        raise ValueError("RQ014 environment v4 site/distribution manifest bytes drift")
+    _validate_stdlib_checksum_manifest(
+        manifest_path=site_manifest, stdlib_root=site_root,
+        expected_count=site["regular_file_count"],
+        expected_total_size=site["regular_file_total_size_bytes"],
+    )
+
+    model_binding = manifest["model_binding"]
+    expected_model = {
+        "path": M3_ARTIFACT_PATH, "size_bytes": M3_ARTIFACT_SIZE_BYTES,
+        "sha256": MODEL_SHA256,
+        "manifest_path": str(base / "checkpoints" / "rq009_m3" / "manifest.json"),
+        "manifest_sha256": "2efbdd0c39edabc419aad815a1eb7529af3623a06c4d3a0b0a99782bcb2f40f4",
+        "feature_contract_path": str(base / "checkpoints" / "rq009_m3" / "feature_spec_contract.json"),
+        "feature_contract_sha256": "3ad8ba8ab4c51422a7b2ef208683b7552b68f9e949f0087542ba208065677cce",
+        "nofollow_required": True,
+    }
+    if model_binding != expected_model:
+        raise ValueError("RQ014 environment v4 M3 model binding drift")
+    parity = manifest["rating_free_parity"]
+    if not isinstance(parity, dict) or set(parity) != {
+        "status", "rating_inputs_accessed", "raw_max_abs_diff",
+        "fixture_precision_max_abs_diff", "recorded_atol", "receipt_path",
+        "receipt_size_bytes", "receipt_sha256",
+    } or parity != {
+        "status": "PASS", "rating_inputs_accessed": False,
+        "raw_max_abs_diff": 4.952394050405928e-11,
+        "fixture_precision_max_abs_diff": 0.0, "recorded_atol": 1e-7,
+        "receipt_path": str(base / "manifests" / "RQ014" / "staging_env_v4" / "m3_rating_free_parity_v1.json"),
+        "receipt_size_bytes": 3471, "receipt_sha256": RQ014_ENVIRONMENT_V4_PARITY_SHA256,
+    }:
+        raise ValueError("RQ014 environment v4 parity evidence drift")
+    parity_path = require_contained_regular_file(Path(parity["receipt_path"]), [base / "manifests" / "RQ014"])
+    if parity_path.stat().st_size != parity["receipt_size_bytes"] or sha256_file(parity_path) != parity["receipt_sha256"]:
+        raise ValueError("RQ014 environment v4 parity receipt bytes drift")
+
+    native = manifest["native_library_integrity"]
+    if not isinstance(native, dict) or set(native) != {
+        "discovery_scope", "columns", "consumer_count", "manifest_path",
+        "manifest_size_bytes", "manifest_sha256", "row_count",
+        "resolved_regular_file_count", "resolved_regular_file_total_size_bytes",
+        "symlink_row_count", "multi_hop_count", "system_and_managed_trust_roots",
+        "symlink_chain_policy",
+    } or any(native.get(key) != value for key, value in RQ014_ENVIRONMENT_V4_NATIVE.items()):
+        raise ValueError("RQ014 environment v4 native closure metadata drift")
+    if native["system_and_managed_trust_roots"] != [str(environment_root), "/usr/lib64"]:
+        raise ValueError("RQ014 environment v4 native trust roots drift")
+    native_manifest = require_contained_regular_file(Path(native["manifest_path"]), [base / "manifests" / "RQ014"])
+    if native_manifest.stat().st_size != native["manifest_size_bytes"] or sha256_file(native_manifest) != native["manifest_sha256"]:
+        raise ValueError("RQ014 environment v4 native manifest bytes drift")
+    _validate_native_library_manifest(
+        manifest_path=native_manifest, environment_root=environment_root,
+        expected_count=native["row_count"],
+        expected_total_size=native["resolved_regular_file_total_size_bytes"],
+        expected_symlink_count=native["symlink_row_count"], manifest_version=4,
+        expected_consumer_count=native["consumer_count"],
+        expected_resolved_count=native["resolved_regular_file_count"],
+    )
+    return {
+        "environment_manifest_path": str(path),
+        "environment_manifest_sha256": ref["sha256"],
+        "python_executable_path": str(python),
+        "python_executable_sha256": RQ014_ENVIRONMENT_V4_PYTHON_SHA256,
+        "python_version": "Python 3.9.6", "isolated_sys_path": expected_sys_path,
+        "stdlib_root": str(stdlib_root), "lib_dynload_root": str(lib_dynload),
+        "python_zip_path": str(zip_path), "stdlib_regular_file_count": stdlib["regular_file_count"],
+        "stdlib_regular_file_total_size_bytes": stdlib["regular_file_total_size_bytes"],
+        "stdlib_checksum_manifest_path": str(stdlib_manifest),
+        "stdlib_checksum_manifest_size_bytes": stdlib["checksum_manifest_size_bytes"],
+        "stdlib_checksum_manifest_sha256": stdlib["checksum_manifest_sha256"],
+        "site_packages_root": str(site_root), "site_packages_regular_file_count": site["regular_file_count"],
+        "site_packages_regular_file_total_size_bytes": site["regular_file_total_size_bytes"],
+        "site_packages_checksum_manifest_path": str(site_manifest),
+        "site_packages_checksum_manifest_size_bytes": site["checksum_manifest_size_bytes"],
+        "site_packages_checksum_manifest_sha256": site["checksum_manifest_sha256"],
+        "distribution_manifest_path": str(distributions),
+        "distribution_manifest_size_bytes": site["distribution_manifest_size_bytes"],
+        "distribution_manifest_sha256": site["distribution_manifest_sha256"],
+        "native_library_manifest_path": str(native_manifest),
+        "native_library_manifest_size_bytes": native["manifest_size_bytes"],
+        "native_library_manifest_sha256": native["manifest_sha256"],
+        "native_library_row_count": native["row_count"],
+        "native_library_resolved_count": native["resolved_regular_file_count"],
+        "native_library_consumer_count": native["consumer_count"],
+        "native_library_total_size_bytes": native["resolved_regular_file_total_size_bytes"],
+        "native_library_symlink_row_count": native["symlink_row_count"],
+        "native_library_manifest_version": 4,
     }
 
 
@@ -1611,9 +1916,10 @@ def _with_rq014_validate_only_plan(validated: dict[str, Any]) -> dict[str, Any]:
         ]
     if "pilot_scope" in validated:
         runtime_metadata["m3_execution"] = {
-            "enabled": False,
+            "enabled": True,
             "env_v4_required": True,
-            "cost_estimate": "EXPLICITLY_UNMEASURED",
+            "cost_estimate": "MEASURED",
+            "verification_failure": "GLOBAL_ABORT_NO_DONE",
         }
     submission_plan = {
         "job_name": validated["job_name"],
@@ -1708,15 +2014,17 @@ def _validate_rq014_operation_contract(
                 "declassification_export_done",
                 "contract_preflight_receipt",
                 "contract_preflight_done",
+                "m3_parity_fixture",
                 "pilot_scope",
             ]
             or operation.get("m3_stage_contract")
             != {
-                "m3_stage_enabled": False,
+                "m3_stage_enabled": True,
                 "env_v4_required": True,
-                "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
-                "combined_g2r_cost_estimate": "EXPLICITLY_UNMEASURED",
-                "deserialization": "FORBIDDEN",
+                "m3_cost_estimate": "MEASURED",
+                "combined_g2r_cost_estimate": "MEASURED",
+                "deserialization": "REQUIRED_AFTER_V4_RUNTIME_GATE",
+                "verification_failure": "GLOBAL_ABORT_FAIL_RECEIPT_NO_DONE_NO_NUMERIC_COST",
             }
         ):
             raise ValueError("RQ014 resource-pilot contract predicate drift")
@@ -1912,45 +2220,62 @@ def _validate_rq014_spec(
         != inventory["managed_interpreter"]["sha256"]
     ):
         raise ValueError("RQ014 managed-HPC contract differs from reviewed environment inventory")
-    environment = _validate_rq014_environment_manifest(
-        spec["environment_manifest"],
-        base=base,
-        inventory=inventory,
-    )
-    stdlib_contract = managed_contract.get("stdlib_integrity")
-    expected_stdlib_contract = {
-        "root": environment["stdlib_root"],
-        "zip_path_status": "python39.zip ABSENT",
-        "symlink_count": 0,
-        "regular_file_count": environment["stdlib_regular_file_count"],
-        "regular_file_total_size_bytes": environment[
-            "stdlib_regular_file_total_size_bytes"
-        ],
-        "checksum_manifest_path": environment["stdlib_checksum_manifest_path"],
-        "checksum_manifest_size_bytes": environment[
-            "stdlib_checksum_manifest_size_bytes"
-        ],
-        "checksum_manifest_sha256": environment["stdlib_checksum_manifest_sha256"],
+    bindings = managed_contract.get("environment_bindings_by_operation")
+    expected_binding_keys = {
+        RQ014_EXPORT_OPERATION, RQ014_PREFLIGHT_OPERATION, RQ014_RESOURCE_PILOT_OPERATION
     }
-    if stdlib_contract != expected_stdlib_contract:
-        raise ValueError("RQ014 execution contract differs from the verified stdlib closure")
-    native_contract = managed_contract.get("native_library_integrity")
-    expected_native_contract = {
-        "manifest_path": environment["native_library_manifest_path"],
-        "manifest_size_bytes": environment["native_library_manifest_size_bytes"],
-        "manifest_sha256": environment["native_library_manifest_sha256"],
-        "row_count": environment["native_library_row_count"],
-        "resolved_regular_file_total_size_bytes": environment[
-            "native_library_total_size_bytes"
-        ],
-        "symlink_row_count": environment["native_library_symlink_row_count"],
-        "multi_hop_count": 0,
-        "system_library_trust_roots": ["/lib64"],
+    if not isinstance(bindings, dict) or set(bindings) != expected_binding_keys:
+        raise ValueError("RQ014 per-operation environment binding exact-key drift")
+    expected_v3_binding = {
+        "schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
+        "path": inventory["managed_environment_manifest"]["path"],
+        "size_bytes": inventory["managed_environment_manifest"]["size_bytes"],
+        "sha256": inventory["managed_environment_manifest"]["sha256"],
     }
-    if native_contract != expected_native_contract:
-        raise ValueError(
-            "RQ014 execution contract differs from the verified native-library closure"
+    expected_v4_binding = {
+        "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+        "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v4.json"),
+        "size_bytes": RQ014_ENVIRONMENT_V4_SIZE_BYTES,
+        "sha256": RQ014_ENVIRONMENT_V4_SHA256,
+    }
+    if bindings[RQ014_EXPORT_OPERATION] != expected_v3_binding or bindings[RQ014_PREFLIGHT_OPERATION] != expected_v3_binding or bindings[RQ014_RESOURCE_PILOT_OPERATION] != expected_v4_binding:
+        raise ValueError("RQ014 per-operation environment binding drift")
+    active_binding = bindings[spec["operation"]]
+    if spec["environment_manifest"] != {
+        "path": active_binding["path"], "sha256": active_binding["sha256"]
+    }:
+        raise ValueError("RQ014 run-spec environment manifest does not match its operation binding")
+    if spec["operation"] == RQ014_RESOURCE_PILOT_OPERATION:
+        environment = _validate_rq014_environment_manifest_v4(
+            spec["environment_manifest"], base=base
         )
+    else:
+        environment = _validate_rq014_environment_manifest(
+            spec["environment_manifest"], base=base, inventory=inventory
+        )
+        stdlib_contract = managed_contract.get("stdlib_integrity")
+        expected_stdlib_contract = {
+            "root": environment["stdlib_root"], "zip_path_status": "python39.zip ABSENT",
+            "symlink_count": 0, "regular_file_count": environment["stdlib_regular_file_count"],
+            "regular_file_total_size_bytes": environment["stdlib_regular_file_total_size_bytes"],
+            "checksum_manifest_path": environment["stdlib_checksum_manifest_path"],
+            "checksum_manifest_size_bytes": environment["stdlib_checksum_manifest_size_bytes"],
+            "checksum_manifest_sha256": environment["stdlib_checksum_manifest_sha256"],
+        }
+        if stdlib_contract != expected_stdlib_contract:
+            raise ValueError("RQ014 execution contract differs from the verified stdlib closure")
+        native_contract = managed_contract.get("native_library_integrity")
+        expected_native_contract = {
+            "manifest_path": environment["native_library_manifest_path"],
+            "manifest_size_bytes": environment["native_library_manifest_size_bytes"],
+            "manifest_sha256": environment["native_library_manifest_sha256"],
+            "row_count": environment["native_library_row_count"],
+            "resolved_regular_file_total_size_bytes": environment["native_library_total_size_bytes"],
+            "symlink_row_count": environment["native_library_symlink_row_count"],
+            "multi_hop_count": 0, "system_library_trust_roots": ["/lib64"],
+        }
+        if native_contract != expected_native_contract:
+            raise ValueError("RQ014 execution contract differs from the verified native-library closure")
     if (
         managed_contract.get("slurm_environment_export")
         != "NIL_ON_DIRECTIVE_AND_SBATCH_COMMAND; NONE_IS_FORBIDDEN_BECAUSE_IT_CAN_RECONSTRUCT_THE_LOGIN_ENVIRONMENT"
@@ -2085,6 +2410,7 @@ def _validate_rq014_spec(
     preflight_receipt_path = None
     preflight_done_path = None
     mapping_spec_path = None
+    m3_parity_fixture_path = None
     if spec["operation"] == RQ014_RESOURCE_PILOT_OPERATION:
         mapping_spec_path = _resolve_ref(
             spec["wod_path_type_mapping_manifest"],
@@ -2101,6 +2427,14 @@ def _validate_rq014_spec(
             roots=[base / "work_dirs" / "RQ014"],
             label="contract-preflight DONE receipt",
         )
+        m3_parity_fixture_path = _resolve_ref(
+            spec["m3_parity_fixture"], roots=[repo], label="M3 v4 parity fixture"
+        )
+        if (
+            m3_parity_fixture_path != (repo / RQ014_M3_PARITY_FIXTURE).resolve()
+            or spec["m3_parity_fixture"]["sha256"] != RQ014_M3_PARITY_FIXTURE_SHA256
+        ):
+            raise ValueError("RQ014 M3 parity fixture binding drift")
     roles = validate_g2_input_roles(
         manifest_path=input_path,
         contract=contract,
@@ -2131,7 +2465,7 @@ def _validate_rq014_spec(
         receipt_path=sanitization_path,
         full_hash=True,
         expected_exporter_git_commit=spec["declassification_export_commit"],
-        expected_exporter_environment_sha256=environment["environment_manifest_sha256"],
+        expected_exporter_environment_sha256=inventory["managed_environment_manifest"]["sha256"],
         expected_exporter_code_sha256=sha256_file(
             repo / "scripts" / "rq014" / "export_score_stripped_bundle.py"
         ),
@@ -2176,6 +2510,8 @@ def _validate_rq014_spec(
             ],
             "contract_preflight_done_path": str(preflight_done_path),
             "contract_preflight_done_sha256": spec["contract_preflight_done"]["sha256"],
+            "m3_parity_fixture_path": str(m3_parity_fixture_path),
+            "m3_parity_fixture_sha256": spec["m3_parity_fixture"]["sha256"],
             "score_stripped_bundle_root": str(bundle_root),
             "wod_path_type_mapping": path_mapping,
             "pilot_scope": spec["pilot_scope"],
@@ -2336,9 +2672,29 @@ import json
 import sys
 import types
 
-expected_sys_path_json, materializer_path, preflight_path, resource_pilot_path, entrypoint, *arguments = sys.argv[1:]
+expected_sys_path_json, site_packages_root, verifier_model_path, materializer_path, preflight_path, resource_pilot_path, entrypoint, *arguments = sys.argv[1:]
 if sys.path != json.loads(expected_sys_path_json):
     raise RuntimeError("Managed isolated sys.path differs from the reviewed runtime closure")
+if site_packages_root != "-":
+    sys.path.append(site_packages_root)
+    sociality_package = types.ModuleType("sociality_estimation")
+    sociality_package.__path__ = ()
+    sociality_package.__package__ = "sociality_estimation"
+    verifier_package = types.ModuleType("sociality_estimation.verifier")
+    verifier_package.__path__ = ()
+    verifier_package.__package__ = "sociality_estimation.verifier"
+    sociality_package.verifier = verifier_package
+    sys.modules["sociality_estimation"] = sociality_package
+    sys.modules["sociality_estimation.verifier"] = verifier_package
+    verifier_spec = importlib.util.spec_from_file_location(
+        "sociality_estimation.verifier.model", verifier_model_path
+    )
+    if verifier_spec is None or verifier_spec.loader is None:
+        raise RuntimeError("Cannot construct exact-path verifier model loader")
+    verifier_module = importlib.util.module_from_spec(verifier_spec)
+    verifier_package.model = verifier_module
+    sys.modules["sociality_estimation.verifier.model"] = verifier_module
+    verifier_spec.loader.exec_module(verifier_module)
 scripts_package = types.ModuleType("scripts")
 scripts_package.__path__ = ()
 scripts_package.__package__ = "scripts"
@@ -2396,6 +2752,7 @@ def _rq014_isolated_python_command(
     entrypoint: str,
     arguments: list[str],
     isolated_sys_path: list[str],
+    site_packages_root: str | None = None,
 ) -> list[str]:
     allowed = {
         "scripts/rq014/export_score_stripped_bundle.py",
@@ -2413,6 +2770,8 @@ def _rq014_isolated_python_command(
         "-c",
         _RQ014_EXACT_PATH_BOOTSTRAP,
         json.dumps(isolated_sys_path, separators=(",", ":")),
+        site_packages_root or "-",
+        str(code / "src" / "sociality_estimation" / "verifier" / "model.py"),
         str(code / "scripts" / "rq014" / "materialize_registry.py"),
         str(code / "scripts" / "rq014" / "preflight.py"),
         str(code / "scripts" / "rq014" / "run_resource_pilot.py"),
@@ -2437,6 +2796,10 @@ def _stdlib_shell_checks(validated: dict[str, Any]) -> str:
     progress_program = shlex.quote(
         '/FAILED/ { print; fflush() } NR % 500 == 0 { print "stdlib-check", NR; fflush() }'
     )
+    find_prefix = f"{SYSTEM_FIND} {root}"
+    if "site_packages_root" in validated:
+        site = shlex.quote(validated["site_packages_root"])
+        find_prefix += f" -path {site} -prune -o"
     return (
         _shell_digest_check(
             validated["stdlib_checksum_manifest_path"],
@@ -2445,11 +2808,31 @@ def _stdlib_shell_checks(validated: dict[str, Any]) -> str:
         + f"test -d {root}\n"
         + f"test -d {lib_dynload}\n"
         + f"test ! -e {zip_path}\n"
+        + f"test -z \"$({find_prefix} -type l -print -quit)\"\n"
+        + f"test -z \"$({find_prefix} ! -type d ! -type f -print -quit)\"\n"
+        + f"test \"$({find_prefix} -type f -printf 'x\\n' | {SYSTEM_AWK} {count_program})\" = {validated['stdlib_regular_file_count']}\n"
+        + f"test \"$({find_prefix} -type f -printf '%s\\n' | {SYSTEM_AWK} {size_program})\" = {validated['stdlib_regular_file_total_size_bytes']}\n"
+        + f"(cd / && {SYSTEM_SHA256SUM} --check --strict {checksum_manifest} | {SYSTEM_AWK} {progress_program})\n"
+    )
+
+
+def _site_packages_shell_checks(validated: dict[str, Any]) -> str:
+    if "site_packages_root" not in validated:
+        return ""
+    root = shlex.quote(validated["site_packages_root"])
+    checksum = shlex.quote(validated["site_packages_checksum_manifest_path"])
+    count_program = shlex.quote("END { print NR + 0 }")
+    size_program = shlex.quote('{ total += $1 } END { printf "%.0f", total + 0 }')
+    progress_program = shlex.quote('/FAILED/ { print; fflush() } NR % 500 == 0 { print "site-check", NR; fflush() }')
+    return (
+        _shell_digest_check(validated["site_packages_checksum_manifest_path"], validated["site_packages_checksum_manifest_sha256"])
+        + _shell_digest_check(validated["distribution_manifest_path"], validated["distribution_manifest_sha256"])
+        + f"test -d {root}\n"
         + f"test -z \"$({SYSTEM_FIND} {root} -type l -print -quit)\"\n"
         + f"test -z \"$({SYSTEM_FIND} {root} ! -type d ! -type f -print -quit)\"\n"
-        + f"test \"$({SYSTEM_FIND} {root} -type f -printf 'x\\n' | {SYSTEM_AWK} {count_program})\" = {validated['stdlib_regular_file_count']}\n"
-        + f"test \"$({SYSTEM_FIND} {root} -type f -printf '%s\\n' | {SYSTEM_AWK} {size_program})\" = {validated['stdlib_regular_file_total_size_bytes']}\n"
-        + f"(cd / && {SYSTEM_SHA256SUM} --check --strict {checksum_manifest} | {SYSTEM_AWK} {progress_program})\n"
+        + f"test \"$({SYSTEM_FIND} {root} -type f -printf 'x\\n' | {SYSTEM_AWK} {count_program})\" = {validated['site_packages_regular_file_count']}\n"
+        + f"test \"$({SYSTEM_FIND} {root} -type f -printf '%s\\n' | {SYSTEM_AWK} {size_program})\" = {validated['site_packages_regular_file_total_size_bytes']}\n"
+        + f"(cd / && {SYSTEM_SHA256SUM} --check --strict {checksum} | {SYSTEM_AWK} {progress_program})\n"
     )
 
 
@@ -2459,6 +2842,43 @@ def _native_library_shell_checks(validated: dict[str, Any]) -> str:
         "# managed_environment_root="
         + str(Path(validated["python_executable_path"]).parents[1])
     )
+    version = validated.get("native_library_manifest_version", 1)
+    if version == 4:
+        header_lines = (
+            "  test \"$native_header\" = '# rq014-managed-python-native-libs-v4'\n"
+            "  IFS= read -r native_header\n"
+            "  test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'\n"
+            "  IFS= read -r native_header\n"
+            "  test \"$native_header\" = '# discovery=recursive_ldd_plus_same_directory_then_unique_managed_root_resolution_for_context_dependent_bundled_SONAMEs'\n"
+            "  IFS= read -r native_header\n"
+            f"  test \"$native_header\" = '# consumer_count={validated['native_library_consumer_count']}'\n"
+            "  IFS= read -r native_header\n"
+            f"  test \"$native_header\" = '# row_count={validated['native_library_row_count']}'\n"
+        )
+        unique_setup = "declare -A native_seen=()\nnative_resolved=0\n"
+        unique_count = (
+            "  if test -z \"${native_seen[$resolved_path]+x}\"; then\n"
+            "    native_seen[$resolved_path]=1\n"
+            "    native_resolved=$((native_resolved + 1))\n"
+            "    native_total=$((native_total + size_bytes))\n"
+            "  fi\n"
+        )
+        unique_assert = f"test \"$native_resolved\" = {validated['native_library_resolved_count']}\n"
+    else:
+        header_lines = (
+            "  test \"$native_header\" = '# rq014-managed-python-native-libs-v1'\n"
+            "  IFS= read -r native_header\n"
+            "  test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'\n"
+            "  IFS= read -r native_header\n"
+            "  test \"$native_header\" = '# discovery=ldd_python3.9_plus_every_regular_lib-dynload_so'\n"
+            "  IFS= read -r native_header\n"
+            f"  test \"$native_header\" = {environment_root_header}\n"
+            "  IFS= read -r native_header\n"
+            f"  test \"$native_header\" = '# row_count={validated['native_library_row_count']}'\n"
+        )
+        unique_setup = ""
+        unique_count = "  native_total=$((native_total + size_bytes))\n"
+        unique_assert = ""
     return (
         _shell_digest_check(
             validated["native_library_manifest_path"],
@@ -2467,18 +2887,11 @@ def _native_library_shell_checks(validated: dict[str, Any]) -> str:
         + "native_rows=0\n"
         + "native_symlinks=0\n"
         + "native_total=0\n"
+        + unique_setup
         + f"native_tab=$({SYSTEM_ENV} -i PATH={MINIMAL_PATH} {SYSTEM_AWK} 'BEGIN {{ printf \"\\t\" }}')\n"
         + "{\n"
         + "  IFS= read -r native_header\n"
-        + "  test \"$native_header\" = '# rq014-managed-python-native-libs-v1'\n"
-        + "  IFS= read -r native_header\n"
-        + "  test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'\n"
-        + "  IFS= read -r native_header\n"
-        + "  test \"$native_header\" = '# discovery=ldd_python3.9_plus_every_regular_lib-dynload_so'\n"
-        + "  IFS= read -r native_header\n"
-        + f"  test \"$native_header\" = {environment_root_header}\n"
-        + "  IFS= read -r native_header\n"
-        + f"  test \"$native_header\" = '# row_count={validated['native_library_row_count']}'\n"
+        + header_lines
         + "  while IFS=\"$native_tab\" read -r soname loader_path link_target resolved_path size_bytes digest extra; do\n"
         + "  test -n \"$soname\"\n"
         + "  test -z \"${extra-}\"\n"
@@ -2500,11 +2913,12 @@ def _native_library_shell_checks(validated: dict[str, Any]) -> str:
         + f"  test \"$({SYSTEM_STAT} -c %s \"$resolved_path\")\" = \"$size_bytes\"\n"
         + f"  test \"$({SYSTEM_SHA256SUM} \"$resolved_path\" | {SYSTEM_AWK} '{{print $1}}')\" = \"$digest\"\n"
         + "  native_rows=$((native_rows + 1))\n"
-        + "  native_total=$((native_total + size_bytes))\n"
+        + unique_count
         + "  done\n"
         + f"}} < {manifest}\n"
         + f"test \"$native_rows\" = {validated['native_library_row_count']}\n"
         + f"test \"$native_symlinks\" = {validated['native_library_symlink_row_count']}\n"
+        + unique_assert
         + f"test \"$native_total\" = {validated['native_library_total_size_bytes']}\n"
     )
 
@@ -2676,6 +3090,8 @@ def render_rq014_sbatch(
             validated["contract_preflight_receipt_path"],
             "--contract-preflight-done",
             validated["contract_preflight_done_path"],
+            "--m3-parity-fixture",
+            str(code / RQ014_M3_PARITY_FIXTURE),
             "--output-root",
             str(run_root / "outputs"),
         ]
@@ -2720,6 +3136,10 @@ def render_rq014_sbatch(
                 validated["contract_preflight_done_path"],
                 validated["contract_preflight_done_sha256"],
             )
+            + _shell_digest_check(
+                code / RQ014_M3_PARITY_FIXTURE,
+                validated["m3_parity_fixture_sha256"],
+            )
         )
     else:
         raise ValueError("Unsupported fixed RQ014 subcommand")
@@ -2738,6 +3158,7 @@ def render_rq014_sbatch(
         entrypoint=validated["entrypoint"],
         arguments=arguments,
         isolated_sys_path=validated["isolated_sys_path"],
+        site_packages_root=validated.get("site_packages_root"),
     )
     runtime_environment = [
         SYSTEM_ENV,
@@ -2782,6 +3203,7 @@ def render_rq014_sbatch(
         f"{_shell_digest_check(code / validated['formal_g1_relative_path'], validated['formal_g1_sha256'])}"
         f"{source_checks}"
         f"{_stdlib_shell_checks(validated)}"
+        f"{_site_packages_shell_checks(validated)}"
         f"{_native_library_shell_checks(validated)}"
         f"{_shell_digest_check(code / contract_bundle_relative, validated['contract_bundle_sha256'])}"
         f"(cd {shlex.quote(str(code))} && {SYSTEM_SHA256SUM} -c {shlex.quote(contract_bundle_relative)})\n"
