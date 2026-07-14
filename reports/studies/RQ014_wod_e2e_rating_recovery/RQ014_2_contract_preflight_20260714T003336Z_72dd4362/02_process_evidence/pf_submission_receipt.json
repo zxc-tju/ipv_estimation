@@ -1,0 +1,10 @@
+{
+  "git_commit": "b06a243eea7e1418622f89e5ea80d3da4fe3bc58",
+  "job_id": "1924193",
+  "job_name": "zxc-rq014-pre-72dd4362f954",
+  "operation": "rq014_g2_contract_preflight",
+  "run_id": "RQ014_1_wod_rating_recovery_20260713T161542Z_41ac5280",
+  "run_spec_sha256": "72dd4362f9546dcf24b792bd3c0f1c6413f1232f069e57891bcbb293fd316c14",
+  "sbatch_response": "1924193\n",
+  "schema_version": "rq014-submission-receipt-v1"
+}

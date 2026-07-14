@@ -90,3 +90,13 @@ remain separately authorized future operations.
   read; contract preflight remains centrally DENIED pending D1 and its own authorization loop.
 
 No `decision.md` should be created until empirical evidence reaches the registered claim gates.
+
+## Preflight wave record (2026-07-14)
+- D1→D2 loop complete: PRs #10–#14 (allowlist, cross-commit provenance field, amendment v1.7/lane v3 M3-fixed
+  320 cells, WOD path-type freeze 254/222@F/3@K, blind-anchor fixed-root + shared cross-phase validator), each
+  with fresh dual review and regenerated FORMAL_G1_PASS. First submission failed fail-closed (cross-phase
+  defect; RUN_ID burned, root preserved); fix reviewed; resubmission job 1924193 COMPLETED 0:0. All 12 bindings
+  materialized; M3 delivery verified pre-deserialization with immutable receipt. Bounded report + evidence:
+  reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_2_contract_preflight_20260714T003336Z_72dd4362/.
+  D2 accepted: resource-pilot authorization loop + managed environment closure v4 design authorized; pilot
+  submit retains an explicit PI stop. Rating access: NONE throughout.

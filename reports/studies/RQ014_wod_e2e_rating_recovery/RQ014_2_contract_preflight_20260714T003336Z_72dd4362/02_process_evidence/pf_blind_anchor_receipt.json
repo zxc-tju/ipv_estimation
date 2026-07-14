@@ -1,0 +1,52 @@
+{
+  "schema_version": "rq014-blind-anchor-receipt-v1p5",
+  "receipt_date": "2026-07-12",
+  "source_contract": "reports/plans/RQ014_plan_v1_wod_e2e_rating_ipv_deviation_recovery_20260710.md#13.3",
+  "source_kind": "previously_published_aggregate_constants_only",
+  "contains_row_level_ratings": false,
+  "permits_new_rating_derived_statistics": false,
+  "g2_verification_mode": "receipt_integrity_and_rating_free_implementation_fixtures_only",
+  "g2_rho_recomputation": "FORBIDDEN",
+  "required_g2_outcome_labels": [
+    "ATTESTED_RECEIPT_MATCH",
+    "RATING_FREE_PREDICTOR_PARITY_PASS",
+    "RHO_NOT_RECOMPUTED_BY_DESIGN"
+  ],
+  "run_scoped_predictor_and_key_hashes": "TO_BIND_IN_INPUT_MANIFEST_G2",
+  "rating_artifact_hashes": "DEFERRED_TO_AUTHORIZED_INPUT_MANIFEST_G3",
+  "anchors": [
+    {
+      "anchor_id": "A1",
+      "rate_hz": 4,
+      "scheme_id": 1,
+      "public_scene_n": 75,
+      "expected_rho": 0.14767623020869206,
+      "rho_tolerance": 0.000001
+    },
+    {
+      "anchor_id": "A2",
+      "rate_hz": 4,
+      "scheme_id": 2,
+      "public_scene_n": 98,
+      "expected_rho": 0.03129843185743807,
+      "rho_tolerance": 0.000001
+    },
+    {
+      "anchor_id": "A3",
+      "rate_hz": 10,
+      "scheme_id": 1,
+      "public_scene_n": 75,
+      "expected_rho": 0.16481712868606582,
+      "rho_tolerance": 0.000001
+    },
+    {
+      "anchor_id": "A4",
+      "rate_hz": 10,
+      "scheme_id": 2,
+      "public_scene_n": 47,
+      "expected_rho": 0.12753396435827072,
+      "rho_tolerance": 0.000001
+    }
+  ],
+  "deferred_recomputation_rule": "Exact N/key/rho recomputation is deferred to a future checksum-bound rating-join operation; it must occur before new discovery statistics and requires separate PI and central authorization."
+}

@@ -1,0 +1,62 @@
+718 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/configs/research_authorization.json
+83700 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/START_HERE.md
+52494 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_hpc_run_launcher.py
+18076 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_fl05_indexer.py
+26972 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_g0_closure_scripts.py
+54895 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_managed_hpc_contract.py
+67612 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_recovery_lane_v2_contract.py
+5632 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_recovery_lane_v3_contract.py
+9381 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_science_freeze_v1p7.py
+38106 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_score_stripped_export.py
+14378 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_v1p3_registry_contract.py
+21301 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_v1p5_contract.py
+12239 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/tests/test_rq014_wod_path_type_mapping.py
+1651 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/logs/slurm_1922605.err
+7660 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/logs/slurm_1922605.out
+20232 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/manifests/code_snapshot.json
+42512 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/manifests/run_manifest.json
+13896 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/manifests/run.sbatch
+2499 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/manifests/run_spec.json
+419 /share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/manifests/submission_receipt.json
+==ERR==
+Traceback (most recent call last):
+  File "<string>", line 45, in <module>
+  File "<frozen importlib._bootstrap_external>", line 850, in exec_module
+  File "<frozen importlib._bootstrap>", line 228, in _call_with_frames_removed
+  File "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/scripts/rq014/run_managed_g2.py", line 78, in <module>
+    raise SystemExit(main())
+  File "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/scripts/rq014/run_managed_g2.py", line 42, in main
+    receipt = run_preflight(
+  File "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/scripts/rq014/preflight.py", line 1648, in run_preflight
+    roles = validate_input_manifest_g2(
+  File "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/scripts/rq014/preflight.py", line 1119, in validate_input_manifest_g2
+    path = require_contained_regular_file(Path(entry["absolute_path"]), allowed_roots)
+  File "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_1_wod_rating_recovery_20260713T115004Z_bdad1e4c/code/scripts/rq014/preflight.py", line 275, in require_contained_regular_file
+    raise ContractError(f"Input escapes allowed roots or crosses a symlink: {path}")
+scripts.rq014.preflight.ContractError: Input escapes allowed roots or crosses a symlink: /share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_blind_anchor_receipt_v1p5.json
+==OUT_TAIL==
+scripts/rq014/spearman_average_midranks.py: OK
+scripts/rq014/spearman_version_manifest_v1.json: OK
+scripts/rq014/wod_ipv_adapter.py: OK
+scripts/rq014/wod_ipv_preprocessing.py: OK
+scripts/rq014/wod_path_type_mapping_version_manifest_v1.json: OK
+scripts/rq014/wod_reference_builder.py: OK
+src/sociality_estimation/__init__.py: OK
+src/sociality_estimation/core/__init__.py: OK
+src/sociality_estimation/core/agent.py: OK
+src/sociality_estimation/core/ipv_estimation.py: OK
+src/sociality_estimation/planning/Lattice.py: OK
+src/sociality_estimation/planning/__init__.py: OK
+src/sociality_estimation/planning/utility.py: OK
+tests/fixtures/rq014_wod_path_type_mapping_golden_v1.json: OK
+tests/test_hpc_run_launcher.py: OK
+tests/test_rq014_fl05_indexer.py: OK
+tests/test_rq014_g0_closure_scripts.py: OK
+tests/test_rq014_managed_hpc_contract.py: OK
+tests/test_rq014_recovery_lane_v2_contract.py: OK
+tests/test_rq014_recovery_lane_v3_contract.py: OK
+tests/test_rq014_science_freeze_v1p7.py: OK
+tests/test_rq014_score_stripped_export.py: OK
+tests/test_rq014_v1p3_registry_contract.py: OK
+tests/test_rq014_v1p5_contract.py: OK
+tests/test_rq014_wod_path_type_mapping.py: OK
