@@ -1,21 +1,28 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
+import math
 import sys
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 import scripts.hpc.prepare_research_run as launcher
 import scripts.rq014.run_managed_g2 as managed
 from scripts.rq014.run_resource_pilot import (
     FAILURE_CODES,
+    PilotError,
+    _assemble_windows,
+    _derive_state,
     canonical_json_bytes,
     run_resource_pilot,
     select_resource_pilot_cells,
     sha256_file,
 )
+from scripts.rq014.wod_ipv_preprocessing import derive_window_kinematics
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -115,6 +122,33 @@ def test_lane_v3_cell_selection_matches_golden_fixture() -> None:
     assert selected == {key: golden[key] for key in selected}
 
 
+@pytest.mark.parametrize(
+    "axis_name", ["sampling_axis", "temporal_axis", "horizon_axis", "readout_axis"]
+)
+@pytest.mark.parametrize("mutation", ["value", "order"])
+def test_lane_v3_cell_selection_rejects_any_axis_value_or_order_drift(
+    axis_name: str,
+    mutation: str,
+) -> None:
+    lane = copy.deepcopy(json.loads(LANE.read_text(encoding="utf-8")))
+    bank = lane["rating_blind_feature_bank"]
+    axis = bank[axis_name]
+    if axis_name == "temporal_axis":
+        axis = axis["recipes"]
+    if mutation == "order":
+        axis[0], axis[1] = axis[1], axis[0]
+    elif axis_name == "sampling_axis":
+        axis[0]["rate_hz"] = 5
+    elif axis_name == "temporal_axis":
+        axis[0]["window_s"] = 1.25
+    elif axis_name == "horizon_axis":
+        axis[0]["maximum_tau_tick"] = "DRIFT"
+    else:
+        axis[0] = "OTHER"
+    with pytest.raises(PilotError, match="ordered axis contract drifted"):
+        select_resource_pilot_cells(lane)
+
+
 def _write_csv(path: Path, header: list[str], rows: list[list[object]]) -> None:
     path.write_text(
         ",".join(header) + "\n" + "".join(",".join(map(str, row)) + "\n" for row in rows),
@@ -142,7 +176,11 @@ def _build_runtime_fixture(tmp_path: Path) -> dict[str, object]:
             "pos_y_m",
             "included_in_effective_future",
         ],
-        [["S1", "C1", value, value, 0.1 * value, "true"] for value in times_future],
+        [
+            ["S1", candidate_id, value, value, 0.1 * value, "true"]
+            for candidate_id in ("C1", "C2", "C3")
+            for value in times_future
+        ],
     )
     counterpart_times = [round(-1.0 + index * 0.25, 2) for index in range(17)]
     _write_csv(
@@ -257,6 +295,112 @@ def _build_runtime_fixture(tmp_path: Path) -> dict[str, object]:
     }
 
 
+def _anchor_sources(
+    *,
+    candidate_end_s: tuple[float, float, float] = (3.0, 3.0, 3.0),
+    counterpart_end_s: float = 3.0,
+) -> dict[str, object]:
+    history = [
+        (tick / 4.0, tick / 4.0, 0.0)
+        for tick in range(-4, 1)
+    ]
+    candidates = {
+        ("S1", candidate_id): [
+            (tick / 4.0, tick / 4.0, 0.1 * tick / 4.0)
+            for tick in range(1, round(end_s * 4) + 1)
+        ]
+        for candidate_id, end_s in zip(
+            ("C1", "C2", "C3"), candidate_end_s
+        )
+    }
+    counterpart = [
+        (tick / 4.0, tick / 4.0 + 2.0, 1.0)
+        for tick in range(-4, round(counterpart_end_s * 4) + 1)
+    ]
+    return {
+        "candidate": candidates,
+        "history": {("S1",): history},
+        "counterpart": {("S1",): counterpart},
+        "mapped_segment_count": 1,
+        "source_row_count": sum(len(rows) for rows in candidates.values())
+        + len(history)
+        + len(counterpart),
+    }
+
+
+def test_anchor_domain_uses_joint_three_candidate_h_common() -> None:
+    sources = _anchor_sources(candidate_end_s=(3.0, 2.5, 2.0))
+    windows = _assemble_windows(sources, "RR3-R10L-TF-HFEAS-NEX_MEAN")
+    assert len(windows) == 3 * 11
+    assert all(window[-1][0] == 2.0 for pair in windows for window in pair)
+
+
+def test_anchor_domain_h20_is_all_or_none_and_gates_hfeas() -> None:
+    assert len(
+        _assemble_windows(_anchor_sources(), "RR3-R04N-CH-W10-H20-NEX_MEAN")
+    ) == 3 * 5
+    sources = _anchor_sources(candidate_end_s=(3.0, 3.0, 1.75))
+    with pytest.raises(PilotError, match="No complete rating-blind windows"):
+        _assemble_windows(sources, "RR3-R04N-CH-W10-H20-NEX_MEAN")
+    with pytest.raises(PilotError, match="No complete rating-blind windows"):
+        _assemble_windows(sources, "RR3-R10L-TF-HFEAS-NEX_MEAN")
+
+
+@pytest.mark.parametrize("stream", ["C1", "C2", "C3", "counterpart"])
+def test_anchor_domain_requires_every_exact_four_way_grid_tick(stream: str) -> None:
+    sources = _anchor_sources()
+    key = ("S1", stream)
+    if stream == "counterpart":
+        rows = sources["counterpart"][("S1",)]
+    else:
+        rows = sources["candidate"][key]
+    rows[:] = [row for row in rows if row[0] != 1.5]
+    with pytest.raises(PilotError, match="No complete rating-blind windows"):
+        _assemble_windows(sources, "RR3-R04N-CH-W10-H20-NEX_MEAN")
+
+
+def test_stdlib_window_kinematics_matches_frozen_numpy_implementation() -> None:
+    points = [
+        (0.0, 0.0, 0.0),
+        (0.25, 0.2, 0.0),
+        (0.5, 0.5, 0.1),
+        (0.75, 0.9, 0.3),
+    ]
+    observed = np.asarray(_derive_state(points))
+    expected = derive_window_kinematics(
+        np.asarray([(point[1], point[2]) for point in points]), 0.25
+    )
+    np.testing.assert_allclose(observed[:, 1:3], expected["position"], rtol=0, atol=0)
+    np.testing.assert_allclose(observed[:, 3:5], expected["velocity"], rtol=0, atol=0)
+    np.testing.assert_allclose(observed[:, 5:7], expected["acceleration"], rtol=0, atol=0)
+    np.testing.assert_allclose(observed[:, 7], expected["heading"], rtol=0, atol=0)
+
+
+def test_heading_stationary_propagation_threshold_and_all_stationary_rejection() -> None:
+    states = _derive_state(
+        [(0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (2.0, 1.0, 0.0), (3.0, 1.0, 0.0)]
+    )
+    assert [state[7] for state in states] == [0.0, 0.0, 0.0, 0.0]
+    with pytest.raises(PilotError, match="All-stationary"):
+        _derive_state([(0.0, 0.0, 0.0), (1.0, 1e-9, 0.0)])
+    with pytest.raises(PilotError, match="All-stationary"):
+        _derive_state([(0.0, 2.0, 3.0), (1.0, 2.0, 3.0), (2.0, 2.0, 3.0)])
+
+    sources = _anchor_sources()
+    sources["counterpart"][("S1",)] = [
+        (point[0], 2.0, 3.0) for point in sources["counterpart"][("S1",)]
+    ]
+    with pytest.raises(PilotError, match="No complete rating-blind windows"):
+        _assemble_windows(sources, "RR3-R04N-CH-W10-H20-NEX_MEAN")
+
+
+def test_heading_exact_negative_pi_normalizes_to_positive_pi() -> None:
+    states = _derive_state(
+        [(0.0, 0.0, 0.0), (1.0, -1.0, -0.0), (2.0, -2.0, -0.0)]
+    )
+    assert [state[7] for state in states] == [math.pi, math.pi, math.pi]
+
+
 def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> None:
     receipt = run_resource_pilot(**_build_runtime_fixture(tmp_path))
     assert receipt["status"] == "PASS"
@@ -266,18 +410,47 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
         "env_v4_required": True,
         "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
     }
-    assert len(receipt["measurements"]) == 6
+    assert len(receipt["measurements"]) == 5
     assert {row["stage_id"] for row in receipt["measurements"]} == {
         "source_load",
         "window_assembly",
         "feature_prep",
     }
     assert all(row["status"] == "PASS" and row["failure_code"] == "NONE" for row in receipt["measurements"])
+    source_rows = [
+        row for row in receipt["measurements"] if row["stage_id"] == "source_load"
+    ]
+    assert len(source_rows) == 1
+    assert source_rows[0]["cell_id"] == "SHARED"
     assert set(receipt["failure_taxonomy"]) == set(FAILURE_CODES) - {"NONE"}
     assert receipt["failure_rate"] == 0.0
     assert receipt["projection"]["m3_cost_estimate"] == "EXPLICITLY_UNMEASURED"
     assert receipt["projection"]["combined_g2r_cost_estimate"] == "EXPLICITLY_UNMEASURED"
     assert receipt["projection"]["projected_non_m3_cpu_hours"] >= 0.0
+    maximum_cell_wall = max(
+        timing["total_serial_walltime_seconds"]
+        for timing in receipt["per_cell_serial_timings"].values()
+    )
+    maximum_cell_cpu = max(
+        timing["total_serial_cpu_seconds"]
+        for timing in receipt["per_cell_serial_timings"].values()
+    )
+    assert receipt["projection"]["formula"] == (
+        "shared_source_load_once + 320 * "
+        "max_endpoint_window_assembly_plus_feature_prep"
+    )
+    assert math.isclose(
+        receipt["projection"]["projected_non_m3_serial_walltime_hours"],
+        (source_rows[0]["walltime_seconds"] + 320 * maximum_cell_wall) / 3600.0,
+    )
+    assert math.isclose(
+        receipt["projection"]["projected_non_m3_cpu_hours"],
+        (source_rows[0]["cpu_seconds"] + 320 * maximum_cell_cpu) / 3600.0,
+    )
+    assert math.isclose(
+        receipt["projection"]["projected_non_m3_parallel_walltime_hours"],
+        (source_rows[0]["walltime_seconds"] + 20 * maximum_cell_wall) / 3600.0,
+    )
     assert receipt["projection"]["projected_non_m3_parallel_walltime_hours"] <= (
         receipt["projection"]["projected_non_m3_serial_walltime_hours"]
     )
@@ -293,7 +466,6 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
             "total_serial_cpu_seconds",
         }
         assert set(timing["stages"]) == {
-            "source_load",
             "window_assembly",
             "feature_prep",
         }
@@ -301,7 +473,7 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
             set(stage_timing) == {"walltime_seconds", "cpu_seconds"}
             for stage_timing in timing["stages"].values()
         )
-        assert timing["measured_stage_count"] == 3
+        assert timing["measured_stage_count"] == 2
         assert timing["total_serial_walltime_seconds"] >= 0.0
         assert timing["total_serial_cpu_seconds"] >= 0.0
     assert receipt["parallel_execution"] == {
@@ -317,10 +489,20 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
             "VECLIB_MAXIMUM_THREADS": "1",
             "BLIS_NUM_THREADS": "1",
         },
+        "shared_source_load_walltime_seconds": receipt["parallel_execution"][
+            "shared_source_load_walltime_seconds"
+        ],
+        "worker_pool_walltime_seconds": receipt["parallel_execution"][
+            "worker_pool_walltime_seconds"
+        ],
         "aggregate_walltime_seconds": receipt["parallel_execution"][
             "aggregate_walltime_seconds"
         ],
     }
+    assert receipt["parallel_execution"]["shared_source_load_walltime_seconds"] == (
+        source_rows[0]["walltime_seconds"]
+    )
+    assert receipt["parallel_execution"]["worker_pool_walltime_seconds"] >= 0.0
     assert receipt["parallel_execution"]["aggregate_walltime_seconds"] >= 0.0
 
 

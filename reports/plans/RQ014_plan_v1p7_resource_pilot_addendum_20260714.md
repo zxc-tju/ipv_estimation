@@ -46,9 +46,27 @@ The exact selected cells are therefore:
 - lightest: `RR3-R04N-CH-W10-H20-NEX_MEAN`;
 - heaviest: `RR3-R10L-TF-HFEAS-NEX_MEAN`.
 
-The runner must reconstruct all 320 IDs from the lane-v3 axes, verify that these
-two IDs are present, and emit this rule ID and both IDs in the receipt. Any axis,
-count, or ID drift fails closed.
+Before deriving either endpoint, the runner verifies the complete ordered axis
+payload at SHA-256
+`72216349fe299a31c7f00d534e129b19e9a7c0cf8ac1ec3fb0876d71e09413a1`,
+then reconstructs all 320 IDs and verifies their LF-delimited canonical digest
+`db280b77a5fba7e7bb8546da9d2d22337e66c1b1d267d8f8acd281326eaaadee`.
+It then verifies that the two endpoints are present and emits this rule ID and
+both IDs in the receipt. Any axis value, order, count, or ID drift fails closed.
+
+## Frozen anchor eligibility
+
+The measured window workload directly implements the checksum-bound
+`RQ014_envelope_builder_contract_v2.json` rules because no anchor-domain
+artifact is among the pilot's bound inputs. For each scene, `H_common` is the
+largest grid tick jointly supported by C1, C2, C3, and the counterpart. Every
+anchor requires every exact closed tick in all four position timelines. `H20`
+is emitted only as its complete `rate_hz..2*rate_hz` set; `HFEAS` is unavailable
+unless that complete H20 set exists. Window-local velocity and acceleration use
+the frozen one-sided/centered operator. Heading is defined only above the exact
+`1e-9` speed threshold, stationary ticks use the frozen earlier-heading/leading
+backfill rules, all-stationary windows are ineligible, and exact `-pi` is stored
+as `+pi`. No derivative halo or cross-window state reuse is permitted.
 
 ## Resource profile
 
@@ -64,20 +82,27 @@ thread limit remains `1`. This sizing implements the PI guidance recorded in
 The two selected endpoint cells therefore run concurrently in separate
 single-threaded processes, with the process pool capped at 16 workers for the
 production-cost extrapolation. Sixteen CPUs leave one core per possible worker;
-32 GiB protects concurrent source scans and the R10L/TF/HFEAS in-memory window
-work without asserting that M3 fits or ran.
+32 GiB protects the once-loaded shared source payload and concurrent
+R10L/TF/HFEAS in-memory window work without asserting that M3 fits or ran.
 
 ## Measurement and projection contract
 
 Each measured stage records elapsed seconds, CPU seconds, process peak RSS, and
-process I/O deltas. The receipt also records every selected cell's serial sum of
-its stage wall/CPU timings and the aggregate wall-clock around the concurrent
-process-pool execution. Stage failures use the fixed taxonomy
+process I/O deltas. `source_load` runs exactly once in the parent and is emitted
+as the separate `SHARED` measurement row. The read-only payload is installed
+before a POSIX fork process pool and inherited copy-on-write by its workers; it
+is not reopened, reparsed, or serialized once per cell. The receipt records
+every selected cell's serial sum of
+its `window_assembly + feature_prep` wall/CPU timings, the worker-pool wall-clock,
+and aggregate wall-clock spanning the shared load plus concurrent execution.
+Stage failures use the fixed taxonomy
 `INPUT_CONTRACT_FAILURE`, `SOURCE_LOAD_FAILURE`, `WINDOW_ASSEMBLY_FAILURE`, or
 `FEATURE_PREP_FAILURE`; successful stages use `NONE`. A PASS receipt requires
-all six cell-stage executions to succeed and a zero failure rate.
+the one shared-stage and four cell-stage executions to succeed with zero
+failure rate.
 
-The non-M3 full-grid projection is explicit: source-load cost is counted once;
+The non-M3 full-grid projection mirrors that execution exactly: the measured
+shared source-load cost is counted once;
 the larger observed light/heavy per-cell `window_assembly + feature_prep` cost is
 multiplied by 320 for the serial wall/CPU estimate and by `ceil(320 / 16)` for
 the 16-worker parallel wall estimate. The measured aggregate endpoint

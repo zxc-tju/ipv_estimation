@@ -11,6 +11,7 @@ import resource
 import time
 from bisect import bisect_right
 from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 from pathlib import Path
 from typing import Any, Callable
 
@@ -27,6 +28,8 @@ FAILURE_CODES = (
 )
 LIGHTEST_CELL_ID = "RR3-R04N-CH-W10-H20-NEX_MEAN"
 HEAVIEST_CELL_ID = "RR3-R10L-TF-HFEAS-NEX_MEAN"
+LANE_V3_AXIS_SHA256 = "72216349fe299a31c7f00d534e129b19e9a7c0cf8ac1ec3fb0876d71e09413a1"
+LANE_V3_CELL_IDS_SHA256 = "db280b77a5fba7e7bb8546da9d2d22337e66c1b1d267d8f8acd281326eaaadee"
 MAX_PARALLEL_WORKERS = 16
 WORKER_THREAD_LIMITS = {
     "OMP_NUM_THREADS": "1",
@@ -36,6 +39,7 @@ WORKER_THREAD_LIMITS = {
     "VECLIB_MAXIMUM_THREADS": "1",
     "BLIS_NUM_THREADS": "1",
 }
+_SHARED_SOURCES: dict[str, Any] | None = None
 
 
 class PilotError(ValueError):
@@ -67,12 +71,23 @@ def enumerate_lane_v3_cells(lane: dict[str, Any]) -> list[str]:
     bank = lane.get("rating_blind_feature_bank")
     if not isinstance(bank, dict):
         raise PilotError("Lane v3 has no rating_blind_feature_bank")
+    temporal = bank.get("temporal_axis")
+    if not isinstance(temporal, dict):
+        raise PilotError("Lane v3 temporal axis is missing")
     sampling = bank.get("sampling_axis")
-    recipes = bank.get("temporal_axis", {}).get("recipes")
+    recipes = temporal.get("recipes")
     horizons = bank.get("horizon_axis")
     readouts = bank.get("readout_axis")
     if not all(isinstance(axis, list) and axis for axis in (sampling, recipes, horizons, readouts)):
         raise PilotError("Lane v3 pilot axes are missing or empty")
+    axis_contract = {
+        "sampling_axis": sampling,
+        "temporal_recipes": recipes,
+        "horizon_axis": horizons,
+        "readout_axis": readouts,
+    }
+    if hashlib.sha256(canonical_json_bytes(axis_contract)).hexdigest() != LANE_V3_AXIS_SHA256:
+        raise PilotError("Lane v3 ordered axis contract drifted")
     cells = [
         f"RR3-{sample['sampling_id']}-{recipe['temporal_id']}-{horizon['horizon_id']}-{readout}"
         for sample in sampling
@@ -83,7 +98,13 @@ def enumerate_lane_v3_cells(lane: dict[str, Any]) -> list[str]:
     expected = bank.get("predictor_cell_enumeration", {}).get(
         "registered_predictor_cell_count"
     )
-    if expected != 320 or len(cells) != expected or len(set(cells)) != expected:
+    cell_bytes = ("\n".join(cells) + "\n").encode("utf-8")
+    if (
+        expected != 320
+        or len(cells) != expected
+        or len(set(cells)) != expected
+        or hashlib.sha256(cell_bytes).hexdigest() != LANE_V3_CELL_IDS_SHA256
+    ):
         raise PilotError("Lane v3 predictor-cell enumeration is not the frozen 320-cell grid")
     return cells
 
@@ -327,6 +348,45 @@ def _resample(points: list[tuple[float, float, float]], rate_hz: int) -> list[tu
     return [_interpolate(points, tick / rate_hz) for tick in range(first_tick, last_tick + 1)]
 
 
+def _grid_tick_points(
+    points: list[tuple[float, float, float]], rate_hz: int
+) -> dict[int, tuple[float, float, float]]:
+    tick_points: dict[int, tuple[float, float, float]] = {}
+    for point in _resample(points, rate_hz):
+        raw_tick = point[0] * rate_hz
+        tick = round(raw_tick)
+        if not math.isclose(raw_tick, tick, abs_tol=1e-9):
+            raise PilotError("Position timestamp is off the registered grid phase")
+        if tick in tick_points:
+            raise PilotError("Position timeline has a duplicate registered grid tick")
+        tick_points[tick] = point
+    return tick_points
+
+
+def _window_tick_bounds(
+    temporal_id: str,
+    tau_tick: int,
+    h_common_tick: int,
+    rate_hz: int,
+) -> tuple[int, int]:
+    if temporal_id == "CH-W10":
+        return tau_tick - rate_hz, tau_tick
+    if temporal_id == "TF":
+        return 0, h_common_tick
+    raise PilotError(f"Pilot selected an unsupported temporal endpoint: {temporal_id}")
+
+
+def _exact_tick_window(
+    tick_points: dict[int, tuple[float, float, float]],
+    lower_tick: int,
+    upper_tick: int,
+) -> list[tuple[float, float, float]] | None:
+    required = range(lower_tick, upper_tick + 1)
+    if not all(tick in tick_points for tick in required):
+        return None
+    return [tick_points[tick] for tick in required]
+
+
 def _assemble_windows(sources: dict[str, Any], cell_id: str) -> list[tuple[list[Any], list[Any]]]:
     parts = cell_id.split("-")
     sampling_id = parts[1]
@@ -334,55 +394,148 @@ def _assemble_windows(sources: dict[str, Any], cell_id: str) -> list[tuple[list[
     horizon_id = parts[-2]
     rate_hz = 4 if sampling_id == "R04N" else 10
     windows: list[tuple[list[Any], list[Any]]] = []
-    for (segment_id, _candidate_id), future in sources["candidate"].items():
+    candidates_by_segment: dict[str, dict[str, list[tuple[float, float, float]]]] = {}
+    for (segment_id, candidate_id), future in sources["candidate"].items():
+        candidates_by_segment.setdefault(segment_id, {})[candidate_id] = future
+    for segment_id in sorted(candidates_by_segment):
+        futures = candidates_by_segment[segment_id]
         history = sources["history"].get((segment_id,))
         counterpart = sources["counterpart"].get((segment_id,))
-        if not history or not counterpart or not future:
+        if not history or not counterpart or set(futures) != {"C1", "C2", "C3"}:
             continue
-        branch = _resample(history + future, rate_hz)
-        other = _resample(counterpart, rate_hz)
-        h_common_tick = min(
-            math.floor(branch[-1][0] * rate_hz + 1e-9),
-            math.floor(other[-1][0] * rate_hz + 1e-9),
+        branch_ticks = {
+            candidate_id: _grid_tick_points(history + futures[candidate_id], rate_hz)
+            for candidate_id in ("C1", "C2", "C3")
+        }
+        counterpart_ticks = _grid_tick_points(counterpart, rate_hz)
+        four_way_ticks = [*branch_ticks.values(), counterpart_ticks]
+        if any(not tick_points for tick_points in four_way_ticks):
+            continue
+        h_common_tick = min(max(tick_points) for tick_points in four_way_ticks)
+        h20_ticks = tuple(range(rate_hz, 2 * rate_hz + 1))
+
+        def exact_windows(
+            tau_tick: int,
+        ) -> tuple[dict[str, list[tuple[float, float, float]]], list[tuple[float, float, float]]] | None:
+            if tau_tick > h_common_tick:
+                return None
+            lower_tick, upper_tick = _window_tick_bounds(
+                temporal_id, tau_tick, h_common_tick, rate_hz
+            )
+            candidate_windows = {
+                candidate_id: _exact_tick_window(
+                    branch_ticks[candidate_id], lower_tick, upper_tick
+                )
+                for candidate_id in ("C1", "C2", "C3")
+            }
+            counterpart_window = _exact_tick_window(
+                counterpart_ticks, lower_tick, upper_tick
+            )
+            if counterpart_window is None or any(
+                candidate_window is None
+                for candidate_window in candidate_windows.values()
+            ):
+                return None
+            resolved_candidates = {
+                candidate_id: candidate_window
+                for candidate_id, candidate_window in candidate_windows.items()
+                if candidate_window is not None
+            }
+            try:
+                for window in [*resolved_candidates.values(), counterpart_window]:
+                    _derive_state(window)
+            except PilotError:
+                return None
+            return resolved_candidates, counterpart_window
+
+        resolved_windows = {
+            tick: exact_windows(tick)
+            for tick in range(rate_hz, h_common_tick + 1)
+        }
+        h20_windows = {tick: resolved_windows.get(tick) for tick in h20_ticks}
+        if any(value is None for value in h20_windows.values()):
+            continue
+        anchor_ticks = (
+            h20_ticks
+            if horizon_id == "H20"
+            else tuple(
+                tick
+                for tick, resolved in resolved_windows.items()
+                if resolved is not None
+            )
         )
-        maximum_tick = min(h_common_tick, 2 * rate_hz) if horizon_id == "H20" else h_common_tick
-        if maximum_tick < rate_hz:
-            continue
-        for tick in range(rate_hz, maximum_tick + 1):
-            tau = tick / rate_hz
-            if temporal_id == "CH-W10":
-                lower, upper = tau - 1.0, tau
-            elif temporal_id == "TF":
-                lower, upper = 0.0, h_common_tick / rate_hz
-            else:
-                raise PilotError(f"Pilot selected an unsupported temporal endpoint: {temporal_id}")
-            branch_window = [point for point in branch if lower - 1e-9 <= point[0] <= upper + 1e-9]
-            other_window = [point for point in other if lower - 1e-9 <= point[0] <= upper + 1e-9]
-            if len(branch_window) >= 3 and len(other_window) >= 3:
-                windows.append((branch_window, other_window))
+        for tick in anchor_ticks:
+            resolved = resolved_windows[tick]
+            if resolved is None:
+                continue
+            candidate_windows, counterpart_window = resolved
+            for candidate_id in ("C1", "C2", "C3"):
+                windows.append((candidate_windows[candidate_id], counterpart_window))
     if not windows:
         raise PilotError(f"No complete rating-blind windows for {cell_id}")
     return windows
 
 
 def _derive_state(points: list[tuple[float, float, float]]) -> list[tuple[float, ...]]:
-    velocity: list[tuple[float, float]] = []
-    for index in range(len(points)):
-        left = max(0, index - 1)
-        right = min(len(points) - 1, index + 1)
-        if left == right:
-            raise PilotError("Window-local derivative has fewer than two points")
-        dt = points[right][0] - points[left][0]
-        velocity.append(((points[right][1] - points[left][1]) / dt, (points[right][2] - points[left][2]) / dt))
+    if len(points) < 2 or not all(
+        math.isfinite(value) for point in points for value in point
+    ):
+        raise PilotError("Window-local state requires at least two finite positions")
+    dt = points[1][0] - points[0][0]
+    if dt <= 0.0 or any(
+        not math.isclose(points[index][0] - points[index - 1][0], dt, abs_tol=1e-9)
+        for index in range(2, len(points))
+    ):
+        raise PilotError("Window-local positions are not on one uniform grid")
+
+    def finite_difference(values: list[tuple[float, float]]) -> list[tuple[float, float]]:
+        derived = [((values[1][0] - values[0][0]) / dt, (values[1][1] - values[0][1]) / dt)]
+        for index in range(1, len(values) - 1):
+            derived.append(
+                (
+                    (values[index + 1][0] - values[index - 1][0]) / (2.0 * dt),
+                    (values[index + 1][1] - values[index - 1][1]) / (2.0 * dt),
+                )
+            )
+        derived.append(
+            (
+                (values[-1][0] - values[-2][0]) / dt,
+                (values[-1][1] - values[-2][1]) / dt,
+            )
+        )
+        return derived
+
+    position_xy = [(point[1], point[2]) for point in points]
+    velocity = finite_difference(position_xy)
+    acceleration = finite_difference(velocity)
+    heading: list[float | None] = []
+    for vx, vy in velocity:
+        if math.hypot(vx, vy) <= 1e-9:
+            heading.append(None)
+            continue
+        value = math.atan2(vy, vx)
+        heading.append(math.pi if value == -math.pi else value)
+    if all(value is None for value in heading):
+        raise PilotError("All-stationary window has undefined heading")
+    first_defined = next(index for index, value in enumerate(heading) if value is not None)
+    heading[:first_defined] = [heading[first_defined]] * first_defined
+    for index in range(first_defined + 1, len(heading)):
+        if heading[index] is None:
+            heading[index] = heading[index - 1]
     states: list[tuple[float, ...]] = []
     for index, point in enumerate(points):
-        left = max(0, index - 1)
-        right = min(len(points) - 1, index + 1)
-        dt = points[right][0] - points[left][0]
-        ax = (velocity[right][0] - velocity[left][0]) / dt
-        ay = (velocity[right][1] - velocity[left][1]) / dt
-        heading = math.atan2(velocity[index][1], velocity[index][0])
-        states.append((point[0], point[1], point[2], velocity[index][0], velocity[index][1], ax, ay, heading))
+        states.append(
+            (
+                point[0],
+                point[1],
+                point[2],
+                velocity[index][0],
+                velocity[index][1],
+                acceleration[index][0],
+                acceleration[index][1],
+                float(heading[index]),
+            )
+        )
     return states
 
 
@@ -404,44 +557,38 @@ def _configure_worker_thread_limits() -> None:
 
 def _run_pilot_cell(
     cell_id: str,
-    bundle_root: Path,
-    mapping_manifest_path: Path,
 ) -> dict[str, Any]:
+    if _SHARED_SOURCES is None:
+        raise PilotError("Shared pilot sources were not installed before worker start")
+    sources = _SHARED_SOURCES
     measurements: list[dict[str, Any]] = []
-    sources, source_measurement = _measure(
-        "source_load", cell_id, lambda: _load_sources(bundle_root, mapping_manifest_path)
+    windows, window_measurement = _measure(
+        "window_assembly", cell_id, lambda: _assemble_windows(sources, cell_id)
     )
-    measurements.append(source_measurement)
+    measurements.append(window_measurement)
     detail: dict[str, Any] | None = None
     projection_basis: dict[str, float] | None = None
-    if sources is not None:
-        windows, window_measurement = _measure(
-            "window_assembly", cell_id, lambda: _assemble_windows(sources, cell_id)
+    if windows is not None:
+        feature_detail, feature_measurement = _measure(
+            "feature_prep", cell_id, lambda: _prepare_features(windows)
         )
-        measurements.append(window_measurement)
-        if windows is not None:
-            feature_detail, feature_measurement = _measure(
-                "feature_prep", cell_id, lambda: _prepare_features(windows)
-            )
-            measurements.append(feature_measurement)
-            if feature_detail is not None:
-                detail = {
-                    "mapped_segment_count": sources["mapped_segment_count"],
-                    "source_row_count": sources["source_row_count"],
-                    **feature_detail,
-                }
-                projection_basis = {
-                    "source_cpu_seconds": source_measurement["cpu_seconds"],
-                    "source_walltime_seconds": source_measurement["walltime_seconds"],
-                    "per_cell_cpu_seconds": (
-                        window_measurement["cpu_seconds"]
-                        + feature_measurement["cpu_seconds"]
-                    ),
-                    "per_cell_walltime_seconds": (
-                        window_measurement["walltime_seconds"]
-                        + feature_measurement["walltime_seconds"]
-                    ),
-                }
+        measurements.append(feature_measurement)
+        if feature_detail is not None:
+            detail = {
+                "mapped_segment_count": sources["mapped_segment_count"],
+                "source_row_count": sources["source_row_count"],
+                **feature_detail,
+            }
+            projection_basis = {
+                "per_cell_cpu_seconds": (
+                    window_measurement["cpu_seconds"]
+                    + feature_measurement["cpu_seconds"]
+                ),
+                "per_cell_walltime_seconds": (
+                    window_measurement["walltime_seconds"]
+                    + feature_measurement["walltime_seconds"]
+                ),
+            }
     stage_timings = {
         measurement["stage_id"]: {
             "walltime_seconds": measurement["walltime_seconds"],
@@ -540,6 +687,7 @@ def run_resource_pilot(
     preflight_receipt_path: Path,
     preflight_done_path: Path,
 ) -> dict[str, Any]:
+    global _SHARED_SOURCES
     try:
         lane = _load_json(lane_path)
         selection = select_resource_pilot_cells(lane)
@@ -582,6 +730,8 @@ def run_resource_pilot(
                 "selected_cell_count": 0,
                 "worker_model": "PROCESS_POOL",
                 "worker_thread_limits": WORKER_THREAD_LIMITS,
+                "shared_source_load_walltime_seconds": M3_COST_SENTINEL,
+                "worker_pool_walltime_seconds": M3_COST_SENTINEL,
                 "aggregate_walltime_seconds": M3_COST_SENTINEL,
             },
             "failure_taxonomy": taxonomy,
@@ -612,21 +762,36 @@ def run_resource_pilot(
         selection["lightest_cell_id"],
         selection["heaviest_cell_id"],
     )
-    actual_worker_count = min(MAX_PARALLEL_WORKERS, len(selected_cell_ids))
-    parallel_started = time.monotonic()
-    with ProcessPoolExecutor(
-        max_workers=actual_worker_count,
-        initializer=_configure_worker_thread_limits,
-    ) as executor:
-        cell_results = list(
-            executor.map(
-                _run_pilot_cell,
-                selected_cell_ids,
-                (bundle_root,) * len(selected_cell_ids),
-                (mapping_manifest_path,) * len(selected_cell_ids),
-            )
-        )
-    aggregate_walltime_seconds = time.monotonic() - parallel_started
+    execution_started = time.monotonic()
+    sources, source_measurement = _measure(
+        "source_load",
+        "SHARED",
+        lambda: _load_sources(bundle_root, mapping_manifest_path),
+    )
+    measurements.append(source_measurement)
+    actual_worker_count = 0
+    worker_pool_walltime: float | str = M3_COST_SENTINEL
+    cell_results: list[dict[str, Any]] = []
+    if sources is not None:
+        actual_worker_count = min(MAX_PARALLEL_WORKERS, len(selected_cell_ids))
+        worker_pool_started = time.monotonic()
+        _SHARED_SOURCES = sources
+        try:
+            with ProcessPoolExecutor(
+                max_workers=actual_worker_count,
+                mp_context=get_context("fork"),
+                initializer=_configure_worker_thread_limits,
+            ) as executor:
+                cell_results = list(
+                    executor.map(
+                        _run_pilot_cell,
+                        selected_cell_ids,
+                    )
+                )
+        finally:
+            _SHARED_SOURCES = None
+        worker_pool_walltime = time.monotonic() - worker_pool_started
+    aggregate_walltime_seconds = time.monotonic() - execution_started
     for result in cell_results:
         cell_id = result["cell_id"]
         measurements.extend(result["measurements"])
@@ -640,8 +805,8 @@ def run_resource_pilot(
     for row in failures:
         taxonomy[row["failure_code"]] += 1
     if not failures and len(cell_totals) == 2:
-        source_cpu = max(value["source_cpu_seconds"] for value in cell_totals.values())
-        source_wall = max(value["source_walltime_seconds"] for value in cell_totals.values())
+        source_cpu = source_measurement["cpu_seconds"]
+        source_wall = source_measurement["walltime_seconds"]
         per_cell_cpu = max(value["per_cell_cpu_seconds"] for value in cell_totals.values())
         per_cell_wall = max(value["per_cell_walltime_seconds"] for value in cell_totals.values())
         non_m3_cpu: float | str = (source_cpu + 320 * per_cell_cpu) / 3600.0
@@ -654,8 +819,8 @@ def run_resource_pilot(
         non_m3_wall = M3_COST_SENTINEL
         non_m3_parallel_wall = M3_COST_SENTINEL
     projection = {
-        "formula": "max_source_load_once + 320 * max_endpoint_window_assembly_plus_feature_prep",
-        "parallel_formula": "max_source_load_once + ceil(320 / 16) * max_endpoint_window_assembly_plus_feature_prep",
+        "formula": "shared_source_load_once + 320 * max_endpoint_window_assembly_plus_feature_prep",
+        "parallel_formula": "shared_source_load_once + ceil(320 / 16) * max_endpoint_window_assembly_plus_feature_prep",
         "parallel_worker_count": MAX_PARALLEL_WORKERS,
         "projected_non_m3_cpu_hours": non_m3_cpu,
         "projected_non_m3_serial_walltime_hours": non_m3_wall,
@@ -688,6 +853,10 @@ def run_resource_pilot(
             "selected_cell_count": len(selected_cell_ids),
             "worker_model": "PROCESS_POOL",
             "worker_thread_limits": WORKER_THREAD_LIMITS,
+            "shared_source_load_walltime_seconds": source_measurement[
+                "walltime_seconds"
+            ],
+            "worker_pool_walltime_seconds": worker_pool_walltime,
             "aggregate_walltime_seconds": aggregate_walltime_seconds,
         },
         "failure_taxonomy": taxonomy,

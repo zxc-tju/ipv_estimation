@@ -74,7 +74,9 @@
           {"required": ["declassification_export_commit"]},
           {"required": ["m3_artifact"]},
           {"required": ["input_manifest"]},
+          {"required": ["wod_path_type_mapping_manifest"]},
           {"required": ["contract_preflight_receipt"]},
+          {"required": ["contract_preflight_done"]},
           {"required": ["pilot_scope"]}
         ]
       }

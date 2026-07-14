@@ -240,8 +240,11 @@ question index in `STUDIES.md`.
   W5b implementation candidate is now local-only: `rq014_g2_resource_pilot` uses the existing v3 stdlib runtime
   for rating-blind `source_load`, `window_assembly`, and `feature_prep` measurements on frozen light/heavy cells.
   Its `amd` profile is 1 node/1 task/16 CPU/32G/04:00:00; the endpoint cells run concurrently in separate
-  single-threaded processes under a 16-worker ceiling, with per-cell serial timings and aggregate concurrent
-  wall-clock recorded for D3. M3 stays disabled with `env_v4_required=true`, and M3/combined cost is
+  single-threaded processes under a 16-worker ceiling after one separately measured parent source load whose
+  read-only payload is inherited copy-on-write by the fork workers. Ordered
+  axes/320 IDs fail closed on digest drift; joint three-candidate H-common, exact H20/HFEAS eligibility, and frozen
+  heading boundaries govern the measured windows. Per-cell serial, worker-pool, and aggregate wall-clock evidence
+  is recorded for D3. M3 stays disabled with `env_v4_required=true`, and M3/combined cost is
   `EXPLICITLY_UNMEASURED`. Managed
   environment closure v4 remains a separate proposal for later M3 execution. Fresh dual review, Formal G1/final
   bundle regeneration, publication/sync, immutable spec, validate-only, and the explicit PI stop are still pending;
