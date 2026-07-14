@@ -159,3 +159,10 @@ adopts `tests/fixtures/m3_verifier_portable_fixture.json` at SHA-256
 with its recorded absolute tolerance `1e-7`; W5c achieved raw maximum absolute
 difference `4.952394050405928e-11`. The fixture is closure evidence only and is
 never opened as pilot workload input because it contains a frozen target field.
+
+W5f records a W5d verification gap: validator unit tests had fabricated the
+pre-W5d 12-key delivery block and pilot template tests stopped at `load_spec`,
+so no test combined the reviewed 14-key contract with the full pilot
+`validate_spec` path. W5f requires and value-checks the two W5d pilot fields and
+adds that real-contract integration regression before another pilot spec is
+validated.

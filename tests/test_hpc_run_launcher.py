@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
@@ -23,26 +24,23 @@ M3_PATH = (
 )
 M3_SIZE_BYTES = 88306301
 M3_SHA256 = "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
+REAL_M3_DELIVERY_CONTRACT = json.loads(
+    (ROOT / "reports/plans/RQ014_execution_contract_v1p5.json").read_text(
+        encoding="utf-8"
+    )
+)["m3_artifact_delivery_contract"]
 
 
 def m3_delivery_contract(path: Path, payload: bytes) -> dict[str, object]:
+    delivery = copy.deepcopy(REAL_M3_DELIVERY_CONTRACT)
+    delivery.update(
+        path=str(path),
+        allowed_root=str(path.parent),
+        size_bytes=len(payload),
+        sha256=hashlib.sha256(payload).hexdigest(),
+    )
     return {
-        "m3_artifact_delivery_contract": {
-            "spec_ref_field": "m3_artifact",
-            "required_for_operation": "rq014_g2_contract_preflight",
-            "prohibited_for_operation": "rq014_g2_declassification_export",
-            "path": str(path),
-            "allowed_root": str(path.parent),
-            "size_bytes": len(payload),
-            "sha256": hashlib.sha256(payload).hexdigest(),
-            "open_policy": "SINGLE_RETAINED_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
-            "verification_order": (
-                "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION"
-            ),
-            "deserialization_in_contract_preflight": "FORBIDDEN",
-            "immutable_receipt_schema": "rq014-m3-artifact-input-receipt-v1",
-            "job_start_reverification": True,
-        }
+        "m3_artifact_delivery_contract": delivery,
     }
 
 
@@ -463,6 +461,62 @@ def test_m3_artifact_uses_retained_no_follow_descriptor_before_deserialization(
             base=directory_base,
             contract=directory_contract,
         )
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("verification_only_for_operation", "rq014_g2_contract_preflight"),
+        ("deserialization_in_resource_pilot", "OPTIONAL"),
+    ],
+)
+def test_m3_delivery_contract_rejects_w5d_pilot_policy_value_drift(
+    tmp_path: Path,
+    field: str,
+    replacement: str,
+) -> None:
+    artifact = tmp_path / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"
+    artifact.parent.mkdir(parents=True)
+    payload = b"frozen scorer fixture"
+    artifact.write_bytes(payload)
+    contract = m3_delivery_contract(artifact, payload)
+    contract["m3_artifact_delivery_contract"][field] = replacement
+    ref = {
+        "path": str(artifact),
+        "size_bytes": len(payload),
+        "sha256": hashlib.sha256(payload).hexdigest(),
+    }
+    with pytest.raises(
+        rq014_preflight.ContractError,
+        match="delivery contract must require preflight and prohibit export",
+    ):
+        rq014_preflight.validate_m3_artifact_ref(ref, base=tmp_path, contract=contract)
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["verification_only_for_operation", "deserialization_in_resource_pilot"],
+)
+def test_m3_delivery_contract_requires_all_14_w5d_keys(
+    tmp_path: Path,
+    field: str,
+) -> None:
+    artifact = tmp_path / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"
+    artifact.parent.mkdir(parents=True)
+    payload = b"frozen scorer fixture"
+    artifact.write_bytes(payload)
+    contract = m3_delivery_contract(artifact, payload)
+    del contract["m3_artifact_delivery_contract"][field]
+    ref = {
+        "path": str(artifact),
+        "size_bytes": len(payload),
+        "sha256": hashlib.sha256(payload).hexdigest(),
+    }
+    with pytest.raises(
+        rq014_preflight.ContractError,
+        match="delivery contract is missing or malformed",
+    ):
+        rq014_preflight.validate_m3_artifact_ref(ref, base=tmp_path, contract=contract)
 
 
 def test_run_preflight_aborts_on_m3_before_input_or_ledger_processing(
