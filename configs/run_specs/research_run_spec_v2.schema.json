@@ -20,7 +20,11 @@
     "rq_id": {"const": "RQ014"},
     "run_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
     "operation": {
-      "enum": ["rq014_g2_declassification_export", "rq014_g2_contract_preflight"]
+      "enum": [
+        "rq014_g2_declassification_export",
+        "rq014_g2_contract_preflight",
+        "rq014_g2_resource_pilot"
+      ]
     },
     "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
     "declassification_export_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
@@ -46,7 +50,11 @@
     "sanitization_receipt": {"$ref": "#/$defs/fileRef"},
     "materialization_ledger": {"$ref": "#/$defs/fileRef"},
     "declassification_export_receipt": {"$ref": "#/$defs/fileRef"},
-    "declassification_export_done": {"$ref": "#/$defs/fileRef"}
+    "declassification_export_done": {"$ref": "#/$defs/fileRef"},
+    "contract_preflight_receipt": {"$ref": "#/$defs/fileRef"},
+    "contract_preflight_done": {"$ref": "#/$defs/fileRef"},
+    "wod_path_type_mapping_manifest": {"$ref": "#/$defs/fileRef"},
+    "pilot_scope": {"$ref": "#/$defs/pilotScope"}
   },
   "oneOf": [
     {
@@ -64,7 +72,12 @@
       "not": {
         "anyOf": [
           {"required": ["declassification_export_commit"]},
-          {"required": ["m3_artifact"]}
+          {"required": ["m3_artifact"]},
+          {"required": ["input_manifest"]},
+          {"required": ["wod_path_type_mapping_manifest"]},
+          {"required": ["contract_preflight_receipt"]},
+          {"required": ["contract_preflight_done"]},
+          {"required": ["pilot_scope"]}
         ]
       }
     },
@@ -81,7 +94,46 @@
         "materialization_ledger",
         "declassification_export_receipt",
         "declassification_export_done"
-      ]
+      ],
+      "not": {
+        "anyOf": [
+          {"required": ["scene_bundles"]},
+          {"required": ["readiness_table"]},
+          {"required": ["counterpart_tracks"]},
+          {"required": ["created_at_utc"]},
+          {"required": ["wod_path_type_mapping_manifest"]},
+          {"required": ["contract_preflight_receipt"]},
+          {"required": ["contract_preflight_done"]},
+          {"required": ["pilot_scope"]}
+        ]
+      }
+    },
+    {
+      "properties": {
+        "operation": {"const": "rq014_g2_resource_pilot"},
+        "resource_profile_id": {"const": "rq014-g2-resource-pilot-cpu-v1"}
+      },
+      "required": [
+        "declassification_export_commit",
+        "m3_artifact",
+        "input_manifest",
+        "sanitization_receipt",
+        "materialization_ledger",
+        "wod_path_type_mapping_manifest",
+        "declassification_export_receipt",
+        "declassification_export_done",
+        "contract_preflight_receipt",
+        "contract_preflight_done",
+        "pilot_scope"
+      ],
+      "not": {
+        "anyOf": [
+          {"required": ["scene_bundles"]},
+          {"required": ["readiness_table"]},
+          {"required": ["counterpart_tracks"]},
+          {"required": ["created_at_utc"]}
+        ]
+      }
     }
   ],
   "$defs": {
@@ -106,6 +158,26 @@
         "sha256": {
           "const": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
         }
+      }
+    },
+    "pilotScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_selection_rule_id",
+        "non_m3_stages",
+        "m3_stage_enabled",
+        "env_v4_required",
+        "m3_cost_estimate"
+      ],
+      "properties": {
+        "cell_selection_rule_id": {"const": "LANE_V3_NON_M3_COST_EXTREMES_V1"},
+        "non_m3_stages": {
+          "const": ["source_load", "window_assembly", "feature_prep"]
+        },
+        "m3_stage_enabled": {"const": false},
+        "env_v4_required": {"const": true},
+        "m3_cost_estimate": {"const": "EXPLICITLY_UNMEASURED"}
       }
     }
   }

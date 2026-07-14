@@ -55,15 +55,27 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "The W5a execution boundary remained fail closed through both rounds and terminal dual review is NO_BLOCKER."
+    },
+    {
+      "evidence": [
+        "W5b round 1 reviewed commit 4c7bd1be099f233d61c683127ef3e40b24bd95f2 and returned one execution-governance blocker, E1: export specs did not explicitly reject the pilot-only wod_path_type_mapping_manifest and contract_preflight_done fields. Statistics independently returned three implementation blockers.",
+        "Round-2 remediation commit 59c258534220db62e68e0cd64c59442cd2dba960 added export-branch not-any-of rejection for both fields with schema and launcher regressions, retained the 16-CPU/32G single-thread-per-worker profile, and preserved the rating-blind non-M3/M3-disabled split and failure taxonomy. Execution governance returned NO_BLOCKER while statistics retained only the R04N counterpart sampling residual.",
+        "Round-3 commit c6b8fb39da1af55dafae98d8b5189dc50e9e4bdd changed only the frozen preprocessing implementation, tests and explanatory records needed to close that statistics residual; it did not broaden central authority, enable M3, access ratings, invoke the launcher, submit a job or change the reviewed launcher/wrapper pin chain.",
+        "Terminal round-3 execution-governance and statistics reviews both returned NO_BLOCKER on the exact 107-row review manifest SHA-256 69ffb92de18b057ab70d6805cc3d2043fd36b4f057683683f28b15e13e0c4956, with distinct reviewer identities and zero unresolved blockers or majors."
+      ],
+      "finding_id": "W5B-E-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The W5b export-schema rejection blocker is closed and the terminal pilot surfaces remain fail closed at the pre-submit PI gate."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-14T05:27:37Z",
+  "reviewed_at_utc": "2026-07-14T10:09:32Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "4f24e243575995015aa294abf2dfc2288928ad6066456e9ff9ec87307d37cf07",
+  "reviewed_manifest_sha256": "69ffb92de18b057ab70d6805cc3d2043fd36b4f057683683f28b15e13e0c4956",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

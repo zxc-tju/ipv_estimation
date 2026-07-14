@@ -562,6 +562,7 @@ def test_reviewed_runtime_references_use_the_same_v3_environment_lock() -> None:
     for relative in (
         "configs/run_specs/RQ014_g2_declassification_export.template.json",
         "configs/run_specs/RQ014_g2_contract_preflight.template.json",
+        "configs/run_specs/RQ014_g2_resource_pilot.template.json",
     ):
         payload = json.loads((ROOT / relative).read_text(encoding="utf-8"))
         assert payload["environment_manifest"] == {
@@ -739,6 +740,18 @@ def test_preflight_and_resource_pilot_are_conditionally_registered_for_review() 
         "rq014-g2-contract-preflight-receipt-v1",
         "rq014-managed-operation-done-v1",
     ]
+    launcher._validate_rq014_operation_contract(
+        pilot,
+        operation_name="rq014_g2_resource_pilot",
+        resource_profile_id="rq014-g2-resource-pilot-cpu-v1",
+    )
+    assert pilot["required_run_spec_refs"][-5:] == [
+        "declassification_export_receipt",
+        "declassification_export_done",
+        "contract_preflight_receipt",
+        "contract_preflight_done",
+        "pilot_scope",
+    ]
     assert authorization["authorizations"]["RQ014"]["formal_g1_path"] == (
         launcher.RQ014_FORMAL_G1
     )
@@ -771,6 +784,14 @@ def test_preflight_and_resource_pilot_are_conditionally_registered_for_review() 
     assert schema["properties"]["m3_artifact"] == {"$ref": "#/$defs/m3ArtifactRef"}
     preflight_branch = schema["oneOf"][1]
     assert "m3_artifact" in preflight_branch["required"]
+    pilot_branch = schema["oneOf"][2]
+    assert pilot_branch["properties"]["resource_profile_id"]["const"] == (
+        "rq014-g2-resource-pilot-cpu-v1"
+    )
+    assert "contract_preflight_receipt" in pilot_branch["required"]
+    assert schema["$defs"]["pilotScope"]["properties"]["env_v4_required"] == {
+        "const": True
+    }
 
 
 def test_allowlist_change_invalidates_old_formal_g1_before_preflight_submit() -> None:

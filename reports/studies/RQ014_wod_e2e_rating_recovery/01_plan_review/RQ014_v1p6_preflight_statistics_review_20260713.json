@@ -55,15 +55,27 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The W5a round-1 prose blocker is remedied and round 2 closes with dual NO_BLOCKER without broadening execution authority."
+    },
+    {
+      "evidence": [
+        "W5b round 1 reviewed commit 4c7bd1be099f233d61c683127ef3e40b24bd95f2 and returned three statistics blockers: S1 required fail-closed validation of the ordered lane-v3 axes before endpoint derivation, S2 required source-loading charges to match the actual parallel execution model, and S3 required the measured workload to implement the frozen joint anchor-eligibility and heading semantics exactly; execution governance independently reported one schema-rejection blocker.",
+        "Round-2 remediation commit 59c258534220db62e68e0cd64c59442cd2dba960 closed S1 and S2 and implemented the frozen joint three-candidate H-common, all-or-none H20/exact eligibility, heading, stationary and exact-minus-pi rules. Statistics retained one residual S3 blocker because the R04N counterpart path still exposed native 10-Hz rows to the 0.25-s exact-grid eligibility check; execution governance returned NO_BLOCKER.",
+        "Round-3 commit c6b8fb39da1af55dafae98d8b5189dc50e9e4bdd resamples counterpart positions to the tstar-anchored 0.25-s grid only inside observed support, uses immediately bracketing timestamps, permits the exact inclusive 2*dt source-gap boundary and fails closed for every strictly larger gap without extrapolation. Native-10-Hz and bit-exact inclusive/exclusive boundary fixtures close the residual.",
+        "Terminal round-3 statistics and execution-governance reviews both returned NO_BLOCKER on the exact 107-row review manifest SHA-256 69ffb92de18b057ab70d6805cc3d2043fd36b4f057683683f28b15e13e0c4956, with zero unresolved blockers or majors."
+      ],
+      "finding_id": "W5B-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The W5b three-round statistics ledger closes with exact lane axes, execution-matched loading, frozen eligibility, and support-only R04N counterpart interpolation."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-14T05:27:36Z",
+  "reviewed_at_utc": "2026-07-14T10:09:31Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "4f24e243575995015aa294abf2dfc2288928ad6066456e9ff9ec87307d37cf07",
+  "reviewed_manifest_sha256": "69ffb92de18b057ab70d6805cc3d2043fd36b4f057683683f28b15e13e0c4956",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

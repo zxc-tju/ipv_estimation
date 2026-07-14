@@ -154,8 +154,15 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
         "rq014-g2-contract-preflight-receipt-v1",
         "rq014-managed-operation-done-v1",
     ]
-    assert "resource_profile_id" not in pilot
-    assert not (ROOT / "configs" / "run_specs" / "RQ014_g2_resource_pilot.template.json").exists()
+    assert pilot["resource_profile_id"] == "rq014-g2-resource-pilot-cpu-v1"
+    assert pilot["m3_stage_contract"] == {
+        "m3_stage_enabled": False,
+        "env_v4_required": True,
+        "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
+        "combined_g2r_cost_estimate": "EXPLICITLY_UNMEASURED",
+        "deserialization": "FORBIDDEN",
+    }
+    assert (ROOT / "configs" / "run_specs" / "RQ014_g2_resource_pilot.template.json").is_file()
     assert operations["rq014_g2_blind_build"]["status"].startswith("DENY_")
     assert operations["rq014_g2p_power_simulation"]["status"].startswith("DENY_")
 

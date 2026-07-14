@@ -320,6 +320,48 @@ def test_export_spec_rejects_preflight_export_commit_field(tmp_path: Path) -> No
         load_spec(path)
 
 
+@pytest.mark.parametrize(
+    "field", ["wod_path_type_mapping_manifest", "contract_preflight_done"]
+)
+def test_export_spec_and_schema_reject_pilot_or_preflight_only_refs(
+    tmp_path: Path,
+    field: str,
+) -> None:
+    payload = json.loads(
+        (
+            ROOT
+            / "configs"
+            / "run_specs"
+            / "RQ014_g2_declassification_export.template.json"
+        ).read_text(encoding="utf-8")
+    )
+    payload["run_id"] = "RQ014_export_fixture"
+    payload["git_commit"] = "1" * 40
+    for value in payload.values():
+        if isinstance(value, dict) and "sha256" in value:
+            value["path"] = "/managed/fixture"
+            value["sha256"] = "3" * 64
+    for value in payload["scene_bundles"]:
+        value["path"] = "/managed/fixture"
+        value["sha256"] = "3" * 64
+    payload[field] = {"path": "/managed/forbidden", "sha256": "4" * 64}
+    path = tmp_path / f"export-with-{field}.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(ValueError, match=f"unexpected.*{field}"):
+        load_spec(path)
+
+    schema = json.loads(
+        (ROOT / "configs" / "run_specs" / "research_run_spec_v2.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    export_rejections = {
+        entry["required"][0]
+        for entry in schema["oneOf"][0]["not"]["anyOf"]
+    }
+    assert field in export_rejections
+
+
 def test_m3_artifact_is_preflight_only_exact_key(tmp_path: Path) -> None:
     payload = json.loads(
         (ROOT / "configs" / "run_specs" / "RQ014_g2_declassification_export.template.json").read_text(
@@ -1017,6 +1059,9 @@ def test_exact_path_python_bootstrap_blocks_site_and_shadow_injection(
     preflight_path.write_bytes((ROOT / "scripts" / "rq014" / "preflight.py").read_bytes())
     materializer_path.write_bytes(
         (ROOT / "scripts" / "rq014" / "materialize_registry.py").read_bytes()
+    )
+    (rq014 / "run_resource_pilot.py").write_bytes(
+        (ROOT / "scripts" / "rq014" / "run_resource_pilot.py").read_bytes()
     )
     (rq014 / "run_managed_g2.py").write_text(
         "import json\n"
