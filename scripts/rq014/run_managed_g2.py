@@ -37,6 +37,7 @@ def main() -> int:
     pilot.add_argument("--wod-path-type-mapping-manifest", type=Path, required=True)
     pilot.add_argument("--contract-preflight-receipt", type=Path, required=True)
     pilot.add_argument("--contract-preflight-done", type=Path, required=True)
+    pilot.add_argument("--m3-parity-fixture", type=Path, required=True)
     for operation_parser in (preflight, pilot):
         operation_parser.add_argument("--m3-artifact", type=Path, required=True)
         operation_parser.add_argument("--m3-artifact-size-bytes", type=int, required=True)
@@ -81,6 +82,7 @@ def main() -> int:
             m3_artifact_path=args.m3_artifact.resolve(),
             m3_artifact_size_bytes=args.m3_artifact_size_bytes,
             m3_artifact_sha256=args.m3_artifact_sha256,
+            m3_parity_fixture_path=args.m3_parity_fixture.resolve(),
             export_receipt_path=args.declassification_export_receipt.resolve(),
             export_done_path=args.declassification_export_done.resolve(),
             preflight_receipt_path=args.contract_preflight_receipt.resolve(),

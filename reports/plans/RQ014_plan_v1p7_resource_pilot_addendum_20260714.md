@@ -1,10 +1,11 @@
 # RQ014 v1.7 addendum — W5b resource-pilot environment split
 
 Date: 2026-07-14. This addendum narrows the already scoped
-`rq014_g2_resource_pilot` operation. It does not authorize submission, G2R,
-rating access, M3 scoring, or environment-v4 construction.
+`rq014_g2_resource_pilot` operation. It does not authorize submission, G2R, or
+rating access. Its W5b environment decision was superseded by the W5d changelog
+below after the separately reviewed environment-v4 candidate became available.
 
-## Environment decision
+## W5b environment decision (superseded by W5d)
 
 The pilot runs only under the existing checksum-bound v3 standard-library
 runtime. The W5 environment-closure proposal records that v3 imports zero site
@@ -38,8 +39,8 @@ those lane semantics:
 - the minimum temporal workload is `CH-W10`, while the maximum is `TF`, whose
   full `[0,H_common]` position window applies at every retained finite anchor;
 - horizon workload increases from bounded `H20` to all-feasible `HFEAS`;
-- readouts are tied because deviation/readout execution depends on disabled M3;
-  ties use the first lane-declared readout, `NEX_MEAN`.
+- readouts are tied because the W5d M3 cost substrate and its row count do not
+  vary by readout; ties use the first lane-declared readout, `NEX_MEAN`.
 
 The exact selected cells are therefore:
 
@@ -95,8 +96,8 @@ thread limit remains `1`. This sizing implements the PI guidance recorded in
 The two selected endpoint cells therefore run concurrently in separate
 single-threaded processes, with the process pool capped at 16 workers for the
 production-cost extrapolation. Sixteen CPUs leave one core per possible worker;
-32 GiB protects the once-loaded shared source payload and concurrent
-R10L/TF/HFEAS in-memory window work without asserting that M3 fits or ran.
+32 GiB protects the once-loaded shared source and M3 payloads plus concurrent
+R10L/TF/HFEAS in-memory window and scoring work.
 
 ## Measurement and projection contract
 
@@ -106,12 +107,12 @@ as the separate `SHARED` measurement row. The read-only payload is installed
 before a POSIX fork process pool and inherited copy-on-write by its workers; it
 is not reopened, reparsed, or serialized once per cell. The receipt records
 every selected cell's serial sum of
-its `window_assembly + feature_prep` wall/CPU timings, the worker-pool wall-clock,
+its `window_assembly + feature_prep + m3_scoring` wall/CPU timings, the worker-pool wall-clock,
 and aggregate wall-clock spanning the shared load plus concurrent execution.
 Stage failures use the fixed taxonomy
-`INPUT_CONTRACT_FAILURE`, `SOURCE_LOAD_FAILURE`, `WINDOW_ASSEMBLY_FAILURE`, or
-`FEATURE_PREP_FAILURE`; successful stages use `NONE`. A PASS receipt requires
-the one shared-stage and four cell-stage executions to succeed with zero
+`INPUT_CONTRACT_FAILURE`, `SOURCE_LOAD_FAILURE`, `WINDOW_ASSEMBLY_FAILURE`,
+`FEATURE_PREP_FAILURE`, or `M3_STAGE_FAILURE`; successful stages use `NONE`.
+A PASS receipt requires the two shared stages and six cell-stage executions to succeed with zero
 failure rate.
 
 The non-M3 full-grid projection mirrors that execution exactly: the measured
@@ -122,5 +123,39 @@ the 16-worker parallel wall estimate. The measured aggregate endpoint
 wall-clock remains separate evidence of process startup and concurrent I/O, so
 D3 can qualify both extrapolations rather than treating the theoretical worker
 division as observed 16-way scaling. This is a conservative two-endpoint
-extrapolation, not a G2R total. The receipt-to-`DONE.json` hash chain follows the
+extrapolation. W5d adds the once-only M3 model-load cost and the larger endpoint
+M3-scoring cost to separate M3 and combined G2R projections, using the same
+serial and `ceil(320 / 16)` parallel formulas. The receipt-to-`DONE.json` hash chain follows the
 managed sibling operations, and `DONE.json` is written only for PASS.
+
+## W5d changelog — accepted environment-v4 closure
+
+W5d supersedes this addendum's W5b M3-disabled environment split and every
+dependent readout, memory-sizing, measurement-count, taxonomy, timing, and
+projection clause above. The W5c
+build report and environment-closure proposal bind
+`managed_python_environment_v4.json` at SHA-256
+`1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9`.
+Export and contract-preflight stay on v3; the resource pilot binds v4 and must
+verify, before scientific Python starts, 1,849 stdlib files / 40,860,773 bytes /
+0 symlinks, 12,206 site-package files / 487,535,728 bytes / 0 symlinks, and the
+94-row native closure (45 unique resolved files, 31 link rows).
+
+After that gate, the pilot deserializes M3 once in the parent and measures one
+shared `m3_model_load` plus per-cell `m3_scoring` in single-threaded fork
+workers. Scoring uses a deterministic rating-free vector derived from frozen
+model/support metadata, tiled only to the measured cell's window count; it is a
+cost substrate, not scientific evidence. D3 receives separate non-M3, M3, and
+combined serial/16-worker projections. Any v4, model, or scoring mismatch is a
+global abort with a FAIL receipt and no DONE, following the lane-v3 W4
+`m3_artifact_mismatch_policy=GLOBAL_ABORT` precedent; a failed measured load or
+score attempt is recorded in a FAIL receipt, but no numeric M3/combined cost or
+DONE is emitted. Silent fallback is
+forbidden and numeric M3/combined estimates become `EXPLICITLY_UNMEASURED`.
+
+The M3 manifest names no parity fixture. The reviewed v4 standard instead
+adopts `tests/fixtures/m3_verifier_portable_fixture.json` at SHA-256
+`ae62b9fddba53308d319ccef5a70d56a9f0ae243fe009aa3f85e36cb20fcee37`
+with its recorded absolute tolerance `1e-7`; W5c achieved raw maximum absolute
+difference `4.952394050405928e-11`. The fixture is closure evidence only and is
+never opened as pilot workload input because it contains a frozen target field.

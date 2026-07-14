@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 78caf93a489a7c2ee4d0d445ebc63ce0cc77b61316cda637151e68f20dff3b03 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 6a73d129a63eecc2b84e58d09641627ee5bc557847fa56488e854435294358a1 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -143,17 +143,20 @@ exact all-or-none anchor eligibility, and frozen heading boundaries are applied.
 Native-10Hz counterpart positions are interpolated within support to the R04N
 0.25-second grid; a bracketing gap strictly above `2*dt=0.5 s` is ineligible and
 counterpart extrapolation is forbidden.
-It runs only the v3-compatible rating-blind
-`source_load`, `window_assembly`, and `feature_prep` stages for the frozen lane-v3
-cost endpoints. `m3_stage_enabled` is false, `env_v4_required` is true, and both
-M3 and combined G2R costs remain `EXPLICITLY_UNMEASURED`; the frozen M3 bytes are
-verified for lineage but never imported or deserialized. This implementation
+Export and preflight remain bound to v3. The pilot binds the exact v4 manifest
+and its pre-exec stdlib/site/native closure gate, then measures one shared M3
+model load and per-cell single-threaded M3 scoring on a deterministic
+rating-free cost substrate. `m3_stage_enabled` and `env_v4_required` are true;
+M3 and combined projections are numeric only after every v4/M3 stage passes,
+otherwise the run fails closed with no DONE and `EXPLICITLY_UNMEASURED` fields.
+The parity fixture is checksum evidence only, not workload input. This implementation
 does not remove the fresh-review, Formal-G1, bundle, immutable-spec,
 validate-only, and explicit PI stop gates before submission.
 
 Schema v2 is fixed by `research_run_spec_v2.schema.json`, while the managed
 standard-library interpreter receipt is fixed by
-`rq014_managed_python_environment_v3.schema.json`; the checked-in RQ014
+`rq014_managed_python_environment_v3.schema.json`, while the pilot scientific
+closure is fixed by `rq014_managed_python_environment_v4.schema.json`; the checked-in RQ014
 template is intentionally non-executable until every placeholder is replaced
 with an exact path/hash in an immutable managed manifest area. The final
 production spec must be a direct child of

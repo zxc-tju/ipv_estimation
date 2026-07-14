@@ -12,6 +12,7 @@ import pytest
 
 import scripts.hpc.prepare_research_run as launcher
 import scripts.rq014.run_managed_g2 as managed
+import scripts.rq014.run_resource_pilot as pilot_module
 from scripts.rq014.run_resource_pilot import (
     FAILURE_CODES,
     PilotError,
@@ -57,9 +58,9 @@ def test_pilot_template_and_manual_schema_accept_exact_resolved_keys(tmp_path: P
     assert loaded["pilot_scope"] == {
         "cell_selection_rule_id": "LANE_V3_NON_M3_COST_EXTREMES_V1",
         "non_m3_stages": ["source_load", "window_assembly", "feature_prep"],
-        "m3_stage_enabled": False,
+        "m3_stage_enabled": True,
         "env_v4_required": True,
-        "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
+        "m3_cost_estimate": "MEASURED",
     }
     schema = json.loads(
         (ROOT / "configs" / "run_specs" / "research_run_spec_v2.schema.json").read_text(
@@ -78,6 +79,7 @@ def test_pilot_template_and_manual_schema_accept_exact_resolved_keys(tmp_path: P
         "contract_preflight_receipt",
         "contract_preflight_done",
         "wod_path_type_mapping_manifest",
+        "m3_parity_fixture",
         "pilot_scope",
     ],
 )
@@ -93,7 +95,7 @@ def test_pilot_new_top_level_fields_are_required_exactly(tmp_path: Path, field: 
     [
         ("cell_selection_rule_id", "OTHER"),
         ("non_m3_stages", ["source_load"]),
-        ("m3_stage_enabled", True),
+        ("m3_stage_enabled", False),
         ("env_v4_required", False),
         ("m3_cost_estimate", 0),
     ],
@@ -116,6 +118,35 @@ def test_pilot_rejects_unexpected_top_level_field(tmp_path: Path) -> None:
     payload["unexpected"] = True
     with pytest.raises(ValueError, match="unexpected"):
         launcher.load_spec(_write_spec(tmp_path / "unexpected.json", payload))
+
+
+@pytest.mark.parametrize(
+    "template_name",
+    [
+        "RQ014_g2_declassification_export.template.json",
+        "RQ014_g2_contract_preflight.template.json",
+    ],
+)
+def test_v3_operations_reject_pilot_v4_fixture_field(
+    tmp_path: Path, template_name: str
+) -> None:
+    payload = json.loads((ROOT / "configs/run_specs" / template_name).read_text(encoding="utf-8"))
+    payload["run_id"] = "fixture"
+    payload["git_commit"] = "1" * 40
+    if "declassification_export_commit" in payload:
+        payload["declassification_export_commit"] = "2" * 40
+    if "created_at_utc" in payload:
+        payload["created_at_utc"] = "2026-07-14T00:00:00Z"
+    for value in payload.values():
+        if isinstance(value, dict) and set(value) == {"path", "sha256"}:
+            value["path"] = "/managed/fixture"
+            value["sha256"] = "3" * 64
+    for value in payload.get("scene_bundles", []):
+        value["path"] = "/managed/fixture"
+        value["sha256"] = "3" * 64
+    payload["m3_parity_fixture"] = {"path": "/managed/fixture", "sha256": "4" * 64}
+    with pytest.raises(ValueError, match="unexpected.*m3_parity_fixture"):
+        launcher.load_spec(_write_spec(tmp_path / template_name, payload))
 
 
 def test_lane_v3_cell_selection_matches_golden_fixture() -> None:
@@ -243,8 +274,7 @@ def _build_runtime_fixture(tmp_path: Path) -> dict[str, object]:
         path = tmp_path / f"{name}.json"
         path.write_bytes(canonical_json_bytes({"fixture": name}))
         inputs[name] = path
-    m3 = tmp_path / "m3_scorer.joblib"
-    m3.write_bytes(b"verification-only-m3")
+    m3 = ROOT / "models" / "rq009_m3" / "m3_scorer.joblib"
     m3_sha = sha256_file(m3)
     preflight_receipt = tmp_path / "preflight_receipt.json"
     preflight_receipt.write_bytes(
@@ -290,6 +320,7 @@ def _build_runtime_fixture(tmp_path: Path) -> dict[str, object]:
         "m3_artifact_path": m3,
         "m3_artifact_size_bytes": m3.stat().st_size,
         "m3_artifact_sha256": m3_sha,
+        "m3_parity_fixture_path": ROOT / "tests" / "fixtures" / "m3_verifier_portable_fixture.json",
         "export_receipt_path": inputs["export_receipt"],
         "export_done_path": inputs["export_done"],
         "preflight_receipt_path": preflight_receipt,
@@ -462,20 +493,22 @@ def test_heading_exact_negative_pi_normalizes_to_positive_pi() -> None:
     assert [state[7] for state in states] == [math.pi, math.pi, math.pi]
 
 
-def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> None:
+def test_resource_pilot_receipt_measures_enabled_m3_stage(tmp_path: Path) -> None:
     receipt = run_resource_pilot(**_build_runtime_fixture(tmp_path))
     assert receipt["status"] == "PASS"
     assert receipt["pilot_scope"] == {
         "non_m3_stages": ["source_load", "window_assembly", "feature_prep"],
-        "m3_stage_enabled": False,
+        "m3_stage_enabled": True,
         "env_v4_required": True,
-        "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
+        "m3_cost_estimate": "MEASURED",
     }
-    assert len(receipt["measurements"]) == 5
+    assert len(receipt["measurements"]) == 8
     assert {row["stage_id"] for row in receipt["measurements"]} == {
         "source_load",
         "window_assembly",
         "feature_prep",
+        "m3_model_load",
+        "m3_scoring",
     }
     assert all(row["status"] == "PASS" and row["failure_code"] == "NONE" for row in receipt["measurements"])
     source_rows = [
@@ -485,15 +518,17 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
     assert source_rows[0]["cell_id"] == "SHARED"
     assert set(receipt["failure_taxonomy"]) == set(FAILURE_CODES) - {"NONE"}
     assert receipt["failure_rate"] == 0.0
-    assert receipt["projection"]["m3_cost_estimate"] == "EXPLICITLY_UNMEASURED"
-    assert receipt["projection"]["combined_g2r_cost_estimate"] == "EXPLICITLY_UNMEASURED"
+    assert receipt["projection"]["m3_cost_estimate"] == "MEASURED"
+    assert receipt["projection"]["combined_g2r_cost_estimate"] == "MEASURED"
     assert receipt["projection"]["projected_non_m3_cpu_hours"] >= 0.0
     maximum_cell_wall = max(
-        timing["total_serial_walltime_seconds"]
+        timing["stages"]["window_assembly"]["walltime_seconds"]
+        + timing["stages"]["feature_prep"]["walltime_seconds"]
         for timing in receipt["per_cell_serial_timings"].values()
     )
     maximum_cell_cpu = max(
-        timing["total_serial_cpu_seconds"]
+        timing["stages"]["window_assembly"]["cpu_seconds"]
+        + timing["stages"]["feature_prep"]["cpu_seconds"]
         for timing in receipt["per_cell_serial_timings"].values()
     )
     assert receipt["projection"]["formula"] == (
@@ -515,6 +550,26 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
     assert receipt["projection"]["projected_non_m3_parallel_walltime_hours"] <= (
         receipt["projection"]["projected_non_m3_serial_walltime_hours"]
     )
+    m3_load = next(row for row in receipt["measurements"] if row["stage_id"] == "m3_model_load")
+    maximum_m3_wall = max(
+        timing["stages"]["m3_scoring"]["walltime_seconds"]
+        for timing in receipt["per_cell_serial_timings"].values()
+    )
+    maximum_m3_cpu = max(
+        timing["stages"]["m3_scoring"]["cpu_seconds"]
+        for timing in receipt["per_cell_serial_timings"].values()
+    )
+    assert receipt["projection"]["m3_formula"] == (
+        "shared_m3_model_load_once + 320 * max_endpoint_m3_scoring"
+    )
+    assert math.isclose(
+        receipt["projection"]["projected_m3_serial_walltime_hours"],
+        (m3_load["walltime_seconds"] + 320 * maximum_m3_wall) / 3600.0,
+    )
+    assert math.isclose(
+        receipt["projection"]["projected_m3_cpu_hours"],
+        (m3_load["cpu_seconds"] + 320 * maximum_m3_cpu) / 3600.0,
+    )
     assert set(receipt["per_cell_serial_timings"]) == {
         "RR3-R04N-CH-W10-H20-NEX_MEAN",
         "RR3-R10L-TF-HFEAS-NEX_MEAN",
@@ -529,12 +584,13 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
         assert set(timing["stages"]) == {
             "window_assembly",
             "feature_prep",
+            "m3_scoring",
         }
         assert all(
             set(stage_timing) == {"walltime_seconds", "cpu_seconds"}
             for stage_timing in timing["stages"].values()
         )
-        assert timing["measured_stage_count"] == 2
+        assert timing["measured_stage_count"] == 3
         assert timing["total_serial_walltime_seconds"] >= 0.0
         assert timing["total_serial_cpu_seconds"] >= 0.0
     assert receipt["parallel_execution"] == {
@@ -552,6 +608,9 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
         },
         "shared_source_load_walltime_seconds": receipt["parallel_execution"][
             "shared_source_load_walltime_seconds"
+        ],
+        "shared_m3_model_load_walltime_seconds": receipt["parallel_execution"][
+            "shared_m3_model_load_walltime_seconds"
         ],
         "worker_pool_walltime_seconds": receipt["parallel_execution"][
             "worker_pool_walltime_seconds"
@@ -587,6 +646,39 @@ def test_resource_pilot_records_input_failure_without_done_eligible_status(tmp_p
     )
 
 
+def test_resource_pilot_m3_failure_aborts_without_numeric_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def fail_load(_path: Path) -> dict[str, object]:
+        raise RuntimeError("fixture v4/M3 mismatch")
+
+    monkeypatch.setattr(pilot_module, "_load_m3_model", fail_load)
+    receipt = run_resource_pilot(**_build_runtime_fixture(tmp_path))
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_taxonomy"]["M3_STAGE_FAILURE"] == 1
+    assert receipt["projection"]["m3_cost_estimate"] == "EXPLICITLY_UNMEASURED"
+    assert receipt["projection"]["combined_g2r_cost_estimate"] == "EXPLICITLY_UNMEASURED"
+    assert receipt["per_cell_serial_timings"] == {}
+
+
+def test_resource_pilot_m3_scoring_failure_is_fail_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def fail_score(_window_count: int, _scorer: dict[str, object]) -> dict[str, object]:
+        raise RuntimeError("fixture M3 scoring failure")
+
+    monkeypatch.setattr(pilot_module, "_score_m3_stage", fail_score)
+    receipt = run_resource_pilot(**_build_runtime_fixture(tmp_path))
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_taxonomy"]["M3_STAGE_FAILURE"] == 2
+    assert sum(
+        row["stage_id"] == "m3_scoring" and row["status"] == "FAIL"
+        for row in receipt["measurements"]
+    ) == 2
+    assert receipt["projection"]["m3_cost_estimate"] == "EXPLICITLY_UNMEASURED"
+    assert receipt["projection"]["combined_g2r_cost_estimate"] == "EXPLICITLY_UNMEASURED"
+
+
 def test_managed_resource_pilot_writes_hash_chained_done(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -617,6 +709,8 @@ def test_managed_resource_pilot_writes_hash_chained_done(
         str(fixture),
         "--contract-preflight-done",
         str(fixture),
+        "--m3-parity-fixture",
+        str(fixture),
         "--m3-artifact",
         str(fixture),
         "--m3-artifact-size-bytes",
@@ -643,6 +737,23 @@ def test_managed_resource_pilot_writes_hash_chained_done(
     assert set(done) == {"schema_version", "operation", "receipt_sha256", "status"}
     assert done["operation"] == "rq014_g2_resource_pilot"
     assert done["receipt_sha256"] == hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+
+    failed_output = tmp_path / "failed-outputs"
+    monkeypatch.setattr(
+        managed,
+        "run_resource_pilot",
+        lambda **kwargs: {
+            "schema_version": "rq014-g2-resource-pilot-receipt-v1",
+            "operation": "rq014_g2_resource_pilot",
+            "status": "FAIL",
+        },
+    )
+    failed_arguments = list(arguments)
+    failed_arguments[-1] = str(failed_output)
+    monkeypatch.setattr(sys, "argv", failed_arguments)
+    assert managed.main() == 1
+    assert (failed_output / "rq014_g2_resource_pilot_receipt.json").is_file()
+    assert not (failed_output / "DONE.json").exists()
 
 
 def test_pilot_validate_only_table_and_sbatch_wiring(tmp_path: Path) -> None:
@@ -673,9 +784,9 @@ def test_pilot_validate_only_table_and_sbatch_wiring(tmp_path: Path) -> None:
         "pilot_scope": {
             "cell_selection_rule_id": "LANE_V3_NON_M3_COST_EXTREMES_V1",
             "non_m3_stages": ["source_load", "window_assembly", "feature_prep"],
-            "m3_stage_enabled": False,
+            "m3_stage_enabled": True,
             "env_v4_required": True,
-            "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
+            "m3_cost_estimate": "MEASURED",
         },
         "environment_manifest_path": str(base / "environment.json"),
         "environment_manifest_sha256": "1" * 64,
@@ -690,9 +801,10 @@ def test_pilot_validate_only_table_and_sbatch_wiring(tmp_path: Path) -> None:
     planned = launcher._with_rq014_validate_only_plan(common)
     assert planned["submission_plan"]["pilot_stage_plan"] == common["pilot_scope"]
     assert planned["runtime_metadata"]["m3_execution"] == {
-        "enabled": False,
+        "enabled": True,
         "env_v4_required": True,
-        "cost_estimate": "EXPLICITLY_UNMEASURED",
+        "cost_estimate": "MEASURED",
+        "verification_failure": "GLOBAL_ABORT_NO_DONE",
     }
 
     validated = {
@@ -735,6 +847,7 @@ def test_pilot_validate_only_table_and_sbatch_wiring(tmp_path: Path) -> None:
         "contract_preflight_receipt_sha256": "0" * 64,
         "contract_preflight_done_path": str(base / "preflight-DONE.json"),
         "contract_preflight_done_sha256": "1" * 64,
+        "m3_parity_fixture_sha256": "2" * 64,
         "score_stripped_bundle_root": str(base / "bundle"),
         "contract_bundle_relative_path": "reports/plans/bundle.sha256",
         "contract_bundle_sha256": "2" * 64,

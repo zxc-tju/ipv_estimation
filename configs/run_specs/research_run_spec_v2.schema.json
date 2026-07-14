@@ -42,6 +42,7 @@
     "counterpart_tracks": {"$ref": "#/$defs/fileRef"},
     "environment_manifest": {"$ref": "#/$defs/fileRef"},
     "m3_artifact": {"$ref": "#/$defs/m3ArtifactRef"},
+    "m3_parity_fixture": {"$ref": "#/$defs/fileRef"},
     "created_at_utc": {
       "type": "string",
       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
@@ -60,7 +61,8 @@
     {
       "properties": {
         "operation": {"const": "rq014_g2_declassification_export"},
-        "resource_profile_id": {"const": "rq014-g2-declassify-cpu-v1"}
+        "resource_profile_id": {"const": "rq014-g2-declassify-cpu-v1"},
+        "environment_manifest": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json", "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"}}
       },
       "required": [
         "scene_bundles",
@@ -73,6 +75,7 @@
         "anyOf": [
           {"required": ["declassification_export_commit"]},
           {"required": ["m3_artifact"]},
+          {"required": ["m3_parity_fixture"]},
           {"required": ["input_manifest"]},
           {"required": ["wod_path_type_mapping_manifest"]},
           {"required": ["contract_preflight_receipt"]},
@@ -84,7 +87,8 @@
     {
       "properties": {
         "operation": {"const": "rq014_g2_contract_preflight"},
-        "resource_profile_id": {"const": "rq014-g2-preflight-cpu-v1"}
+        "resource_profile_id": {"const": "rq014-g2-preflight-cpu-v1"},
+        "environment_manifest": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json", "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"}}
       },
       "required": [
         "declassification_export_commit",
@@ -101,6 +105,7 @@
           {"required": ["readiness_table"]},
           {"required": ["counterpart_tracks"]},
           {"required": ["created_at_utc"]},
+          {"required": ["m3_parity_fixture"]},
           {"required": ["wod_path_type_mapping_manifest"]},
           {"required": ["contract_preflight_receipt"]},
           {"required": ["contract_preflight_done"]},
@@ -111,7 +116,8 @@
     {
       "properties": {
         "operation": {"const": "rq014_g2_resource_pilot"},
-        "resource_profile_id": {"const": "rq014-g2-resource-pilot-cpu-v1"}
+        "resource_profile_id": {"const": "rq014-g2-resource-pilot-cpu-v1"},
+        "environment_manifest": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v4.json", "sha256": "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"}}
       },
       "required": [
         "declassification_export_commit",
@@ -124,6 +130,7 @@
         "declassification_export_done",
         "contract_preflight_receipt",
         "contract_preflight_done",
+        "m3_parity_fixture",
         "pilot_scope"
       ],
       "not": {
@@ -175,9 +182,9 @@
         "non_m3_stages": {
           "const": ["source_load", "window_assembly", "feature_prep"]
         },
-        "m3_stage_enabled": {"const": false},
+        "m3_stage_enabled": {"const": true},
         "env_v4_required": {"const": true},
-        "m3_cost_estimate": {"const": "EXPLICITLY_UNMEASURED"}
+        "m3_cost_estimate": {"const": "MEASURED"}
       }
     }
   }

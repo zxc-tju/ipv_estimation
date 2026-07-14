@@ -156,11 +156,12 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
     ]
     assert pilot["resource_profile_id"] == "rq014-g2-resource-pilot-cpu-v1"
     assert pilot["m3_stage_contract"] == {
-        "m3_stage_enabled": False,
+        "m3_stage_enabled": True,
         "env_v4_required": True,
-        "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
-        "combined_g2r_cost_estimate": "EXPLICITLY_UNMEASURED",
-        "deserialization": "FORBIDDEN",
+        "m3_cost_estimate": "MEASURED",
+        "combined_g2r_cost_estimate": "MEASURED",
+        "deserialization": "REQUIRED_AFTER_V4_RUNTIME_GATE",
+        "verification_failure": "GLOBAL_ABORT_FAIL_RECEIPT_NO_DONE_NO_NUMERIC_COST",
     }
     assert (ROOT / "configs" / "run_specs" / "RQ014_g2_resource_pilot.template.json").is_file()
     assert operations["rq014_g2_blind_build"]["status"].startswith("DENY_")

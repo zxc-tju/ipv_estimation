@@ -14,8 +14,8 @@
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
   "environment_manifest": {
-    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v3.json",
-    "sha256": "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v4.json",
+    "sha256": "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"
   },
   "input_manifest": {
     "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/REPLACE_PREFLIGHT_RUN_ID/input_manifest.g2.json",
@@ -54,12 +54,16 @@
     "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/REPLACE_PREFLIGHT_RUN_ID/outputs/DONE.json",
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
+  "m3_parity_fixture": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/tests/fixtures/m3_verifier_portable_fixture.json",
+    "sha256": "ae62b9fddba53308d319ccef5a70d56a9f0ae243fe009aa3f85e36cb20fcee37"
+  },
   "pilot_scope": {
     "cell_selection_rule_id": "LANE_V3_NON_M3_COST_EXTREMES_V1",
     "non_m3_stages": ["source_load", "window_assembly", "feature_prep"],
-    "m3_stage_enabled": false,
+    "m3_stage_enabled": true,
     "env_v4_required": true,
-    "m3_cost_estimate": "EXPLICITLY_UNMEASURED"
+    "m3_cost_estimate": "MEASURED"
   },
   "resource_profile_id": "rq014-g2-resource-pilot-cpu-v1"
 }
