@@ -140,6 +140,9 @@ timings, the worker-pool wall-clock, and aggregate end-to-end wall-clock for D3
 serial/parallel extrapolation. Ordered lane axes and all 320 IDs are
 digest-checked before endpoint selection; joint C1/C2/C3/counterpart H-common,
 exact all-or-none anchor eligibility, and frozen heading boundaries are applied.
+Native-10Hz counterpart positions are interpolated within support to the R04N
+0.25-second grid; a bracketing gap strictly above `2*dt=0.5 s` is ineligible and
+counterpart extrapolation is forbidden.
 It runs only the v3-compatible rating-blind
 `source_load`, `window_assembly`, and `feature_prep` stages for the frozen lane-v3
 cost endpoints. `m3_stage_enabled` is false, `env_v4_required` is true, and both

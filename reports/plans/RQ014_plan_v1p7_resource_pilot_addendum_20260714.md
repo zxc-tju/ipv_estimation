@@ -68,6 +68,19 @@ the frozen one-sided/centered operator. Heading is defined only above the exact
 backfill rules, all-stationary windows are ineligible, and exact `-pi` is stored
 as `+pi`. No derivative halo or cross-window state reuse is permitted.
 
+The R04N counterpart path is governed specifically by
+`RQ014_recovery_lane_v3.json#/rating_blind_feature_bank/sampling_axis/0/history_and_counterpart_rule`,
+which requires linear interpolation inside observed support to the full
+tstar-anchored 0.25 s grid, and by
+`RQ014_envelope_builder_contract_v2.json#/timeline_and_state_contract/wod_tstar/counterpart`,
+`#/timeline_and_state_contract/linear_interpolation`, and
+`#/timeline_and_state_contract/maximum_source_gap/default` plus
+`#/timeline_and_state_contract/maximum_source_gap/extrapolation`.
+The latter fixes componentwise interpolation from immediately bracketing source
+timestamps, forbids extrapolation, and permits a bracketing gap of at most
+`2*dt`. The runner therefore accepts the bit-exact `0.5 s` R04N boundary and
+makes the query ineligible for any strictly larger float, without tolerance.
+
 ## Resource profile
 
 `rq014-g2-resource-pilot-cpu-v1` is fixed to the `amd` partition, one node, one

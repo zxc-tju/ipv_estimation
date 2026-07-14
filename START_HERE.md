@@ -243,7 +243,9 @@ question index in `STUDIES.md`.
   single-threaded processes under a 16-worker ceiling after one separately measured parent source load whose
   read-only payload is inherited copy-on-write by the fork workers. Ordered
   axes/320 IDs fail closed on digest drift; joint three-candidate H-common, exact H20/HFEAS eligibility, and frozen
-  heading boundaries govern the measured windows. Per-cell serial, worker-pool, and aggregate wall-clock evidence
+  heading boundaries govern the measured windows. Native-10Hz counterpart positions are support-only interpolated
+  to the R04N 0.25 s grid; gaps above the exact inclusive `2*dt=0.5 s` boundary are ineligible. Per-cell serial,
+  worker-pool, and aggregate wall-clock evidence
   is recorded for D3. M3 stays disabled with `env_v4_required=true`, and M3/combined cost is
   `EXPLICITLY_UNMEASURED`. Managed
   environment closure v4 remains a separate proposal for later M3 execution. Fresh dual review, Formal G1/final

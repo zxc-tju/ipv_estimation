@@ -46,6 +46,10 @@ class PilotError(ValueError):
     """Raised when a pilot contract or rating-blind input fails closed."""
 
 
+class SourceGapError(PilotError):
+    """Raised when interpolation would cross a frozen-ineligible source gap."""
+
+
 def canonical_json_bytes(value: object) -> bytes:
     return (
         json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n"
@@ -320,19 +324,27 @@ def _load_sources(bundle_root: Path, mapping_manifest_path: Path) -> dict[str, A
     }
 
 
-def _interpolate(points: list[tuple[float, float, float]], target: float) -> tuple[float, float, float]:
+def _interpolate(
+    points: list[tuple[float, float, float]],
+    target: float,
+    *,
+    maximum_source_gap_s: float | None = None,
+) -> tuple[float, float, float]:
     times = [point[0] for point in points]
     index = bisect_right(times, target)
-    if index == 0 or index == len(points) + 1:
+    if index == 0:
         raise PilotError("Interpolation target leaves observed support")
-    if index <= len(points) - 1 and math.isclose(points[index - 1][0], target, abs_tol=1e-9):
+    if index <= len(points) - 1 and points[index - 1][0] == target:
         return (target, points[index - 1][1], points[index - 1][2])
     if index == len(points):
-        if math.isclose(points[-1][0], target, abs_tol=1e-9):
+        if points[-1][0] == target:
             return (target, points[-1][1], points[-1][2])
         raise PilotError("Interpolation target leaves observed support")
     left, right = points[index - 1], points[index]
-    fraction = (target - left[0]) / (right[0] - left[0])
+    source_gap_s = right[0] - left[0]
+    if maximum_source_gap_s is not None and source_gap_s > maximum_source_gap_s:
+        raise SourceGapError("Interpolation source gap exceeds the frozen 2*dt limit")
+    fraction = (target - left[0]) / source_gap_s
     return (
         target,
         left[1] + fraction * (right[1] - left[1]),
@@ -340,19 +352,41 @@ def _interpolate(points: list[tuple[float, float, float]], target: float) -> tup
     )
 
 
-def _resample(points: list[tuple[float, float, float]], rate_hz: int) -> list[tuple[float, float, float]]:
-    if rate_hz == 4:
+def _resample(
+    points: list[tuple[float, float, float]],
+    rate_hz: int,
+    *,
+    interpolate_to_grid: bool = False,
+    maximum_source_gap_s: float | None = None,
+) -> list[tuple[float, float, float]]:
+    if rate_hz == 4 and not interpolate_to_grid:
         return points
     first_tick = math.ceil((points[0][0] * rate_hz) - 1e-9)
     last_tick = math.floor((points[-1][0] * rate_hz) + 1e-9)
-    return [_interpolate(points, tick / rate_hz) for tick in range(first_tick, last_tick + 1)]
+    return [
+        _interpolate(
+            points,
+            tick / rate_hz,
+            maximum_source_gap_s=maximum_source_gap_s,
+        )
+        for tick in range(first_tick, last_tick + 1)
+    ]
 
 
 def _grid_tick_points(
-    points: list[tuple[float, float, float]], rate_hz: int
+    points: list[tuple[float, float, float]],
+    rate_hz: int,
+    *,
+    interpolate_to_grid: bool = False,
+    maximum_source_gap_s: float | None = None,
 ) -> dict[int, tuple[float, float, float]]:
     tick_points: dict[int, tuple[float, float, float]] = {}
-    for point in _resample(points, rate_hz):
+    for point in _resample(
+        points,
+        rate_hz,
+        interpolate_to_grid=interpolate_to_grid,
+        maximum_source_gap_s=maximum_source_gap_s,
+    ):
         raw_tick = point[0] * rate_hz
         tick = round(raw_tick)
         if not math.isclose(raw_tick, tick, abs_tol=1e-9):
@@ -407,7 +441,15 @@ def _assemble_windows(sources: dict[str, Any], cell_id: str) -> list[tuple[list[
             candidate_id: _grid_tick_points(history + futures[candidate_id], rate_hz)
             for candidate_id in ("C1", "C2", "C3")
         }
-        counterpart_ticks = _grid_tick_points(counterpart, rate_hz)
+        try:
+            counterpart_ticks = _grid_tick_points(
+                counterpart,
+                rate_hz,
+                interpolate_to_grid=True,
+                maximum_source_gap_s=2.0 / rate_hz,
+            )
+        except SourceGapError:
+            continue
         four_way_ticks = [*branch_ticks.values(), counterpart_ticks]
         if any(not tick_points for tick_points in four_way_ticks):
             continue

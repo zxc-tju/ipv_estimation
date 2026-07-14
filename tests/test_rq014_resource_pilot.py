@@ -15,8 +15,10 @@ import scripts.rq014.run_managed_g2 as managed
 from scripts.rq014.run_resource_pilot import (
     FAILURE_CODES,
     PilotError,
+    SourceGapError,
     _assemble_windows,
     _derive_state,
+    _grid_tick_points,
     canonical_json_bytes,
     run_resource_pilot,
     select_resource_pilot_cells,
@@ -182,7 +184,7 @@ def _build_runtime_fixture(tmp_path: Path) -> dict[str, object]:
             for value in times_future
         ],
     )
-    counterpart_times = [round(-1.0 + index * 0.25, 2) for index in range(17)]
+    counterpart_times = [round(-1.0 + index * 0.1, 2) for index in range(41)]
     _write_csv(
         bundle / "counterpart_tracks.csv",
         ["segment_id", "time_s", "x_m", "y_m"],
@@ -314,8 +316,8 @@ def _anchor_sources(
         )
     }
     counterpart = [
-        (tick / 4.0, tick / 4.0 + 2.0, 1.0)
-        for tick in range(-4, round(counterpart_end_s * 4) + 1)
+        (tick / 10.0, tick / 10.0 + 2.0, 1.0)
+        for tick in range(-10, round(counterpart_end_s * 10) + 1)
     ]
     return {
         "candidate": candidates,
@@ -346,15 +348,74 @@ def test_anchor_domain_h20_is_all_or_none_and_gates_hfeas() -> None:
         _assemble_windows(sources, "RR3-R10L-TF-HFEAS-NEX_MEAN")
 
 
-@pytest.mark.parametrize("stream", ["C1", "C2", "C3", "counterpart"])
+@pytest.mark.parametrize("stream", ["C1", "C2", "C3"])
 def test_anchor_domain_requires_every_exact_four_way_grid_tick(stream: str) -> None:
     sources = _anchor_sources()
     key = ("S1", stream)
-    if stream == "counterpart":
-        rows = sources["counterpart"][("S1",)]
-    else:
-        rows = sources["candidate"][key]
+    rows = sources["candidate"][key]
     rows[:] = [row for row in rows if row[0] != 1.5]
+    with pytest.raises(PilotError, match="No complete rating-blind windows"):
+        _assemble_windows(sources, "RR3-R04N-CH-W10-H20-NEX_MEAN")
+
+
+def test_r04n_counterpart_native_10hz_interpolates_only_within_support() -> None:
+    windows = _assemble_windows(
+        _anchor_sources(), "RR3-R04N-CH-W10-H20-NEX_MEAN"
+    )
+    assert len(windows) == 3 * 5
+    assert all(
+        point[0] * 4 == round(point[0] * 4)
+        for _candidate_window, counterpart_window in windows
+        for point in counterpart_window
+    )
+
+    native_10hz = [
+        (tick / 10.0, 2.0 * tick / 10.0, -tick / 10.0)
+        for tick in range(1, 7)
+    ]
+    tick_points = _grid_tick_points(
+        native_10hz,
+        4,
+        interpolate_to_grid=True,
+        maximum_source_gap_s=0.5,
+    )
+    assert tick_points == {
+        1: (0.25, 0.5, -0.25),
+        2: (0.5, 1.0, -0.5),
+    }
+
+
+def test_r04n_counterpart_two_dt_gap_boundary_is_bit_exact_and_fail_closed() -> None:
+    inclusive_gap = 0.5
+    exclusive_gap = math.nextafter(inclusive_gap, math.inf)
+    assert inclusive_gap.hex() == "0x1.0000000000000p-1"
+    assert exclusive_gap.hex() == "0x1.0000000000001p-1"
+
+    accepted = _grid_tick_points(
+        [(0.0, 0.0, 0.0), (inclusive_gap, 1.0, 2.0)],
+        4,
+        interpolate_to_grid=True,
+        maximum_source_gap_s=2.0 * 0.25,
+    )
+    assert accepted == {
+        0: (0.0, 0.0, 0.0),
+        1: (0.25, 0.5, 1.0),
+        2: (0.5, 1.0, 2.0),
+    }
+    with pytest.raises(SourceGapError, match=r"exceeds the frozen 2\*dt limit"):
+        _grid_tick_points(
+            [(0.0, 0.0, 0.0), (exclusive_gap, 1.0, 2.0)],
+            4,
+            interpolate_to_grid=True,
+            maximum_source_gap_s=2.0 * 0.25,
+        )
+
+    sources = _anchor_sources()
+    sources["counterpart"][("S1",)] = [
+        point
+        for point in sources["counterpart"][("S1",)]
+        if not 0.0 < point[0] < 0.6
+    ]
     with pytest.raises(PilotError, match="No complete rating-blind windows"):
         _assemble_windows(sources, "RR3-R04N-CH-W10-H20-NEX_MEAN")
 
