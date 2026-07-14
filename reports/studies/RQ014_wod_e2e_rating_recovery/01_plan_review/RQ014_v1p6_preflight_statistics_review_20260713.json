@@ -44,15 +44,26 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The W4h cross-phase blind-anchor defect is closed without changing the frozen science or rating-blind boundary."
+    },
+    {
+      "evidence": [
+        "W5a round 1 reviewed commit 06ffd12d083b7fe0672f02509328de11d87e11d1 and its deterministic 102-row candidate manifest. Statistics returned BLOCKED only on prose: the D2 decision's blanket bundle-regeneration denial conflicted with the required final checksum bundle, the run-spec README described the newly allowlisted pilot as centrally unauthorized, and START_HERE retained the stale pending-preflight-acceptance/D2 stop wording; execution governance returned NO_BLOCKER.",
+        "The option-(c) remedy amended W5a to 2c8706e8b527d50474abd7b37564b1634398a3b9 without changing authorization semantics: scientific/input-bundle regeneration remains forbidden, the section 8.1 final checksum bundle is expressly permitted but non-executing, and README plus START_HERE now enumerate the implementation, fresh-G1/bundle, validate-only and explicit-PI-confirmation gates.",
+        "Round 2 returned statistics NO_BLOCKER and execution-governance NO_BLOCKER on the exact 102-row review manifest SHA-256 4f24e243575995015aa294abf2dfc2288928ad6066456e9ff9ec87307d37cf07, with zero unresolved blockers or majors; central allowlisting remains implementation-closure-only and does not authorize validate-only, submission or execution."
+      ],
+      "finding_id": "W5A-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The W5a round-1 prose blocker is remedied and round 2 closes with dual NO_BLOCKER without broadening execution authority."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-13T15:48:10Z",
+  "reviewed_at_utc": "2026-07-14T05:27:36Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "4fb4af0cfc452352e08a62ee5c8f14517e077edcaefb27310442967b2591bc68",
+  "reviewed_manifest_sha256": "4f24e243575995015aa294abf2dfc2288928ad6066456e9ff9ec87307d37cf07",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
