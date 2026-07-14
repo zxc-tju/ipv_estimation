@@ -1018,6 +1018,9 @@ def test_exact_path_python_bootstrap_blocks_site_and_shadow_injection(
     materializer_path.write_bytes(
         (ROOT / "scripts" / "rq014" / "materialize_registry.py").read_bytes()
     )
+    (rq014 / "run_resource_pilot.py").write_bytes(
+        (ROOT / "scripts" / "rq014" / "run_resource_pilot.py").read_bytes()
+    )
     (rq014 / "run_managed_g2.py").write_text(
         "import json\n"
         "import sys\n"

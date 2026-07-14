@@ -237,8 +237,12 @@ question index in `STUDIES.md`.
   `1924193` `zxc-rq014-pre-72dd4362f954` COMPLETED 0:0 — 12/12 bindings materialized, M3 delivery verified
   pre-deserialization (immutable receipt), receipts + bounded report dual NO_BLOCKER. Report:
   `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_2_contract_preflight_20260714T003336Z_72dd4362/`.
-  NEXT (D2-authorized, in prep): `rq014_g2_resource_pilot` authorization loop and managed environment closure v4
-  (scientific stack for G2R) — pilot submission retains an explicit PI stop; D3 = compute budget.
+  W5b implementation candidate is now local-only: `rq014_g2_resource_pilot` uses the existing v3 stdlib runtime
+  for rating-blind `source_load`, `window_assembly`, and `feature_prep` measurements on frozen light/heavy cells;
+  M3 stays disabled with `env_v4_required=true`, and M3/combined cost is `EXPLICITLY_UNMEASURED`. Managed
+  environment closure v4 remains a separate proposal for later M3 execution. Fresh dual review, Formal G1/final
+  bundle regeneration, publication/sync, immutable spec, validate-only, and the explicit PI stop are still pending;
+  D3 remains the separate compute-budget gate.
 - **RQ014 v1.6 contract preflight EXECUTED PASS (receipt-verified 2026-07-14; this supersedes
   earlier preflight-pending statements above).** Exact authority commit `b06a243eea7e1418622f89e5ea80d3da4fe3bc58`,
   Formal G1 `755e6a34…`, final bundle `41ac5280…`, and immutable run spec `72dd4362…` produced run
@@ -246,16 +250,15 @@ question index in `STUDIES.md`.
   `zxc-rq014-pre-72dd4362f954` completed `0:0` in 3m26s on `cpua041`. The immutable preflight
   receipt is SHA-256 `1e2d0cf6…0bb2e23`, status `PASS`, with `rating_access=NONE`,
   `rating_join=NONE`, `observed_statistics=NONE`, all sanitization scans zero, and the exact
-  M3 artifact verified without deserialization. `rq014_g2_resource_pilot` remains explicitly
-  unauthorized pending W5a implementation closure, fresh G1/bundle, validate-only, and explicit pre-submit PI
+  M3 artifact verified without deserialization. `rq014_g2_resource_pilot` now has a local W5b implementation
+  candidate but remains non-submittable pending fresh review, G1/bundle, validate-only, and explicit pre-submit PI
   confirmation; stop and preserve. Local receipt/log copies are
   under `.codex-fleet/rq014-execution-v1p6/board/w4g_evidence/pf_*`.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
   tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Current
-  W5a resource-pilot authority-candidate result: `244 passed`; prior W4h result: `244 passed`; broader non-shortcut regression excluding the locally absent
-  ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
+  W5b focused resource-pilot suite result is recorded in `main_workflow.log`; prior W5a result: `244 passed`.
   Python compilation, shell syntax and `git diff --check` also pass. No rating value was read,
   no production run root was created, and no Slurm job was submitted.
 - RQ014 last adjudicated W4h preflight authority bundle is
@@ -269,9 +272,10 @@ question index in `STUDIES.md`.
   records rating access `NONE`, observed statistics `NONE`, verified receipt chain and dual `NO_BLOCKER`. D2 accepts
   that evidence and authorizes only the §8.1 loop for `rq014_g2_resource_pilot`. The W5a candidate adds it as the
   exact third central operation, binds decision `RQ014_PI_decision_D2_resource_pilot_20260714.md`, and requires
-  receipt schemas `rq014-g2-contract-preflight-receipt-v1` plus `rq014-managed-operation-done-v1`. No pilot
-  resource-profile ID, pilot schema branch, entrypoint, or run-spec template exists at this baseline, so
-  validate-only and submit remain fail-closed. Fresh dual review and post-review G1/bundle regeneration are next;
+  receipt schemas `rq014-g2-contract-preflight-receipt-v1` plus `rq014-managed-operation-done-v1`. W5b now adds
+  the pilot profile/schema/template/entrypoint and freezes light cell `RR3-R04N-CH-W10-H20-NEX_MEAN` plus heavy
+  cell `RR3-R10L-TF-HFEAS-NEX_MEAN`; M3 is verification-only and cannot be deserialized under v3. Fresh dual
+  review and post-review G1/bundle regeneration are next;
   an explicit PI stop remains before pilot submit, and D3 separately gates the full G2R compute budget. No rating
   value was read and no HPC write/job occurred in W5a.
 - RQ007 held-out remains sealed. RQ009 must freeze all rules and stop at

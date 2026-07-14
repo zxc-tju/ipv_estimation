@@ -1,0 +1,7 @@
+{
+  "schema_version": "rq014-resource-pilot-cell-selection-golden-v1",
+  "rule_id": "LANE_V3_NON_M3_COST_EXTREMES_V1",
+  "registered_cell_count": 320,
+  "lightest_cell_id": "RR3-R04N-CH-W10-H20-NEX_MEAN",
+  "heaviest_cell_id": "RR3-R10L-TF-HFEAS-NEX_MEAN"
+}

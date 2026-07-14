@@ -173,6 +173,7 @@ RQ014_PREFLIGHT_OPERATION = "rq014_g2_contract_preflight"
 RQ014_RESOURCE_PILOT_OPERATION = "rq014_g2_resource_pilot"
 RQ014_EXPORT_RESOURCE_PROFILE = "rq014-g2-declassify-cpu-v1"
 RQ014_PREFLIGHT_RESOURCE_PROFILE = "rq014-g2-preflight-cpu-v1"
+RQ014_RESOURCE_PILOT_PROFILE = "rq014-g2-resource-pilot-cpu-v1"
 RQ014_WRAPPER_CAPABILITY_CONTRACT = (
     "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at "
     "/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, "
@@ -191,7 +192,8 @@ RQ014_PYTHON_IMPORT_SURFACE = (
     "exact loader links/final bytes and exact isolated sys.path; /lib64 is the explicit "
     "operating-system ABI trust boundary; the closed-snapshot registry materializer is "
     "explicitly preloaded by spec_from_file_location as scripts.rq014.materialize_registry, "
-    "then preflight and the fixed scientific entrypoint are loaded only by exact reviewed "
+    "then preflight, the stdlib-only resource-pilot helper and the fixed scientific entrypoint "
+    "are loaded only by exact reviewed "
     "closed-snapshot paths; scripts and scripts.rq014 keep empty __path__, so ordinary path "
     "import, checkout/root/src/sitecustomize/usercustomize/PYTHONPATH/local shadows remain "
     "unavailable"
@@ -218,6 +220,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "configs/run_specs/README.md",
     "configs/run_specs/RQ014_g2_contract_preflight.template.json",
     "configs/run_specs/RQ014_g2_declassification_export.template.json",
+    "configs/run_specs/RQ014_g2_resource_pilot.template.json",
     "configs/run_specs/research_run_spec_v2.schema.json",
     "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
     "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
@@ -236,6 +239,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "reports/plans/RQ014_plan_v1p5_amendment_20260712.md",
     "reports/plans/RQ014_plan_v1p7_amendment_20260713.md",
     "reports/plans/RQ014_plan_v1p7_addendum_pathtype_20260713.md",
+    "reports/plans/RQ014_plan_v1p7_resource_pilot_addendum_20260714.md",
     "reports/plans/RQ014_plan_v1p5_review_manifest_round1_blocked_20260712.sha256",
     "reports/plans/RQ014_plan_v1p5_review_manifest_round2_blocked_20260712.sha256",
     "reports/plans/RQ014_plan_v1p5_review_manifest_round3_blocked_20260712.sha256",
@@ -295,6 +299,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "scripts/rq014/materialize_registry.py",
     "scripts/rq014/preflight.py",
     "scripts/rq014/run_managed_g2.py",
+    "scripts/rq014/run_resource_pilot.py",
     "scripts/rq014/derive_wod_path_type_mapping.py",
     "scripts/rq014/spearman_average_midranks.py",
     "scripts/rq014/spearman_version_manifest_v1.json",
@@ -313,6 +318,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "tests/test_rq014_fl05_indexer.py",
     "tests/test_rq014_g0_closure_scripts.py",
     "tests/test_rq014_managed_hpc_contract.py",
+    "tests/test_rq014_resource_pilot.py",
     "tests/test_rq014_recovery_lane_v2_contract.py",
     "tests/test_rq014_recovery_lane_v3_contract.py",
     "tests/test_rq014_science_freeze_v1p7.py",
@@ -321,6 +327,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "tests/test_rq014_wod_path_type_mapping.py",
     "tests/test_rq014_v1p5_contract.py",
     "tests/fixtures/rq014_wod_path_type_mapping_golden_v1.json",
+    "tests/fixtures/rq014_resource_pilot_cells_v1.json",
     "models/rq009_m3/README.md",
     "models/rq009_m3/feature_spec_contract.json",
     "models/rq009_m3/manifest.json",
@@ -565,6 +572,42 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
             if spec.get("resource_profile_id") != RQ014_PREFLIGHT_RESOURCE_PROFILE:
                 raise ValueError("Unknown RQ014 preflight resource profile")
             allowed = required
+        elif spec.get("operation") == RQ014_RESOURCE_PILOT_OPERATION:
+            required = common | {
+                "declassification_export_commit",
+                "m3_artifact",
+                "input_manifest",
+                "sanitization_receipt",
+                "materialization_ledger",
+                "wod_path_type_mapping_manifest",
+                "declassification_export_receipt",
+                "declassification_export_done",
+                "contract_preflight_receipt",
+                "contract_preflight_done",
+                "pilot_scope",
+            }
+            ref_keys = common_ref_keys + (
+                "input_manifest",
+                "sanitization_receipt",
+                "materialization_ledger",
+                "wod_path_type_mapping_manifest",
+                "declassification_export_receipt",
+                "declassification_export_done",
+                "contract_preflight_receipt",
+                "contract_preflight_done",
+            )
+            if spec.get("resource_profile_id") != RQ014_RESOURCE_PILOT_PROFILE:
+                raise ValueError("Unknown RQ014 resource-pilot resource profile")
+            expected_scope = {
+                "cell_selection_rule_id": "LANE_V3_NON_M3_COST_EXTREMES_V1",
+                "non_m3_stages": ["source_load", "window_assembly", "feature_prep"],
+                "m3_stage_enabled": False,
+                "env_v4_required": True,
+                "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
+            }
+            if "pilot_scope" in spec and spec.get("pilot_scope") != expected_scope:
+                raise ValueError("Run spec v2 pilot_scope differs from the frozen env-v4 split")
+            allowed = required
         else:
             raise ValueError("Unsupported RQ014 v2 operation")
         if not required <= set(spec) or not set(spec) <= allowed:
@@ -595,7 +638,7 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
             raise ValueError("Run spec v2 git_commit must be lowercase 40-hex")
         if spec["git_commit"] == "0" * 40:
             raise ValueError("Run spec v2 git_commit is a placeholder")
-        if spec["operation"] == RQ014_PREFLIGHT_OPERATION:
+        if spec["operation"] in {RQ014_PREFLIGHT_OPERATION, RQ014_RESOURCE_PILOT_OPERATION}:
             export_commit = spec["declassification_export_commit"]
             if not isinstance(export_commit, str) or not HEX40.fullmatch(export_commit):
                 raise ValueError(
@@ -1566,6 +1609,25 @@ def _with_rq014_validate_only_plan(validated: dict[str, Any]) -> dict[str, Any]:
         runtime_metadata["m3_artifact_verification"] = validated[
             "m3_artifact_verification"
         ]
+    if "pilot_scope" in validated:
+        runtime_metadata["m3_execution"] = {
+            "enabled": False,
+            "env_v4_required": True,
+            "cost_estimate": "EXPLICITLY_UNMEASURED",
+        }
+    submission_plan = {
+        "job_name": validated["job_name"],
+        "resource_profile_id": validated["resource_profile_id"],
+        "slurm_profile": validated["slurm_profile"],
+        "thread_limits": validated["thread_limits"],
+        "environment_export_policy": {
+            "sbatch_directive": "#SBATCH --export=NIL",
+            "sbatch_command_flag": "--export=NIL",
+            "rendered_script_state": "SUBMIT_ONLY_NOT_CREATED_BY_VALIDATE",
+        },
+    }
+    if "pilot_scope" in validated:
+        submission_plan["pilot_stage_plan"] = validated["pilot_scope"]
     return {
         **validated,
         "code_snapshot_plan": {
@@ -1575,17 +1637,7 @@ def _with_rq014_validate_only_plan(validated: dict[str, Any]) -> dict[str, Any]:
             "files": validated["code_snapshot_files"],
             "receipt_state": "SUBMIT_ONLY_NOT_CREATED_BY_VALIDATE",
         },
-        "submission_plan": {
-            "job_name": validated["job_name"],
-            "resource_profile_id": validated["resource_profile_id"],
-            "slurm_profile": validated["slurm_profile"],
-            "thread_limits": validated["thread_limits"],
-            "environment_export_policy": {
-                "sbatch_directive": "#SBATCH --export=NIL",
-                "sbatch_command_flag": "--export=NIL",
-                "rendered_script_state": "SUBMIT_ONLY_NOT_CREATED_BY_VALIDATE",
-            },
-        },
+        "submission_plan": submission_plan,
         "runtime_metadata": runtime_metadata,
     }
 
@@ -1618,23 +1670,116 @@ def _validate_rq014_operation_contract(
             "retained bytes, and records that same digest"
         ):
             raise ValueError("RQ014 export source-byte binding contract drift")
-    elif (
-        operation.get("required_prior_receipts")
-        != [
-            "rq014-g2-declassification-export-receipt-v1",
-            "rq014-managed-operation-done-v1",
-        ]
-        or operation.get("required_run_spec_refs")
-        != [
-            "declassification_export_receipt",
-            "declassification_export_done",
-            "environment_manifest",
-            "m3_artifact",
-        ]
-    ):
-        raise ValueError("RQ014 preflight prior-receipt predicate drift")
+    elif operation_name == RQ014_PREFLIGHT_OPERATION:
+        if (
+            operation.get("required_prior_receipts")
+            != [
+                "rq014-g2-declassification-export-receipt-v1",
+                "rq014-managed-operation-done-v1",
+            ]
+            or operation.get("required_run_spec_refs")
+            != [
+                "declassification_export_receipt",
+                "declassification_export_done",
+                "environment_manifest",
+                "m3_artifact",
+            ]
+        ):
+            raise ValueError("RQ014 preflight prior-receipt predicate drift")
+    elif operation_name == RQ014_RESOURCE_PILOT_OPERATION:
+        if (
+            operation.get("required_prior_receipts")
+            != [
+                "rq014-g2-contract-preflight-receipt-v1",
+                "rq014-managed-operation-done-v1",
+            ]
+            or operation.get("run_spec_schema_version") != 2
+            or operation.get("required_run_spec_refs")
+            != [
+                "formal_g1",
+                "contract_bundle",
+                "environment_manifest",
+                "input_manifest",
+                "sanitization_receipt",
+                "materialization_ledger",
+                "wod_path_type_mapping_manifest",
+                "m3_artifact",
+                "declassification_export_receipt",
+                "declassification_export_done",
+                "contract_preflight_receipt",
+                "contract_preflight_done",
+                "pilot_scope",
+            ]
+            or operation.get("m3_stage_contract")
+            != {
+                "m3_stage_enabled": False,
+                "env_v4_required": True,
+                "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
+                "combined_g2r_cost_estimate": "EXPLICITLY_UNMEASURED",
+                "deserialization": "FORBIDDEN",
+            }
+        ):
+            raise ValueError("RQ014 resource-pilot contract predicate drift")
+    else:
+        raise ValueError("Unsupported RQ014 operation contract")
     if resource_profile_id != operation.get("resource_profile_id"):
         raise ValueError("Run spec resource profile differs from operation contract")
+
+
+def _validate_rq014_preflight_receipt_chain(
+    *,
+    receipt_path: Path,
+    done_path: Path,
+    spec: dict[str, Any],
+) -> dict[str, Any]:
+    receipt = _strict_json_load(receipt_path)
+    done = _strict_json_load(done_path)
+    if (
+        receipt.get("schema_version") != "rq014-g2-contract-preflight-receipt-v1"
+        or receipt.get("operation") != RQ014_PREFLIGHT_OPERATION
+        or receipt.get("status") != "PASS"
+        or receipt.get("rating_access") != "NONE"
+        or receipt.get("rating_join") != "NONE"
+        or receipt.get("observed_statistics") != "NONE"
+    ):
+        raise ValueError("Prior RQ014 contract-preflight receipt is not an exact PASS")
+    if set(done) != {"schema_version", "operation", "receipt_sha256", "status"}:
+        raise ValueError("Prior RQ014 contract-preflight DONE exact keys drifted")
+    if done != {
+        "schema_version": "rq014-managed-operation-done-v1",
+        "operation": RQ014_PREFLIGHT_OPERATION,
+        "receipt_sha256": sha256_file(receipt_path),
+        "status": "PASS",
+    }:
+        raise ValueError("Prior RQ014 contract-preflight DONE chain is invalid")
+    expected = {
+        "input_manifest_sha256": spec["input_manifest"]["sha256"],
+        "materialization_ledger_sha256": spec["materialization_ledger"]["sha256"],
+        "declassification_export_receipt_sha256": spec[
+            "declassification_export_receipt"
+        ]["sha256"],
+        "declassification_export_done_sha256": spec["declassification_export_done"][
+            "sha256"
+        ],
+    }
+    if any(receipt.get(key) != digest for key, digest in expected.items()):
+        raise ValueError("Prior RQ014 contract-preflight lineage differs from the pilot spec")
+    mapping = receipt.get("wod_path_type_mapping")
+    if (
+        not isinstance(mapping, dict)
+        or mapping.get("manifest_sha256")
+        != spec["wod_path_type_mapping_manifest"]["sha256"]
+    ):
+        raise ValueError("Prior RQ014 contract-preflight mapping lineage differs")
+    m3_receipt = receipt.get("m3_artifact_input_receipt")
+    if (
+        not isinstance(m3_receipt, dict)
+        or m3_receipt.get("sha256") != spec["m3_artifact"]["sha256"]
+        or m3_receipt.get("size_bytes") != spec["m3_artifact"]["size_bytes"]
+        or m3_receipt.get("deserialized") is not False
+    ):
+        raise ValueError("Prior RQ014 M3 verification-only lineage differs")
+    return receipt
 
 
 def _validate_rq014_spec(
@@ -1665,7 +1810,7 @@ def _validate_rq014_spec(
     if commit != run_git(repo, "rev-parse", "HEAD"):
         raise ValueError("RQ014 run commit must equal the managed-checkout HEAD")
     _require_published_commit(repo, commit, label="Run commit")
-    if spec["operation"] == RQ014_PREFLIGHT_OPERATION:
+    if spec["operation"] in {RQ014_PREFLIGHT_OPERATION, RQ014_RESOURCE_PILOT_OPERATION}:
         _require_published_commit(
             repo,
             spec["declassification_export_commit"],
@@ -1742,7 +1887,7 @@ def _validate_rq014_spec(
         resource_profile_id=spec["resource_profile_id"],
     )
     m3_verification = None
-    if spec["operation"] == RQ014_PREFLIGHT_OPERATION:
+    if spec["operation"] in {RQ014_PREFLIGHT_OPERATION, RQ014_RESOURCE_PILOT_OPERATION}:
         try:
             m3_verification = validate_m3_artifact_ref(
                 spec["m3_artifact"],
@@ -1937,6 +2082,25 @@ def _validate_rq014_spec(
         roots=[base / "work_dirs" / "RQ014"],
         label="declassification export DONE receipt",
     )
+    preflight_receipt_path = None
+    preflight_done_path = None
+    mapping_spec_path = None
+    if spec["operation"] == RQ014_RESOURCE_PILOT_OPERATION:
+        mapping_spec_path = _resolve_ref(
+            spec["wod_path_type_mapping_manifest"],
+            roots=[base / "inputs" / "RQ014"],
+            label="WOD path-type mapping manifest",
+        )
+        preflight_receipt_path = _resolve_ref(
+            spec["contract_preflight_receipt"],
+            roots=[base / "work_dirs" / "RQ014"],
+            label="contract-preflight receipt",
+        )
+        preflight_done_path = _resolve_ref(
+            spec["contract_preflight_done"],
+            roots=[base / "work_dirs" / "RQ014"],
+            label="contract-preflight DONE receipt",
+        )
     roles = validate_g2_input_roles(
         manifest_path=input_path,
         contract=contract,
@@ -1948,6 +2112,8 @@ def _validate_rq014_spec(
         roles["wod_path_type_mapping_manifest"],
         mapping_root=base / "inputs" / "RQ014" / "wod_path_type_mapping" / "v1",
     )
+    if mapping_spec_path is not None and roles["wod_path_type_mapping_manifest"] != mapping_spec_path:
+        raise ValueError("Run spec and G2 manifest bind different WOD path-type mappings")
     bundle_manifest = roles["wod_score_stripped_bundle_manifest"]
     bundle_root = base / "inputs" / "RQ014" / "wod_rated479_score_stripped" / "v1"
     export_receipt = validate_declassification_export_receipts(
@@ -1974,6 +2140,66 @@ def _validate_rq014_spec(
     if export_receipt["geometry_available_scene_count"] != bundle["geometry_available_scene_count"]:
         raise ValueError("Export receipt and score-stripped bundle geometry counts differ")
     validate_materialization_ledger(ledger_path=ledger_path, repo_root=repo, contract=contract)
+
+    if spec["operation"] == RQ014_RESOURCE_PILOT_OPERATION:
+        if preflight_receipt_path is None or preflight_done_path is None:
+            raise AssertionError("Pilot preflight receipt paths were not resolved")
+        _validate_rq014_preflight_receipt_chain(
+            receipt_path=preflight_receipt_path,
+            done_path=preflight_done_path,
+            spec=spec,
+        )
+        return _with_rq014_validate_only_plan({
+            **common_validated,
+            "input_manifest_path": str(input_path),
+            "input_manifest_sha256": spec["input_manifest"]["sha256"],
+            "sanitization_receipt_path": str(sanitization_path),
+            "sanitization_receipt_sha256": spec["sanitization_receipt"]["sha256"],
+            "materialization_ledger_path": str(ledger_path),
+            "materialization_ledger_sha256": spec["materialization_ledger"]["sha256"],
+            "wod_path_type_mapping_manifest_path": str(mapping_spec_path),
+            "wod_path_type_mapping_manifest_sha256": spec[
+                "wod_path_type_mapping_manifest"
+            ]["sha256"],
+            "declassification_export_receipt_path": str(export_receipt_path),
+            "declassification_export_receipt_sha256": spec[
+                "declassification_export_receipt"
+            ]["sha256"],
+            "declassification_export_done_path": str(export_done_path),
+            "declassification_export_done_sha256": spec["declassification_export_done"][
+                "sha256"
+            ],
+            "declassification_export_commit": spec["declassification_export_commit"],
+            "contract_preflight_receipt_path": str(preflight_receipt_path),
+            "contract_preflight_receipt_sha256": spec["contract_preflight_receipt"][
+                "sha256"
+            ],
+            "contract_preflight_done_path": str(preflight_done_path),
+            "contract_preflight_done_sha256": spec["contract_preflight_done"]["sha256"],
+            "score_stripped_bundle_root": str(bundle_root),
+            "wod_path_type_mapping": path_mapping,
+            "pilot_scope": spec["pilot_scope"],
+            "resource_profile_id": RQ014_RESOURCE_PILOT_PROFILE,
+            "job_name": f"zxc-rq014-pilot-{spec_sha256[:12]}",
+            "entrypoint": "scripts/rq014/run_managed_g2.py",
+            "fixed_subcommand": "resource-pilot",
+            "slurm_profile": {
+                "partition": "amd",
+                "nodes": 1,
+                "ntasks": 1,
+                "cpus_per_task": 4,
+                "memory": "16G",
+                "time": "04:00:00",
+            },
+            "thread_limits": {
+                "OMP_NUM_THREADS": "1",
+                "OPENBLAS_NUM_THREADS": "1",
+                "MKL_NUM_THREADS": "1",
+                "NUMEXPR_NUM_THREADS": "1",
+                "VECLIB_MAXIMUM_THREADS": "1",
+                "BLIS_NUM_THREADS": "1",
+            },
+        })
 
     job_name = f"zxc-rq014-pre-{spec_sha256[:12]}"
     return _with_rq014_validate_only_plan({
@@ -2110,7 +2336,7 @@ import json
 import sys
 import types
 
-expected_sys_path_json, materializer_path, preflight_path, entrypoint, *arguments = sys.argv[1:]
+expected_sys_path_json, materializer_path, preflight_path, resource_pilot_path, entrypoint, *arguments = sys.argv[1:]
 if sys.path != json.loads(expected_sys_path_json):
     raise RuntimeError("Managed isolated sys.path differs from the reviewed runtime closure")
 scripts_package = types.ModuleType("scripts")
@@ -2142,6 +2368,16 @@ preflight_module = importlib.util.module_from_spec(preflight_spec)
 rq014_package.preflight = preflight_module
 sys.modules["scripts.rq014.preflight"] = preflight_module
 preflight_spec.loader.exec_module(preflight_module)
+
+resource_pilot_spec = importlib.util.spec_from_file_location(
+    "scripts.rq014.run_resource_pilot", resource_pilot_path
+)
+if resource_pilot_spec is None or resource_pilot_spec.loader is None:
+    raise RuntimeError("Cannot construct exact-path resource-pilot loader")
+resource_pilot_module = importlib.util.module_from_spec(resource_pilot_spec)
+rq014_package.run_resource_pilot = resource_pilot_module
+sys.modules["scripts.rq014.run_resource_pilot"] = resource_pilot_module
+resource_pilot_spec.loader.exec_module(resource_pilot_module)
 
 sys.argv = [entrypoint, *arguments]
 entrypoint_spec = importlib.util.spec_from_file_location("__main__", entrypoint)
@@ -2179,6 +2415,7 @@ def _rq014_isolated_python_command(
         json.dumps(isolated_sys_path, separators=(",", ":")),
         str(code / "scripts" / "rq014" / "materialize_registry.py"),
         str(code / "scripts" / "rq014" / "preflight.py"),
+        str(code / "scripts" / "rq014" / "run_resource_pilot.py"),
         str(code / entrypoint),
         *arguments,
     ]
@@ -2345,7 +2582,7 @@ def render_rq014_sbatch(
             )
             + f"test ! -e {shlex.quote(validated['score_stripped_output_root'])}\n"
         )
-    else:
+    elif validated.get("fixed_subcommand", "contract-preflight") == "contract-preflight":
         execution_contract = code / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
         arguments = [
             "contract-preflight",
@@ -2408,6 +2645,84 @@ def render_rq014_sbatch(
                 validated["declassification_export_done_sha256"],
             )
         )
+    elif validated["fixed_subcommand"] == "resource-pilot":
+        arguments = [
+            "resource-pilot",
+            "--run-id",
+            validated["run_id"],
+            "--lane-v3",
+            str(code / "reports" / "plans" / "RQ014_recovery_lane_v3.json"),
+            "--bundle-root",
+            validated["score_stripped_bundle_root"],
+            "--m3-artifact",
+            validated["m3_artifact_path"],
+            "--m3-artifact-size-bytes",
+            str(validated["m3_artifact_size_bytes"]),
+            "--m3-artifact-sha256",
+            validated["m3_artifact_sha256"],
+            "--input-manifest",
+            validated["input_manifest_path"],
+            "--sanitization-receipt",
+            validated["sanitization_receipt_path"],
+            "--materialization-ledger",
+            validated["materialization_ledger_path"],
+            "--wod-path-type-mapping-manifest",
+            validated["wod_path_type_mapping_manifest_path"],
+            "--declassification-export-receipt",
+            validated["declassification_export_receipt_path"],
+            "--declassification-export-done",
+            validated["declassification_export_done_path"],
+            "--contract-preflight-receipt",
+            validated["contract_preflight_receipt_path"],
+            "--contract-preflight-done",
+            validated["contract_preflight_done_path"],
+            "--output-root",
+            str(run_root / "outputs"),
+        ]
+        m3_path = shlex.quote(validated["m3_artifact_path"])
+        source_checks = (
+            f"test ! -L {m3_path}\n"
+            f"test -f {m3_path}\n"
+            f'test "$({SYSTEM_READLINK} -f {m3_path})" = {m3_path}\n'
+            f'test "$({SYSTEM_STAT} -c %s {m3_path})" = '
+            f"{validated['m3_artifact_size_bytes']}\n"
+            + _shell_digest_check(
+                validated["m3_artifact_path"], validated["m3_artifact_sha256"]
+            )
+            + _shell_digest_check(
+                validated["input_manifest_path"], validated["input_manifest_sha256"]
+            )
+            + _shell_digest_check(
+                validated["sanitization_receipt_path"],
+                validated["sanitization_receipt_sha256"],
+            )
+            + _shell_digest_check(
+                validated["materialization_ledger_path"],
+                validated["materialization_ledger_sha256"],
+            )
+            + _shell_digest_check(
+                validated["wod_path_type_mapping_manifest_path"],
+                validated["wod_path_type_mapping_manifest_sha256"],
+            )
+            + _shell_digest_check(
+                validated["declassification_export_receipt_path"],
+                validated["declassification_export_receipt_sha256"],
+            )
+            + _shell_digest_check(
+                validated["declassification_export_done_path"],
+                validated["declassification_export_done_sha256"],
+            )
+            + _shell_digest_check(
+                validated["contract_preflight_receipt_path"],
+                validated["contract_preflight_receipt_sha256"],
+            )
+            + _shell_digest_check(
+                validated["contract_preflight_done_path"],
+                validated["contract_preflight_done_sha256"],
+            )
+        )
+    else:
+        raise ValueError("Unsupported fixed RQ014 subcommand")
     source_checks += (
         _shell_digest_check(
             validated["environment_manifest_path"],

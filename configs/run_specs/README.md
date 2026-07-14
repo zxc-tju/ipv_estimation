@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 21941f33604107e0710a28ff32d4e48a4f12bd7cb7e0fe0c334a0f47d5520991 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" e2efc6ca86cfbf5f5b8f74fb223c9989b23dc9dd044ca2e0c4362d25ac785d37 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -129,6 +129,16 @@ its pilot-specific schema, resource profile, run-spec template, and entrypoint e
 produces a new Formal G1 and final checksum bundle; validate-only passes; and the PI explicitly
 confirms the pilot submission. Feature build, rating recovery screen, clean replay, optional
 power/stability, and every rating-bearing operation remain centrally unauthorized.
+
+The W5b resource-pilot surface is `RQ014_g2_resource_pilot.template.json` with
+profile `rq014-g2-resource-pilot-cpu-v1` (`amd`, 1 node, 1 task, 4 CPUs, 16G,
+04:00:00; all thread limits 1). It runs only the v3-compatible rating-blind
+`source_load`, `window_assembly`, and `feature_prep` stages for the frozen lane-v3
+cost endpoints. `m3_stage_enabled` is false, `env_v4_required` is true, and both
+M3 and combined G2R costs remain `EXPLICITLY_UNMEASURED`; the frozen M3 bytes are
+verified for lineage but never imported or deserialized. This implementation
+does not remove the fresh-review, Formal-G1, bundle, immutable-spec,
+validate-only, and explicit PI stop gates before submission.
 
 Schema v2 is fixed by `research_run_spec_v2.schema.json`, while the managed
 standard-library interpreter receipt is fixed by

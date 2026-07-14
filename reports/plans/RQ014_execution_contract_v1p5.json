@@ -122,6 +122,36 @@
         "required_prior_receipts": [
           "rq014-g2-contract-preflight-receipt-v1",
           "rq014-managed-operation-done-v1"
+        ],
+        "run_spec_schema_version": 2,
+        "resource_profile_id": "rq014-g2-resource-pilot-cpu-v1",
+        "required_run_spec_refs": [
+          "formal_g1",
+          "contract_bundle",
+          "environment_manifest",
+          "input_manifest",
+          "sanitization_receipt",
+          "materialization_ledger",
+          "wod_path_type_mapping_manifest",
+          "m3_artifact",
+          "declassification_export_receipt",
+          "declassification_export_done",
+          "contract_preflight_receipt",
+          "contract_preflight_done",
+          "pilot_scope"
+        ],
+        "m3_stage_contract": {
+          "m3_stage_enabled": false,
+          "env_v4_required": true,
+          "m3_cost_estimate": "EXPLICITLY_UNMEASURED",
+          "combined_g2r_cost_estimate": "EXPLICITLY_UNMEASURED",
+          "deserialization": "FORBIDDEN"
+        },
+        "allowed_effects": [
+          "verify reviewed rating-blind lineage and the frozen M3 bytes without deserializing them",
+          "measure source_load window_assembly and feature_prep for the frozen lightest and heaviest lane-v3 cells",
+          "write walltime CPU peak-RSS IO failure-taxonomy and non-M3-only projection evidence",
+          "write an immutable pilot receipt and PASS-only managed DONE chain"
         ]
       },
       "rq014_g2_blind_build": {
@@ -370,6 +400,8 @@
     "open_policy": "SINGLE_RETAINED_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
     "verification_order": "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION",
     "deserialization_in_contract_preflight": "FORBIDDEN",
+    "verification_only_for_operation": "rq014_g2_resource_pilot",
+    "deserialization_in_resource_pilot": "FORBIDDEN_PENDING_ENVIRONMENT_V4",
     "immutable_receipt_schema": "rq014-m3-artifact-input-receipt-v1",
     "job_start_reverification": true
   },
@@ -459,9 +491,9 @@
     "wrapper_capability_contract": "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at /share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, opens fd9 at the exact managed submit_research_run.sh, hashes and executes that retained fd9; the wrapper must inherit both descriptors and may not create them; before any RQ014 registry-materializer or preflight preload, the launcher requires exact /proc/self/fd targets, regular non-symlink fixed paths, and fstat st_dev/st_ino/st_mode equality; this is not a cryptographic secret against deliberate same-account descriptor emulation",
     "production_spec_root": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs",
     "production_spec_contract": "direct-child regular non-symlink read-only canonical JSON; one O_NOFOLLOW descriptor read with retained exact bytes passed through validation, sealing and submission; no path reopen",
-    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 21941f33604107e0710a28ff32d4e48a4f12bd7cb7e0fe0c334a0f47d5520991 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
+    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" e2efc6ca86cfbf5f5b8f74fb223c9989b23dc9dd044ca2e0c4362d25ac785d37 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
     "operator_wrapper_size_bytes": 8108,
-    "operator_wrapper_sha256": "21941f33604107e0710a28ff32d4e48a4f12bd7cb7e0fe0c334a0f47d5520991",
+    "operator_wrapper_sha256": "e2efc6ca86cfbf5f5b8f74fb223c9989b23dc9dd044ca2e0c4362d25ac785d37",
     "operator_environment_boundary": "BASH_ENV ENV LD_PRELOAD PYTHONHOME PYTHONPATH HPC_SOCIALITY_ROOT and every SBATCH_* variable are rejected; launcher then re-execs in an empty environment",
     "slurm_environment_export": "NIL_ON_DIRECTIVE_AND_SBATCH_COMMAND; NONE_IS_FORBIDDEN_BECAUSE_IT_CAN_RECONSTRUCT_THE_LOGIN_ENVIRONMENT",
     "code_execution_surface": "read only final-contract-bundle registered regular-file blobs from the exact declared published Git commit tree into a closed run-root snapshot; verify each blob against the registered digest and hash the snapshot receipt and bundle manifest before execution; the sole external scientific byte is the separately spec-bound M3 scorer, which is retained-descriptor verified and never deserialized by contract preflight; dirty or untracked worktree bytes, Git worktree checkout, hooks, filters and unregistered files are forbidden",
@@ -480,7 +512,7 @@
       "/usr/bin/sbatch"
     ],
     "python_startup_flags": ["-I", "-S", "-B", "-X", "utf8"],
-    "python_import_surface": "before the first managed-Python process, the wrapper uses absolute system tools to verify the pinned launcher, preflight and registry-materializer bytes, Python executable, v3 environment manifest, exact stdlib checksum manifest, zip absence, zero stdlib symlinks, complete stdlib regular-file set/count/size/hash, pinned consumer-derived native dependency set, exact loader links/final bytes and exact isolated sys.path; /lib64 is the explicit operating-system ABI trust boundary; the closed-snapshot registry materializer is explicitly preloaded by spec_from_file_location as scripts.rq014.materialize_registry, then preflight and the fixed scientific entrypoint are loaded only by exact reviewed closed-snapshot paths; scripts and scripts.rq014 keep empty __path__, so ordinary path import, checkout/root/src/sitecustomize/usercustomize/PYTHONPATH/local shadows remain unavailable",
+    "python_import_surface": "before the first managed-Python process, the wrapper uses absolute system tools to verify the pinned launcher, preflight and registry-materializer bytes, Python executable, v3 environment manifest, exact stdlib checksum manifest, zip absence, zero stdlib symlinks, complete stdlib regular-file set/count/size/hash, pinned consumer-derived native dependency set, exact loader links/final bytes and exact isolated sys.path; /lib64 is the explicit operating-system ABI trust boundary; the closed-snapshot registry materializer is explicitly preloaded by spec_from_file_location as scripts.rq014.materialize_registry, then preflight, the stdlib-only resource-pilot helper and the fixed scientific entrypoint are loaded only by exact reviewed closed-snapshot paths; scripts and scripts.rq014 keep empty __path__, so ordinary path import, checkout/root/src/sitecustomize/usercustomize/PYTHONPATH/local shadows remain unavailable",
     "submission_failure_policy": "pre-submit failures remove every partial code snapshot and run root and write a retryable FAILED receipt; any failure after sbatch starts preserves the run root, raw response and known job ID when available, and writes a non-retryable SUBMISSION_STATE_UNKNOWN receipt",
     "validate_only_contract": "side-effect-free output contains rq/run/operation, exact code_snapshot_files and commit-blob materialization plan, M3 artifact path/size/SHA-256 and retained-descriptor verification evidence, job/resource/thread plan and pinned runtime metadata; code_snapshot receipt, immutable M3 input receipt and rendered NIL sbatch script are submit-only artifacts",
     "environment_manifest_schema": "configs/run_specs/rq014_managed_python_environment_v3.schema.json",
