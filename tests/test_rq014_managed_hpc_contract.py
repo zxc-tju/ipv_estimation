@@ -702,7 +702,7 @@ def test_authoritative_rq014_operator_docs_require_the_same_clean_bootstrap() ->
     assert "submit_research_run.sh --spec" not in decision
 
 
-def test_preflight_is_conditionally_registered_and_centrally_allowlisted_for_review() -> None:
+def test_preflight_and_resource_pilot_are_conditionally_registered_for_review() -> None:
     execution = json.loads(
         (ROOT / "reports" / "plans" / "RQ014_execution_contract_v1p5.json").read_text(
             encoding="utf-8"
@@ -723,10 +723,22 @@ def test_preflight_is_conditionally_registered_and_centrally_allowlisted_for_rev
     assert authorization["authorizations"]["RQ014"]["allowed_operations"] == [
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
+        "rq014_g2_resource_pilot",
     ]
     assert authorization["authorizations"]["RQ014"]["preflight_decision_path"] == (
         "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
     )
+    assert authorization["authorizations"]["RQ014"]["pilot_decision_path"] == (
+        "reports/plans/RQ014_PI_decision_D2_resource_pilot_20260714.md"
+    )
+    pilot = execution["authorization"]["registered_operations"][
+        "rq014_g2_resource_pilot"
+    ]
+    assert pilot["status"] == "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1"
+    assert pilot["required_prior_receipts"] == [
+        "rq014-g2-contract-preflight-receipt-v1",
+        "rq014-managed-operation-done-v1",
+    ]
     assert authorization["authorizations"]["RQ014"]["formal_g1_path"] == (
         launcher.RQ014_FORMAL_G1
     )

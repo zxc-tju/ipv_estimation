@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 3ad13e1180729a3a72bb0b914fe194ed0b45c3554f095b92c0d5b9e6b7a6119d /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 21941f33604107e0710a28ff32d4e48a4f12bd7cb7e0fe0c334a0f47d5520991 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -123,9 +123,12 @@ revalidated only inside the authorized submit path.
 
 The current review-candidate recovery route is defined in `reports/plans/RQ014_recovery_lane_v3.json`.
 It fixes the checksum-bound RQ009 M3 conformal model as the sole envelope and defines a 320-cell
-rating-blind feature grid followed by a 960-row full-data screen. Resource pilot, feature build,
-rating recovery screen, clean replay, optional power/stability, and every other
-rating-bearing operation remain centrally unauthorized.
+rating-blind feature grid followed by a 960-row full-data screen. The resource pilot is centrally
+allowlisted only for D2 implementation closure and remains non-executable and non-submittable until
+its pilot-specific schema, resource profile, run-spec template, and entrypoint exist; fresh review
+produces a new Formal G1 and final checksum bundle; validate-only passes; and the PI explicitly
+confirms the pilot submission. Feature build, rating recovery screen, clean replay, optional
+power/stability, and every rating-bearing operation remain centrally unauthorized.
 
 Schema v2 is fixed by `research_run_spec_v2.schema.json`, while the managed
 standard-library interpreter receipt is fixed by

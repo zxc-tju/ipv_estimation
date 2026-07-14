@@ -170,6 +170,7 @@ HEX64 = re.compile(r"^[0-9a-f]{64}$")
 UTC_SECONDS = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 RQ014_EXPORT_OPERATION = "rq014_g2_declassification_export"
 RQ014_PREFLIGHT_OPERATION = "rq014_g2_contract_preflight"
+RQ014_RESOURCE_PILOT_OPERATION = "rq014_g2_resource_pilot"
 RQ014_EXPORT_RESOURCE_PROFILE = "rq014-g2-declassify-cpu-v1"
 RQ014_PREFLIGHT_RESOURCE_PROFILE = "rq014-g2-preflight-cpu-v1"
 RQ014_WRAPPER_CAPABILITY_CONTRACT = (
@@ -222,6 +223,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "reports/plans/RQ014_PI_decision_G0_waiver_launch_20260711.md",
     "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
     "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",
+    "reports/plans/RQ014_PI_decision_D2_resource_pilot_20260714.md",
     "reports/plans/RQ014_PI_decision_envelope_identification_20260713.md",
     "reports/plans/RQ014_blind_anchor_receipt_v1p5.json",
     "reports/plans/RQ014_config_space_v1p5.yaml",
@@ -1652,6 +1654,7 @@ def _validate_rq014_spec(
         "allowed_operations",
         "decision_path",
         "preflight_decision_path",
+        "pilot_decision_path",
         "formal_g1_path",
         "execution_contract_path",
     }
@@ -1669,11 +1672,12 @@ def _validate_rq014_spec(
             label="Declassification export commit",
         )
 
-    decision_key = (
-        "preflight_decision_path"
-        if spec["operation"] == RQ014_PREFLIGHT_OPERATION
-        else "decision_path"
-    )
+    if spec["operation"] == RQ014_PREFLIGHT_OPERATION:
+        decision_key = "preflight_decision_path"
+    elif spec["operation"] == RQ014_RESOURCE_PILOT_OPERATION:
+        decision_key = "pilot_decision_path"
+    else:
+        decision_key = "decision_path"
     decision_relative_path = rq[decision_key]
     decision_path = (repo / decision_relative_path).resolve()
     execution_contract_path = (repo / rq["execution_contract_path"]).resolve()

@@ -139,11 +139,23 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
     assert authorization["authorizations"]["RQ014"]["allowed_operations"] == [
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
+        "rq014_g2_resource_pilot",
     ]
     assert authorization["authorizations"]["RQ014"]["preflight_decision_path"] == (
         "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
     )
-    assert operations["rq014_g2_resource_pilot"]["status"].startswith("DENY_")
+    assert authorization["authorizations"]["RQ014"]["pilot_decision_path"] == (
+        "reports/plans/RQ014_PI_decision_D2_resource_pilot_20260714.md"
+    )
+    pilot = operations["rq014_g2_resource_pilot"]
+    assert pilot["status"] == "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1"
+    assert pilot["rating_access"] == pilot["rating_join"] == "FORBIDDEN"
+    assert pilot["required_prior_receipts"] == [
+        "rq014-g2-contract-preflight-receipt-v1",
+        "rq014-managed-operation-done-v1",
+    ]
+    assert "resource_profile_id" not in pilot
+    assert not (ROOT / "configs" / "run_specs" / "RQ014_g2_resource_pilot.template.json").exists()
     assert operations["rq014_g2_blind_build"]["status"].startswith("DENY_")
     assert operations["rq014_g2p_power_simulation"]["status"].startswith("DENY_")
 
@@ -151,6 +163,7 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
     assert central["authorizations"]["RQ014"]["allowed_operations"] == [
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
+        "rq014_g2_resource_pilot",
     ]
 
 
