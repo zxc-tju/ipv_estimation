@@ -247,45 +247,33 @@ question index in `STUDIES.md`.
   receipt is SHA-256 `1e2d0cf6…0bb2e23`, status `PASS`, with `rating_access=NONE`,
   `rating_join=NONE`, `observed_statistics=NONE`, all sanitization scans zero, and the exact
   M3 artifact verified without deserialization. `rq014_g2_resource_pilot` remains explicitly
-  unauthorized pending preflight acceptance/D2; stop and preserve. Local receipt/log copies are
+  unauthorized pending W5a implementation closure, fresh G1/bundle, validate-only, and explicit pre-submit PI
+  confirmation; stop and preserve. Local receipt/log copies are
   under `.codex-fleet/rq014-execution-v1p6/board/w4g_evidence/pf_*`.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
-  tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Historical
-  W4b pre-submit result: `128 passed`; prior final release result: `194 passed`; broader non-shortcut
-  regression excluding the locally absent ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
-  Python compilation, shell syntax and `git diff --check` also passed at that pre-submit stage; the
-  later preflight execution is recorded above and still read no rating value.
-- RQ014 final preflight authority bundle is
-  `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 74 rows, SHA-256
-  `41ac52808cba5eb729829bc031053c49fb49583691ff24f7e2662c38b5ee2f19` at commit `b06a243e`;
-  the earlier W4b candidate `999ad552…` is superseded, and the v1.5 baseline remains at
   tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Current
-  W4h review-candidate result: `244 passed`; prior W4f result: `241 passed`; broader non-shortcut regression excluding the locally absent
+  W5a resource-pilot authority-candidate result: `244 passed`; prior W4h result: `244 passed`; broader non-shortcut regression excluding the locally absent
   ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
   Python compilation, shell syntax and `git diff --check` also pass. No rating value was read,
   no production run root was created, and no Slurm job was submitted.
-- RQ014 last adjudicated W4f preflight authority bundle is
+- RQ014 last adjudicated W4h preflight authority bundle is
   `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 105 rows, SHA-256
-  `bdad1e4c6d45897e70df769c17c269832e13ee0c1a0b180535b432e35c47635d`; the v1.5 baseline remains at
+  `41ac52808cba5eb729829bc031053c49fb49583691ff24f7e2662c38b5ee2f19`; the v1.5 baseline remains at
   `reports/plans/RQ014_plan_v1p5_checksums_20260712.sha256`.
-- **RQ014 W4h is a review candidate, not executable authority.** The adjudicated W4f rating-blind WOD mapping
-  contains 254 mappings (`CP=115, HO=90, MP=48, F=1`). The first preflight submit at published commit `218d8bd2`
-  failed closed before scientific work because validate-only accepted the managed-checkout blind-anchor path while
-  the job required its run-snapshot counterpart. W4h removes that cross-phase exception: both phases now require
-  the exact 1,752-byte receipt (SHA-256 `80e393f7…95496a`) installed at
-  `inputs/RQ014/blind_anchor/v1/RQ014_blind_anchor_receipt_v1p5.json`; the repository copy is provenance only.
-  The failed run root remains preserved, no rating was accessed, and the W4f Formal G1/final bundle do not cover
-  W4h bytes. Fresh dual review, regenerated verdicts/G1/final bundle, publication/sync, a new immutable spec and
-  explicit confirmation are mandatory before another submit. The mapping addendum freezes
-  the recovered full479 conflict-geometry rule over the published nine-file score-stripped bundle. Its deterministic
-  scene-level candidate has 222 geometry-available
-  `UNMAPPED_EXCLUDED` scenes that fail closed at F, and 3 structural no-geometry scenes that terminate at K before
-  lookup. The v1p6 registry and execution contract checksum-bind the definition, stdlib implementation, and table, increasing
-  the exact active science-binding count from 9 to 12. Round 2 restores the protected envelope-builder v2 bytes at
-  SHA-256 `407d6320…b8c8a4` and freezes the binary64/OLS tolerances plus ten boundary/exclusion fixtures (15 total) in the
-  addendum/registry instead.
+- **RQ014 contract preflight PASS; D2 accepted; W5a is an authority candidate, not submit authority.** The W4h
+  correction was reviewed/published, then the single authorized preflight submit completed as Slurm job `1924193`
+  with `COMPLETED/0:0`. The bounded report
+  `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_2_contract_preflight_20260714T003336Z_72dd4362/report.md`
+  records rating access `NONE`, observed statistics `NONE`, verified receipt chain and dual `NO_BLOCKER`. D2 accepts
+  that evidence and authorizes only the §8.1 loop for `rq014_g2_resource_pilot`. The W5a candidate adds it as the
+  exact third central operation, binds decision `RQ014_PI_decision_D2_resource_pilot_20260714.md`, and requires
+  receipt schemas `rq014-g2-contract-preflight-receipt-v1` plus `rq014-managed-operation-done-v1`. No pilot
+  resource-profile ID, pilot schema branch, entrypoint, or run-spec template exists at this baseline, so
+  validate-only and submit remain fail-closed. Fresh dual review and post-review G1/bundle regeneration are next;
+  an explicit PI stop remains before pilot submit, and D3 separately gates the full G2R compute budget. No rating
+  value was read and no HPC write/job occurred in W5a.
 - RQ007 held-out remains sealed. RQ009 must freeze all rules and stop at
   `READY_FOR_SEALED_TEST` until a new PI authorization opens it.
 - RQ008B is not authorized; no RQ008 motif may enter RQ009.
