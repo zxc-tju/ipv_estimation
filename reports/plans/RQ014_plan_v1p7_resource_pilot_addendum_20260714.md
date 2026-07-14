@@ -53,23 +53,36 @@ count, or ID drift fails closed.
 ## Resource profile
 
 `rq014-g2-resource-pilot-cpu-v1` is fixed to the `amd` partition, one node, one
-task, four allocated CPUs, `16G`, and `04:00:00`, while every registered thread
-limit remains `1`. The four CPUs provide allocation headroom for the heaviest
-cell's full source I/O scan and runtime overhead; the measured Python stages are
-deliberately single-threaded so CPU and walltime remain interpretable. The 16 GiB
-request protects the R10L/TF/HFEAS in-memory window scan without asserting that
-M3 fits or ran.
+task, 16 allocated CPUs, `32G`, and `04:00:00`, while every registered per-worker
+thread limit remains `1`. This sizing implements the PI guidance recorded in
+`.codex-fleet/rq014-execution-v1p6/board/knowledge.md` on 2026-07-14:
+
+> 2026-07-14 PI resource guidance: CPU is ample on the cluster — prefer
+> efficiency; pilot and G2R profiles may request generous CPU (parallel cells;
+> per-worker thread caps preserved for determinism). Recorded for W5b+.
+
+The two selected endpoint cells therefore run concurrently in separate
+single-threaded processes, with the process pool capped at 16 workers for the
+production-cost extrapolation. Sixteen CPUs leave one core per possible worker;
+32 GiB protects concurrent source scans and the R10L/TF/HFEAS in-memory window
+work without asserting that M3 fits or ran.
 
 ## Measurement and projection contract
 
 Each measured stage records elapsed seconds, CPU seconds, process peak RSS, and
-process I/O deltas. Stage failures use the fixed taxonomy
+process I/O deltas. The receipt also records every selected cell's serial sum of
+its stage wall/CPU timings and the aggregate wall-clock around the concurrent
+process-pool execution. Stage failures use the fixed taxonomy
 `INPUT_CONTRACT_FAILURE`, `SOURCE_LOAD_FAILURE`, `WINDOW_ASSEMBLY_FAILURE`, or
 `FEATURE_PREP_FAILURE`; successful stages use `NONE`. A PASS receipt requires
 all six cell-stage executions to succeed and a zero failure rate.
 
 The non-M3 full-grid projection is explicit: source-load cost is counted once;
 the larger observed light/heavy per-cell `window_assembly + feature_prep` cost is
-multiplied by 320. This is a conservative two-endpoint extrapolation, not a G2R
-total. The receipt-to-`DONE.json` hash chain follows the managed sibling
-operations, and `DONE.json` is written only for PASS.
+multiplied by 320 for the serial wall/CPU estimate and by `ceil(320 / 16)` for
+the 16-worker parallel wall estimate. The measured aggregate endpoint
+wall-clock remains separate evidence of process startup and concurrent I/O, so
+D3 can qualify both extrapolations rather than treating the theoretical worker
+division as observed 16-way scaling. This is a conservative two-endpoint
+extrapolation, not a G2R total. The receipt-to-`DONE.json` hash chain follows the
+managed sibling operations, and `DONE.json` is written only for PASS.

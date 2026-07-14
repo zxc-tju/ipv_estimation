@@ -238,8 +238,11 @@ question index in `STUDIES.md`.
   pre-deserialization (immutable receipt), receipts + bounded report dual NO_BLOCKER. Report:
   `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_2_contract_preflight_20260714T003336Z_72dd4362/`.
   W5b implementation candidate is now local-only: `rq014_g2_resource_pilot` uses the existing v3 stdlib runtime
-  for rating-blind `source_load`, `window_assembly`, and `feature_prep` measurements on frozen light/heavy cells;
-  M3 stays disabled with `env_v4_required=true`, and M3/combined cost is `EXPLICITLY_UNMEASURED`. Managed
+  for rating-blind `source_load`, `window_assembly`, and `feature_prep` measurements on frozen light/heavy cells.
+  Its `amd` profile is 1 node/1 task/16 CPU/32G/04:00:00; the endpoint cells run concurrently in separate
+  single-threaded processes under a 16-worker ceiling, with per-cell serial timings and aggregate concurrent
+  wall-clock recorded for D3. M3 stays disabled with `env_v4_required=true`, and M3/combined cost is
+  `EXPLICITLY_UNMEASURED`. Managed
   environment closure v4 remains a separate proposal for later M3 execution. Fresh dual review, Formal G1/final
   bundle regeneration, publication/sync, immutable spec, validate-only, and the explicit PI stop are still pending;
   D3 remains the separate compute-budget gate.

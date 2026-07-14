@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" e2efc6ca86cfbf5f5b8f74fb223c9989b23dc9dd044ca2e0c4362d25ac785d37 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 78caf93a489a7c2ee4d0d445ebc63ce0cc77b61316cda637151e68f20dff3b03 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -131,8 +131,11 @@ confirms the pilot submission. Feature build, rating recovery screen, clean repl
 power/stability, and every rating-bearing operation remain centrally unauthorized.
 
 The W5b resource-pilot surface is `RQ014_g2_resource_pilot.template.json` with
-profile `rq014-g2-resource-pilot-cpu-v1` (`amd`, 1 node, 1 task, 4 CPUs, 16G,
-04:00:00; all thread limits 1). It runs only the v3-compatible rating-blind
+profile `rq014-g2-resource-pilot-cpu-v1` (`amd`, 1 node, 1 task, 16 CPUs, 32G,
+04:00:00; every per-worker thread limit is 1). The two frozen endpoint cells run
+concurrently in separate processes under a 16-worker ceiling. The receipt keeps
+their per-cell serial stage timings and the aggregate concurrent wall-clock for
+D3 serial/parallel extrapolation. It runs only the v3-compatible rating-blind
 `source_load`, `window_assembly`, and `feature_prep` stages for the frozen lane-v3
 cost endpoints. `m3_stage_enabled` is false, `env_v4_required` is true, and both
 M3 and combined G2R costs remain `EXPLICITLY_UNMEASURED`; the frozen M3 bytes are

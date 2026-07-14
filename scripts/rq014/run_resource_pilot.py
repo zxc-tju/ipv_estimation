@@ -10,6 +10,7 @@ import os
 import resource
 import time
 from bisect import bisect_right
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Any, Callable
 
@@ -26,6 +27,15 @@ FAILURE_CODES = (
 )
 LIGHTEST_CELL_ID = "RR3-R04N-CH-W10-H20-NEX_MEAN"
 HEAVIEST_CELL_ID = "RR3-R10L-TF-HFEAS-NEX_MEAN"
+MAX_PARALLEL_WORKERS = 16
+WORKER_THREAD_LIMITS = {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "BLIS_NUM_THREADS": "1",
+}
 
 
 class PilotError(ValueError):
@@ -387,6 +397,76 @@ def _prepare_features(windows: list[tuple[list[Any], list[Any]]]) -> dict[str, A
     return {"window_count": len(windows), "state_row_count": state_rows, "feature_prep_sha256": digest.hexdigest()}
 
 
+def _configure_worker_thread_limits() -> None:
+    for name, value in WORKER_THREAD_LIMITS.items():
+        os.environ[name] = value
+
+
+def _run_pilot_cell(
+    cell_id: str,
+    bundle_root: Path,
+    mapping_manifest_path: Path,
+) -> dict[str, Any]:
+    measurements: list[dict[str, Any]] = []
+    sources, source_measurement = _measure(
+        "source_load", cell_id, lambda: _load_sources(bundle_root, mapping_manifest_path)
+    )
+    measurements.append(source_measurement)
+    detail: dict[str, Any] | None = None
+    projection_basis: dict[str, float] | None = None
+    if sources is not None:
+        windows, window_measurement = _measure(
+            "window_assembly", cell_id, lambda: _assemble_windows(sources, cell_id)
+        )
+        measurements.append(window_measurement)
+        if windows is not None:
+            feature_detail, feature_measurement = _measure(
+                "feature_prep", cell_id, lambda: _prepare_features(windows)
+            )
+            measurements.append(feature_measurement)
+            if feature_detail is not None:
+                detail = {
+                    "mapped_segment_count": sources["mapped_segment_count"],
+                    "source_row_count": sources["source_row_count"],
+                    **feature_detail,
+                }
+                projection_basis = {
+                    "source_cpu_seconds": source_measurement["cpu_seconds"],
+                    "source_walltime_seconds": source_measurement["walltime_seconds"],
+                    "per_cell_cpu_seconds": (
+                        window_measurement["cpu_seconds"]
+                        + feature_measurement["cpu_seconds"]
+                    ),
+                    "per_cell_walltime_seconds": (
+                        window_measurement["walltime_seconds"]
+                        + feature_measurement["walltime_seconds"]
+                    ),
+                }
+    stage_timings = {
+        measurement["stage_id"]: {
+            "walltime_seconds": measurement["walltime_seconds"],
+            "cpu_seconds": measurement["cpu_seconds"],
+        }
+        for measurement in measurements
+    }
+    return {
+        "cell_id": cell_id,
+        "measurements": measurements,
+        "detail": detail,
+        "projection_basis": projection_basis,
+        "serial_timing": {
+            "stages": stage_timings,
+            "measured_stage_count": len(measurements),
+            "total_serial_walltime_seconds": sum(
+                measurement["walltime_seconds"] for measurement in measurements
+            ),
+            "total_serial_cpu_seconds": sum(
+                measurement["cpu_seconds"] for measurement in measurements
+            ),
+        },
+    }
+
+
 def _validate_preflight_chain(
     *,
     preflight_receipt_path: Path,
@@ -495,6 +575,15 @@ def run_resource_pilot(
             "cell_selection": None,
             "measurements": [],
             "cell_details": {},
+            "per_cell_serial_timings": {},
+            "parallel_execution": {
+                "configured_max_workers": MAX_PARALLEL_WORKERS,
+                "actual_worker_count": 0,
+                "selected_cell_count": 0,
+                "worker_model": "PROCESS_POOL",
+                "worker_thread_limits": WORKER_THREAD_LIMITS,
+                "aggregate_walltime_seconds": M3_COST_SENTINEL,
+            },
             "failure_taxonomy": taxonomy,
             "failed_stage_count": 1,
             "measured_stage_count": 0,
@@ -506,6 +595,7 @@ def run_resource_pilot(
             "projection": {
                 "projected_non_m3_cpu_hours": M3_COST_SENTINEL,
                 "projected_non_m3_serial_walltime_hours": M3_COST_SENTINEL,
+                "projected_non_m3_parallel_walltime_hours": M3_COST_SENTINEL,
                 "m3_cost_estimate": M3_COST_SENTINEL,
                 "combined_g2r_cost_estimate": M3_COST_SENTINEL,
                 "env_v4_required": True,
@@ -517,36 +607,34 @@ def run_resource_pilot(
     measurements: list[dict[str, Any]] = []
     cell_totals: dict[str, dict[str, float]] = {}
     cell_details: dict[str, dict[str, Any]] = {}
-    for cell_id in (selection["lightest_cell_id"], selection["heaviest_cell_id"]):
-        sources, source_measurement = _measure(
-            "source_load", cell_id, lambda: _load_sources(bundle_root, mapping_manifest_path)
+    per_cell_serial_timings: dict[str, dict[str, Any]] = {}
+    selected_cell_ids = (
+        selection["lightest_cell_id"],
+        selection["heaviest_cell_id"],
+    )
+    actual_worker_count = min(MAX_PARALLEL_WORKERS, len(selected_cell_ids))
+    parallel_started = time.monotonic()
+    with ProcessPoolExecutor(
+        max_workers=actual_worker_count,
+        initializer=_configure_worker_thread_limits,
+    ) as executor:
+        cell_results = list(
+            executor.map(
+                _run_pilot_cell,
+                selected_cell_ids,
+                (bundle_root,) * len(selected_cell_ids),
+                (mapping_manifest_path,) * len(selected_cell_ids),
+            )
         )
-        measurements.append(source_measurement)
-        if sources is None:
-            continue
-        windows, window_measurement = _measure(
-            "window_assembly", cell_id, lambda: _assemble_windows(sources, cell_id)
-        )
-        measurements.append(window_measurement)
-        if windows is None:
-            continue
-        detail, feature_measurement = _measure(
-            "feature_prep", cell_id, lambda: _prepare_features(windows)
-        )
-        measurements.append(feature_measurement)
-        if detail is None:
-            continue
-        cell_details[cell_id] = {
-            "mapped_segment_count": sources["mapped_segment_count"],
-            "source_row_count": sources["source_row_count"],
-            **detail,
-        }
-        cell_totals[cell_id] = {
-            "source_cpu_seconds": source_measurement["cpu_seconds"],
-            "source_walltime_seconds": source_measurement["walltime_seconds"],
-            "per_cell_cpu_seconds": window_measurement["cpu_seconds"] + feature_measurement["cpu_seconds"],
-            "per_cell_walltime_seconds": window_measurement["walltime_seconds"] + feature_measurement["walltime_seconds"],
-        }
+    aggregate_walltime_seconds = time.monotonic() - parallel_started
+    for result in cell_results:
+        cell_id = result["cell_id"]
+        measurements.extend(result["measurements"])
+        per_cell_serial_timings[cell_id] = result["serial_timing"]
+        if result["detail"] is not None:
+            cell_details[cell_id] = result["detail"]
+        if result["projection_basis"] is not None:
+            cell_totals[cell_id] = result["projection_basis"]
     failures = [row for row in measurements if row["status"] == "FAIL"]
     taxonomy = {code: 0 for code in FAILURE_CODES if code != "NONE"}
     for row in failures:
@@ -558,13 +646,20 @@ def run_resource_pilot(
         per_cell_wall = max(value["per_cell_walltime_seconds"] for value in cell_totals.values())
         non_m3_cpu: float | str = (source_cpu + 320 * per_cell_cpu) / 3600.0
         non_m3_wall: float | str = (source_wall + 320 * per_cell_wall) / 3600.0
+        non_m3_parallel_wall: float | str = (
+            source_wall + math.ceil(320 / MAX_PARALLEL_WORKERS) * per_cell_wall
+        ) / 3600.0
     else:
         non_m3_cpu = M3_COST_SENTINEL
         non_m3_wall = M3_COST_SENTINEL
+        non_m3_parallel_wall = M3_COST_SENTINEL
     projection = {
         "formula": "max_source_load_once + 320 * max_endpoint_window_assembly_plus_feature_prep",
+        "parallel_formula": "max_source_load_once + ceil(320 / 16) * max_endpoint_window_assembly_plus_feature_prep",
+        "parallel_worker_count": MAX_PARALLEL_WORKERS,
         "projected_non_m3_cpu_hours": non_m3_cpu,
         "projected_non_m3_serial_walltime_hours": non_m3_wall,
+        "projected_non_m3_parallel_walltime_hours": non_m3_parallel_wall,
         "m3_cost_estimate": M3_COST_SENTINEL,
         "combined_g2r_cost_estimate": M3_COST_SENTINEL,
         "env_v4_required": True,
@@ -586,6 +681,15 @@ def run_resource_pilot(
         "cell_selection": selection,
         "measurements": measurements,
         "cell_details": cell_details,
+        "per_cell_serial_timings": per_cell_serial_timings,
+        "parallel_execution": {
+            "configured_max_workers": MAX_PARALLEL_WORKERS,
+            "actual_worker_count": actual_worker_count,
+            "selected_cell_count": len(selected_cell_ids),
+            "worker_model": "PROCESS_POOL",
+            "worker_thread_limits": WORKER_THREAD_LIMITS,
+            "aggregate_walltime_seconds": aggregate_walltime_seconds,
+        },
         "failure_taxonomy": taxonomy,
         "failed_stage_count": len(failures),
         "measured_stage_count": len(measurements),

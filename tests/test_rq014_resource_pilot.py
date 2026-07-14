@@ -278,6 +278,50 @@ def test_resource_pilot_receipt_measures_only_non_m3_stages(tmp_path: Path) -> N
     assert receipt["projection"]["m3_cost_estimate"] == "EXPLICITLY_UNMEASURED"
     assert receipt["projection"]["combined_g2r_cost_estimate"] == "EXPLICITLY_UNMEASURED"
     assert receipt["projection"]["projected_non_m3_cpu_hours"] >= 0.0
+    assert receipt["projection"]["projected_non_m3_parallel_walltime_hours"] <= (
+        receipt["projection"]["projected_non_m3_serial_walltime_hours"]
+    )
+    assert set(receipt["per_cell_serial_timings"]) == {
+        "RR3-R04N-CH-W10-H20-NEX_MEAN",
+        "RR3-R10L-TF-HFEAS-NEX_MEAN",
+    }
+    for timing in receipt["per_cell_serial_timings"].values():
+        assert set(timing) == {
+            "stages",
+            "measured_stage_count",
+            "total_serial_walltime_seconds",
+            "total_serial_cpu_seconds",
+        }
+        assert set(timing["stages"]) == {
+            "source_load",
+            "window_assembly",
+            "feature_prep",
+        }
+        assert all(
+            set(stage_timing) == {"walltime_seconds", "cpu_seconds"}
+            for stage_timing in timing["stages"].values()
+        )
+        assert timing["measured_stage_count"] == 3
+        assert timing["total_serial_walltime_seconds"] >= 0.0
+        assert timing["total_serial_cpu_seconds"] >= 0.0
+    assert receipt["parallel_execution"] == {
+        "configured_max_workers": 16,
+        "actual_worker_count": 2,
+        "selected_cell_count": 2,
+        "worker_model": "PROCESS_POOL",
+        "worker_thread_limits": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+        },
+        "aggregate_walltime_seconds": receipt["parallel_execution"][
+            "aggregate_walltime_seconds"
+        ],
+    }
+    assert receipt["parallel_execution"]["aggregate_walltime_seconds"] >= 0.0
 
 
 def test_resource_pilot_records_input_failure_without_done_eligible_status(tmp_path: Path) -> None:
@@ -288,6 +332,14 @@ def test_resource_pilot_records_input_failure_without_done_eligible_status(tmp_p
     assert receipt["failure_taxonomy"]["INPUT_CONTRACT_FAILURE"] == 1
     assert receipt["failure_rate"] == 1.0
     assert receipt["projection"]["projected_non_m3_cpu_hours"] == (
+        "EXPLICITLY_UNMEASURED"
+    )
+    assert receipt["projection"]["projected_non_m3_parallel_walltime_hours"] == (
+        "EXPLICITLY_UNMEASURED"
+    )
+    assert receipt["per_cell_serial_timings"] == {}
+    assert receipt["parallel_execution"]["actual_worker_count"] == 0
+    assert receipt["parallel_execution"]["aggregate_walltime_seconds"] == (
         "EXPLICITLY_UNMEASURED"
     )
 
@@ -363,8 +415,8 @@ def test_pilot_validate_only_table_and_sbatch_wiring(tmp_path: Path) -> None:
             "partition": "amd",
             "nodes": 1,
             "ntasks": 1,
-            "cpus_per_task": 4,
-            "memory": "16G",
+            "cpus_per_task": 16,
+            "memory": "32G",
             "time": "04:00:00",
         },
         "thread_limits": {
@@ -454,8 +506,8 @@ def test_pilot_validate_only_table_and_sbatch_wiring(tmp_path: Path) -> None:
         sealed_spec_path=run_root / "manifests" / "run_spec.json",
     )
     assert "#SBATCH --job-name=zxc-rq014-pilot-123456789abc" in script
-    assert "#SBATCH --cpus-per-task=4" in script
-    assert "#SBATCH --mem=16G" in script
+    assert "#SBATCH --cpus-per-task=16" in script
+    assert "#SBATCH --mem=32G" in script
     assert "#SBATCH --time=04:00:00" in script
     assert "resource-pilot" in script
     assert "--contract-preflight-receipt" in script
