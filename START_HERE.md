@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-13.
+Last reviewed: 2026-07-14.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -161,6 +161,11 @@ question index in `STUDIES.md`.
   execution/governance reviews both returned `NO_BLOCKER`; machine validation accepts
   `RQ014_formal_G1_v1p5_20260712.yaml` as `FORMAL_G1_PASS`. The exact contract is published, and the
   authorized rating-blind declassification export has now been executed and dual-reviewed PASS
+  (2026-07-13; see the v1.6 execution bullet below). PI accepted D1, and the subsequently authorized
+  `rq014_g2_contract_preflight` completed PASS; no later RQ014 operation may run pending D2.
+- RQ014 primary science authority is now
+  `reports/plans/RQ014_recovery_lane_v2.json`: a fixed 960-cell rating-blind feature grid followed by a
+  one-time, separately authorized 2,880-row full-data recovery screen and a clean independent replay of
   (2026-07-13; see the v1.6 execution bullet below). PI accepted D1 and authorized starting the
   authority-change loop for only `rq014_g2_contract_preflight`; no further RQ014 production operation may run yet.
 - RQ014 review-candidate primary science authority is now
@@ -171,18 +176,23 @@ question index in `STUDIES.md`.
   t*-prefix and full-future semantics are distinct. Window-local state derivation forbids derivative
   halos; a checksum-bound 15,328-group per-scene anchor-domain contract is the sole membership authority.
   Legacy split/power/confirmation is optional and does not gate historical recovery.
-- RQ014 first staged operation is `rq014_g2_declassification_export`, not scientific compute and
+- RQ014 first staged operation was `rq014_g2_declassification_export`, not scientific compute and
   not contract preflight. Raw rated479 TFRecords still embed `preference_score`, so the operation
   may read only the eight exact score-omitting Phase-1 bundles, structural readiness TSV, and
   selected counterpart CSV registered in
   `reports/studies/RQ014_wod_e2e_rating_recovery/02_g2_preflight/RQ014_declassification_source_inventory_20260712.json`.
-  It emits only the canonical CSV/JSON schema under the managed input root. Contract preflight
-  remains denied until a validated export receipt exists. Current kickoff:
+  It emits only the canonical CSV/JSON schema under the managed input root. That export gate and
+  the subsequent contract preflight are now complete; the current stop gate is D2 as recorded below. Historical kickoff:
   `reports/plans/prompts/RQ014_G2_kickoff_prompt_v1p5_20260712.md`.
 - RQ014 multi-agent execution handoff is
   `reports/plans/RQ014_plan_v1p6_execution_handoff_20260712.md` (SHA-256
   `f007c290ea6bb1130b2df1b49c63e482e34cfc7147716f8d68dd4c918e81de0c`). It is an
   append-only operational supplement, not a new authorization and not part of the v1.5 Formal-G1
+  bundle. At handoff publication, the Tongji managed checkout was `b1476bd0` and lacked the v1.5 contract; the Lead
+  Agent first had to sync published Git history and detach at exact reviewed commit `24be0827`, then
+  create/dual-review an immutable export spec and run validate-only. Waves 0–3 through the already
+  authorized rating-blind export/bounded report could proceed without a new user decision. The first
+  mandatory user/PI decision was D1 after export PASS evidence; preflight, compute budget, 960-cell
   bundle. At handoff time the Tongji managed checkout was `b1476bd0` and lacked the v1.5 contract; that
   historical sync instruction was completed before the later W4b/W4c work. The Lead then had to
   create/dual-review an immutable export spec and run validate-only. Waves 0–3 through the already
@@ -217,9 +227,40 @@ question index in `STUDIES.md`.
   publication/sync, immutable-spec validate-only, fresh validation and explicit user confirmation remain mandatory.
   No rating value was read.
   Fleet evidence: `.codex-fleet/rq014-execution-v1p6/board/`.
+- **RQ014 preflight COMPLETE, D2 accepted (2026-07-14).** Authorization loops PR #10–#14 (each fresh-dual-reviewed,
+  Formal G1 regenerated) delivered: preflight allowlisting + explicit `declassification_export_commit`; science
+  amendment v1.7 + `RQ014_recovery_lane_v3.json` (PI-identified frozen M3 envelope, 320 cells / 960 terminal rows,
+  out-of-support extrapolation semantics normative); registries v1p6 (12 active bindings; X02 LEGACY_INACTIVE_UNBOUND);
+  WOD path-type mapping freeze (254 mapped CP115/HO90/MP48/F1; 222 excluded@F, 3@K; installed at
+  `inputs/RQ014/wod_path_type_mapping/v1`); blind-anchor fixed root + shared cross-phase validator. First preflight
+  submission failed fail-closed (reviewed cross-phase defect; RUN_ID burned, root preserved); after PR #14, job
+  `1924193` `zxc-rq014-pre-72dd4362f954` COMPLETED 0:0 — 12/12 bindings materialized, M3 delivery verified
+  pre-deserialization (immutable receipt), receipts + bounded report dual NO_BLOCKER. Report:
+  `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_2_contract_preflight_20260714T003336Z_72dd4362/`.
+  NEXT (D2-authorized, in prep): `rq014_g2_resource_pilot` authorization loop and managed environment closure v4
+  (scientific stack for G2R) — pilot submission retains an explicit PI stop; D3 = compute budget.
+- **RQ014 v1.6 contract preflight EXECUTED PASS (receipt-verified 2026-07-14; this supersedes
+  earlier preflight-pending statements above).** Exact authority commit `b06a243eea7e1418622f89e5ea80d3da4fe3bc58`,
+  Formal G1 `755e6a34…`, final bundle `41ac5280…`, and immutable run spec `72dd4362…` produced run
+  `RQ014_1_wod_rating_recovery_20260713T161542Z_41ac5280`. Slurm `1924193`
+  `zxc-rq014-pre-72dd4362f954` completed `0:0` in 3m26s on `cpua041`. The immutable preflight
+  receipt is SHA-256 `1e2d0cf6…0bb2e23`, status `PASS`, with `rating_access=NONE`,
+  `rating_join=NONE`, `observed_statistics=NONE`, all sanitization scans zero, and the exact
+  M3 artifact verified without deserialization. `rq014_g2_resource_pilot` remains explicitly
+  unauthorized pending preflight acceptance/D2; stop and preserve. Local receipt/log copies are
+  under `.codex-fleet/rq014-execution-v1p6/board/w4g_evidence/pf_*`.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py
+  tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Historical
+  W4b pre-submit result: `128 passed`; prior final release result: `194 passed`; broader non-shortcut
+  regression excluding the locally absent ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
+  Python compilation, shell syntax and `git diff --check` also passed at that pre-submit stage; the
+  later preflight execution is recorded above and still read no rating value.
+- RQ014 final preflight authority bundle is
+  `reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256`: 74 rows, SHA-256
+  `41ac52808cba5eb729829bc031053c49fb49583691ff24f7e2662c38b5ee2f19` at commit `b06a243e`;
+  the earlier W4b candidate `999ad552…` is superseded, and the v1.5 baseline remains at
   tests/test_rq014_managed_hpc_contract.py` plus the G0/FL05/v1p3/recovery-contract suites. Current
   W4h review-candidate result: `244 passed`; prior W4f result: `241 passed`; broader non-shortcut regression excluding the locally absent
   ignored RQ009 scorer-only module: `202 passed, 1 skipped, 2 deselected`.
@@ -618,9 +659,9 @@ question index in `STUDIES.md`.
   frozen in `configs/run_specs/README.md` and `RQ014_execution_contract_v1p5.json`; invoking
   `scripts/hpc/submit_research_run.sh` without that wrapper-hash gate, direct `sbatch`,
   `/share/home/u25310231/ZXC/RQ014_recovery`, the retired `ipv_estimation` checkout, and external
-  RQ010B code execution are forbidden. The candidate central allowlist contains exactly the staged
-  declassification export and contract preflight. Preflight remains machine-denied until fresh dual review,
-  new Formal G1/final bundle, exact published commit, immutable spec, validate-only and all operation predicates pass.
+  RQ010B code execution are forbidden. The central allowlist used for job `1924193` contained exactly
+  the staged declassification export and contract preflight. Preflight completed PASS; resource pilot
+  and all later operations remain machine-denied pending their separate gates and authorization.
 - RQ009 Phase 4 calibration and independent Phase 4.5 calibration-integrity
   audit are now PASS. M3 test coverage reproduces at 80=`0.8162154701`,
   90=`0.8986657101`, and 95=`0.9496345436`; M3 conformal radii reproduce
