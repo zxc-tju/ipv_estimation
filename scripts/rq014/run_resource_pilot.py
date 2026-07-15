@@ -340,12 +340,15 @@ def _interpolate(
 ) -> tuple[float, float, float]:
     times = [point[0] for point in points]
     index = bisect_right(times, target)
+    tolerance = 1e-12
     if index == 0:
+        if math.isclose(target, points[0][0], rel_tol=0.0, abs_tol=tolerance):
+            return (target, points[0][1], points[0][2])
         raise PilotError("Interpolation target leaves observed support")
     if index <= len(points) - 1 and points[index - 1][0] == target:
         return (target, points[index - 1][1], points[index - 1][2])
     if index == len(points):
-        if points[-1][0] == target:
+        if math.isclose(target, points[-1][0], rel_tol=0.0, abs_tol=tolerance):
             return (target, points[-1][1], points[-1][2])
         raise PilotError("Interpolation target leaves observed support")
     left, right = points[index - 1], points[index]

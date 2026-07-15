@@ -20,6 +20,7 @@ from scripts.rq014.run_resource_pilot import (
     _assemble_windows,
     _derive_state,
     _grid_tick_points,
+    _interpolate,
     canonical_json_bytes,
     run_resource_pilot,
     select_resource_pilot_cells,
@@ -414,6 +415,37 @@ def test_r04n_counterpart_native_10hz_interpolates_only_within_support() -> None
         1: (0.25, 0.5, -0.25),
         2: (0.5, 1.0, -0.5),
     }
+
+
+def test_interpolate_accepts_real_one_ulp_endpoints_and_remains_fail_closed() -> None:
+    light_last = 3.4999999999999982
+    heavy_first = -4.899999999999999
+    assert light_last.hex() == "0x1.bfffffffffffcp+1"
+    assert heavy_first.hex() == "-0x1.3999999999998p+2"
+
+    light = _grid_tick_points(
+        [(-3.0999999999999996, -3.1, 1.0), (light_last, 3.5, 2.0)],
+        4,
+        interpolate_to_grid=True,
+    )
+    assert light[14] == (3.5, 3.5, 2.0)
+
+    heavy = _grid_tick_points(
+        [(heavy_first, -4.9, 1.0), (1.5, 1.5, 2.0)],
+        10,
+        interpolate_to_grid=True,
+    )
+    assert heavy[-49] == (-4.9, -4.9, 1.0)
+
+    with pytest.raises(PilotError, match="leaves observed support"):
+        _interpolate([(0.0, 0.0, 0.0), (light_last, 3.5, 2.0)], light_last + 0.01)
+
+    with pytest.raises(SourceGapError, match=r"exceeds the frozen 2\*dt limit"):
+        _interpolate(
+            [(0.0, 0.0, 0.0), (math.nextafter(0.5, math.inf), 1.0, 2.0)],
+            0.25,
+            maximum_source_gap_s=0.5,
+        )
 
 
 def test_r04n_counterpart_two_dt_gap_boundary_is_bit_exact_and_fail_closed() -> None:
