@@ -418,7 +418,7 @@ def test_r04n_counterpart_native_10hz_interpolates_only_within_support() -> None
 
 
 def test_interpolate_enforces_bounded_endpoint_equivalence_and_gap_fail_closed() -> None:
-    """Freeze the preflight-equivalent 1e-12 boundary at both bisect edges.
+    """Freeze the inclusive preflight-equivalent 1e-12 boundary at both edges.
 
     Both job targets are 1.7763568394002505e-15 s outside observed support:
     four binary64 ULPs at 3.5 and two binary64 ULPs at magnitude 4.9.
@@ -446,19 +446,36 @@ def test_interpolate_enforces_bounded_endpoint_equivalence_and_gap_fail_closed()
     assert heavy[-49] == (-4.9, -4.9, 1.0)
 
     tolerance = 1e-12
-    inside_delta = 9e-13
     outside_delta = math.nextafter(tolerance, math.inf)
-    assert inside_delta < tolerance < outside_delta
+    assert tolerance < outside_delta
 
     lower_edge = [(0.0, 10.0, 20.0), (1.0, 11.0, 21.0)]
-    assert _interpolate(lower_edge, -inside_delta) == (-inside_delta, 10.0, 20.0)
+    lower_endpoint = lower_edge[0][0]
+    lower_inclusive_target = lower_endpoint - tolerance
+    lower_exclusive_target = lower_endpoint - outside_delta
+    assert abs(lower_inclusive_target - lower_endpoint) == tolerance
+    assert abs(lower_exclusive_target - lower_endpoint) == outside_delta
+    assert _interpolate(lower_edge, lower_inclusive_target) == (
+        lower_inclusive_target,
+        10.0,
+        20.0,
+    )
     with pytest.raises(PilotError, match="leaves observed support"):
-        _interpolate(lower_edge, -outside_delta)
+        _interpolate(lower_edge, lower_exclusive_target)
 
     upper_edge = [(-1.0, 29.0, 39.0), (0.0, 30.0, 40.0)]
-    assert _interpolate(upper_edge, inside_delta) == (inside_delta, 30.0, 40.0)
+    upper_endpoint = upper_edge[-1][0]
+    upper_inclusive_target = upper_endpoint + tolerance
+    upper_exclusive_target = upper_endpoint + outside_delta
+    assert abs(upper_inclusive_target - upper_endpoint) == tolerance
+    assert abs(upper_exclusive_target - upper_endpoint) == outside_delta
+    assert _interpolate(upper_edge, upper_inclusive_target) == (
+        upper_inclusive_target,
+        30.0,
+        40.0,
+    )
     with pytest.raises(PilotError, match="leaves observed support"):
-        _interpolate(upper_edge, outside_delta)
+        _interpolate(upper_edge, upper_exclusive_target)
 
     with pytest.raises(PilotError, match="leaves observed support"):
         _interpolate([(0.0, 0.0, 0.0), (light_last, 3.5, 2.0)], light_last + 0.01)
