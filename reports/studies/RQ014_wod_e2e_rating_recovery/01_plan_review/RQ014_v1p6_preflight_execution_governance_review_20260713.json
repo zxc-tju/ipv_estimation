@@ -92,15 +92,26 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The five-round W5f-W5j execution-governance ledger closes the contract-semantics and complete closure-gate diagnostic guarantees with terminal dual NO_BLOCKER."
+    },
+    {
+      "evidence": [
+        "Round 1 reviewed W5l commit 536fcd4e61bc6b079e0b5979dfc52eabbb927aff: both reviewers returned BLOCKED because the submitted resource-pilot prelude would compare the v4 native columns header against literal <TAB> bytes and abort deterministically at native:manifest:header-columns even though the corrected Python validate-only path accepted the immutable real-tab TSV.",
+        "Round 2 reviewed W5m commit 042c638157d067dc6f409dcf46bebbda170d0568: the v4 emitted gate now matches real tab bytes, all v3 literal-<TAB> expectations remain intact, and a complete emitted-shell sweep found the stdlib, site-packages, distributions, and remaining native content expectations consistent with the staged published bytes.",
+        "The terminal pin cascade binds launcher SHA-256 d0a9c737fc22ae204f9c503d854242a0808cae4022efe5c116d12cecf880e8a6 at 168455 bytes through wrapper SHA-256 32900f6a9b3d89eb56de5fa4d158c89fbb85408be53427d280bbd0866ea1abae at 8108 bytes while preflight remains byte-identical. Both distinct reviewers returned NO_BLOCKER on the exact deterministic 111-row manifest SHA-256 b392a42d21d70336c1b13c5cb4dde7eeca4cc19f87c8d62b7b15f2c90597bb45, with zero unresolved blockers or majors."
+      ],
+      "finding_id": "W5LM-E-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The two-round W5l-W5m execution ledger closes the emitted-shell cross-layer copy and preserves a coherent fail-closed v4 launch chain."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-15T01:26:14Z",
+  "reviewed_at_utc": "2026-07-15T03:56:51Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "d23d4c677b9d966248daec56c91f0ce187f3279703a8fdc6a8b2bae681d624e3",
+  "reviewed_manifest_sha256": "b392a42d21d70336c1b13c5cb4dde7eeca4cc19f87c8d62b7b15f2c90597bb45",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
