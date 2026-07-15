@@ -147,7 +147,7 @@
           "m3_cost_estimate": "MEASURED",
           "combined_g2r_cost_estimate": "MEASURED",
           "deserialization": "REQUIRED_AFTER_V4_RUNTIME_GATE",
-        "verification_failure": "GLOBAL_ABORT_FAIL_RECEIPT_NO_DONE_NO_NUMERIC_COST"
+          "verification_failure": "PRE_RUNTIME_CLOSURE_GATE_MISMATCH=NONZERO_ABORT_NO_RECEIPT_NO_DONE_CAUSE_IN_SLURM_LOG;RUNTIME_DETECTED_M3_FAILURE=FAIL_RECEIPT_NO_DONE_NO_NUMERIC_COST"
         },
         "allowed_effects": [
           "verify reviewed rating-blind lineage and the frozen M3 bytes before deserializing them under v4",
@@ -402,7 +402,7 @@
     "open_policy": "SINGLE_RETAINED_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
     "verification_order": "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION",
     "deserialization_in_contract_preflight": "FORBIDDEN",
-    "verification_only_for_operation": "rq014_g2_resource_pilot",
+    "verification_only_for_operation": "rq014_g2_contract_preflight",
     "deserialization_in_resource_pilot": "REQUIRED_AFTER_OPERATION_BOUND_V4_CLOSURE_GATE; FAILURE_IS_GLOBAL_ABORT_WITH_NO_DONE",
     "immutable_receipt_schema": "rq014-m3-artifact-input-receipt-v1",
     "job_start_reverification": true
@@ -493,9 +493,9 @@
     "wrapper_capability_contract": "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at /share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, opens fd9 at the exact managed submit_research_run.sh, hashes and executes that retained fd9; the wrapper must inherit both descriptors and may not create them; before any RQ014 registry-materializer or preflight preload, the launcher requires exact /proc/self/fd targets, regular non-symlink fixed paths, and fstat st_dev/st_ino/st_mode equality; this is not a cryptographic secret against deliberate same-account descriptor emulation",
     "production_spec_root": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs",
     "production_spec_contract": "direct-child regular non-symlink read-only canonical JSON; one O_NOFOLLOW descriptor read with retained exact bytes passed through validation, sealing and submission; no path reopen",
-    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 2e14d943aab92c9da2096dc224cea4dd0f94617a748aa4fa14c6d4e0a70e86a4 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
+    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 42b391d6b7cdfcf01b46f2ca6c471eeebf7123ef81eaa8064a8c07f3e7b3e959 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
     "operator_wrapper_size_bytes": 8108,
-    "operator_wrapper_sha256": "2e14d943aab92c9da2096dc224cea4dd0f94617a748aa4fa14c6d4e0a70e86a4",
+    "operator_wrapper_sha256": "42b391d6b7cdfcf01b46f2ca6c471eeebf7123ef81eaa8064a8c07f3e7b3e959",
     "operator_environment_boundary": "BASH_ENV ENV LD_PRELOAD PYTHONHOME PYTHONPATH HPC_SOCIALITY_ROOT and every SBATCH_* variable are rejected; launcher then re-execs in an empty environment",
     "slurm_environment_export": "NIL_ON_DIRECTIVE_AND_SBATCH_COMMAND; NONE_IS_FORBIDDEN_BECAUSE_IT_CAN_RECONSTRUCT_THE_LOGIN_ENVIRONMENT",
     "code_execution_surface": "read only final-contract-bundle registered regular-file blobs from the exact declared published Git commit tree into a closed run-root snapshot; verify each blob against the registered digest and hash the snapshot receipt and bundle manifest before execution; the sole external scientific byte is the separately spec-bound M3 scorer, which is retained-descriptor verified and never deserialized by contract preflight; dirty or untracked worktree bytes, Git worktree checkout, hooks, filters and unregistered files are forbidden",

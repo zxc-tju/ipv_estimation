@@ -804,7 +804,11 @@ def test_pilot_validate_only_table_and_sbatch_wiring(tmp_path: Path) -> None:
         "enabled": True,
         "env_v4_required": True,
         "cost_estimate": "MEASURED",
-        "verification_failure": "GLOBAL_ABORT_NO_DONE",
+        "verification_failure": (
+            "PRE_RUNTIME_CLOSURE_GATE_MISMATCH=NONZERO_ABORT_NO_RECEIPT_NO_DONE_"
+            "CAUSE_IN_SLURM_LOG;RUNTIME_DETECTED_M3_FAILURE=FAIL_RECEIPT_NO_DONE_"
+            "NO_NUMERIC_COST"
+        ),
     }
 
     validated = {

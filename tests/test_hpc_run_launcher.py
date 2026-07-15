@@ -466,7 +466,7 @@ def test_m3_artifact_uses_retained_no_follow_descriptor_before_deserialization(
 @pytest.mark.parametrize(
     ("field", "replacement"),
     [
-        ("verification_only_for_operation", "rq014_g2_contract_preflight"),
+        ("verification_only_for_operation", "rq014_g2_resource_pilot"),
         ("deserialization_in_resource_pilot", "OPTIONAL"),
     ],
 )

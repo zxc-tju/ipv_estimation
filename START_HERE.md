@@ -252,9 +252,12 @@ question index in `STUDIES.md`.
   and scores per cell on a deterministic rating-free cost vector. Any v4/M3 mismatch aborts with no DONE;
   numeric M3/combined projections are emitted only on PASS. The first pilot validate-only attempt failed
   before submission because the M3 validator still required the pre-W5d 12-key delivery block while the reviewed
-  contract correctly carried 14 keys. W5f repairs that authority wiring with a real-contract end-to-end regression;
-  fresh mini-review, Formal G1/final-bundle regeneration, publication/sync, a newly pinned immutable spec, and the
-  explicit PI stop remain required. D3 remains the separate compute-budget gate.
+  contract correctly carried 14 keys. W5f repairs that authority wiring with a real-contract end-to-end regression.
+  W5g clarifies that preflight is the verification-only operation, while the pilot spec still requires M3 and its
+  job prelude reverifies the scorer before v4 deserialization. A pre-runtime closure mismatch exits non-zero with
+  cause only in Slurm logs and no receipt/DONE; runtime-detected M3 failures write a FAIL receipt with no DONE or
+  numeric cost. Fresh mini-review, Formal G1/final-bundle regeneration, publication/sync, a newly pinned immutable
+  spec, and the explicit PI stop remain required. D3 remains the separate compute-budget gate.
 - **RQ014 v1.6 contract preflight EXECUTED PASS (receipt-verified 2026-07-14; this supersedes
   earlier preflight-pending statements above).** Exact authority commit `b06a243eea7e1418622f89e5ea80d3da4fe3bc58`,
   Formal G1 `755e6a34…`, final bundle `41ac5280…`, and immutable run spec `72dd4362…` produced run

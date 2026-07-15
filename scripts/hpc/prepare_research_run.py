@@ -174,12 +174,6 @@ RQ014_RESOURCE_PILOT_OPERATION = "rq014_g2_resource_pilot"
 RQ014_EXPORT_RESOURCE_PROFILE = "rq014-g2-declassify-cpu-v1"
 RQ014_PREFLIGHT_RESOURCE_PROFILE = "rq014-g2-preflight-cpu-v1"
 RQ014_RESOURCE_PILOT_PROFILE = "rq014-g2-resource-pilot-cpu-v1"
-RQ014_ENVIRONMENT_V3_PATH = str(
-    RQ014_MANAGED_BASE / "manifests" / "RQ014" / "managed_python_environment_v3.json"
-)
-RQ014_ENVIRONMENT_V3_SHA256 = (
-    "30de86f702101fbfc8065f6a0d7fd4378daf526d0e55c1197a6a0a147752877a"
-)
 RQ014_ENVIRONMENT_V4_PATH = str(
     RQ014_MANAGED_BASE / "manifests" / "RQ014" / "managed_python_environment_v4.json"
 )
@@ -1919,7 +1913,11 @@ def _with_rq014_validate_only_plan(validated: dict[str, Any]) -> dict[str, Any]:
             "enabled": True,
             "env_v4_required": True,
             "cost_estimate": "MEASURED",
-            "verification_failure": "GLOBAL_ABORT_NO_DONE",
+            "verification_failure": (
+                "PRE_RUNTIME_CLOSURE_GATE_MISMATCH=NONZERO_ABORT_NO_RECEIPT_NO_DONE_"
+                "CAUSE_IN_SLURM_LOG;RUNTIME_DETECTED_M3_FAILURE=FAIL_RECEIPT_NO_DONE_"
+                "NO_NUMERIC_COST"
+            ),
         }
     submission_plan = {
         "job_name": validated["job_name"],
@@ -2024,7 +2022,11 @@ def _validate_rq014_operation_contract(
                 "m3_cost_estimate": "MEASURED",
                 "combined_g2r_cost_estimate": "MEASURED",
                 "deserialization": "REQUIRED_AFTER_V4_RUNTIME_GATE",
-                "verification_failure": "GLOBAL_ABORT_FAIL_RECEIPT_NO_DONE_NO_NUMERIC_COST",
+                "verification_failure": (
+                    "PRE_RUNTIME_CLOSURE_GATE_MISMATCH=NONZERO_ABORT_NO_RECEIPT_NO_DONE_"
+                    "CAUSE_IN_SLURM_LOG;RUNTIME_DETECTED_M3_FAILURE=FAIL_RECEIPT_NO_DONE_"
+                    "NO_NUMERIC_COST"
+                ),
             }
         ):
             raise ValueError("RQ014 resource-pilot contract predicate drift")

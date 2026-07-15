@@ -1020,6 +1020,12 @@ def test_resource_pilot_validate_spec_accepts_real_w5d_m3_contract_end_to_end(
         "immutable_receipt_schema",
         "job_start_reverification",
     }
+    assert delivery["verification_only_for_operation"] == launcher.RQ014_PREFLIGHT_OPERATION
+    assert delivery["deserialization_in_resource_pilot"] == (
+        "REQUIRED_AFTER_OPERATION_BOUND_V4_CLOSURE_GATE; "
+        "FAILURE_IS_GLOBAL_ABORT_WITH_NO_DONE"
+    )
+    assert delivery["job_start_reverification"] is True
 
     def write_ref(path: Path, payload: bytes = b"{}\n") -> dict[str, str]:
         path.parent.mkdir(parents=True, exist_ok=True)

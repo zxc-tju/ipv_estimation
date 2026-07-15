@@ -325,7 +325,7 @@ def validate_m3_artifact_ref(
             "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION"
         ),
         "deserialization_in_contract_preflight": "FORBIDDEN",
-        "verification_only_for_operation": "rq014_g2_resource_pilot",
+        "verification_only_for_operation": "rq014_g2_contract_preflight",
         "deserialization_in_resource_pilot": (
             "REQUIRED_AFTER_OPERATION_BOUND_V4_CLOSURE_GATE; "
             "FAILURE_IS_GLOBAL_ABORT_WITH_NO_DONE"

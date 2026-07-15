@@ -161,7 +161,11 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
         "m3_cost_estimate": "MEASURED",
         "combined_g2r_cost_estimate": "MEASURED",
         "deserialization": "REQUIRED_AFTER_V4_RUNTIME_GATE",
-        "verification_failure": "GLOBAL_ABORT_FAIL_RECEIPT_NO_DONE_NO_NUMERIC_COST",
+        "verification_failure": (
+            "PRE_RUNTIME_CLOSURE_GATE_MISMATCH=NONZERO_ABORT_NO_RECEIPT_NO_DONE_"
+            "CAUSE_IN_SLURM_LOG;RUNTIME_DETECTED_M3_FAILURE=FAIL_RECEIPT_NO_DONE_"
+            "NO_NUMERIC_COST"
+        ),
     }
     assert (ROOT / "configs" / "run_specs" / "RQ014_g2_resource_pilot.template.json").is_file()
     assert operations["rq014_g2_blind_build"]["status"].startswith("DENY_")
