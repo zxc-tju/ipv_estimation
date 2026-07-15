@@ -276,6 +276,15 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, str]:
     _write_json(inventory_path, inventory)
     execution_contract_path = repo / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
     execution_contract = json.loads(execution_contract_path.read_text(encoding="utf-8"))
+    m3_artifact = base / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"
+    m3_artifact.parent.mkdir(parents=True, exist_ok=True)
+    m3_artifact.write_bytes(b"fixture frozen M3 scorer")
+    execution_contract["m3_artifact_delivery_contract"].update(
+        path=str(m3_artifact),
+        allowed_root=str(m3_artifact.parent),
+        size_bytes=m3_artifact.stat().st_size,
+        sha256=sha256_file(m3_artifact),
+    )
     execution_contract["managed_hpc_contract"].update(
         base=str(base),
         repo=str(repo),
@@ -983,6 +992,189 @@ def test_v2_managed_declassification_validates_all_contract_layers(
         f"# managed_environment_root={base / 'envs' / 'ipv-exact-sigma01'}"
         in script
     )
+
+
+def test_resource_pilot_validate_spec_accepts_real_w5d_m3_contract_end_to_end(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    base, export_spec_path, commit = _build_fixture(tmp_path)
+    repo = base / "code" / "repo"
+    export_spec = json.loads(export_spec_path.read_text(encoding="utf-8"))
+    contract_path = repo / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    delivery = contract["m3_artifact_delivery_contract"]
+    assert set(delivery) == {
+        "spec_ref_field",
+        "required_for_operation",
+        "prohibited_for_operation",
+        "path",
+        "allowed_root",
+        "size_bytes",
+        "sha256",
+        "open_policy",
+        "verification_order",
+        "deserialization_in_contract_preflight",
+        "verification_only_for_operation",
+        "deserialization_in_resource_pilot",
+        "immutable_receipt_schema",
+        "job_start_reverification",
+    }
+    assert delivery["verification_only_for_operation"] == launcher.RQ014_PREFLIGHT_OPERATION
+    assert delivery["deserialization_in_resource_pilot"] == (
+        "REQUIRED_AFTER_OPERATION_BOUND_V4_CLOSURE_GATE; "
+        "FAILURE_IS_GLOBAL_ABORT_WITH_NO_DONE"
+    )
+    assert delivery["job_start_reverification"] is True
+
+    def write_ref(path: Path, payload: bytes = b"{}\n") -> dict[str, str]:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(payload)
+        return {"path": str(path), "sha256": sha256_file(path)}
+
+    manifest_root = base / "manifests" / "RQ014" / "fixture_preflight"
+    input_ref = write_ref(manifest_root / "input_manifest.g2.json")
+    ledger_ref = write_ref(manifest_root / "materialization_ledger.json")
+    input_root = base / "inputs" / "RQ014"
+    sanitization_ref = write_ref(input_root / "bundle" / "sanitization_receipt.json")
+    mapping_ref = write_ref(input_root / "wod_path_type_mapping" / "v1" / "manifest.json")
+    bundle_manifest = input_root / "bundle" / "file_manifest.json"
+    write_ref(bundle_manifest)
+    export_root = base / "work_dirs" / "RQ014" / "fixture_export" / "outputs"
+    export_receipt_ref = write_ref(export_root / "rq014_g2_declassification_export_receipt.json")
+    export_done_ref = write_ref(export_root / "DONE.json")
+    preflight_root = base / "work_dirs" / "RQ014" / "fixture_preflight" / "outputs"
+    preflight_receipt = {
+        "schema_version": "rq014-g2-contract-preflight-receipt-v1",
+        "operation": launcher.RQ014_PREFLIGHT_OPERATION,
+        "status": "PASS",
+        "rating_access": "NONE",
+        "rating_join": "NONE",
+        "observed_statistics": "NONE",
+        "input_manifest_sha256": input_ref["sha256"],
+        "materialization_ledger_sha256": ledger_ref["sha256"],
+        "declassification_export_receipt_sha256": export_receipt_ref["sha256"],
+        "declassification_export_done_sha256": export_done_ref["sha256"],
+        "wod_path_type_mapping": {"manifest_sha256": mapping_ref["sha256"]},
+        "m3_artifact_input_receipt": {
+            "sha256": delivery["sha256"],
+            "size_bytes": delivery["size_bytes"],
+            "deserialized": False,
+        },
+    }
+    preflight_receipt_ref = write_ref(
+        preflight_root / "rq014_g2_contract_preflight_receipt.json",
+        json.dumps(preflight_receipt, sort_keys=True).encode("utf-8") + b"\n",
+    )
+    preflight_done = {
+        "schema_version": "rq014-managed-operation-done-v1",
+        "operation": launcher.RQ014_PREFLIGHT_OPERATION,
+        "receipt_sha256": preflight_receipt_ref["sha256"],
+        "status": "PASS",
+    }
+    preflight_done_ref = write_ref(
+        preflight_root / "DONE.json",
+        json.dumps(preflight_done, sort_keys=True).encode("utf-8") + b"\n",
+    )
+    parity_fixture = repo / launcher.RQ014_M3_PARITY_FIXTURE
+    spec_payload = {
+        "schema_version": 2,
+        "rq_id": "RQ014",
+        "run_id": "RQ014_fixture_resource_pilot",
+        "operation": launcher.RQ014_RESOURCE_PILOT_OPERATION,
+        "git_commit": commit,
+        "declassification_export_commit": commit,
+        "formal_g1": export_spec["formal_g1"],
+        "contract_bundle": export_spec["contract_bundle"],
+        "environment_manifest": {
+            "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v4.json"),
+            "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+        },
+        "input_manifest": input_ref,
+        "sanitization_receipt": sanitization_ref,
+        "materialization_ledger": ledger_ref,
+        "wod_path_type_mapping_manifest": mapping_ref,
+        "m3_artifact": {
+            "path": delivery["path"],
+            "size_bytes": delivery["size_bytes"],
+            "sha256": delivery["sha256"],
+        },
+        "declassification_export_receipt": export_receipt_ref,
+        "declassification_export_done": export_done_ref,
+        "contract_preflight_receipt": preflight_receipt_ref,
+        "contract_preflight_done": preflight_done_ref,
+        "m3_parity_fixture": {
+            "path": str(parity_fixture),
+            "sha256": sha256_file(parity_fixture),
+        },
+        "pilot_scope": {
+            "cell_selection_rule_id": "LANE_V3_NON_M3_COST_EXTREMES_V1",
+            "non_m3_stages": ["source_load", "window_assembly", "feature_prep"],
+            "m3_stage_enabled": True,
+            "env_v4_required": True,
+            "m3_cost_estimate": "MEASURED",
+        },
+        "resource_profile_id": launcher.RQ014_RESOURCE_PILOT_PROFILE,
+    }
+    spec_path = _write_json(tmp_path / "pilot_spec.json", spec_payload)
+
+    monkeypatch.setattr(launcher, "DEFAULT_BASE", base)
+    monkeypatch.setattr(launcher, "M3_ARTIFACT_PATH", delivery["path"])
+    monkeypatch.setattr(launcher, "M3_ARTIFACT_SIZE_BYTES", delivery["size_bytes"])
+    monkeypatch.setattr(launcher, "MODEL_SHA256", delivery["sha256"])
+    monkeypatch.setattr(
+        launcher,
+        "_validate_rq014_environment_manifest_v4",
+        lambda ref, *, base: {
+            "environment_manifest_path": ref["path"],
+            "environment_manifest_sha256": ref["sha256"],
+            "python_executable_path": str(base / "envs" / "ipv-m3-v4" / "bin" / "python"),
+            "python_executable_sha256": launcher.RQ014_ENVIRONMENT_V4_PYTHON_SHA256,
+            "python_version": "Python 3.9.24",
+            "isolated_sys_path": [],
+            "stdlib_checksum_manifest_sha256": "1" * 64,
+            "native_library_manifest_sha256": "2" * 64,
+        },
+    )
+    monkeypatch.setattr(
+        launcher,
+        "validate_g2_input_roles",
+        lambda **kwargs: {
+            "wod_score_stripped_sanitization_receipt": Path(sanitization_ref["path"]),
+            "wod_path_type_mapping_manifest": Path(mapping_ref["path"]),
+            "wod_score_stripped_bundle_manifest": bundle_manifest,
+        },
+    )
+    monkeypatch.setattr(
+        launcher,
+        "validate_wod_path_type_mapping_manifest",
+        lambda *args, **kwargs: {"manifest_sha256": mapping_ref["sha256"]},
+    )
+    monkeypatch.setattr(
+        launcher,
+        "validate_declassification_export_receipts",
+        lambda **kwargs: {"geometry_available_scene_count": 1},
+    )
+    monkeypatch.setattr(
+        launcher,
+        "validate_score_stripped_bundle",
+        lambda **kwargs: {"geometry_available_scene_count": 1},
+    )
+    monkeypatch.setattr(launcher, "validate_materialization_ledger", lambda **kwargs: None)
+
+    spec = launcher.load_spec(spec_path)
+    validated = launcher.validate_spec(
+        spec,
+        base=base,
+        repo=repo,
+        spec_path=spec_path,
+    )
+    assert validated["operation"] == launcher.RQ014_RESOURCE_PILOT_OPERATION
+    assert validated["m3_artifact_verification"]["schema_version"] == (
+        "rq014-m3-artifact-input-receipt-v1"
+    )
+    assert validated["entrypoint"] == "scripts/rq014/run_managed_g2.py"
+    assert validated["fixed_subcommand"] == "resource-pilot"
 
 
 def test_v2_formal_g1_blocked_denies_execution(

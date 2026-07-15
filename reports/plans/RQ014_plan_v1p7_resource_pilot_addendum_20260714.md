@@ -146,12 +146,17 @@ shared `m3_model_load` plus per-cell `m3_scoring` in single-threaded fork
 workers. Scoring uses a deterministic rating-free vector derived from frozen
 model/support metadata, tiled only to the measured cell's window count; it is a
 cost substrate, not scientific evidence. D3 receives separate non-M3, M3, and
-combined serial/16-worker projections. Any v4, model, or scoring mismatch is a
-global abort with a FAIL receipt and no DONE, following the lane-v3 W4
-`m3_artifact_mismatch_policy=GLOBAL_ABORT` precedent; a failed measured load or
-score attempt is recorded in a FAIL receipt, but no numeric M3/combined cost or
-DONE is emitted. Silent fallback is
-forbidden and numeric M3/combined estimates become `EXPLICITLY_UNMEASURED`.
+combined serial/16-worker projections. A pre-runtime v4 closure-gate or sbatch-
+prelude digest mismatch runs under `set -euo pipefail` and aborts non-zero before
+Python starts: each silent guard first emits the deterministic one-line stderr
+marker `RQ014_CLOSURE_GATE_FAIL <stable-identity>` (while `sha256sum -c` retains
+its own diagnostic), so the Slurm error log retains the cause; it writes no
+receipt and no DONE. Once the managed runtime starts, an M3 re-verification, lineage, model-
+load, or scoring failure follows the lane-v3 W4
+`m3_artifact_mismatch_policy=GLOBAL_ABORT` precedent: it writes a FAIL receipt,
+no DONE, and no numeric M3/combined cost. Silent fallback is forbidden and
+numeric M3/combined estimates become `EXPLICITLY_UNMEASURED` only in that
+runtime FAIL receipt; the bash prelude must not synthesize one.
 
 The M3 manifest names no parity fixture. The reviewed v4 standard instead
 adopts `tests/fixtures/m3_verifier_portable_fixture.json` at SHA-256
@@ -159,3 +164,10 @@ adopts `tests/fixtures/m3_verifier_portable_fixture.json` at SHA-256
 with its recorded absolute tolerance `1e-7`; W5c achieved raw maximum absolute
 difference `4.952394050405928e-11`. The fixture is closure evidence only and is
 never opened as pilot workload input because it contains a frozen target field.
+
+W5f records a W5d verification gap: validator unit tests had fabricated the
+pre-W5d 12-key delivery block and pilot template tests stopped at `load_spec`,
+so no test combined the reviewed 14-key contract with the full pilot
+`validate_spec` path. W5f requires and value-checks the two W5d pilot fields and
+adds that real-contract integration regression before another pilot spec is
+validated.

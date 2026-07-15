@@ -79,16 +79,29 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "The fresh Claude statistics review supersedes the outage-truncated Codex round and closes W5d with NO_BLOCKER; the dead-v3-constant observation is non-blocking follow-up."
+    },
+    {
+      "evidence": [
+        "Round 1 reviewed W5f commit e628d56bf5916a300aa7538ae803314709c66338: execution governance returned NO_BLOCKER, while statistics raised B1 because verification_only_for_operation incorrectly named the deserializing pilot and B2 because the FAIL-receipt promise covered pre-runtime bash aborts that cannot write a receipt.",
+        "Round 2 reviewed W5g commit 843534e61da2c8319f405d8003f2c23261cb1bc2: B1 and B2 closed through the preflight-only verification binding and the runtime-versus-pre-runtime failure split; execution governance returned NO_BLOCKER, while statistics raised B3 because digest, inherited-environment, and maintenance-lock gates could still abort without the promised Slurm-log marker.",
+        "Round 3 reviewed W5h commit 431074c561ada39d63cbfc678b11e774120a56d7: the cited top-level B3 gates gained deterministic stderr diagnostics, but both reviewers blocked on the residual silent stdlib, site-packages, and native-closure emitters.",
+        "Round 4 reviewed W5i commit 2a982607053d3ea06c5d2d55a0c1fdd688df4ecd: those three closure classes gained executed diagnostic regressions and execution governance returned NO_BLOCKER with normalized pass-path bytes unchanged; the statistics sweep retained one blocker for raw pilot-M3, duplicate preflight, and export output-root gates.",
+        "Round 5 reviewed W5j commit 7d912cd1a4a1bcd06fc27ce9dbc1683bb7a53369: the exhaustive three-operation sweep and structural no-silent-gate regression closed the residual, and both distinct reviewers returned NO_BLOCKER on the exact deterministic 111-row manifest SHA-256 d23d4c677b9d966248daec56c91f0ce187f3279703a8fdc6a8b2bae681d624e3 with zero unresolved blockers or majors."
+      ],
+      "finding_id": "W5FJ-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The five-round W5f-W5j statistics ledger closes B1, B2, B3, and the exhaustive residual-gate sweep with terminal dual NO_BLOCKER."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-14T16:35:38Z",
+  "reviewed_at_utc": "2026-07-15T01:26:13Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "d0cc07da1258833a5c961e7fbe273e7428f0030da41f3366f3dfcbbe23003a59",
-  "reviewer_agent": "claude/w5d-stat-reviewer",
+  "reviewed_manifest_sha256": "d23d4c677b9d966248daec56c91f0ce187f3279703a8fdc6a8b2bae681d624e3",
+  "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
   "unresolved_majors": 0,

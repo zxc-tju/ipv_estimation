@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import os
+import re
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -23,26 +26,23 @@ M3_PATH = (
 )
 M3_SIZE_BYTES = 88306301
 M3_SHA256 = "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
+REAL_M3_DELIVERY_CONTRACT = json.loads(
+    (ROOT / "reports/plans/RQ014_execution_contract_v1p5.json").read_text(
+        encoding="utf-8"
+    )
+)["m3_artifact_delivery_contract"]
 
 
 def m3_delivery_contract(path: Path, payload: bytes) -> dict[str, object]:
+    delivery = copy.deepcopy(REAL_M3_DELIVERY_CONTRACT)
+    delivery.update(
+        path=str(path),
+        allowed_root=str(path.parent),
+        size_bytes=len(payload),
+        sha256=hashlib.sha256(payload).hexdigest(),
+    )
     return {
-        "m3_artifact_delivery_contract": {
-            "spec_ref_field": "m3_artifact",
-            "required_for_operation": "rq014_g2_contract_preflight",
-            "prohibited_for_operation": "rq014_g2_declassification_export",
-            "path": str(path),
-            "allowed_root": str(path.parent),
-            "size_bytes": len(payload),
-            "sha256": hashlib.sha256(payload).hexdigest(),
-            "open_policy": "SINGLE_RETAINED_FD_O_RDONLY_O_NOFOLLOW_O_CLOEXEC_O_NONBLOCK",
-            "verification_order": (
-                "BEFORE_INPUT_MANIFEST_MATERIALIZATION_LEDGER_CELL_RATING_AND_DESERIALIZATION"
-            ),
-            "deserialization_in_contract_preflight": "FORBIDDEN",
-            "immutable_receipt_schema": "rq014-m3-artifact-input-receipt-v1",
-            "job_start_reverification": True,
-        }
+        "m3_artifact_delivery_contract": delivery,
     }
 
 
@@ -463,6 +463,62 @@ def test_m3_artifact_uses_retained_no_follow_descriptor_before_deserialization(
             base=directory_base,
             contract=directory_contract,
         )
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement"),
+    [
+        ("verification_only_for_operation", "rq014_g2_resource_pilot"),
+        ("deserialization_in_resource_pilot", "OPTIONAL"),
+    ],
+)
+def test_m3_delivery_contract_rejects_w5d_pilot_policy_value_drift(
+    tmp_path: Path,
+    field: str,
+    replacement: str,
+) -> None:
+    artifact = tmp_path / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"
+    artifact.parent.mkdir(parents=True)
+    payload = b"frozen scorer fixture"
+    artifact.write_bytes(payload)
+    contract = m3_delivery_contract(artifact, payload)
+    contract["m3_artifact_delivery_contract"][field] = replacement
+    ref = {
+        "path": str(artifact),
+        "size_bytes": len(payload),
+        "sha256": hashlib.sha256(payload).hexdigest(),
+    }
+    with pytest.raises(
+        rq014_preflight.ContractError,
+        match="delivery contract must require preflight and prohibit export",
+    ):
+        rq014_preflight.validate_m3_artifact_ref(ref, base=tmp_path, contract=contract)
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["verification_only_for_operation", "deserialization_in_resource_pilot"],
+)
+def test_m3_delivery_contract_requires_all_14_w5d_keys(
+    tmp_path: Path,
+    field: str,
+) -> None:
+    artifact = tmp_path / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"
+    artifact.parent.mkdir(parents=True)
+    payload = b"frozen scorer fixture"
+    artifact.write_bytes(payload)
+    contract = m3_delivery_contract(artifact, payload)
+    del contract["m3_artifact_delivery_contract"][field]
+    ref = {
+        "path": str(artifact),
+        "size_bytes": len(payload),
+        "sha256": hashlib.sha256(payload).hexdigest(),
+    }
+    with pytest.raises(
+        rq014_preflight.ContractError,
+        match="delivery contract is missing or malformed",
+    ):
+        rq014_preflight.validate_m3_artifact_ref(ref, base=tmp_path, contract=contract)
 
 
 def test_run_preflight_aborts_on_m3_before_input_or_ledger_processing(
@@ -1404,12 +1460,8 @@ def test_git_config_hooks_fsmonitor_and_checkout_filters_cannot_enter_snapshot(
     assert not marker.exists()
 
 
-def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> None:
-    base = tmp_path / "sociality_estimation"
-    repo = ROOT
-    run_root = base / "work_dirs" / "RQ014" / "run1"
-    code = run_root / "code"
-    validated = {
+def rq014_sbatch_fixture(base: Path) -> dict[str, object]:
+    return {
         "job_name": "zxc-rq014-pre-123456789abc",
         "commit": "a" * 40,
         "declassification_export_commit": "d" * 40,
@@ -1475,6 +1527,143 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
             "time": "01:00:00",
         },
     }
+
+
+def rq014_export_sbatch_fixture(base: Path) -> dict[str, object]:
+    validated = rq014_sbatch_fixture(base)
+    validated.update(
+        {
+            "entrypoint": "scripts/rq014/export_score_stripped_bundle.py",
+            "scene_bundle_paths": [str(base / "source" / "scene_00.json")],
+            "scene_bundle_size_bytes": [1],
+            "scene_bundle_sha256": ["1" * 64],
+            "readiness_table_path": str(base / "source" / "readiness.tsv"),
+            "readiness_table_size_bytes": 1,
+            "readiness_table_sha256": "2" * 64,
+            "counterpart_tracks_path": str(base / "source" / "counterparts.json"),
+            "counterpart_tracks_size_bytes": 1,
+            "counterpart_tracks_sha256": "3" * 64,
+            "score_stripped_output_root": str(base / "inputs" / "score-stripped"),
+            "created_at_utc": "2026-07-15T00:00:00Z",
+        }
+    )
+    return validated
+
+
+def rq014_pilot_sbatch_fixture(base: Path) -> dict[str, object]:
+    validated = rq014_sbatch_fixture(base)
+    environment_root = base / "envs" / "ipv-m3-v4"
+    validated.update(
+        {
+            "fixed_subcommand": "resource-pilot",
+            "run_id": "RQ014_resource_pilot_fixture",
+            "score_stripped_bundle_root": str(base / "inputs" / "score-stripped"),
+            "m3_artifact_path": str(base / "checkpoints" / "rq009_m3" / "m3.joblib"),
+            "m3_artifact_size_bytes": 1,
+            "m3_artifact_sha256": "4" * 64,
+            "wod_path_type_mapping_manifest_path": str(
+                base / "inputs" / "wod-path-type" / "manifest.json"
+            ),
+            "wod_path_type_mapping_manifest_sha256": "5" * 64,
+            "contract_preflight_receipt_path": str(
+                base / "work_dirs" / "RQ014" / "preflight" / "outputs" / "receipt.json"
+            ),
+            "contract_preflight_receipt_sha256": "6" * 64,
+            "contract_preflight_done_path": str(
+                base / "work_dirs" / "RQ014" / "preflight" / "outputs" / "DONE.json"
+            ),
+            "contract_preflight_done_sha256": "7" * 64,
+            "m3_parity_fixture_sha256": "8" * 64,
+            "python_executable_path": str(environment_root / "bin" / "python3.9"),
+            "site_packages_root": str(
+                environment_root / "lib" / "python3.9" / "site-packages"
+            ),
+            "site_packages_checksum_manifest_path": str(
+                base / "manifests" / "RQ014" / "managed_python_site_packages_v4.sha256"
+            ),
+            "site_packages_checksum_manifest_sha256": "9" * 64,
+            "distribution_manifest_path": str(
+                base / "manifests" / "RQ014" / "managed_python_distributions_v4.json"
+            ),
+            "distribution_manifest_sha256": "a" * 64,
+            "site_packages_regular_file_count": 12_206,
+            "site_packages_regular_file_total_size_bytes": 487_535_728,
+            "native_library_manifest_version": 4,
+            "native_library_consumer_count": 45,
+            "native_library_row_count": 94,
+            "native_library_resolved_count": 45,
+            "native_library_symlink_row_count": 31,
+            "native_library_total_size_bytes": 209_669_255,
+        }
+    )
+    return validated
+
+
+def render_rq014_fixture_sbatch(
+    validated: dict[str, object],
+    base: Path,
+    operation_label: str,
+) -> str:
+    run_root = base / "work_dirs" / "RQ014" / operation_label
+    return render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=run_root / "code",
+        sealed_spec_path=run_root / "manifests" / "run_spec.json",
+    )
+
+
+def _extract_emitted_closure_guard(script: str, identity: str) -> str:
+    marker = f"RQ014_CLOSURE_GATE_FAIL {identity}"
+    marker_offset = script.index(shlex.quote(marker))
+    guard_start = script.rfind("if ! ", 0, marker_offset)
+    guard_end = script.index("fi\n", marker_offset) + len("fi\n")
+    return script[guard_start:guard_end]
+
+
+def _run_emitted_closure_guard(
+    script: str,
+    identity: str,
+    *,
+    setup: str = "",
+) -> subprocess.CompletedProcess[str]:
+    command = (
+        "set -euo pipefail\n"
+        + setup
+        + _extract_emitted_closure_guard(script, identity)
+        + "exit 0\n"
+    )
+    return subprocess.run(
+        ["/bin/bash", "-c", command],
+        text=True,
+        capture_output=True,
+        env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"},
+    )
+
+
+EMITTED_NON_GATE_TEST_EXEMPTIONS = {
+    'if test -z "${native_seen[$resolved_path]+x}"; then': (
+        "v4 native-manifest unique-path accumulator branch"
+    ),
+    'if test "$link_target" = -; then': (
+        "native-manifest regular-file versus symlink row branch"
+    ),
+}
+EMITTED_SHELL_GATE_PATTERN = re.compile(
+    r"(?:^|(?:&&|\|\||;)\s+)"
+    r"(?:(?:if|elif|while|until)\s+)?"
+    r"(?:!\s+)?(?:test(?:\s|$)|\[\s)"
+)
+
+
+def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> None:
+    base = tmp_path / "sociality_estimation"
+    repo = ROOT
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    code = run_root / "code"
+    validated = rq014_sbatch_fixture(base)
     script = render_rq014_sbatch(
         validated=validated,
         base=base,
@@ -1538,3 +1727,246 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
     rendered = tmp_path / "run.sbatch"
     rendered.write_text(script, encoding="utf-8")
     subprocess.run(["/bin/bash", "-n", str(rendered)], check=True)
+
+
+def test_all_rq014_operation_preludes_have_no_unguarded_silent_gate_lines(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    fixture_specs = {
+        "export": rq014_export_sbatch_fixture(base),
+        "preflight": rq014_sbatch_fixture(base),
+        "pilot": rq014_pilot_sbatch_fixture(base),
+    }
+    violations: list[str] = []
+    seen_exemptions: set[str] = set()
+    for operation, validated in fixture_specs.items():
+        script = render_rq014_fixture_sbatch(validated, base, operation)
+        rendered = tmp_path / f"{operation}.sbatch"
+        rendered.write_text(script, encoding="utf-8")
+        subprocess.run(["/bin/bash", "-n", str(rendered)], check=True)
+        lines = script.splitlines()
+        for index, line in enumerate(lines):
+            stripped = line.strip()
+            if not EMITTED_SHELL_GATE_PATTERN.search(stripped):
+                continue
+            if stripped.startswith(("if ! test ", "if ! [ ")):
+                following = [
+                    lines[offset].strip() if offset < len(lines) else "<missing>"
+                    for offset in (index + 1, index + 2, index + 3)
+                ]
+                if not (
+                    following[0].startswith(
+                        "printf '%s\\n' 'RQ014_CLOSURE_GATE_FAIL "
+                    )
+                    and following[0].endswith(" >&2")
+                    and following[1] == "exit 1"
+                    and following[2] == "fi"
+                ):
+                    violations.append(
+                        f"{operation}:{index + 1}:malformed-guard:{stripped}"
+                    )
+                continue
+            if stripped in EMITTED_NON_GATE_TEST_EXEMPTIONS:
+                seen_exemptions.add(stripped)
+                continue
+            violations.append(f"{operation}:{index + 1}:raw-gate:{stripped}")
+    assert violations == []
+    assert seen_exemptions == set(EMITTED_NON_GATE_TEST_EXEMPTIONS)
+
+
+def test_emitted_closure_gate_reports_digest_failure_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    code = run_root / "code"
+    sealed_spec = run_root / "manifests" / "run_spec.json"
+    sealed_spec.parent.mkdir(parents=True)
+    (base / "manifests").mkdir(parents=True)
+    sealed_spec.write_bytes(b"sealed fixture spec\n")
+    validated = rq014_sbatch_fixture(base)
+    sha256sum = tmp_path / "bin" / "sha256sum"
+    sha256sum.parent.mkdir()
+    sha256sum.write_text(
+        "#!/bin/sh\nexec /usr/bin/shasum -a 256 \"$@\"\n",
+        encoding="utf-8",
+    )
+    sha256sum.chmod(0o755)
+
+    def first_digest_prelude(script: str) -> str:
+        digest_guard = _extract_emitted_closure_guard(
+            script,
+            f"digest:{sealed_spec}",
+        ).replace(
+            launcher.SYSTEM_SHA256SUM,
+            str(sha256sum),
+        )
+        return "set -euo pipefail\n" + digest_guard + "exit 0\n"
+
+    environment = {"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"}
+    failing_script = render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=code,
+        sealed_spec_path=sealed_spec,
+    )
+    assert "RQ014_CLOSURE_GATE_FAIL forbidden-environment" in failing_script
+    assert (
+        f"RQ014_CLOSURE_GATE_FAIL maintenance-lock-symlink:"
+        f"{base / 'manifests' / 'runtime_maintenance.lock'}"
+    ) in failing_script
+    failure = subprocess.run(
+        ["/bin/bash", "-c", first_digest_prelude(failing_script)],
+        text=True,
+        capture_output=True,
+        env=environment,
+    )
+    marker = f"RQ014_CLOSURE_GATE_FAIL digest:{sealed_spec}"
+    assert failure.returncode != 0
+    assert failure.stderr == f"{marker}\n"
+
+    validated["run_spec_sha256"] = launcher.sha256_file(sealed_spec)
+    passing_script = render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=code,
+        sealed_spec_path=sealed_spec,
+    )
+    success = subprocess.run(
+        ["/bin/bash", "-c", first_digest_prelude(passing_script)],
+        text=True,
+        capture_output=True,
+        env=environment,
+    )
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_pilot_m3_gate_reports_symlink_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    validated = rq014_pilot_sbatch_fixture(base)
+    m3_path = Path(validated["m3_artifact_path"])
+    m3_path.parent.mkdir(parents=True)
+    target = m3_path.with_name("m3-target.joblib")
+    target.write_bytes(b"x")
+    m3_path.symlink_to(target.name)
+    script = render_rq014_fixture_sbatch(validated, base, "pilot")
+    identity = "pilot:m3-artifact:not-symlink"
+    failure = _run_emitted_closure_guard(script, identity)
+    assert failure.returncode != 0
+    assert failure.stderr == f"RQ014_CLOSURE_GATE_FAIL {identity}\n"
+
+    m3_path.unlink()
+    m3_path.write_bytes(b"x")
+    success = _run_emitted_closure_guard(script, identity)
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_stdlib_gate_reports_missing_root_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    validated = rq014_sbatch_fixture(base)
+    script = render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=run_root / "code",
+        sealed_spec_path=run_root / "manifests" / "run_spec.json",
+    )
+    identity = "stdlib:root:directory"
+    failure = _run_emitted_closure_guard(script, identity)
+    assert failure.returncode != 0
+    assert failure.stderr == f"RQ014_CLOSURE_GATE_FAIL {identity}\n"
+
+    Path(validated["stdlib_root"]).mkdir(parents=True)
+    success = _run_emitted_closure_guard(script, identity)
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_site_packages_gate_reports_symlink_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    site_root = base / "envs" / "ipv-m3-v4" / "lib" / "python3.9" / "site-packages"
+    validated = rq014_sbatch_fixture(base)
+    validated.update(
+        {
+            "site_packages_root": str(site_root),
+            "site_packages_checksum_manifest_path": str(
+                base / "manifests" / "RQ014" / "managed_python_site_packages_v4.sha256"
+            ),
+            "site_packages_checksum_manifest_sha256": "a" * 64,
+            "distribution_manifest_path": str(
+                base / "manifests" / "RQ014" / "managed_python_distributions_v4.json"
+            ),
+            "distribution_manifest_sha256": "b" * 64,
+            "site_packages_regular_file_count": 1,
+            "site_packages_regular_file_total_size_bytes": 1,
+        }
+    )
+    site_root.mkdir(parents=True)
+    target = site_root / "target.py"
+    target.write_bytes(b"x")
+    link = site_root / "linked.py"
+    link.symlink_to(target.name)
+    script = render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=run_root / "code",
+        sealed_spec_path=run_root / "manifests" / "run_spec.json",
+    )
+    identity = "site-packages:tree:symlink-absent"
+    failure = _run_emitted_closure_guard(script, identity)
+    assert failure.returncode != 0
+    assert failure.stderr == f"RQ014_CLOSURE_GATE_FAIL {identity}\n"
+
+    link.unlink()
+    success = _run_emitted_closure_guard(script, identity)
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_native_gate_reports_header_drift_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    script = render_rq014_sbatch(
+        validated=rq014_sbatch_fixture(base),
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=run_root / "code",
+        sealed_spec_path=run_root / "manifests" / "run_spec.json",
+    )
+    identity = "native:manifest:header-version"
+    failure = _run_emitted_closure_guard(
+        script,
+        identity,
+        setup="native_header='# drifted-native-header'\n",
+    )
+    assert failure.returncode != 0
+    assert failure.stderr == f"RQ014_CLOSURE_GATE_FAIL {identity}\n"
+
+    success = _run_emitted_closure_guard(
+        script,
+        identity,
+        setup="native_header='# rq014-managed-python-native-libs-v1'\n",
+    )
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr

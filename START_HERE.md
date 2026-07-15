@@ -237,7 +237,7 @@ question index in `STUDIES.md`.
   `1924193` `zxc-rq014-pre-72dd4362f954` COMPLETED 0:0 — 12/12 bindings materialized, M3 delivery verified
   pre-deserialization (immutable receipt), receipts + bounded report dual NO_BLOCKER. Report:
   `reports/studies/RQ014_wod_e2e_rating_recovery/RQ014_2_contract_preflight_20260714T003336Z_72dd4362/`.
-  W5d implementation candidate is now local-only: export/preflight remain on v3, while
+  W5d is published on `origin/main` at merge `c3036fce`: export/preflight remain on v3, while
   `rq014_g2_resource_pilot` binds the checksum-closed v4 runtime for rating-blind
   `source_load`, `window_assembly`, `feature_prep`, and M3 measurements on frozen light/heavy cells.
   Its `amd` profile is 1 node/1 task/16 CPU/32G/04:00:00; the endpoint cells run concurrently in separate
@@ -250,9 +250,17 @@ question index in `STUDIES.md`.
   is recorded for D3. The v4 gate verifies the pinned stdlib (1,849/40,860,773/0),
   site-packages (12,206/487,535,728/0), and 94-row native closure before M3 loads once in the parent
   and scores per cell on a deterministic rating-free cost vector. Any v4/M3 mismatch aborts with no DONE;
-  numeric M3/combined projections are emitted only on PASS. Fresh dual review, Formal G1/final
-  bundle regeneration, publication/sync, immutable spec, validate-only, and the explicit PI stop are still pending;
-  D3 remains the separate compute-budget gate.
+  numeric M3/combined projections are emitted only on PASS. The first pilot validate-only attempt failed
+  before submission because the M3 validator still required the pre-W5d 12-key delivery block while the reviewed
+  contract correctly carried 14 keys. W5f repairs that authority wiring with a real-contract end-to-end regression.
+  W5g clarifies that preflight is the verification-only operation, while the pilot spec still requires M3 and its
+  job prelude reverifies the scorer before v4 deserialization. A pre-runtime closure mismatch exits non-zero with
+  a deterministic `RQ014_CLOSURE_GATE_FAIL <stable-identity>` stderr line from every emitted export,
+  preflight, and pilot gate (digest, output-root, M3, stdlib, site-packages, and native), captured by Slurm
+  with no receipt/DONE;
+  runtime-detected M3 failures write a FAIL receipt with no DONE or numeric cost. Fresh mini-review, Formal
+  G1/final-bundle regeneration, publication/sync, a newly pinned immutable
+  spec, and the explicit PI stop remain required. D3 remains the separate compute-budget gate.
 - **RQ014 v1.6 contract preflight EXECUTED PASS (receipt-verified 2026-07-14; this supersedes
   earlier preflight-pending statements above).** Exact authority commit `b06a243eea7e1418622f89e5ea80d3da4fe3bc58`,
   Formal G1 `755e6a34…`, final bundle `41ac5280…`, and immutable run spec `72dd4362…` produced run
