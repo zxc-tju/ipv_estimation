@@ -2782,10 +2782,24 @@ def _rq014_isolated_python_command(
     ]
 
 
+def _shell_closure_gate_guard(condition: str, identity: str) -> str:
+    marker = shlex.quote(f"RQ014_CLOSURE_GATE_FAIL {identity}")
+    return (
+        f"if ! {condition}; then\n"
+        f"  printf '%s\\n' {marker} >&2\n"
+        "  exit 1\n"
+        "fi\n"
+    )
+
+
 def _shell_digest_check(path: str | Path, digest: str) -> str:
     quoted_path = shlex.quote(str(path))
     awk_program = shlex.quote("{print $1}")
-    return f'test "$({SYSTEM_SHA256SUM} {quoted_path} | {SYSTEM_AWK} {awk_program})" = {shlex.quote(digest)}\n'
+    condition = (
+        f'test "$({SYSTEM_SHA256SUM} {quoted_path} | {SYSTEM_AWK} {awk_program})" '
+        f"= {shlex.quote(digest)}"
+    )
+    return _shell_closure_gate_guard(condition, f"digest:{path}")
 
 
 def _stdlib_shell_checks(validated: dict[str, Any]) -> str:
@@ -3179,6 +3193,15 @@ def render_rq014_sbatch(
     quoted = " ".join(shlex.quote(item) for item in [*runtime_environment, *python_command])
     contract_bundle_relative = validated["contract_bundle_relative_path"]
     profile = validated["slurm_profile"]
+    runtime_lock = base / "manifests" / "runtime_maintenance.lock"
+    forbidden_environment_guard = _shell_closure_gate_guard(
+        'test -z "${BASH_ENV-}${ENV-}${LD_PRELOAD-}${PYTHONHOME-}${PYTHONPATH-}"',
+        "forbidden-environment",
+    )
+    maintenance_lock_guard = _shell_closure_gate_guard(
+        f"test ! -L {shlex.quote(str(runtime_lock))}",
+        f"maintenance-lock-symlink:{runtime_lock}",
+    )
     return (
         "#!/bin/bash\n"
         f"#SBATCH --job-name={validated['job_name']}\n"
@@ -3194,9 +3217,9 @@ def render_rq014_sbatch(
         "#SBATCH --chdir=/\n\n"
         "set -euo pipefail\n"
         "umask 077\n"
-        "test -z \"${BASH_ENV-}${ENV-}${LD_PRELOAD-}${PYTHONHOME-}${PYTHONPATH-}\"\n"
-        f"test ! -L {shlex.quote(str(base / 'manifests' / 'runtime_maintenance.lock'))}\n"
-        f"exec 8>{shlex.quote(str(base / 'manifests' / 'runtime_maintenance.lock'))}\n"
+        f"{forbidden_environment_guard}"
+        f"{maintenance_lock_guard}"
+        f"exec 8>{shlex.quote(str(runtime_lock))}\n"
         f"{SYSTEM_FLOCK} -s 8\n"
         f"{_shell_digest_check(sealed_spec_path, validated['run_spec_sha256'])}"
         f"{_shell_digest_check(run_root / 'manifests' / 'code_snapshot.json', validated['code_snapshot_receipt_sha256'])}"

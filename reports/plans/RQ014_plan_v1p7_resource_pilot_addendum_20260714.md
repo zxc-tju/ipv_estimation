@@ -148,8 +148,10 @@ model/support metadata, tiled only to the measured cell's window count; it is a
 cost substrate, not scientific evidence. D3 receives separate non-M3, M3, and
 combined serial/16-worker projections. A pre-runtime v4 closure-gate or sbatch-
 prelude digest mismatch runs under `set -euo pipefail` and aborts non-zero before
-Python starts: it writes no receipt and no DONE, while the Slurm log retains the
-cause. Once the managed runtime starts, an M3 re-verification, lineage, model-
+Python starts: each silent guard first emits the deterministic one-line stderr
+marker `RQ014_CLOSURE_GATE_FAIL <stable-identity>` (while `sha256sum -c` retains
+its own diagnostic), so the Slurm error log retains the cause; it writes no
+receipt and no DONE. Once the managed runtime starts, an M3 re-verification, lineage, model-
 load, or scoring failure follows the lane-v3 W4
 `m3_artifact_mismatch_policy=GLOBAL_ABORT` precedent: it writes a FAIL receipt,
 no DONE, and no numeric M3/combined cost. Silent fallback is forbidden and

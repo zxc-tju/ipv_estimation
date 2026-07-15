@@ -1458,12 +1458,8 @@ def test_git_config_hooks_fsmonitor_and_checkout_filters_cannot_enter_snapshot(
     assert not marker.exists()
 
 
-def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> None:
-    base = tmp_path / "sociality_estimation"
-    repo = ROOT
-    run_root = base / "work_dirs" / "RQ014" / "run1"
-    code = run_root / "code"
-    validated = {
+def rq014_sbatch_fixture(base: Path) -> dict[str, object]:
+    return {
         "job_name": "zxc-rq014-pre-123456789abc",
         "commit": "a" * 40,
         "declassification_export_commit": "d" * 40,
@@ -1529,6 +1525,14 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
             "time": "01:00:00",
         },
     }
+
+
+def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> None:
+    base = tmp_path / "sociality_estimation"
+    repo = ROOT
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    code = run_root / "code"
+    validated = rq014_sbatch_fixture(base)
     script = render_rq014_sbatch(
         validated=validated,
         base=base,
@@ -1592,3 +1596,76 @@ def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> 
     rendered = tmp_path / "run.sbatch"
     rendered.write_text(script, encoding="utf-8")
     subprocess.run(["/bin/bash", "-n", str(rendered)], check=True)
+
+
+def test_emitted_closure_gate_reports_digest_failure_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    code = run_root / "code"
+    sealed_spec = run_root / "manifests" / "run_spec.json"
+    sealed_spec.parent.mkdir(parents=True)
+    (base / "manifests").mkdir(parents=True)
+    sealed_spec.write_bytes(b"sealed fixture spec\n")
+    validated = rq014_sbatch_fixture(base)
+    sha256sum = tmp_path / "bin" / "sha256sum"
+    sha256sum.parent.mkdir()
+    sha256sum.write_text(
+        "#!/bin/sh\nexec /usr/bin/shasum -a 256 \"$@\"\n",
+        encoding="utf-8",
+    )
+    sha256sum.chmod(0o755)
+
+    def first_digest_prelude(script: str) -> str:
+        marker = f"RQ014_CLOSURE_GATE_FAIL digest:{sealed_spec}"
+        marker_offset = script.index(marker)
+        guard_start = script.rfind("if ! ", 0, marker_offset)
+        guard_end = script.index("fi\n", marker_offset) + len("fi\n")
+        digest_guard = script[guard_start:guard_end].replace(
+            launcher.SYSTEM_SHA256SUM,
+            str(sha256sum),
+        )
+        return "set -euo pipefail\n" + digest_guard + "exit 0\n"
+
+    environment = {"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"}
+    failing_script = render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=code,
+        sealed_spec_path=sealed_spec,
+    )
+    assert "RQ014_CLOSURE_GATE_FAIL forbidden-environment" in failing_script
+    assert (
+        f"RQ014_CLOSURE_GATE_FAIL maintenance-lock-symlink:"
+        f"{base / 'manifests' / 'runtime_maintenance.lock'}"
+    ) in failing_script
+    failure = subprocess.run(
+        ["/bin/bash", "-c", first_digest_prelude(failing_script)],
+        text=True,
+        capture_output=True,
+        env=environment,
+    )
+    marker = f"RQ014_CLOSURE_GATE_FAIL digest:{sealed_spec}"
+    assert failure.returncode != 0
+    assert failure.stderr == f"{marker}\n"
+
+    validated["run_spec_sha256"] = launcher.sha256_file(sealed_spec)
+    passing_script = render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=code,
+        sealed_spec_path=sealed_spec,
+    )
+    success = subprocess.run(
+        ["/bin/bash", "-c", first_digest_prelude(passing_script)],
+        text=True,
+        capture_output=True,
+        env=environment,
+    )
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
