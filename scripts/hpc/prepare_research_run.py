@@ -2807,6 +2807,32 @@ def _shell_digest_check(path: str | Path, digest: str) -> str:
     return _shell_closure_gate_guard(condition, f"digest:{path}")
 
 
+def _shell_managed_file_checks(
+    path: str | Path,
+    size_bytes: int,
+    identity_prefix: str,
+) -> str:
+    quoted_path = shlex.quote(str(path))
+    return (
+        _shell_closure_gate_guard(
+            f"test ! -L {quoted_path}",
+            f"{identity_prefix}:not-symlink",
+        )
+        + _shell_closure_gate_guard(
+            f"test -f {quoted_path}",
+            f"{identity_prefix}:regular-file",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_READLINK} -f {quoted_path})" = {quoted_path}',
+            f"{identity_prefix}:resolved-path",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_STAT} -c %s {quoted_path})" = {size_bytes}',
+            f"{identity_prefix}:size",
+        )
+    )
+
+
 def _stdlib_shell_checks(validated: dict[str, Any]) -> str:
     root = shlex.quote(validated["stdlib_root"])
     lib_dynload = shlex.quote(validated["lib_dynload_root"])
@@ -3199,7 +3225,10 @@ def render_rq014_sbatch(
                 validated["counterpart_tracks_path"],
                 validated["counterpart_tracks_sha256"],
             )
-            + f"test ! -e {shlex.quote(validated['score_stripped_output_root'])}\n"
+            + _shell_closure_gate_guard(
+                f"test ! -e {shlex.quote(validated['score_stripped_output_root'])}",
+                "export:output-root:absent",
+            )
         )
     elif validated.get("fixed_subcommand", "contract-preflight") == "contract-preflight":
         execution_contract = code / "reports" / "plans" / "RQ014_execution_contract_v1p5.json"
@@ -3234,13 +3263,12 @@ def render_rq014_sbatch(
             "--output-root",
             str(run_root / "outputs"),
         ]
-        m3_path = shlex.quote(validated["m3_artifact_path"])
         source_checks = (
-            f"test ! -L {m3_path}\n"
-            f"test -f {m3_path}\n"
-            f'test "$({SYSTEM_READLINK} -f {m3_path})" = {m3_path}\n'
-            f'test "$({SYSTEM_STAT} -c %s {m3_path})" = '
-            f"{validated['m3_artifact_size_bytes']}\n"
+            _shell_managed_file_checks(
+                validated["m3_artifact_path"],
+                validated["m3_artifact_size_bytes"],
+                "preflight:m3-artifact",
+            )
             + _shell_digest_check(
                 validated["m3_artifact_path"], validated["m3_artifact_sha256"]
             )
@@ -3300,13 +3328,12 @@ def render_rq014_sbatch(
             "--output-root",
             str(run_root / "outputs"),
         ]
-        m3_path = shlex.quote(validated["m3_artifact_path"])
         source_checks = (
-            f"test ! -L {m3_path}\n"
-            f"test -f {m3_path}\n"
-            f'test "$({SYSTEM_READLINK} -f {m3_path})" = {m3_path}\n'
-            f'test "$({SYSTEM_STAT} -c %s {m3_path})" = '
-            f"{validated['m3_artifact_size_bytes']}\n"
+            _shell_managed_file_checks(
+                validated["m3_artifact_path"],
+                validated["m3_artifact_size_bytes"],
+                "pilot:m3-artifact",
+            )
             + _shell_digest_check(
                 validated["m3_artifact_path"], validated["m3_artifact_sha256"]
             )
