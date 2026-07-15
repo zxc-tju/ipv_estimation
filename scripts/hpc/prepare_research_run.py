@@ -2943,7 +2943,7 @@ def _native_library_shell_checks(validated: dict[str, Any]) -> str:
                 indent="  ",
             )
             + _shell_closure_gate_guard(
-                "test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'",
+                "test \"$native_header\" = '# columns=soname\tloader_path\tlink_target_or_dash\tresolved_path\tsize_bytes\tsha256'",
                 "native:manifest:header-columns",
                 indent="  ",
             )

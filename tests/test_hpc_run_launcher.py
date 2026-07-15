@@ -1986,7 +1986,7 @@ def rq014_pilot_sbatch_fixture(base: Path) -> dict[str, object]:
             "site_packages_regular_file_count": 12_206,
             "site_packages_regular_file_total_size_bytes": 487_535_728,
             "native_library_manifest_version": 4,
-            "native_library_consumer_count": 45,
+            "native_library_consumer_count": 369,
             "native_library_row_count": 94,
             "native_library_resolved_count": 45,
             "native_library_symlink_row_count": 31,
@@ -2367,3 +2367,46 @@ def test_emitted_native_gate_reports_header_drift_and_stays_silent_on_pass(
     )
     assert success.returncode == 0
     assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_v4_native_header_gates_accept_published_real_bytes(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    validated = rq014_pilot_sbatch_fixture(base)
+    script = render_rq014_fixture_sbatch(validated, base, "pilot")
+    header_path = tmp_path / "managed_python_native_libs_v4.headers"
+    header_path.write_bytes(
+        b"\n".join(
+            (
+                *REAL_V4_NATIVE_HEADER_LINES,
+                b"# consumer_count=369",
+                b"# row_count=94",
+            )
+        )
+        + b"\n"
+    )
+    assert header_path.read_bytes().splitlines() == [
+        *REAL_V4_NATIVE_HEADER_LINES,
+        b"# consumer_count=369",
+        b"# row_count=94",
+    ]
+
+    header_block_start = script.index("{\n", script.index("native_tab="))
+    header_block_end = script.index(
+        '  while IFS="$native_tab" read -r soname',
+        header_block_start,
+    )
+    command = (
+        "set -euo pipefail\n"
+        + script[header_block_start:header_block_end]
+        + f"}} < {shlex.quote(str(header_path))}\n"
+    )
+    result = subprocess.run(
+        ["/bin/bash", "-c", command],
+        text=True,
+        capture_output=True,
+        env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"},
+    )
+    assert result.returncode == 0, result.stderr
+    assert "RQ014_CLOSURE_GATE_FAIL" not in result.stderr
