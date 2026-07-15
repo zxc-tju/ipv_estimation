@@ -417,11 +417,19 @@ def test_r04n_counterpart_native_10hz_interpolates_only_within_support() -> None
     }
 
 
-def test_interpolate_accepts_real_one_ulp_endpoints_and_remains_fail_closed() -> None:
+def test_interpolate_enforces_bounded_endpoint_equivalence_and_gap_fail_closed() -> None:
+    """Freeze the preflight-equivalent 1e-12 boundary at both bisect edges.
+
+    Both job targets are 1.7763568394002505e-15 s outside observed support:
+    four binary64 ULPs at 3.5 and two binary64 ULPs at magnitude 4.9.
+    """
     light_last = 3.4999999999999982
     heavy_first = -4.899999999999999
     assert light_last.hex() == "0x1.bfffffffffffcp+1"
     assert heavy_first.hex() == "-0x1.3999999999998p+2"
+    real_endpoint_delta = 1.7763568394002505e-15
+    assert 3.5 - light_last == real_endpoint_delta == 4 * math.ulp(3.5)
+    assert heavy_first - (-4.9) == real_endpoint_delta == 2 * math.ulp(4.9)
 
     light = _grid_tick_points(
         [(-3.0999999999999996, -3.1, 1.0), (light_last, 3.5, 2.0)],
@@ -436,6 +444,21 @@ def test_interpolate_accepts_real_one_ulp_endpoints_and_remains_fail_closed() ->
         interpolate_to_grid=True,
     )
     assert heavy[-49] == (-4.9, -4.9, 1.0)
+
+    tolerance = 1e-12
+    inside_delta = 9e-13
+    outside_delta = math.nextafter(tolerance, math.inf)
+    assert inside_delta < tolerance < outside_delta
+
+    lower_edge = [(0.0, 10.0, 20.0), (1.0, 11.0, 21.0)]
+    assert _interpolate(lower_edge, -inside_delta) == (-inside_delta, 10.0, 20.0)
+    with pytest.raises(PilotError, match="leaves observed support"):
+        _interpolate(lower_edge, -outside_delta)
+
+    upper_edge = [(-1.0, 29.0, 39.0), (0.0, 30.0, 40.0)]
+    assert _interpolate(upper_edge, inside_delta) == (inside_delta, 30.0, 40.0)
+    with pytest.raises(PilotError, match="leaves observed support"):
+        _interpolate(upper_edge, outside_delta)
 
     with pytest.raises(PilotError, match="leaves observed support"):
         _interpolate([(0.0, 0.0, 0.0), (light_last, 3.5, 2.0)], light_last + 0.01)
