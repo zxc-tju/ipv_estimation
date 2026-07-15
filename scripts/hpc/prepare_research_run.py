@@ -1252,8 +1252,8 @@ def _validate_native_library_manifest(
         expected_headers = [
             "# rq014-managed-python-native-libs-v4",
             (
-                "# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>"
-                "resolved_path<TAB>size_bytes<TAB>sha256"
+                "# columns=soname\tloader_path\tlink_target_or_dash\t"
+                "resolved_path\tsize_bytes\tsha256"
             ),
             (
                 "# discovery=recursive_ldd_plus_same_directory_then_unique_managed_root_"
@@ -2943,7 +2943,7 @@ def _native_library_shell_checks(validated: dict[str, Any]) -> str:
                 indent="  ",
             )
             + _shell_closure_gate_guard(
-                "test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'",
+                "test \"$native_header\" = '# columns=soname\tloader_path\tlink_target_or_dash\tresolved_path\tsize_bytes\tsha256'",
                 "native:manifest:header-columns",
                 indent="  ",
             )

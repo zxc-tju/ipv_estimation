@@ -32,6 +32,40 @@ REAL_M3_DELIVERY_CONTRACT = json.loads(
     )
 )["m3_artifact_delivery_contract"]
 
+REAL_V4_NATIVE_HEADER_LINES = (
+    b"# rq014-managed-python-native-libs-v4",
+    (
+        b"# columns=soname\tloader_path\tlink_target_or_dash\tresolved_path\t"
+        b"size_bytes\tsha256"
+    ),
+    (
+        b"# discovery=recursive_ldd_plus_same_directory_then_unique_managed_root_"
+        b"resolution_for_context_dependent_bundled_SONAMEs"
+    ),
+)
+REAL_V4_PUBLISHED_PINS = {
+    "environment": (
+        6148,
+        "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9",
+    ),
+    "stdlib": (
+        360696,
+        "0e9f0cad3d576fcacfbcbc093e813aabafc432df453a15e2bc872f832bc692e7",
+    ),
+    "site_packages": (
+        2687140,
+        "fe420c24a554e640544724b9db17353675b6d17d3d01190a2cc22a7dd103852a",
+    ),
+    "distributions": (
+        222929,
+        "de30460a5c1949b7e23de732a59a4c414c2dd5738059ef39339fe758f79fd737",
+    ),
+    "native": (
+        31328,
+        "02a4f2e46b47f847027a066f075c91b59b536728764e0bebca97614b31980918",
+    ),
+}
+
 
 def m3_delivery_contract(path: Path, payload: bytes) -> dict[str, object]:
     delivery = copy.deepcopy(REAL_M3_DELIVERY_CONTRACT)
@@ -1460,6 +1494,369 @@ def test_git_config_hooks_fsmonitor_and_checkout_filters_cannot_enter_snapshot(
     assert not marker.exists()
 
 
+def _schema_const_instance(node: dict[str, object]) -> object:
+    if "const" in node:
+        return copy.deepcopy(node["const"])
+    if node.get("type") == "object":
+        properties = node["properties"]
+        assert isinstance(properties, dict)
+        return {
+            key: _schema_const_instance(properties[key])
+            for key in node["required"]
+        }
+    raise AssertionError(f"Fixture schema node has no frozen instance: {node}")
+
+
+def _rewrite_fixture_base(value: object, *, old: str, new: str) -> object:
+    if isinstance(value, str):
+        return value.replace(old, new)
+    if isinstance(value, list):
+        return [_rewrite_fixture_base(item, old=old, new=new) for item in value]
+    if isinstance(value, dict):
+        return {
+            key: _rewrite_fixture_base(item, old=old, new=new)
+            for key, item in value.items()
+        }
+    return value
+
+
+def _write_real_format_checksum_manifest(path: Path, files: list[Path]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "".join(
+            f"# size_bytes={item.stat().st_size}\n{launcher.sha256_file(item)}  {item}\n"
+            for item in sorted(files, key=str)
+        ),
+        encoding="utf-8",
+    )
+
+
+def _file_metadata(path: Path) -> dict[str, object]:
+    return {
+        "path": str(path),
+        "sha256": launcher.sha256_file(path),
+        "size_bytes": path.stat().st_size,
+    }
+
+
+def _build_real_format_v4_environment_fixture(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> SimpleNamespace:
+    """Build a small closure with the exact representations of the published v4 files."""
+
+    published_base = "/share/home/u25310231/ZXC/sociality_estimation"
+    base = tmp_path / "sociality_estimation"
+    schema = json.loads(
+        (ROOT / "configs/run_specs/rq014_managed_python_environment_v4.schema.json")
+        .read_text(encoding="utf-8")
+    )
+    manifest = _rewrite_fixture_base(
+        _schema_const_instance(schema),
+        old=published_base,
+        new=str(base),
+    )
+    assert isinstance(manifest, dict)
+
+    environment_root = base / "envs" / "ipv-m3-v4"
+    python = environment_root / "bin" / "python3.9"
+    python.parent.mkdir(parents=True)
+    with python.open("wb") as handle:
+        handle.truncate(15_742_400)
+    python_sha256 = launcher.sha256_file(python)
+
+    stdlib_root = environment_root / "lib" / "python3.9"
+    lib_dynload = stdlib_root / "lib-dynload"
+    (stdlib_root / "encodings").mkdir(parents=True)
+    lib_dynload.mkdir(parents=True)
+    stdlib_files = [
+        stdlib_root / "encodings" / "utf_8.py",
+        lib_dynload / "_struct.cpython-39-x86_64-linux-gnu.so",
+    ]
+    stdlib_files[0].write_bytes(b"# published-format stdlib fixture\n")
+    stdlib_files[1].write_bytes(b"published-format extension bytes\x00")
+
+    site_root = stdlib_root / "site-packages"
+    package_root = site_root / "fixture_pkg"
+    dist_info = site_root / "fixture_pkg-1.0.dist-info"
+    license_root = dist_info / "licenses"
+    package_root.mkdir(parents=True)
+    license_root.mkdir(parents=True)
+    site_files = [
+        package_root / "__init__.py",
+        dist_info / "METADATA",
+        dist_info / "RECORD",
+        dist_info / "WHEEL",
+        license_root / "LICENSE.txt",
+        site_root / "distutils-precedence.pth",
+    ]
+    contents = (
+        "COPYRIGHT = 'Copyright © fixture'\n".encode("utf-8"),
+        b"Metadata-Version: 2.4\nName: fixture-pkg\nVersion: 1.0\n",
+        b"fixture_pkg/__init__.py,,\n",
+        b"Wheel-Version: 1.0\nRoot-Is-Purelib: true\n",
+        b"Published-format fixture license\n",
+        b"import _distutils_hack\n",
+    )
+    assert len(site_files) == len(contents)
+    for path, payload in zip(site_files, contents):
+        path.write_bytes(payload)
+
+    staging = base / "manifests" / "RQ014" / "staging_env_v4"
+    stdlib_manifest = staging / "managed_python_stdlib_v4.sha256"
+    site_manifest = staging / "managed_python_site_packages_v4.sha256"
+    _write_real_format_checksum_manifest(stdlib_manifest, stdlib_files)
+    _write_real_format_checksum_manifest(site_manifest, site_files)
+
+    wheel = staging / "wheelhouse" / "fixture_pkg-1.0-py3-none-any.whl"
+    wheel.parent.mkdir(parents=True)
+    wheel.write_bytes(b"published-format wheel artifact\n")
+    distributions_payload = {
+        "captured_at_utc": "2026-07-14T11:12:18Z",
+        "distributions": [
+            {
+                "dist_info_path": str(dist_info),
+                "files": {
+                    "direct_url": None,
+                    "entry_points": None,
+                    "metadata": _file_metadata(dist_info / "METADATA"),
+                    "record": _file_metadata(dist_info / "RECORD"),
+                    "wheel_metadata": _file_metadata(dist_info / "WHEEL"),
+                },
+                "license_expression": None,
+                "license_field": "Copyright © fixture",
+                "license_files": [_file_metadata(license_root / "LICENSE.txt")],
+                "name": "fixture-pkg",
+                "normalized_name": "fixture-pkg",
+                "provenance": {
+                    "artifact": _file_metadata(wheel),
+                    "type": "wheel",
+                },
+                "version": "1.0",
+            }
+        ],
+        "editable_installs": [],
+        "pth_files_inert_under_no_site": [
+            _file_metadata(site_root / "distutils-precedence.pth")
+        ],
+        "runtime_network_installation_allowed": False,
+        "schema_version": "rq014-managed-python-distributions-v4",
+        "site_packages_root": str(site_root),
+        "sitecustomize_or_usercustomize_files": [],
+    }
+    distributions = staging / "managed_python_distributions_v4.json"
+    distributions.write_bytes(launcher._canonical_spec_bytes(distributions_payload))
+
+    environment_lib = environment_root / "lib"
+    linked_resolved = environment_lib / "libfixture.so.1.0"
+    linked_resolved.write_bytes(b"published-format linked native bytes\n")
+    linked_loader = environment_lib / "libfixture.so.1"
+    linked_loader.symlink_to(linked_resolved.name)
+    shared_resolved = environment_lib / "libshared.so.1"
+    shared_resolved.write_bytes(b"published-format shared native bytes\n")
+    native_rows = [
+        ("libfixture.so.1", linked_loader, linked_resolved.name, linked_resolved),
+        ("libshared.so.1", lib_dynload / "../../libshared.so.1", "-", shared_resolved),
+        ("libshared.so.1", site_root / "../../libshared.so.1", "-", shared_resolved),
+    ]
+    native_manifest = staging / "managed_python_native_libs_v4.tsv"
+    native_manifest.write_bytes(
+        b"\n".join(
+            (*REAL_V4_NATIVE_HEADER_LINES, b"# consumer_count=3", b"# row_count=3")
+        )
+        + b"\n"
+        + "".join(
+            "\t".join(
+                (
+                    soname,
+                    str(loader),
+                    link_target,
+                    str(resolved),
+                    str(resolved.stat().st_size),
+                    launcher.sha256_file(resolved),
+                )
+            )
+            + "\n"
+            for soname, loader, link_target, resolved in native_rows
+        ).encode("utf-8")
+    )
+
+    parity_path = staging / "m3_rating_free_parity_v1.json"
+    parity_payload = {
+        "fixture_precision_max_abs_diff": 0.0,
+        "padding": "",
+        "rating_inputs_accessed": False,
+        "raw_max_abs_diff": 4.952394050405928e-11,
+        "recorded_atol": 1e-7,
+        "schema_version": "rq014-m3-rating-free-parity-v1",
+        "status": "PASS",
+    }
+    initial_parity = launcher._canonical_spec_bytes(parity_payload)
+    parity_payload["padding"] = "x" * (3471 - len(initial_parity))
+    parity_path.write_bytes(launcher._canonical_spec_bytes(parity_payload))
+    assert parity_path.stat().st_size == 3471
+
+    stdlib_total = sum(path.stat().st_size for path in stdlib_files)
+    site_total = sum(path.stat().st_size for path in site_files)
+    native_unique = {resolved for _, _, _, resolved in native_rows}
+    native_total = sum(path.stat().st_size for path in native_unique)
+    stdlib_lock = {
+        "regular_file_count": len(stdlib_files),
+        "regular_file_total_size_bytes": stdlib_total,
+        "symlink_count": 0,
+        "special_file_count": 0,
+        "checksum_manifest_size_bytes": stdlib_manifest.stat().st_size,
+        "checksum_manifest_sha256": launcher.sha256_file(stdlib_manifest),
+    }
+    site_lock = {
+        "regular_file_count": len(site_files),
+        "regular_file_total_size_bytes": site_total,
+        "symlink_count": 0,
+        "special_file_count": 0,
+        "checksum_manifest_size_bytes": site_manifest.stat().st_size,
+        "checksum_manifest_sha256": launcher.sha256_file(site_manifest),
+        "distribution_manifest_size_bytes": distributions.stat().st_size,
+        "distribution_manifest_sha256": launcher.sha256_file(distributions),
+    }
+    native_lock = {
+        "consumer_count": 3,
+        "row_count": 3,
+        "resolved_regular_file_count": len(native_unique),
+        "resolved_regular_file_total_size_bytes": native_total,
+        "symlink_row_count": 1,
+        "multi_hop_count": 0,
+        "manifest_size_bytes": native_manifest.stat().st_size,
+        "manifest_sha256": launcher.sha256_file(native_manifest),
+    }
+
+    manifest["python_executable"]["sha256"] = python_sha256
+    manifest["stdlib_integrity"].update(stdlib_lock)
+    manifest["site_packages_integrity"].update(site_lock)
+    manifest["native_library_integrity"].update(native_lock)
+    manifest["rating_free_parity"]["receipt_sha256"] = launcher.sha256_file(parity_path)
+    environment_manifest = base / "manifests" / "RQ014" / "managed_python_environment_v4.json"
+    environment_manifest.parent.mkdir(parents=True, exist_ok=True)
+    environment_manifest.write_bytes(launcher._canonical_spec_bytes(manifest))
+    rewritten_files = (
+        environment_manifest,
+        stdlib_manifest,
+        site_manifest,
+        distributions,
+        native_manifest,
+    )
+    assert all(published_base.encode("utf-8") not in path.read_bytes() for path in rewritten_files)
+    assert native_manifest.read_bytes().splitlines()[:3] == list(
+        REAL_V4_NATIVE_HEADER_LINES
+    )
+
+    monkeypatch.setattr(launcher, "RQ014_ENVIRONMENT_V4_PATH", str(environment_manifest))
+    monkeypatch.setattr(
+        launcher, "RQ014_ENVIRONMENT_V4_SHA256", launcher.sha256_file(environment_manifest)
+    )
+    monkeypatch.setattr(
+        launcher, "RQ014_ENVIRONMENT_V4_SIZE_BYTES", environment_manifest.stat().st_size
+    )
+    monkeypatch.setattr(launcher, "RQ014_ENVIRONMENT_V4_PYTHON_SHA256", python_sha256)
+    monkeypatch.setattr(launcher, "RQ014_ENVIRONMENT_V4_STDLIB", stdlib_lock)
+    monkeypatch.setattr(launcher, "RQ014_ENVIRONMENT_V4_SITE_PACKAGES", site_lock)
+    monkeypatch.setattr(launcher, "RQ014_ENVIRONMENT_V4_NATIVE", native_lock)
+    monkeypatch.setattr(
+        launcher, "RQ014_ENVIRONMENT_V4_PARITY_SHA256", launcher.sha256_file(parity_path)
+    )
+    monkeypatch.setattr(
+        launcher,
+        "M3_ARTIFACT_PATH",
+        str(base / "checkpoints" / "rq009_m3" / "m3_scorer.joblib"),
+    )
+    monkeypatch.setattr(
+        launcher.subprocess,
+        "check_output",
+        lambda *args, **kwargs: "Python 3.9.6\n",
+    )
+    return SimpleNamespace(
+        base=base,
+        environment_manifest=environment_manifest,
+        native_manifest=native_manifest,
+        stdlib_count=len(stdlib_files),
+        site_count=len(site_files),
+        native_count=len(native_rows),
+        native_resolved_count=len(native_unique),
+    )
+
+
+def test_v4_native_header_lines_are_exact_published_real_bytes(tmp_path: Path) -> None:
+    environment_root = tmp_path / "envs" / "ipv-m3-v4"
+    resolved = environment_root / "lib" / "libfixture.so.1"
+    resolved.parent.mkdir(parents=True)
+    resolved.write_bytes(b"native fixture bytes\n")
+    manifest = tmp_path / "managed_python_native_libs_v4.tsv"
+    manifest.write_bytes(
+        b"\n".join(
+            (*REAL_V4_NATIVE_HEADER_LINES, b"# consumer_count=1", b"# row_count=1")
+        )
+        + b"\n"
+        + (
+            f"libfixture.so.1\t{resolved}\t-\t{resolved}\t{resolved.stat().st_size}\t"
+            f"{launcher.sha256_file(resolved)}\n"
+        ).encode("utf-8")
+    )
+    assert manifest.read_bytes().splitlines()[:3] == list(REAL_V4_NATIVE_HEADER_LINES)
+    assert b"<TAB>" not in manifest.read_bytes().splitlines()[1]
+    assert manifest.read_bytes().splitlines()[1].count(b"\t") == 5
+    launcher._validate_native_library_manifest(
+        manifest_path=manifest,
+        environment_root=environment_root,
+        expected_count=1,
+        expected_total_size=resolved.stat().st_size,
+        expected_symlink_count=0,
+        manifest_version=4,
+        expected_consumer_count=1,
+        expected_resolved_count=1,
+    )
+
+
+def test_v4_validator_constants_match_published_real_file_pins() -> None:
+    assert (
+        launcher.RQ014_ENVIRONMENT_V4_SIZE_BYTES,
+        launcher.RQ014_ENVIRONMENT_V4_SHA256,
+    ) == REAL_V4_PUBLISHED_PINS["environment"]
+    assert (
+        launcher.RQ014_ENVIRONMENT_V4_STDLIB["checksum_manifest_size_bytes"],
+        launcher.RQ014_ENVIRONMENT_V4_STDLIB["checksum_manifest_sha256"],
+    ) == REAL_V4_PUBLISHED_PINS["stdlib"]
+    assert (
+        launcher.RQ014_ENVIRONMENT_V4_SITE_PACKAGES["checksum_manifest_size_bytes"],
+        launcher.RQ014_ENVIRONMENT_V4_SITE_PACKAGES["checksum_manifest_sha256"],
+    ) == REAL_V4_PUBLISHED_PINS["site_packages"]
+    assert (
+        launcher.RQ014_ENVIRONMENT_V4_SITE_PACKAGES["distribution_manifest_size_bytes"],
+        launcher.RQ014_ENVIRONMENT_V4_SITE_PACKAGES["distribution_manifest_sha256"],
+    ) == REAL_V4_PUBLISHED_PINS["distributions"]
+    assert (
+        launcher.RQ014_ENVIRONMENT_V4_NATIVE["manifest_size_bytes"],
+        launcher.RQ014_ENVIRONMENT_V4_NATIVE["manifest_sha256"],
+    ) == REAL_V4_PUBLISHED_PINS["native"]
+
+
+def test_validate_environment_v4_end_to_end_from_published_real_formats(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fixture = _build_real_format_v4_environment_fixture(tmp_path, monkeypatch)
+    validated = launcher._validate_rq014_environment_manifest_v4(
+        {
+            "path": str(fixture.environment_manifest),
+            "sha256": launcher.sha256_file(fixture.environment_manifest),
+        },
+        base=fixture.base,
+    )
+    assert validated["stdlib_regular_file_count"] == fixture.stdlib_count
+    assert validated["site_packages_regular_file_count"] == fixture.site_count
+    assert validated["native_library_row_count"] == fixture.native_count
+    assert validated["native_library_resolved_count"] == fixture.native_resolved_count
+    assert validated["native_library_manifest_version"] == 4
+
+
 def rq014_sbatch_fixture(base: Path) -> dict[str, object]:
     return {
         "job_name": "zxc-rq014-pre-123456789abc",
@@ -1589,7 +1986,7 @@ def rq014_pilot_sbatch_fixture(base: Path) -> dict[str, object]:
             "site_packages_regular_file_count": 12_206,
             "site_packages_regular_file_total_size_bytes": 487_535_728,
             "native_library_manifest_version": 4,
-            "native_library_consumer_count": 45,
+            "native_library_consumer_count": 369,
             "native_library_row_count": 94,
             "native_library_resolved_count": 45,
             "native_library_symlink_row_count": 31,
@@ -1970,3 +2367,46 @@ def test_emitted_native_gate_reports_header_drift_and_stays_silent_on_pass(
     )
     assert success.returncode == 0
     assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_v4_native_header_gates_accept_published_real_bytes(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    validated = rq014_pilot_sbatch_fixture(base)
+    script = render_rq014_fixture_sbatch(validated, base, "pilot")
+    header_path = tmp_path / "managed_python_native_libs_v4.headers"
+    header_path.write_bytes(
+        b"\n".join(
+            (
+                *REAL_V4_NATIVE_HEADER_LINES,
+                b"# consumer_count=369",
+                b"# row_count=94",
+            )
+        )
+        + b"\n"
+    )
+    assert header_path.read_bytes().splitlines() == [
+        *REAL_V4_NATIVE_HEADER_LINES,
+        b"# consumer_count=369",
+        b"# row_count=94",
+    ]
+
+    header_block_start = script.index("{\n", script.index("native_tab="))
+    header_block_end = script.index(
+        '  while IFS="$native_tab" read -r soname',
+        header_block_start,
+    )
+    command = (
+        "set -euo pipefail\n"
+        + script[header_block_start:header_block_end]
+        + f"}} < {shlex.quote(str(header_path))}\n"
+    )
+    result = subprocess.run(
+        ["/bin/bash", "-c", command],
+        text=True,
+        capture_output=True,
+        env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"},
+    )
+    assert result.returncode == 0, result.stderr
+    assert "RQ014_CLOSURE_GATE_FAIL" not in result.stderr

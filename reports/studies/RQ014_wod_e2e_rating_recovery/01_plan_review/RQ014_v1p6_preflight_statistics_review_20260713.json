@@ -92,15 +92,26 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The five-round W5f-W5j statistics ledger closes B1, B2, B3, and the exhaustive residual-gate sweep with terminal dual NO_BLOCKER."
+    },
+    {
+      "evidence": [
+        "Round 1 reviewed W5l commit 536fcd4e61bc6b079e0b5979dfc52eabbb927aff: its Python-side v4 validator accepted the immutable published native TSV's real-tab columns header and the full real-file audit found no other Python representation mismatch, but both reviewers returned BLOCKED because the emitted v4 shell gate still expected literal <TAB> bytes and would abort after validate-only at native:manifest:header-columns.",
+        "Round 2 reviewed W5m commit 042c638157d067dc6f409dcf46bebbda170d0568: the emitted v4-only columns-header expectation now uses real tab bytes, the published v3 literal-<TAB> contract remains unchanged, and the sweep covered every content-derived stdlib, site-packages, distribution, and native expectation against the staged immutable published files.",
+        "The real-emission regression executes all five native header guards against the exact published header bytes, and the full RQ014 suite passed 301 tests. The terminal statistics and execution-governance reviewers independently returned NO_BLOCKER on the exact deterministic 111-row manifest SHA-256 b392a42d21d70336c1b13c5cb4dde7eeca4cc19f87c8d62b7b15f2c90597bb45, leaving zero unresolved blockers and zero unresolved majors."
+      ],
+      "finding_id": "W5LM-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The two-round W5l-W5m statistics ledger closes the cross-layer v4 header representation defect with consistent Python and emitted-shell validation."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-15T01:26:13Z",
+  "reviewed_at_utc": "2026-07-15T03:56:50Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "d23d4c677b9d966248daec56c91f0ce187f3279703a8fdc6a8b2bae681d624e3",
+  "reviewed_manifest_sha256": "b392a42d21d70336c1b13c5cb4dde7eeca4cc19f87c8d62b7b15f2c90597bb45",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

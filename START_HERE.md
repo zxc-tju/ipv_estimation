@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-14.
+Last reviewed: 2026-07-15.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -258,9 +258,16 @@ question index in `STUDIES.md`.
   a deterministic `RQ014_CLOSURE_GATE_FAIL <stable-identity>` stderr line from every emitted export,
   preflight, and pilot gate (digest, output-root, M3, stdlib, site-packages, and native), captured by Slurm
   with no receipt/DONE;
-  runtime-detected M3 failures write a FAIL receipt with no DONE or numeric cost. Fresh mini-review, Formal
-  G1/final-bundle regeneration, publication/sync, a newly pinned immutable
-  spec, and the explicit PI stop remain required. D3 remains the separate compute-budget gate.
+  runtime-detected M3 failures write a FAIL receipt with no DONE or numeric cost. The W5f-W5j fresh mini-review
+  and Formal G1/final-bundle regeneration completed, and sync v15 plus a newly pinned pilot
+  spec reached validate-only. That validation then failed before submission because the Python v4 native-manifest
+  validator expected literal `<TAB>` tokens while the correctly pinned immutable TSV contains real tab bytes.
+  W5l changes the v4 Python-side expectation and adds a real-format full-closure integration regression. Its
+  follow-up review found the emitted v4 Slurm prelude retained the same literal-token copy; W5m aligns that
+  shell-only expectation with the published real-tab header and executes all five emitted native-header gates
+  against those bytes. Both fixes leave the v3 literal-`<TAB>` contract unchanged; fresh mini-review/G1/bundle
+  publication and the explicit PI stop are still required before another validate-only or submit. D3 remains
+  the separate compute-budget gate.
 - **RQ014 v1.6 contract preflight EXECUTED PASS (receipt-verified 2026-07-14; this supersedes
   earlier preflight-pending statements above).** Exact authority commit `b06a243eea7e1418622f89e5ea80d3da4fe3bc58`,
   Formal G1 `755e6a34…`, final bundle `41ac5280…`, and immutable run spec `72dd4362…` produced run
