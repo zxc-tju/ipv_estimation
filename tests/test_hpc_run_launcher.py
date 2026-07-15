@@ -4,6 +4,7 @@ import copy
 import hashlib
 import json
 import os
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -1527,6 +1528,34 @@ def rq014_sbatch_fixture(base: Path) -> dict[str, object]:
     }
 
 
+def _extract_emitted_closure_guard(script: str, identity: str) -> str:
+    marker = f"RQ014_CLOSURE_GATE_FAIL {identity}"
+    marker_offset = script.index(shlex.quote(marker))
+    guard_start = script.rfind("if ! ", 0, marker_offset)
+    guard_end = script.index("fi\n", marker_offset) + len("fi\n")
+    return script[guard_start:guard_end]
+
+
+def _run_emitted_closure_guard(
+    script: str,
+    identity: str,
+    *,
+    setup: str = "",
+) -> subprocess.CompletedProcess[str]:
+    command = (
+        "set -euo pipefail\n"
+        + setup
+        + _extract_emitted_closure_guard(script, identity)
+        + "exit 0\n"
+    )
+    return subprocess.run(
+        ["/bin/bash", "-c", command],
+        text=True,
+        capture_output=True,
+        env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"},
+    )
+
+
 def test_rq014_sbatch_is_fixed_rating_blind_and_digest_named(tmp_path: Path) -> None:
     base = tmp_path / "sociality_estimation"
     repo = ROOT
@@ -1618,11 +1647,10 @@ def test_emitted_closure_gate_reports_digest_failure_and_stays_silent_on_pass(
     sha256sum.chmod(0o755)
 
     def first_digest_prelude(script: str) -> str:
-        marker = f"RQ014_CLOSURE_GATE_FAIL digest:{sealed_spec}"
-        marker_offset = script.index(marker)
-        guard_start = script.rfind("if ! ", 0, marker_offset)
-        guard_end = script.index("fi\n", marker_offset) + len("fi\n")
-        digest_guard = script[guard_start:guard_end].replace(
+        digest_guard = _extract_emitted_closure_guard(
+            script,
+            f"digest:{sealed_spec}",
+        ).replace(
             launcher.SYSTEM_SHA256SUM,
             str(sha256sum),
         )
@@ -1666,6 +1694,108 @@ def test_emitted_closure_gate_reports_digest_failure_and_stays_silent_on_pass(
         text=True,
         capture_output=True,
         env=environment,
+    )
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_stdlib_gate_reports_missing_root_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    validated = rq014_sbatch_fixture(base)
+    script = render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=run_root / "code",
+        sealed_spec_path=run_root / "manifests" / "run_spec.json",
+    )
+    identity = "stdlib:root:directory"
+    failure = _run_emitted_closure_guard(script, identity)
+    assert failure.returncode != 0
+    assert failure.stderr == f"RQ014_CLOSURE_GATE_FAIL {identity}\n"
+
+    Path(validated["stdlib_root"]).mkdir(parents=True)
+    success = _run_emitted_closure_guard(script, identity)
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_site_packages_gate_reports_symlink_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    site_root = base / "envs" / "ipv-m3-v4" / "lib" / "python3.9" / "site-packages"
+    validated = rq014_sbatch_fixture(base)
+    validated.update(
+        {
+            "site_packages_root": str(site_root),
+            "site_packages_checksum_manifest_path": str(
+                base / "manifests" / "RQ014" / "managed_python_site_packages_v4.sha256"
+            ),
+            "site_packages_checksum_manifest_sha256": "a" * 64,
+            "distribution_manifest_path": str(
+                base / "manifests" / "RQ014" / "managed_python_distributions_v4.json"
+            ),
+            "distribution_manifest_sha256": "b" * 64,
+            "site_packages_regular_file_count": 1,
+            "site_packages_regular_file_total_size_bytes": 1,
+        }
+    )
+    site_root.mkdir(parents=True)
+    target = site_root / "target.py"
+    target.write_bytes(b"x")
+    link = site_root / "linked.py"
+    link.symlink_to(target.name)
+    script = render_rq014_sbatch(
+        validated=validated,
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=run_root / "code",
+        sealed_spec_path=run_root / "manifests" / "run_spec.json",
+    )
+    identity = "site-packages:tree:symlink-absent"
+    failure = _run_emitted_closure_guard(script, identity)
+    assert failure.returncode != 0
+    assert failure.stderr == f"RQ014_CLOSURE_GATE_FAIL {identity}\n"
+
+    link.unlink()
+    success = _run_emitted_closure_guard(script, identity)
+    assert success.returncode == 0
+    assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr
+
+
+def test_emitted_native_gate_reports_header_drift_and_stays_silent_on_pass(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "sociality_estimation"
+    run_root = base / "work_dirs" / "RQ014" / "run1"
+    script = render_rq014_sbatch(
+        validated=rq014_sbatch_fixture(base),
+        base=base,
+        repo=ROOT,
+        run_root=run_root,
+        code=run_root / "code",
+        sealed_spec_path=run_root / "manifests" / "run_spec.json",
+    )
+    identity = "native:manifest:header-version"
+    failure = _run_emitted_closure_guard(
+        script,
+        identity,
+        setup="native_header='# drifted-native-header'\n",
+    )
+    assert failure.returncode != 0
+    assert failure.stderr == f"RQ014_CLOSURE_GATE_FAIL {identity}\n"
+
+    success = _run_emitted_closure_guard(
+        script,
+        identity,
+        setup="native_header='# rq014-managed-python-native-libs-v1'\n",
     )
     assert success.returncode == 0
     assert "RQ014_CLOSURE_GATE_FAIL" not in success.stderr

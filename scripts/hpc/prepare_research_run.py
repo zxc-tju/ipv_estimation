@@ -2782,13 +2782,18 @@ def _rq014_isolated_python_command(
     ]
 
 
-def _shell_closure_gate_guard(condition: str, identity: str) -> str:
+def _shell_closure_gate_guard(
+    condition: str,
+    identity: str,
+    *,
+    indent: str = "",
+) -> str:
     marker = shlex.quote(f"RQ014_CLOSURE_GATE_FAIL {identity}")
     return (
-        f"if ! {condition}; then\n"
-        f"  printf '%s\\n' {marker} >&2\n"
-        "  exit 1\n"
-        "fi\n"
+        f"{indent}if ! {condition}; then\n"
+        f"{indent}  printf '%s\\n' {marker} >&2\n"
+        f"{indent}  exit 1\n"
+        f"{indent}fi\n"
     )
 
 
@@ -2821,13 +2826,36 @@ def _stdlib_shell_checks(validated: dict[str, Any]) -> str:
             validated["stdlib_checksum_manifest_path"],
             validated["stdlib_checksum_manifest_sha256"],
         )
-        + f"test -d {root}\n"
-        + f"test -d {lib_dynload}\n"
-        + f"test ! -e {zip_path}\n"
-        + f"test -z \"$({find_prefix} -type l -print -quit)\"\n"
-        + f"test -z \"$({find_prefix} ! -type d ! -type f -print -quit)\"\n"
-        + f"test \"$({find_prefix} -type f -printf 'x\\n' | {SYSTEM_AWK} {count_program})\" = {validated['stdlib_regular_file_count']}\n"
-        + f"test \"$({find_prefix} -type f -printf '%s\\n' | {SYSTEM_AWK} {size_program})\" = {validated['stdlib_regular_file_total_size_bytes']}\n"
+        + _shell_closure_gate_guard(
+            f"test -d {root}",
+            "stdlib:root:directory",
+        )
+        + _shell_closure_gate_guard(
+            f"test -d {lib_dynload}",
+            "stdlib:lib-dynload:directory",
+        )
+        + _shell_closure_gate_guard(
+            f"test ! -e {zip_path}",
+            "stdlib:python-zip:absent",
+        )
+        + _shell_closure_gate_guard(
+            f'test -z "$({find_prefix} -type l -print -quit)"',
+            "stdlib:tree:symlink-absent",
+        )
+        + _shell_closure_gate_guard(
+            f'test -z "$({find_prefix} ! -type d ! -type f -print -quit)"',
+            "stdlib:tree:regular-types-only",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({find_prefix} -type f -printf \'x\\n\' | {SYSTEM_AWK} {count_program})" '
+            f"= {validated['stdlib_regular_file_count']}",
+            "stdlib:tree:regular-file-count",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({find_prefix} -type f -printf \'%s\\n\' | {SYSTEM_AWK} {size_program})" '
+            f"= {validated['stdlib_regular_file_total_size_bytes']}",
+            "stdlib:tree:regular-file-total-size",
+        )
         + f"(cd / && {SYSTEM_SHA256SUM} --check --strict {checksum_manifest} | {SYSTEM_AWK} {progress_program})\n"
     )
 
@@ -2843,11 +2871,28 @@ def _site_packages_shell_checks(validated: dict[str, Any]) -> str:
     return (
         _shell_digest_check(validated["site_packages_checksum_manifest_path"], validated["site_packages_checksum_manifest_sha256"])
         + _shell_digest_check(validated["distribution_manifest_path"], validated["distribution_manifest_sha256"])
-        + f"test -d {root}\n"
-        + f"test -z \"$({SYSTEM_FIND} {root} -type l -print -quit)\"\n"
-        + f"test -z \"$({SYSTEM_FIND} {root} ! -type d ! -type f -print -quit)\"\n"
-        + f"test \"$({SYSTEM_FIND} {root} -type f -printf 'x\\n' | {SYSTEM_AWK} {count_program})\" = {validated['site_packages_regular_file_count']}\n"
-        + f"test \"$({SYSTEM_FIND} {root} -type f -printf '%s\\n' | {SYSTEM_AWK} {size_program})\" = {validated['site_packages_regular_file_total_size_bytes']}\n"
+        + _shell_closure_gate_guard(
+            f"test -d {root}",
+            "site-packages:root:directory",
+        )
+        + _shell_closure_gate_guard(
+            f'test -z "$({SYSTEM_FIND} {root} -type l -print -quit)"',
+            "site-packages:tree:symlink-absent",
+        )
+        + _shell_closure_gate_guard(
+            f'test -z "$({SYSTEM_FIND} {root} ! -type d ! -type f -print -quit)"',
+            "site-packages:tree:regular-types-only",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_FIND} {root} -type f -printf \'x\\n\' | {SYSTEM_AWK} {count_program})" '
+            f"= {validated['site_packages_regular_file_count']}",
+            "site-packages:tree:regular-file-count",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_FIND} {root} -type f -printf \'%s\\n\' | {SYSTEM_AWK} {size_program})" '
+            f"= {validated['site_packages_regular_file_total_size_bytes']}",
+            "site-packages:tree:regular-file-total-size",
+        )
         + f"(cd / && {SYSTEM_SHA256SUM} --check --strict {checksum} | {SYSTEM_AWK} {progress_program})\n"
     )
 
@@ -2861,15 +2906,51 @@ def _native_library_shell_checks(validated: dict[str, Any]) -> str:
     version = validated.get("native_library_manifest_version", 1)
     if version == 4:
         header_lines = (
-            "  test \"$native_header\" = '# rq014-managed-python-native-libs-v4'\n"
-            "  IFS= read -r native_header\n"
-            "  test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'\n"
-            "  IFS= read -r native_header\n"
-            "  test \"$native_header\" = '# discovery=recursive_ldd_plus_same_directory_then_unique_managed_root_resolution_for_context_dependent_bundled_SONAMEs'\n"
-            "  IFS= read -r native_header\n"
-            f"  test \"$native_header\" = '# consumer_count={validated['native_library_consumer_count']}'\n"
-            "  IFS= read -r native_header\n"
-            f"  test \"$native_header\" = '# row_count={validated['native_library_row_count']}'\n"
+            _shell_closure_gate_guard(
+                "test \"$native_header\" = '# rq014-managed-python-native-libs-v4'",
+                "native:manifest:header-version",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "IFS= read -r native_header",
+                "native:manifest:header-columns-present",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'",
+                "native:manifest:header-columns",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "IFS= read -r native_header",
+                "native:manifest:header-discovery-present",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "test \"$native_header\" = '# discovery=recursive_ldd_plus_same_directory_then_unique_managed_root_resolution_for_context_dependent_bundled_SONAMEs'",
+                "native:manifest:header-discovery",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "IFS= read -r native_header",
+                "native:manifest:header-consumer-count-present",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                f"test \"$native_header\" = '# consumer_count={validated['native_library_consumer_count']}'",
+                "native:manifest:header-consumer-count",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "IFS= read -r native_header",
+                "native:manifest:header-row-count-present",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                f"test \"$native_header\" = '# row_count={validated['native_library_row_count']}'",
+                "native:manifest:header-row-count",
+                indent="  ",
+            )
         )
         unique_setup = "declare -A native_seen=()\nnative_resolved=0\n"
         unique_count = (
@@ -2879,18 +2960,57 @@ def _native_library_shell_checks(validated: dict[str, Any]) -> str:
             "    native_total=$((native_total + size_bytes))\n"
             "  fi\n"
         )
-        unique_assert = f"test \"$native_resolved\" = {validated['native_library_resolved_count']}\n"
+        unique_assert = _shell_closure_gate_guard(
+            f"test \"$native_resolved\" = {validated['native_library_resolved_count']}",
+            "native:summary:resolved-count",
+        )
     else:
         header_lines = (
-            "  test \"$native_header\" = '# rq014-managed-python-native-libs-v1'\n"
-            "  IFS= read -r native_header\n"
-            "  test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'\n"
-            "  IFS= read -r native_header\n"
-            "  test \"$native_header\" = '# discovery=ldd_python3.9_plus_every_regular_lib-dynload_so'\n"
-            "  IFS= read -r native_header\n"
-            f"  test \"$native_header\" = {environment_root_header}\n"
-            "  IFS= read -r native_header\n"
-            f"  test \"$native_header\" = '# row_count={validated['native_library_row_count']}'\n"
+            _shell_closure_gate_guard(
+                "test \"$native_header\" = '# rq014-managed-python-native-libs-v1'",
+                "native:manifest:header-version",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "IFS= read -r native_header",
+                "native:manifest:header-columns-present",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "test \"$native_header\" = '# columns=soname<TAB>loader_path<TAB>link_target_or_dash<TAB>resolved_path<TAB>size_bytes<TAB>sha256'",
+                "native:manifest:header-columns",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "IFS= read -r native_header",
+                "native:manifest:header-discovery-present",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "test \"$native_header\" = '# discovery=ldd_python3.9_plus_every_regular_lib-dynload_so'",
+                "native:manifest:header-discovery",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "IFS= read -r native_header",
+                "native:manifest:header-environment-root-present",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                f"test \"$native_header\" = {environment_root_header}",
+                "native:manifest:header-environment-root",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                "IFS= read -r native_header",
+                "native:manifest:header-row-count-present",
+                indent="  ",
+            )
+            + _shell_closure_gate_guard(
+                f"test \"$native_header\" = '# row_count={validated['native_library_row_count']}'",
+                "native:manifest:header-row-count",
+                indent="  ",
+            )
         )
         unique_setup = ""
         unique_count = "  native_total=$((native_total + size_bytes))\n"
@@ -2906,36 +3026,105 @@ def _native_library_shell_checks(validated: dict[str, Any]) -> str:
         + unique_setup
         + f"native_tab=$({SYSTEM_ENV} -i PATH={MINIMAL_PATH} {SYSTEM_AWK} 'BEGIN {{ printf \"\\t\" }}')\n"
         + "{\n"
-        + "  IFS= read -r native_header\n"
+        + _shell_closure_gate_guard(
+            "IFS= read -r native_header",
+            "native:manifest:header-version-present",
+            indent="  ",
+        )
         + header_lines
         + "  while IFS=\"$native_tab\" read -r soname loader_path link_target resolved_path size_bytes digest extra; do\n"
-        + "  test -n \"$soname\"\n"
-        + "  test -z \"${extra-}\"\n"
+        + _shell_closure_gate_guard(
+            'test -n "$soname"',
+            "native:row:soname-present",
+            indent="  ",
+        )
+        + _shell_closure_gate_guard(
+            'test -z "${extra-}"',
+            "native:row:column-count",
+            indent="  ",
+        )
         + "  if test \"$link_target\" = -; then\n"
-        + "    test ! -L \"$loader_path\"\n"
-        + "    test -f \"$loader_path\"\n"
+        + _shell_closure_gate_guard(
+            'test ! -L "$loader_path"',
+            "native:row:loader-not-symlink",
+            indent="    ",
+        )
+        + _shell_closure_gate_guard(
+            'test -f "$loader_path"',
+            "native:row:loader-regular-file",
+            indent="    ",
+        )
         + "  else\n"
-        + "    test -L \"$loader_path\"\n"
-        + f"    test \"$({SYSTEM_READLINK} \"$loader_path\")\" = \"$link_target\"\n"
+        + _shell_closure_gate_guard(
+            'test -L "$loader_path"',
+            "native:row:loader-symlink",
+            indent="    ",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_READLINK} "$loader_path")" = "$link_target"',
+            "native:row:link-target",
+            indent="    ",
+        )
         + "    case \"$link_target\" in /*) lexical_target=$link_target ;; *) lexical_target=${loader_path%/*}/$link_target ;; esac\n"
-        + "    test ! -L \"$lexical_target\"\n"
-        + "    test -f \"$lexical_target\"\n"
-        + f"    test \"$({SYSTEM_READLINK} -f \"$lexical_target\")\" = \"$({SYSTEM_READLINK} -f \"$resolved_path\")\"\n"
+        + _shell_closure_gate_guard(
+            'test ! -L "$lexical_target"',
+            "native:row:lexical-target-not-symlink",
+            indent="    ",
+        )
+        + _shell_closure_gate_guard(
+            'test -f "$lexical_target"',
+            "native:row:lexical-target-regular-file",
+            indent="    ",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_READLINK} -f "$lexical_target")" = "$({SYSTEM_READLINK} -f "$resolved_path")"',
+            "native:row:lexical-target-resolution",
+            indent="    ",
+        )
         + "    native_symlinks=$((native_symlinks + 1))\n"
         + "  fi\n"
-        + f"  test \"$({SYSTEM_READLINK} -f \"$loader_path\")\" = \"$resolved_path\"\n"
-        + "  test ! -L \"$resolved_path\"\n"
-        + "  test -f \"$resolved_path\"\n"
-        + f"  test \"$({SYSTEM_STAT} -c %s \"$resolved_path\")\" = \"$size_bytes\"\n"
-        + f"  test \"$({SYSTEM_SHA256SUM} \"$resolved_path\" | {SYSTEM_AWK} '{{print $1}}')\" = \"$digest\"\n"
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_READLINK} -f "$loader_path")" = "$resolved_path"',
+            "native:row:loader-resolution",
+            indent="  ",
+        )
+        + _shell_closure_gate_guard(
+            'test ! -L "$resolved_path"',
+            "native:row:resolved-not-symlink",
+            indent="  ",
+        )
+        + _shell_closure_gate_guard(
+            'test -f "$resolved_path"',
+            "native:row:resolved-regular-file",
+            indent="  ",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_STAT} -c %s "$resolved_path")" = "$size_bytes"',
+            "native:row:resolved-size",
+            indent="  ",
+        )
+        + _shell_closure_gate_guard(
+            f'test "$({SYSTEM_SHA256SUM} "$resolved_path" | {SYSTEM_AWK} \'{{print $1}}\')" = "$digest"',
+            "native:row:resolved-sha256",
+            indent="  ",
+        )
         + "  native_rows=$((native_rows + 1))\n"
         + unique_count
         + "  done\n"
         + f"}} < {manifest}\n"
-        + f"test \"$native_rows\" = {validated['native_library_row_count']}\n"
-        + f"test \"$native_symlinks\" = {validated['native_library_symlink_row_count']}\n"
+        + _shell_closure_gate_guard(
+            f"test \"$native_rows\" = {validated['native_library_row_count']}",
+            "native:summary:row-count",
+        )
+        + _shell_closure_gate_guard(
+            f"test \"$native_symlinks\" = {validated['native_library_symlink_row_count']}",
+            "native:summary:symlink-row-count",
+        )
         + unique_assert
-        + f"test \"$native_total\" = {validated['native_library_total_size_bytes']}\n"
+        + _shell_closure_gate_guard(
+            f"test \"$native_total\" = {validated['native_library_total_size_bytes']}",
+            "native:summary:total-size",
+        )
     )
 
 

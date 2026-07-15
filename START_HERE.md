@@ -255,7 +255,8 @@ question index in `STUDIES.md`.
   contract correctly carried 14 keys. W5f repairs that authority wiring with a real-contract end-to-end regression.
   W5g clarifies that preflight is the verification-only operation, while the pilot spec still requires M3 and its
   job prelude reverifies the scorer before v4 deserialization. A pre-runtime closure mismatch exits non-zero with
-  a deterministic `RQ014_CLOSURE_GATE_FAIL <stable-identity>` stderr line captured by Slurm and no receipt/DONE;
+  a deterministic `RQ014_CLOSURE_GATE_FAIL <stable-identity>` stderr line from every digest, stdlib,
+  site-packages, and native closure test, captured by Slurm with no receipt/DONE;
   runtime-detected M3 failures write a FAIL receipt with no DONE or numeric cost. Fresh mini-review, Formal
   G1/final-bundle regeneration, publication/sync, a newly pinned immutable
   spec, and the explicit PI stop remain required. D3 remains the separate compute-budget gate.
