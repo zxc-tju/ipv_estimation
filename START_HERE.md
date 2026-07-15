@@ -265,9 +265,16 @@ question index in `STUDIES.md`.
   W5l changes the v4 Python-side expectation and adds a real-format full-closure integration regression. Its
   follow-up review found the emitted v4 Slurm prelude retained the same literal-token copy; W5m aligns that
   shell-only expectation with the published real-tab header and executes all five emitted native-header gates
-  against those bytes. Both fixes leave the v3 literal-`<TAB>` contract unchanged; fresh mini-review/G1/bundle
-  publication and the explicit PI stop are still required before another validate-only or submit. D3 remains
-  the separate compute-budget gate.
+  against those bytes. Both fixes leave the v3 literal-`<TAB>` contract unchanged. W5n then completed fresh
+  dual review, Formal G1, final-bundle regeneration, and publication through sync v16. Re-anchored pilot job
+  `1929952` reached runtime with source loading and M3 model loading both PASS, but both selected cells failed
+  window assembly because the pilot harness required exact float equality at observed-support endpoints that
+  differ by exactly `1.7763568394002505e-15 s`: target `3.5` is about four binary64 ULPs above stored
+  `3.4999999999999982`, and target `-4.9` is about two ULPs below stored `-4.899999999999999`. W5o mirrors
+  the frozen preflight resampler's bounded `1e-12` endpoint-equivalence tolerance; this is not characterized
+  as zero extrapolation. Frozen science and the `>2*dt` gap exclusion are unchanged. Fresh dual review, Formal
+  G1/final-bundle regeneration, sync, a new immutable spec, and the explicit PI stop remain required before
+  rerun; D3 remains the separate compute-budget gate.
 - **RQ014 v1.6 contract preflight EXECUTED PASS (receipt-verified 2026-07-14; this supersedes
   earlier preflight-pending statements above).** Exact authority commit `b06a243eea7e1418622f89e5ea80d3da4fe3bc58`,
   Formal G1 `755e6a34…`, final bundle `41ac5280…`, and immutable run spec `72dd4362…` produced run

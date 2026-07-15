@@ -20,6 +20,7 @@ from scripts.rq014.run_resource_pilot import (
     _assemble_windows,
     _derive_state,
     _grid_tick_points,
+    _interpolate,
     canonical_json_bytes,
     run_resource_pilot,
     select_resource_pilot_cells,
@@ -414,6 +415,77 @@ def test_r04n_counterpart_native_10hz_interpolates_only_within_support() -> None
         1: (0.25, 0.5, -0.25),
         2: (0.5, 1.0, -0.5),
     }
+
+
+def test_interpolate_enforces_bounded_endpoint_equivalence_and_gap_fail_closed() -> None:
+    """Freeze the inclusive preflight-equivalent 1e-12 boundary at both edges.
+
+    Both job targets are 1.7763568394002505e-15 s outside observed support:
+    four binary64 ULPs at 3.5 and two binary64 ULPs at magnitude 4.9.
+    """
+    light_last = 3.4999999999999982
+    heavy_first = -4.899999999999999
+    assert light_last.hex() == "0x1.bfffffffffffcp+1"
+    assert heavy_first.hex() == "-0x1.3999999999998p+2"
+    real_endpoint_delta = 1.7763568394002505e-15
+    assert 3.5 - light_last == real_endpoint_delta == 4 * math.ulp(3.5)
+    assert heavy_first - (-4.9) == real_endpoint_delta == 2 * math.ulp(4.9)
+
+    light = _grid_tick_points(
+        [(-3.0999999999999996, -3.1, 1.0), (light_last, 3.5, 2.0)],
+        4,
+        interpolate_to_grid=True,
+    )
+    assert light[14] == (3.5, 3.5, 2.0)
+
+    heavy = _grid_tick_points(
+        [(heavy_first, -4.9, 1.0), (1.5, 1.5, 2.0)],
+        10,
+        interpolate_to_grid=True,
+    )
+    assert heavy[-49] == (-4.9, -4.9, 1.0)
+
+    tolerance = 1e-12
+    outside_delta = math.nextafter(tolerance, math.inf)
+    assert tolerance < outside_delta
+
+    lower_edge = [(0.0, 10.0, 20.0), (1.0, 11.0, 21.0)]
+    lower_endpoint = lower_edge[0][0]
+    lower_inclusive_target = lower_endpoint - tolerance
+    lower_exclusive_target = lower_endpoint - outside_delta
+    assert abs(lower_inclusive_target - lower_endpoint) == tolerance
+    assert abs(lower_exclusive_target - lower_endpoint) == outside_delta
+    assert _interpolate(lower_edge, lower_inclusive_target) == (
+        lower_inclusive_target,
+        10.0,
+        20.0,
+    )
+    with pytest.raises(PilotError, match="leaves observed support"):
+        _interpolate(lower_edge, lower_exclusive_target)
+
+    upper_edge = [(-1.0, 29.0, 39.0), (0.0, 30.0, 40.0)]
+    upper_endpoint = upper_edge[-1][0]
+    upper_inclusive_target = upper_endpoint + tolerance
+    upper_exclusive_target = upper_endpoint + outside_delta
+    assert abs(upper_inclusive_target - upper_endpoint) == tolerance
+    assert abs(upper_exclusive_target - upper_endpoint) == outside_delta
+    assert _interpolate(upper_edge, upper_inclusive_target) == (
+        upper_inclusive_target,
+        30.0,
+        40.0,
+    )
+    with pytest.raises(PilotError, match="leaves observed support"):
+        _interpolate(upper_edge, upper_exclusive_target)
+
+    with pytest.raises(PilotError, match="leaves observed support"):
+        _interpolate([(0.0, 0.0, 0.0), (light_last, 3.5, 2.0)], light_last + 0.01)
+
+    with pytest.raises(SourceGapError, match=r"exceeds the frozen 2\*dt limit"):
+        _interpolate(
+            [(0.0, 0.0, 0.0), (math.nextafter(0.5, math.inf), 1.0, 2.0)],
+            0.25,
+            maximum_source_gap_s=0.5,
+        )
 
 
 def test_r04n_counterpart_two_dt_gap_boundary_is_bit_exact_and_fail_closed() -> None:

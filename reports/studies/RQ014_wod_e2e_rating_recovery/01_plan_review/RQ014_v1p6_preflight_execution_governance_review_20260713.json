@@ -103,15 +103,27 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The two-round W5l-W5m execution ledger closes the emitted-shell cross-layer copy and preserves a coherent fail-closed v4 launch chain."
+    },
+    {
+      "evidence": [
+        "Round 1 reviewed W5o commit baed9234b4a266f07ff2a1e6a605584a24cced8d: the change was confined to the resource-pilot measurement harness, mirrored the frozen preflight endpoint convention, retained fail-closed handling for genuine out-of-support targets and source gaps, and left launcher, wrapper, preflight, materializer, exporter, and frozen-science bytes unchanged; execution governance returned NO_BLOCKER.",
+        "Round 2 reviewed W5o-b commit b261d209ea924178dd6955aa7bf41e4e82d4f738: only operating-record characterization and the pilot regression changed, scripts/rq014/run_resource_pilot.py remained SHA-256 6e1dd0e23fe6a70542609c0dfd7f13e46f3f2641b78c0bcdb81248e9c6ff1231, and execution governance again returned NO_BLOCKER while statistics retained its exact-boundary test residue.",
+        "Round 3 reviewed W5o-c commit 538dc97e9a6bc65e4d4263a8c26b90a562f47a0c: exact inclusive 1e-12 acceptance and immediately-above-tolerance rejection are now asserted at both bisect edges without changing production logic; the full RQ014 suite passed 302 tests and execution governance remained NO_BLOCKER.",
+        "The terminal distinct statistics and execution-governance reviewers both returned NO_BLOCKER on the exact deterministic 111-row manifest SHA-256 40c04a2b690112d49f6ced674a421277f20f3ce0f6a286c28bfe186532431e5f, with zero unresolved blockers or majors and no HPC or rating access."
+      ],
+      "finding_id": "W5O-E-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Execution governance remained NO_BLOCKER across W5o's three rounds while the statistics-only endpoint-tolerance characterization and boundary regression were closed."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-15T03:56:51Z",
+  "reviewed_at_utc": "2026-07-15T15:16:30Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "b392a42d21d70336c1b13c5cb4dde7eeca4cc19f87c8d62b7b15f2c90597bb45",
+  "reviewed_manifest_sha256": "40c04a2b690112d49f6ced674a421277f20f3ce0f6a286c28bfe186532431e5f",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

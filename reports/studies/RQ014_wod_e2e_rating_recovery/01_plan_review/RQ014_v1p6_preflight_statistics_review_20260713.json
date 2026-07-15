@@ -103,15 +103,27 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The two-round W5l-W5m statistics ledger closes the cross-layer v4 header representation defect with consistent Python and emitted-shell validation."
+    },
+    {
+      "evidence": [
+        "Round 1 reviewed W5o commit baed9234b4a266f07ff2a1e6a605584a24cced8d and deterministic 111-row manifest SHA-256 9b4df3f65c9afad1aa39cba9048dd9af128fd55b7eeb68f80c657eef7b5a106f: the harness-only interpolation fix correctly mirrored the frozen preflight resampler's 1e-12 absolute endpoint tolerance, but statistics raised S1 because the one-ULP and no-extrapolation characterization was inaccurate and the regression did not freeze the tolerance boundary; execution governance returned NO_BLOCKER.",
+        "Round 2 reviewed W5o-b commit b261d209ea924178dd6955aa7bf41e4e82d4f738 and deterministic 111-row manifest SHA-256 26d187cb99ead5a56cd6dd3288c1f70b0011b01c16c05611d518ca17b4affbea: the record now states the exact 1.7763568394002505e-15-second deviations, approximately four binary64 ULPs at 3.5 and two at magnitude 4.9, as bounded endpoint equivalence; statistics retained only the residual that acceptance at 9e-13 did not pin the exact inclusive 1e-12 constant, while execution governance again returned NO_BLOCKER.",
+        "Round 3 reviewed W5o-c commit 538dc97e9a6bc65e4d4263a8c26b90a562f47a0c: the regression proves exact float deviations of 1e-12 are accepted and math.nextafter(1e-12, math.inf) is rejected at both index==0 and index==len, while the two real endpoint cases, far-support rejection, and greater-than-2*dt SourceGapError remain covered; production pilot logic remains SHA-256 6e1dd0e23fe6a70542609c0dfd7f13e46f3f2641b78c0bcdb81248e9c6ff1231.",
+        "Terminal round-3 statistics and execution-governance reviews independently returned NO_BLOCKER on the exact deterministic 111-row manifest SHA-256 40c04a2b690112d49f6ced674a421277f20f3ce0f6a286c28bfe186532431e5f, leaving zero unresolved blockers and zero unresolved majors."
+      ],
+      "finding_id": "W5O-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The three-round W5o statistics ledger closes S1 by pinning the mirrored 1e-12 endpoint-equivalence tolerance exactly and inclusively at both bisect edges."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-15T03:56:50Z",
+  "reviewed_at_utc": "2026-07-15T15:16:29Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "b392a42d21d70336c1b13c5cb4dde7eeca4cc19f87c8d62b7b15f2c90597bb45",
+  "reviewed_manifest_sha256": "40c04a2b690112d49f6ced674a421277f20f3ce0f6a286c28bfe186532431e5f",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
