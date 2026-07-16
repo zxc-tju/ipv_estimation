@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/rq014-g2r-predictor-manifest-row-v1.json",
+  "title": "RQ014 G2R predictor-manifest JSONL row",
+  "type": "object",
+  "additionalProperties": false,
+  "x-rq014-stored-key-order": "CPYTHON_3P9_SORT_KEYS_TRUE",
+  "x-rq014-logical-key-order": [
+    "schema_version",
+    "cell_index",
+    "cell_id",
+    "sampling_id",
+    "temporal_id",
+    "horizon_id",
+    "readout_id",
+    "registered_scene_count",
+    "registered_candidate_slot_count",
+    "terminal_candidate_slot_count",
+    "available_candidate_slot_count",
+    "all_three_available_scene_count",
+    "finite_nonconstant_scene_count",
+    "cell_terminal_status",
+    "cell_fatal_upstream_status_or_NA",
+    "reason_code",
+    "anchor_score_row_count",
+    "anchor_score_slice_sha256",
+    "feature_bank_row_count",
+    "feature_bank_slice_sha256",
+    "availability_mask_row_count",
+    "availability_mask_slice_sha256"
+  ],
+  "required": [
+    "schema_version", "cell_index", "cell_id", "sampling_id", "temporal_id",
+    "horizon_id", "readout_id", "registered_scene_count",
+    "registered_candidate_slot_count", "terminal_candidate_slot_count",
+    "available_candidate_slot_count", "all_three_available_scene_count",
+    "finite_nonconstant_scene_count", "cell_terminal_status",
+    "cell_fatal_upstream_status_or_NA", "reason_code",
+    "anchor_score_row_count", "anchor_score_slice_sha256",
+    "feature_bank_row_count", "feature_bank_slice_sha256",
+    "availability_mask_row_count", "availability_mask_slice_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "rq014-g2r-predictor-manifest-row-v1"},
+    "cell_index": {"type": "integer", "minimum": 0, "maximum": 319},
+    "cell_id": {"$ref": "#/$defs/cellId"},
+    "sampling_id": {"enum": ["R04N", "R10L"]},
+    "temporal_id": {"enum": ["CH-W10", "CH-W25", "LF-W10", "LF-W25", "HF-W10", "HF-W25", "TP", "TF"]},
+    "horizon_id": {"enum": ["H20", "HFEAS"]},
+    "readout_id": {"enum": ["NEX_MEAN", "NEX_MAX", "NEX_LAST", "NEX_FOUT", "NMD_MEAN", "NMD_MAX", "NMD_LAST", "AMD_MEAN", "AMD_MAX", "AMD_LAST"]},
+    "registered_scene_count": {"const": 479},
+    "registered_candidate_slot_count": {"const": 1437},
+    "terminal_candidate_slot_count": {"type": "integer", "minimum": 0, "maximum": 1437},
+    "available_candidate_slot_count": {"type": "integer", "minimum": 0, "maximum": 1437},
+    "all_three_available_scene_count": {"type": "integer", "minimum": 0, "maximum": 479},
+    "finite_nonconstant_scene_count": {"type": "integer", "minimum": 0, "maximum": 479},
+    "cell_terminal_status": {"enum": ["TERMINAL", "CELL_FATAL"]},
+    "cell_fatal_upstream_status_or_NA": {
+      "oneOf": [
+        {"enum": ["AUTHORITY_HASH_DRIFT", "SCHEMA_DRIFT", "M3_ARTIFACT_MISMATCH", "FATAL_ANCHOR_DOMAIN_INTEGRITY_ERROR", "FATAL_STATUS_ROLLUP_ERROR", "FATAL_CANDIDATE_ID_OR_FUTURE_LEAKAGE", "OUTPUT_INTEGRITY_FAILURE"]},
+        {"const": "NA"}
+      ]
+    },
+    "reason_code": {
+      "enum": [
+        "F_AVAILABLE_CONTINUE",
+        "F_SAFE_PRIMITIVE_OR_FIXTURE_GATE",
+        "F_MISSING_COUNTERPART_IDENTITY",
+        "F_AMBIGUOUS_COUNTERPART_IDENTITY",
+        "F_MISSING_WOD_PATH_TYPE",
+        "F_AMBIGUOUS_WOD_PATH_TYPE",
+        "F_UNRECOGNIZED_PATH_TYPE",
+        "F_DRIFTED_COUNTERPART_IDENTITY",
+        "F_COUNTERPART_NOT_VEHICLE",
+        "F_TIMELINE_SUPPORT",
+        "F_TIMELINE_SOURCE_GAP",
+        "F_TIMELINE_GRID_PHASE",
+        "F_TIMELINE_SEAM",
+        "F_STATE_NONFINITE",
+        "F_UNDEFINED_HEADING",
+        "F_IPV_NUMERICAL",
+        "F_INELIGIBLE_REFERENCE",
+        "F_M3_SCORING_NUMERICAL_FAILURE",
+        "G2R_FATAL_AUTHORITY_HASH_DRIFT",
+        "G2R_FATAL_SCHEMA_DRIFT",
+        "G2R_FATAL_M3_ARTIFACT_MISMATCH",
+        "G2R_FATAL_ANCHOR_DOMAIN_INTEGRITY",
+        "G2R_FATAL_STATUS_ROLLUP",
+        "G2R_FATAL_CANDIDATE_OR_FUTURE_LEAKAGE",
+        "G2R_FATAL_OUTPUT_INTEGRITY"
+      ]
+    },
+    "anchor_score_row_count": {"type": "integer", "minimum": 0},
+    "anchor_score_slice_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "feature_bank_row_count": {"const": 1437},
+    "feature_bank_slice_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "availability_mask_row_count": {"const": 479},
+    "availability_mask_slice_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"cell_terminal_status": {"const": "TERMINAL"}}},
+      "then": {
+        "properties": {
+          "cell_fatal_upstream_status_or_NA": {"const": "NA"},
+          "reason_code": {
+            "enum": [
+              "F_AVAILABLE_CONTINUE", "F_SAFE_PRIMITIVE_OR_FIXTURE_GATE",
+              "F_MISSING_COUNTERPART_IDENTITY", "F_AMBIGUOUS_COUNTERPART_IDENTITY",
+              "F_MISSING_WOD_PATH_TYPE", "F_AMBIGUOUS_WOD_PATH_TYPE",
+              "F_UNRECOGNIZED_PATH_TYPE", "F_DRIFTED_COUNTERPART_IDENTITY",
+              "F_COUNTERPART_NOT_VEHICLE", "F_TIMELINE_SUPPORT",
+              "F_TIMELINE_SOURCE_GAP", "F_TIMELINE_GRID_PHASE",
+              "F_TIMELINE_SEAM", "F_STATE_NONFINITE", "F_UNDEFINED_HEADING",
+              "F_IPV_NUMERICAL", "F_INELIGIBLE_REFERENCE",
+              "F_M3_SCORING_NUMERICAL_FAILURE"
+            ]
+          }
+        }
+      },
+      "else": {
+        "oneOf": [
+          {"properties": {"cell_fatal_upstream_status_or_NA": {"const": "AUTHORITY_HASH_DRIFT"}, "reason_code": {"const": "G2R_FATAL_AUTHORITY_HASH_DRIFT"}}},
+          {"properties": {"cell_fatal_upstream_status_or_NA": {"const": "SCHEMA_DRIFT"}, "reason_code": {"const": "G2R_FATAL_SCHEMA_DRIFT"}}},
+          {"properties": {"cell_fatal_upstream_status_or_NA": {"const": "M3_ARTIFACT_MISMATCH"}, "reason_code": {"const": "G2R_FATAL_M3_ARTIFACT_MISMATCH"}}},
+          {"properties": {"cell_fatal_upstream_status_or_NA": {"const": "FATAL_ANCHOR_DOMAIN_INTEGRITY_ERROR"}, "reason_code": {"const": "G2R_FATAL_ANCHOR_DOMAIN_INTEGRITY"}}},
+          {"properties": {"cell_fatal_upstream_status_or_NA": {"const": "FATAL_STATUS_ROLLUP_ERROR"}, "reason_code": {"const": "G2R_FATAL_STATUS_ROLLUP"}}},
+          {"properties": {"cell_fatal_upstream_status_or_NA": {"const": "FATAL_CANDIDATE_ID_OR_FUTURE_LEAKAGE"}, "reason_code": {"const": "G2R_FATAL_CANDIDATE_OR_FUTURE_LEAKAGE"}}},
+          {"properties": {"cell_fatal_upstream_status_or_NA": {"const": "OUTPUT_INTEGRITY_FAILURE"}, "reason_code": {"const": "G2R_FATAL_OUTPUT_INTEGRITY"}}}
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "cellId": {"type": "string", "pattern": "^RR3-(R04N|R10L)-(CH-W10|CH-W25|LF-W10|LF-W25|HF-W10|HF-W25|TP|TF)-(H20|HFEAS)-(NEX_MEAN|NEX_MAX|NEX_LAST|NEX_FOUT|NMD_MEAN|NMD_MAX|NMD_LAST|AMD_MEAN|AMD_MAX|AMD_LAST)$"}
+  }
+}

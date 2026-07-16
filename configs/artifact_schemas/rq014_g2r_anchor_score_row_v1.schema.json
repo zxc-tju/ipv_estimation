@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/rq014-g2r-anchor-score-row-v1.json",
+  "title": "RQ014 G2R anchor-score JSONL row",
+  "type": "object",
+  "additionalProperties": false,
+  "x-rq014-stored-key-order": "CPYTHON_3P9_SORT_KEYS_TRUE",
+  "x-rq014-logical-key-order": [
+    "schema_version",
+    "segment_id",
+    "feature_index",
+    "feature_id",
+    "sampling_id",
+    "temporal_id",
+    "horizon_id",
+    "tau_tick",
+    "candidate_ordinal",
+    "candidate_id",
+    "path_type",
+    "candidate_ipv",
+    "m3_q_0p5",
+    "m3_lo_90",
+    "m3_hi_90",
+    "support_gate_pass",
+    "ood_abstain",
+    "nex",
+    "nmd",
+    "amd",
+    "m3_input_row_sha256_or_NA",
+    "upstream_status",
+    "reason_code"
+  ],
+  "required": [
+    "schema_version",
+    "segment_id",
+    "feature_index",
+    "feature_id",
+    "sampling_id",
+    "temporal_id",
+    "horizon_id",
+    "tau_tick",
+    "candidate_ordinal",
+    "candidate_id",
+    "path_type",
+    "candidate_ipv",
+    "m3_q_0p5",
+    "m3_lo_90",
+    "m3_hi_90",
+    "support_gate_pass",
+    "ood_abstain",
+    "nex",
+    "nmd",
+    "amd",
+    "m3_input_row_sha256_or_NA",
+    "upstream_status",
+    "reason_code"
+  ],
+  "properties": {
+    "schema_version": {"const": "rq014-g2r-anchor-score-row-v1"},
+    "segment_id": {"type": "string", "minLength": 1},
+    "feature_index": {"type": "integer", "minimum": 0, "maximum": 15},
+    "feature_id": {"$ref": "#/$defs/featureId"},
+    "sampling_id": {"$ref": "#/$defs/samplingId"},
+    "temporal_id": {"$ref": "#/$defs/temporalId"},
+    "horizon_id": {"$ref": "#/$defs/horizonId"},
+    "tau_tick": {"type": "integer", "minimum": 0},
+    "candidate_ordinal": {"enum": [1, 2, 3]},
+    "candidate_id": {"enum": ["C1", "C2", "C3"]},
+    "path_type": {"enum": ["CP", "HO", "MP", "F"]},
+    "candidate_ipv": {"$ref": "#/$defs/typedValue"},
+    "m3_q_0p5": {"$ref": "#/$defs/typedValue"},
+    "m3_lo_90": {"$ref": "#/$defs/typedValue"},
+    "m3_hi_90": {"$ref": "#/$defs/typedValue"},
+    "support_gate_pass": {"oneOf": [{"type": "boolean"}, {"const": "NA"}]},
+    "ood_abstain": {"oneOf": [{"type": "boolean"}, {"const": "NA"}]},
+    "nex": {"$ref": "#/$defs/typedValue"},
+    "nmd": {"$ref": "#/$defs/typedValue"},
+    "amd": {"$ref": "#/$defs/typedValue"},
+    "m3_input_row_sha256_or_NA": {
+      "oneOf": [
+        {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        {"const": "NA"}
+      ]
+    },
+    "upstream_status": {"$ref": "#/$defs/upstreamStatus"},
+    "reason_code": {"$ref": "#/$defs/reasonCode"}
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        {"properties": {"candidate_ordinal": {"const": 1}, "candidate_id": {"const": "C1"}}},
+        {"properties": {"candidate_ordinal": {"const": 2}, "candidate_id": {"const": "C2"}}},
+        {"properties": {"candidate_ordinal": {"const": 3}, "candidate_id": {"const": "C3"}}}
+      ]
+    }
+  ],
+  "$defs": {
+    "samplingId": {"enum": ["R04N", "R10L"]},
+    "temporalId": {"enum": ["CH-W10", "CH-W25", "LF-W10", "LF-W25", "HF-W10", "HF-W25", "TP", "TF"]},
+    "horizonId": {"enum": ["H20", "HFEAS"]},
+    "featureId": {"type": "string", "pattern": "^F-(R04N|R10L)-(CH-W10|CH-W25|LF-W10|LF-W25|HF-W10|HF-W25|TP|TF)$"},
+    "reasonCode": {
+      "enum": [
+        "F_AVAILABLE_CONTINUE",
+        "F_SAFE_PRIMITIVE_OR_FIXTURE_GATE",
+        "F_MISSING_COUNTERPART_IDENTITY",
+        "F_AMBIGUOUS_COUNTERPART_IDENTITY",
+        "F_MISSING_WOD_PATH_TYPE",
+        "F_AMBIGUOUS_WOD_PATH_TYPE",
+        "F_UNRECOGNIZED_PATH_TYPE",
+        "F_DRIFTED_COUNTERPART_IDENTITY",
+        "F_COUNTERPART_NOT_VEHICLE",
+        "F_TIMELINE_SUPPORT",
+        "F_TIMELINE_SOURCE_GAP",
+        "F_TIMELINE_GRID_PHASE",
+        "F_TIMELINE_SEAM",
+        "F_STATE_NONFINITE",
+        "F_UNDEFINED_HEADING",
+        "F_IPV_NUMERICAL",
+        "F_INELIGIBLE_REFERENCE",
+        "F_M3_SCORING_NUMERICAL_FAILURE"
+      ]
+    },
+    "upstreamStatus": {
+      "enum": [
+        "AVAILABLE",
+        "INELIGIBLE_BLIND",
+        "MISSING_COUNTERPART_IDENTITY",
+        "AMBIGUOUS_COUNTERPART_IDENTITY",
+        "MISSING_WOD_PATH_TYPE",
+        "AMBIGUOUS_WOD_PATH_TYPE",
+        "UNRECOGNIZED_PATH_TYPE",
+        "DRIFTED_COUNTERPART_IDENTITY",
+        "INELIGIBLE_COUNTERPART_CLASS",
+        "INELIGIBLE_TIMELINE_SUPPORT",
+        "INELIGIBLE_TIMELINE_SOURCE_GAP",
+        "INELIGIBLE_TIMELINE_GRID_PHASE",
+        "INELIGIBLE_TIMELINE_SEAM",
+        "INELIGIBLE_STATE_NONFINITE",
+        "INELIGIBLE_UNDEFINED_HEADING",
+        "INELIGIBLE_IPV_NUMERICAL",
+        "INELIGIBLE_REFERENCE",
+        "M3_SCORING_NUMERICAL_FAILURE"
+      ]
+    },
+    "typedValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {"const": "FINITE_FLOAT"},
+            "value": {"type": "number"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "reason_code"],
+          "properties": {
+            "kind": {"const": "NA"},
+            "reason_code": {"$ref": "#/$defs/reasonCode"}
+          }
+        }
+      ]
+    }
+  }
+}
