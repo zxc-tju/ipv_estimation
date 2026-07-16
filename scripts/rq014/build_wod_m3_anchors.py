@@ -19,18 +19,14 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 import numpy as np
+import pandas as pd
 
 from scripts.rq014.wod_ipv_adapter import configure_ipv_estimator_timing
 from scripts.rq014.wod_ipv_preprocessing import state_sequence_from_window_xy
 from scripts.rq014.wod_reference_builder import build_ego_route_reference
 from sociality_estimation.core.ipv_estimation import MotionSequence, estimate_ipv_pair
-from sociality_estimation.verifier.features import (
-    apet_constant_velocity_proxy,
-    closing_ttc,
-    relative_state,
-    theil_sen_slope,
-    wrap_angle,
-)
+from sociality_estimation.verifier.anchors import build_m3_anchor_features
+from sociality_estimation.verifier.features import wrap_angle
 
 
 M3_INPUT_COLUMNS = (
@@ -95,10 +91,47 @@ TEMPORAL_FAMILY_IDS = (
 )
 ALIGNMENT_PRIMARY = "anchor_at_tau_history_only"
 ALIGNMENT_SENSITIVITY = "terminal_minus_6_rows"
+G2R_OUTPUT_CONTRACT_PATH = Path("reports/plans/RQ014_g2r_output_contract_v1.json")
+G2R_OUTPUT_CONTRACT_SHA256 = (
+    "87d16ff3073e74dba363badf6f78c573d49538da47edc693144f3973ce171b1a"
+)
+NC_FIXTURE_IDS = (
+    "NC_HISTORY_BRANCH_R04N_W10",
+    "NC_HISTORY_BRANCH_R04N_W25",
+    "NC_HISTORY_BRANCH_R10L_W10",
+    "NC_HISTORY_BRANCH_R10L_W25",
+    "NC_HISTORY_FUTURE_PERTURBATION",
+)
+_CATEGORY_ALLOWED_VALUES = {
+    "geometry_path_category": frozenset({"F", "CP", "MP"}),
+    "geometry_path_relation": frozenset({"F", "O-C", "C-C", "P-M", "P-P"}),
+    "turn_pair_label": frozenset(
+        f"{ego}-{counterpart}" for ego in ("L", "S", "R") for counterpart in ("L", "S", "R")
+    ),
+    "agent_type_pair": frozenset({"HV;HV"}),
+    "vehicle_type_list": frozenset({"['HV', 'HV']"}),
+    "av_included": frozenset({"all_HV"}),
+    "priority_role": frozenset({"equal", "yield", "priority"}),
+}
 
 
 class WodM3KernelError(ValueError):
     """Fail-closed construction error in the rating-blind W2 kernel."""
+
+
+class M3ScoringNumericalFailure(WodM3KernelError):
+    """Typed A09/A10 terminal status for nonfinite M3 construction inputs."""
+
+    status = "M3_SCORING_NUMERICAL_FAILURE"
+    reason_code = "F_M3_SCORING_NUMERICAL_FAILURE"
+
+
+def sha256_file(path: Path) -> str:
+    """Hash one regular file after rejecting symlink substitution."""
+
+    if path.is_symlink() or not path.is_file():
+        raise WodM3KernelError(f"regular file required: {path}")
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def normalize_signed_zero(value: Any) -> Any:
@@ -244,7 +277,12 @@ def _history_matrix(history_rows: Sequence[Sequence[Any] | Mapping[str, Any]]) -
     matrix = np.asarray(rows, dtype=float)
     if matrix.ndim != 2 or matrix.shape[1] != len(HISTORY_COLUMNS) or len(matrix) < 4:
         raise WodM3KernelError("at least four standardized history rows are required")
-    if not np.all(np.isfinite(matrix)):
+    finite = np.isfinite(matrix)
+    if not np.all(finite[:, 11:13]):
+        raise M3ScoringNumericalFailure(
+            "nonfinite counterpart IPV/error in frozen trailing M3 context"
+        )
+    if not np.all(finite):
         raise WodM3KernelError("standardized history contains nonfinite values")
     order = np.argsort(matrix[:, 0], kind="stable")
     matrix = matrix[order]
@@ -311,6 +349,22 @@ def derive_categories(
     }
 
 
+def build_scene_focal_reference(
+    scene_history_xy: Sequence[Sequence[float]], *, route_intent: str
+) -> np.ndarray:
+    """Build the sole scene-level focal reference shared byte-for-byte by C1-C3."""
+
+    xy = np.asarray(scene_history_xy, dtype=float)
+    if xy.ndim != 2 or xy.shape[1] != 2 or len(xy) < 2 or not np.all(np.isfinite(xy)):
+        raise WodM3KernelError("scene focal history must be finite n-by-2")
+    return build_ego_route_reference(
+        {
+            "intent_name": route_intent,
+            "past_states": {"pos_x": xy[:, 0].tolist(), "pos_y": xy[:, 1].tolist()},
+        }
+    )
+
+
 def build_m3_input_row_from_history(
     history_rows: Sequence[Sequence[Any] | Mapping[str, Any]],
     categories: Mapping[str, Any],
@@ -319,44 +373,33 @@ def build_m3_input_row_from_history(
 ) -> dict[str, Any]:
     """Build the exact 32-field D8 row from standardized causal history."""
 
-    missing = [name for name in CATEGORY_COLUMNS if name not in categories]
-    if missing:
-        raise WodM3KernelError(f"missing category fields: {missing}")
+    if set(categories) != set(CATEGORY_COLUMNS):
+        raise WodM3KernelError("M3 categories require the exact seven frozen keys")
+    for name in CATEGORY_COLUMNS:
+        value = categories[name]
+        if not isinstance(value, str) or value not in _CATEGORY_ALLOWED_VALUES[name]:
+            raise WodM3KernelError(f"invalid frozen category token for {name}: {value!r}")
     history = _history_matrix(history_rows)
-    anchor = history[-1]
-    relative = relative_state(
-        history[:, 1], history[:, 2], history[:, 3], history[:, 4],
-        history[:, 6], history[:, 7], history[:, 8], history[:, 9],
-    )
-    ego_position = anchor[[1, 2]]
-    ego_velocity = anchor[[3, 4]]
-    counterpart_position = anchor[[6, 7]]
-    counterpart_velocity = anchor[[8, 9]]
-    ttc = closing_ttc(float(relative["distance"][-1]), float(relative["closing_rate"][-1]))
-    apet = apet_constant_velocity_proxy(
-        ego_position, ego_velocity, counterpart_position, counterpart_velocity
-    )
-    values: list[Any] = [
-        float(anchor[0] - float(case_start_timestamp_s)),
-        int(len(history)),
-        float(anchor[3]), float(anchor[4]), float(anchor[5]),
-        float(anchor[8]), float(anchor[9]), float(anchor[10]),
-        float(relative["dx"][-1]), float(relative["dy"][-1]),
-        float(relative["distance"][-1]), float(relative["dvx"][-1]),
-        float(relative["dvy"][-1]), float(relative["rel_speed"][-1]),
-        float(relative["closing_rate"][-1]),
-        wrap_angle(float(anchor[10] - anchor[5])),
-        float(np.mean(relative["distance"])),
-        float(np.std(relative["distance"], ddof=0)),
-        float(np.mean(relative["rel_speed"])),
-        float(np.mean(relative["closing_rate"])),
-        float(ttc) if math.isfinite(float(ttc)) else _typed_na("F_M3_INPUT_TTC_UNDEFINED"),
-        float(apet) if math.isfinite(float(apet)) else _typed_na("F_M3_INPUT_APET_UNDEFINED"),
-        float(anchor[11]),
-        float(anchor[12]),
-        float(theil_sen_slope(history[-5:, 0], history[-5:, 11])),
-        *[categories[name] for name in CATEGORY_COLUMNS],
-    ]
+    assembled = build_m3_anchor_features(
+        pd.DataFrame(history, columns=HISTORY_COLUMNS),
+        categories,
+        case_start_timestamp_s=float(case_start_timestamp_s),
+    ).iloc[0]
+    values: list[Any] = []
+    for name in M3_INPUT_COLUMNS:
+        value = assembled[name]
+        if name in CATEGORY_COLUMNS:
+            values.append(value)
+        elif name == "history_row_count":
+            values.append(int(value))
+        elif math.isfinite(float(value)):
+            values.append(float(value))
+        elif name == "closing_ttc_anchor":
+            values.append(_typed_na("F_M3_INPUT_TTC_UNDEFINED"))
+        elif name == "apet_online_proxy":
+            values.append(_typed_na("F_M3_INPUT_APET_UNDEFINED"))
+        else:
+            raise M3ScoringNumericalFailure(f"nonfinite numeric M3 input: {name}")
     for index, value in enumerate(values[:25]):
         if isinstance(value, dict):
             continue
@@ -393,7 +436,7 @@ def _estimate_counterpart_ipv_series(
     timestamps_s: np.ndarray,
     *,
     sample_dt_s: float,
-    route_intent: str,
+    focal_reference: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
     """Run the recovered H10/min-4 exact causal schedule for needed rows."""
 
@@ -401,11 +444,14 @@ def _estimate_counterpart_ipv_series(
     values = np.full(len(ego_xy), np.nan, dtype=float)
     errors = np.full(len(ego_xy), np.nan, dtype=float)
     first_needed = 4
-    scene = {
-        "intent_name": route_intent,
-        "past_states": {"pos_x": ego_xy[:, 0].tolist(), "pos_y": ego_xy[:, 1].tolist()},
-    }
-    ego_reference = build_ego_route_reference(scene)
+    ego_reference = np.asarray(focal_reference, dtype=float)
+    if (
+        ego_reference.ndim != 2
+        or ego_reference.shape[1] != 2
+        or len(ego_reference) < 2
+        or not np.all(np.isfinite(ego_reference))
+    ):
+        raise WodM3KernelError("scene-level focal reference must be finite n-by-2")
     for position in range(first_needed, len(ego_xy)):
         start = max(0, position - 10)
         ego_state = state_sequence_from_window_xy(ego_xy[start : position + 1], sample_dt_s)
@@ -439,7 +485,7 @@ def build_wod_m3_input_row(
     sample_dt_s: float,
     case_start_timestamp_s: float,
     context_end_timestamp_s: float,
-    route_intent: str,
+    scene_focal_reference: Sequence[Sequence[float]],
     counterpart_is_vehicle: bool,
 ) -> dict[str, Any]:
     """Construct a WOD M3 row from one already-resampled causal position history."""
@@ -458,7 +504,11 @@ def build_wod_m3_input_row(
         raise WodM3KernelError("sample_dt_s must be positive and finite")
     timestamps = context_end_timestamp_s - np.arange(len(ego_xy) - 1, -1, -1) * sample_dt_s
     ipv, ipv_error = _estimate_counterpart_ipv_series(
-        ego_xy, counterpart_xy, timestamps, sample_dt_s=sample_dt_s, route_intent=route_intent
+        ego_xy,
+        counterpart_xy,
+        timestamps,
+        sample_dt_s=sample_dt_s,
+        focal_reference=np.asarray(scene_focal_reference, dtype=float),
     )
     context_start = max(0, len(ego_xy) - 10)
     context_ego = ego_xy[context_start:]
@@ -477,10 +527,10 @@ def build_wod_m3_input_row(
             ipv_error[context_start:],
         ]
     )
-    finite_ipv = np.isfinite(standardized[:, 11]) & np.isfinite(standardized[:, 12])
-    standardized = standardized[finite_ipv]
-    if len(standardized) < 4:
-        raise WodM3KernelError("fewer than four estimator-eligible M3 context rows")
+    if not np.all(np.isfinite(standardized[:, 11:13])):
+        raise M3ScoringNumericalFailure(
+            "nonfinite counterpart IPV/error in exact frozen tail-10 context"
+        )
     return build_m3_input_row_from_history(
         standardized, categories, case_start_timestamp_s=case_start_timestamp_s
     )
@@ -495,7 +545,7 @@ def build_feature_family_m3_input_row(
     rate_hz: int,
     h_common_tick: int,
     case_start_tick: int,
-    route_intent: str,
+    scene_focal_reference: Sequence[Sequence[float]],
     counterpart_is_vehicle: bool,
     m3_context_alignment: str = ALIGNMENT_PRIMARY,
 ) -> dict[str, Any]:
@@ -517,7 +567,7 @@ def build_feature_family_m3_input_row(
         sample_dt_s=1.0 / rate_hz,
         case_start_timestamp_s=case_start_tick / rate_hz,
         context_end_timestamp_s=context_tick / rate_hz,
-        route_intent=route_intent,
+        scene_focal_reference=scene_focal_reference,
         counterpart_is_vehicle=counterpart_is_vehicle,
     )
 
@@ -629,41 +679,191 @@ def build_nc_history_only_payload(
     }
 
 
-def run_nc_pretstar_history_only_gate(
-    fixtures: Sequence[Mapping[str, Any]],
-) -> list[dict[str, Any]]:
-    """Execute the four registered branches plus adversarial future fixture."""
+def _nc_observation(binding: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "fixture_id": binding["fixture_id"],
+        "input_path": binding["input_path"],
+        "input_size_bytes": binding["input_size_bytes"],
+        "input_sha256": binding["input_sha256"],
+        "expected_path": binding["expected_path"],
+        "expected_size_bytes": binding["expected_size_bytes"],
+        "expected_sha256": binding["expected_sha256"],
+        "observed_state_bytes_sha256": "NA",
+        "observed_m3_context_bytes_sha256": "NA",
+        "observed_focal_reference_bytes_sha256": "NA",
+        "observed_counterpart_reference_bytes_sha256": "NA",
+        "observed_ipv_bytes_sha256": "NA",
+        "observed_payload_sha256": "NA",
+        "status": "FAIL",
+    }
 
-    expected_ids = (
-        "NC_HISTORY_BRANCH_R04N_W10",
-        "NC_HISTORY_BRANCH_R04N_W25",
-        "NC_HISTORY_BRANCH_R10L_W10",
-        "NC_HISTORY_BRANCH_R10L_W25",
-        "NC_HISTORY_FUTURE_PERTURBATION",
-    )
-    fixture_ids = [str(fixture["fixture_id"]) for fixture in fixtures]
-    if len(fixtures) != len(expected_ids) or len(fixture_ids) != len(set(fixture_ids)):
-        raise WodM3KernelError("NC gate requires five unique registered fixture IDs")
-    by_id = {fixture_id: fixture for fixture_id, fixture in zip(fixture_ids, fixtures)}
-    if tuple(sorted(by_id)) != tuple(sorted(expected_ids)):
-        raise WodM3KernelError("NC gate requires the exact five registered fixture IDs")
-    results = [
-        build_nc_history_only_payload(
-            fixture_id=fixture_id,
-            sample_dt_s=float(by_id[fixture_id]["sample_dt_s"]),
-            ego_history_xy=by_id[fixture_id]["ego_history_xy"],
-            counterpart_history_xy=by_id[fixture_id]["counterpart_history_xy"],
-            route_intent=str(by_id[fixture_id]["route_intent"]),
-        )
-        for fixture_id in expected_ids
-    ]
-    branch = results[3].copy()
-    future = results[4].copy()
-    branch.pop("fixture_id")
-    future.pop("fixture_id")
-    if branch != future:
-        raise WodM3KernelError("FATAL_CANDIDATE_ID_OR_FUTURE_LEAKAGE")
-    return results
+
+def run_nc_pretstar_history_only_gate(
+    *,
+    repo_root: Path,
+    python_executable_path: Path,
+    python_executable_sha256: str,
+    environment_manifest_path: Path,
+    environment_manifest_sha256: str,
+    created_at_utc: str,
+) -> dict[str, Any]:
+    """Verify committed fixtures, execute all five branches, and emit the W1 receipt."""
+
+    repo_root = repo_root.resolve(strict=True)
+    implementation = repo_root / "scripts/rq014/build_wod_m3_anchors.py"
+    contract_path = repo_root / G2R_OUTPUT_CONTRACT_PATH
+    estimator = repo_root / "src/sociality_estimation/core/ipv_estimation.py"
+    bindings: list[Mapping[str, Any]] = []
+    observations: list[dict[str, Any]] = []
+    failure_class = "INPUT_CONTRACT_FAILURE"
+    failure_fixture = "NA"
+    failure_message = "NC gate did not initialize"
+    results: list[dict[str, Any]] = []
+    try:
+        if sha256_file(contract_path) != G2R_OUTPUT_CONTRACT_SHA256:
+            raise WodM3KernelError("G2R output contract SHA-256 drift")
+        contract = _strict_load(contract_path)
+        bindings = contract["fixture_bindings"]["nc_fixture_pairs"]
+        if tuple(item.get("fixture_id") for item in bindings) != NC_FIXTURE_IDS:
+            raise WodM3KernelError("NC fixture binding order or identity drift")
+        observations = [_nc_observation(binding) for binding in bindings]
+        estimator_binding = contract["source_bindings"]["ipv_estimation_core"]
+        if (
+            estimator_binding.get("path") != "src/sociality_estimation/core/ipv_estimation.py"
+            or sha256_file(estimator) != estimator_binding.get("sha256")
+        ):
+            failure_class = "IMPLEMENTATION_HASH_MISMATCH"
+            raise WodM3KernelError("frozen exact IPV estimator SHA-256 drift")
+        for path, expected, label in (
+            (python_executable_path, python_executable_sha256, "python executable"),
+            (environment_manifest_path, environment_manifest_sha256, "environment manifest"),
+        ):
+            if sha256_file(path) != expected:
+                failure_class = "IMPLEMENTATION_HASH_MISMATCH"
+                raise WodM3KernelError(f"{label} SHA-256 drift")
+
+        input_keys = {
+            "base_candidate_futures", "base_ego_future", "counterpart_history_xy",
+            "ego_history_xy", "fixture_id", "perturbed_candidate_futures",
+            "perturbed_ego_future", "route_intent", "sample_dt_s", "sampling_id",
+            "schema_version", "window_s",
+        }
+        expected_keys = {
+            "candidate_payload_sha256_by_ordinal",
+            "counterpart_reference_bytes_sha256", "fixture_id",
+            "focal_reference_bytes_sha256", "ipv_bytes_sha256",
+            "m3_context_bytes_sha256", "schema_version", "state_bytes_sha256",
+            "terminal_status",
+        }
+        for index, binding in enumerate(bindings):
+            failure_fixture = binding["fixture_id"]
+            if binding.get("binding_status") != "BOUND_SCORER_INDEPENDENT":
+                raise WodM3KernelError("NC fixture is not a committed scorer-independent binding")
+            input_path = repo_root / binding["input_path"]
+            expected_path = repo_root / binding["expected_path"]
+            for path, size_key, sha_key, label in (
+                (input_path, "input_size_bytes", "input_sha256", "input"),
+                (expected_path, "expected_size_bytes", "expected_sha256", "expected"),
+            ):
+                if (
+                    path.is_symlink()
+                    or not path.is_file()
+                    or path.stat().st_size != binding[size_key]
+                    or sha256_file(path) != binding[sha_key]
+                ):
+                    failure_class = "FIXTURE_HASH_MISMATCH"
+                    raise WodM3KernelError(f"committed NC {label} bytes drift")
+            fixture = _strict_load(input_path)
+            expected = _strict_load(expected_path)
+            if set(fixture) != input_keys or set(expected) != expected_keys:
+                failure_class = "INPUT_CONTRACT_FAILURE"
+                raise WodM3KernelError("NC fixture exact-key drift")
+            if fixture["fixture_id"] != failure_fixture or expected["fixture_id"] != failure_fixture:
+                raise WodM3KernelError("NC fixture identity differs from committed binding")
+            try:
+                observed = build_nc_history_only_payload(
+                    fixture_id=failure_fixture,
+                    sample_dt_s=float(fixture["sample_dt_s"]),
+                    ego_history_xy=fixture["ego_history_xy"],
+                    counterpart_history_xy=fixture["counterpart_history_xy"],
+                    route_intent=str(fixture["route_intent"]),
+                )
+            except Exception as exc:
+                failure_class = "HISTORY_BRANCH_FAILURE"
+                raise WodM3KernelError(f"NC history branch failed: {exc}") from exc
+            if observed != expected or canonical_json_bytes(observed) != expected_path.read_bytes():
+                failure_class = "PAYLOAD_MISMATCH"
+                raise WodM3KernelError("NC observed payload differs from committed expected bytes")
+            candidate_hashes = observed["candidate_payload_sha256_by_ordinal"]
+            if set(candidate_hashes) != {"1", "2", "3"} or len(set(candidate_hashes.values())) != 1:
+                failure_class = "CANDIDATE_OR_FUTURE_LEAKAGE"
+                raise WodM3KernelError("NC candidate payload hashes are not identical")
+            observation = observations[index]
+            observation.update(
+                {
+                    "observed_state_bytes_sha256": observed["state_bytes_sha256"],
+                    "observed_m3_context_bytes_sha256": observed["m3_context_bytes_sha256"],
+                    "observed_focal_reference_bytes_sha256": observed[
+                        "focal_reference_bytes_sha256"
+                    ],
+                    "observed_counterpart_reference_bytes_sha256": observed[
+                        "counterpart_reference_bytes_sha256"
+                    ],
+                    "observed_ipv_bytes_sha256": observed["ipv_bytes_sha256"],
+                    "observed_payload_sha256": next(iter(candidate_hashes.values())),
+                    "status": "PASS",
+                }
+            )
+            results.append(observed)
+        baseline = dict(results[3])
+        future = dict(results[4])
+        baseline.pop("fixture_id")
+        future.pop("fixture_id")
+        if baseline != future:
+            observations[4]["status"] = "FAIL"
+            failure_class = "CANDIDATE_OR_FUTURE_LEAKAGE"
+            failure_fixture = NC_FIXTURE_IDS[4]
+            raise WodM3KernelError("strictly post-tau perturbation changed NC bytes")
+        failure = "NA"
+        status = "PASS"
+    except Exception as exc:
+        if not observations:
+            observations = [
+                _nc_observation(
+                    {
+                        "fixture_id": fixture_id,
+                        "input_path": "NA",
+                        "input_size_bytes": 1,
+                        "input_sha256": "0" * 64,
+                        "expected_path": "NA",
+                        "expected_size_bytes": 1,
+                        "expected_sha256": "0" * 64,
+                    }
+                )
+                for fixture_id in NC_FIXTURE_IDS
+            ]
+        failure_message = str(exc)
+        failure = {
+            "kind": "RUNTIME_FAILURE",
+            "fixture_id_or_NA": failure_fixture,
+            "failure_class": failure_class,
+            "message": failure_message,
+        }
+        status = "FAIL"
+    return {
+        "schema_version": "rq014-nc-pretstar-history-only-receipt-v1",
+        "control_id": "NC_PRETSTAR_HISTORY_ONLY",
+        "status": status,
+        "implementation_path": "scripts/rq014/build_wod_m3_anchors.py",
+        "implementation_size_bytes": implementation.stat().st_size,
+        "implementation_sha256": sha256_file(implementation),
+        "estimator_sha256": sha256_file(estimator),
+        "python_executable_sha256": python_executable_sha256,
+        "environment_manifest_sha256": environment_manifest_sha256,
+        "fixtures": observations,
+        "failure_or_NA": failure,
+        "created_at_utc": created_at_utc,
+    }
 
 
 def _strict_load(path: Path) -> Any:

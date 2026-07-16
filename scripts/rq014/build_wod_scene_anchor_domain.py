@@ -22,6 +22,11 @@ from typing import Any, Mapping, Sequence
 import numpy as np
 
 from scripts.rq014.build_wod_m3_anchors import canonical_json_bytes, temporal_window_bounds
+from scripts.rq014.preflight import (
+    ContractError,
+    validate_score_stripped_bundle,
+    validate_wod_path_type_mapping_manifest,
+)
 from scripts.rq014.wod_ipv_preprocessing import state_sequence_from_window_xy
 
 
@@ -67,6 +72,10 @@ STATUS_TO_REASON = {
     "INELIGIBLE_UNDEFINED_HEADING": "F_UNDEFINED_HEADING",
 }
 STATUS_PRIORITY = {status: index for index, status in enumerate(STATUS_TO_REASON)}
+RECOVERY_CONTRACT_PATH = Path("reports/plans/RQ014_recovery_lane_v3.json")
+RECOVERY_CONTRACT_SHA256 = "a23141e27e43f4c718f75ad48fb0356beac7ce8fb705243cf18191187efbd4ba"
+ENVELOPE_CONTRACT_PATH = Path("reports/plans/RQ014_envelope_builder_contract_v2.json")
+ENVELOPE_CONTRACT_SHA256 = "407d63209764896a673aa94811f9dd8b60a57a047d17e8cee0a3465c55b8c8a4"
 
 
 class AnchorDomainError(ValueError):
@@ -88,6 +97,17 @@ class SceneDomainInput:
     path_type_or_NA: str
     sampling: Mapping[str, SamplingTimelines]
     terminal_status: str | None = None
+
+
+@dataclass(frozen=True)
+class VerifiedSceneRegistry:
+    """Path/status metadata derived only after full bundle and mapping verification."""
+
+    by_segment: Mapping[str, tuple[str, str | None]]
+    source_manifest_path: Path
+    source_manifest_sha256: str
+    path_mapping_manifest_path: Path
+    path_mapping_manifest_sha256: str
 
 
 def _terminal_row(
@@ -153,8 +173,11 @@ def _window_status(
             xy = np.asarray([branch[tick] for tick in required], dtype=float)
             if not np.all(np.isfinite(xy)):
                 return "INELIGIBLE_STATE_NONFINITE"
-            state_sequence_from_window_xy(xy, 1.0 / rate_hz)
-    except ValueError as exc:
+            with np.errstate(over="raise", invalid="raise", divide="raise"):
+                state = state_sequence_from_window_xy(xy, 1.0 / rate_hz)
+            if not np.all(np.isfinite(state)):
+                return "INELIGIBLE_STATE_NONFINITE"
+    except (FloatingPointError, OverflowError, ValueError) as exc:
         if "all-stationary" in str(exc):
             return "INELIGIBLE_UNDEFINED_HEADING"
         return "INELIGIBLE_STATE_NONFINITE"
@@ -192,8 +215,12 @@ def build_scene_anchor_rows(scene: SceneDomainInput) -> list[dict[str, str]]:
                 if any(not branch for branch in branches):
                     sampling_terminal = "INELIGIBLE_TIMELINE_SUPPORT"
                 else:
-                    h_common_tick = min(max(branch) for branch in branches)
-                    if h_common_tick < 0:
+                    jointly_supported = set(branches[0]).intersection(
+                        *(set(branch) for branch in branches[1:])
+                    )
+                    nonnegative_joint = [tick for tick in jointly_supported if tick >= 0]
+                    h_common_tick = max(nonnegative_joint) if nonnegative_joint else None
+                    if h_common_tick is None:
                         h_common_tick = None
                         sampling_terminal = "INELIGIBLE_TIMELINE_SUPPORT"
         for temporal_id in TEMPORAL_AXIS:
@@ -407,16 +434,99 @@ def validate_anchor_domain_rows(
                 raise AnchorDomainError(f"terminal horizon status drift: {hfeas_key}")
 
 
+def _verified_file_sha256(path: Path, expected_sha256: str, label: str) -> str:
+    if (
+        len(expected_sha256) != 64
+        or any(character not in "0123456789abcdef" for character in expected_sha256)
+        or path.is_symlink()
+        or not path.is_file()
+    ):
+        raise AnchorDomainError(f"invalid {label} binding")
+    observed = hashlib.sha256(path.read_bytes()).hexdigest()
+    if observed != expected_sha256:
+        raise AnchorDomainError(f"{label} SHA-256 mismatch")
+    return observed
+
+
+def load_verified_scene_registry(
+    *,
+    bundle_root: Path,
+    score_schema_path: Path,
+    source_manifest_path: Path,
+    source_manifest_sha256: str,
+    export_receipt_path: Path,
+    path_mapping_manifest_path: Path,
+    path_mapping_manifest_sha256: str,
+    mapping_root: Path,
+) -> VerifiedSceneRegistry:
+    """Validate complete source/mapping artifacts before deriving path/status metadata."""
+
+    _verified_file_sha256(
+        source_manifest_path, source_manifest_sha256, "score-stripped source manifest"
+    )
+    _verified_file_sha256(
+        path_mapping_manifest_path,
+        path_mapping_manifest_sha256,
+        "WOD path-type mapping manifest",
+    )
+    try:
+        validate_score_stripped_bundle(
+            bundle_root=bundle_root,
+            schema_path=score_schema_path,
+            file_manifest_path=source_manifest_path,
+            receipt_path=export_receipt_path,
+            full_hash=True,
+        )
+        validate_wod_path_type_mapping_manifest(
+            path_mapping_manifest_path, mapping_root=mapping_root
+        )
+    except ContractError as exc:
+        raise AnchorDomainError(f"bound upstream artifact validation failed: {exc}") from exc
+
+    with (bundle_root / "blind_scene_manifest.csv").open(
+        "r", encoding="utf-8", newline=""
+    ) as handle:
+        scene_reader = csv.DictReader(handle)
+        scene_rows = list(scene_reader)
+    with (mapping_root / "wod_path_type_mapping.csv").open(
+        "r", encoding="utf-8", newline=""
+    ) as handle:
+        mapping_rows = list(csv.DictReader(handle))
+    mapping = {
+        (row["segment_id"], row["tstar_context_step"]): row["path_type"]
+        for row in mapping_rows
+    }
+    by_segment: dict[str, tuple[str, str | None]] = {}
+    for row in scene_rows:
+        segment_id = row["segment_id"]
+        if row["candidate_geometry_available"] == "false":
+            by_segment[segment_id] = ("NA", "INELIGIBLE_BLIND")
+        else:
+            path_type = mapping.get((segment_id, row["tstar_context_step"]))
+            by_segment[segment_id] = (
+                (path_type, None) if path_type is not None else ("NA", "MISSING_WOD_PATH_TYPE")
+            )
+    if len(by_segment) != 479:
+        raise AnchorDomainError("verified scene registry must contain exactly 479 scenes")
+    return VerifiedSceneRegistry(
+        by_segment=by_segment,
+        source_manifest_path=source_manifest_path.resolve(strict=True),
+        source_manifest_sha256=source_manifest_sha256,
+        path_mapping_manifest_path=path_mapping_manifest_path.resolve(strict=True),
+        path_mapping_manifest_sha256=path_mapping_manifest_sha256,
+    )
+
+
 def build_manifest(
     *,
     artifact_bytes: bytes,
     rows: Sequence[Mapping[str, str]],
     generator_path: Path,
-    recovery_contract_sha256: str,
-    envelope_contract_sha256: str,
-    source_manifest_sha256: str,
-    path_mapping_sha256: str,
+    repo_root: Path,
+    verified_scene_registry: VerifiedSceneRegistry,
+    python_executable_path: Path,
     python_executable_sha256: str,
+    environment_manifest_path: Path,
     environment_manifest_sha256: str,
     created_at_utc: str,
 ) -> dict[str, Any]:
@@ -429,7 +539,39 @@ def build_manifest(
         if row["membership_status"] == "AVAILABLE"
     }
     terminal_groups = groups - available_groups
+    repo_root = repo_root.resolve(strict=True)
+    expected_generator = (repo_root / "scripts/rq014/build_wod_scene_anchor_domain.py").resolve()
+    if generator_path.resolve(strict=True) != expected_generator:
+        raise AnchorDomainError("anchor-domain generator path drift")
     generator_bytes = generator_path.read_bytes()
+    recovery_sha = _verified_file_sha256(
+        repo_root / RECOVERY_CONTRACT_PATH,
+        RECOVERY_CONTRACT_SHA256,
+        "recovery lane contract",
+    )
+    envelope_sha = _verified_file_sha256(
+        repo_root / ENVELOPE_CONTRACT_PATH,
+        ENVELOPE_CONTRACT_SHA256,
+        "envelope builder contract",
+    )
+    source_sha = _verified_file_sha256(
+        verified_scene_registry.source_manifest_path,
+        verified_scene_registry.source_manifest_sha256,
+        "score-stripped source manifest",
+    )
+    mapping_sha = _verified_file_sha256(
+        verified_scene_registry.path_mapping_manifest_path,
+        verified_scene_registry.path_mapping_manifest_sha256,
+        "WOD path-type mapping manifest",
+    )
+    python_sha = _verified_file_sha256(
+        python_executable_path, python_executable_sha256, "python executable"
+    )
+    environment_sha = _verified_file_sha256(
+        environment_manifest_path,
+        environment_manifest_sha256,
+        "environment manifest",
+    )
     return {
         "schema_version": "rq014-wod-scene-anchor-domain-manifest-v1",
         "artifact_relative_path": "wod_scene_anchor_domain.csv",
@@ -442,12 +584,12 @@ def build_manifest(
         "generator_path": "scripts/rq014/build_wod_scene_anchor_domain.py",
         "generator_size_bytes": len(generator_bytes),
         "generator_sha256": hashlib.sha256(generator_bytes).hexdigest(),
-        "recovery_contract_sha256": recovery_contract_sha256,
-        "envelope_contract_sha256": envelope_contract_sha256,
-        "source_manifest_sha256": source_manifest_sha256,
-        "path_mapping_sha256": path_mapping_sha256,
-        "python_executable_sha256": python_executable_sha256,
-        "environment_manifest_sha256": environment_manifest_sha256,
+        "recovery_contract_sha256": recovery_sha,
+        "envelope_contract_sha256": envelope_sha,
+        "source_manifest_sha256": source_sha,
+        "path_mapping_sha256": mapping_sha,
+        "python_executable_sha256": python_sha,
+        "environment_manifest_sha256": environment_sha,
         "created_at_utc": created_at_utc,
     }
 
@@ -462,22 +604,31 @@ def _parse_tick_positions(value: Mapping[str, Sequence[float]]) -> dict[int, tup
     return result
 
 
-def _parse_scene(value: Mapping[str, Any]) -> SceneDomainInput:
+def _parse_scene(
+    value: Mapping[str, Any], verified_scene_registry: VerifiedSceneRegistry
+) -> SceneDomainInput:
+    if set(value) != {"segment_id", "sampling"}:
+        raise AnchorDomainError("scene input may contain only segment_id and resampled sampling")
+    segment_id = str(value["segment_id"])
+    if segment_id not in verified_scene_registry.by_segment:
+        raise AnchorDomainError("scene input is absent from the verified 479-scene registry")
     sampling: dict[str, SamplingTimelines] = {}
     for sampling_id, payload in value.get("sampling", {}).items():
+        if sampling_id not in dict(SAMPLING_AXIS) or set(payload) != {"candidates", "counterpart"}:
+            raise AnchorDomainError("sampling input identity or exact-key drift")
         sampling[sampling_id] = SamplingTimelines(
             candidates={
                 candidate_id: _parse_tick_positions(rows)
                 for candidate_id, rows in payload["candidates"].items()
             },
             counterpart=_parse_tick_positions(payload["counterpart"]),
-            terminal_status=payload.get("terminal_status"),
         )
+    path_type, terminal_status = verified_scene_registry.by_segment[segment_id]
     return SceneDomainInput(
-        segment_id=str(value["segment_id"]),
-        path_type_or_NA=str(value["path_type_or_NA"]),
+        segment_id=segment_id,
+        path_type_or_NA=path_type,
         sampling=sampling,
-        terminal_status=value.get("terminal_status"),
+        terminal_status=terminal_status,
     )
 
 
@@ -504,23 +655,49 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-json", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--bundle-root", type=Path, required=True)
+    parser.add_argument("--score-schema", type=Path, required=True)
+    parser.add_argument("--source-manifest", type=Path, required=True)
+    parser.add_argument("--source-manifest-sha256", required=True)
+    parser.add_argument("--export-receipt", type=Path, required=True)
+    parser.add_argument("--path-mapping-manifest", type=Path, required=True)
+    parser.add_argument("--path-mapping-manifest-sha256", required=True)
+    parser.add_argument("--mapping-root", type=Path, required=True)
+    parser.add_argument("--python-executable", type=Path, required=True)
+    parser.add_argument("--python-executable-sha256", required=True)
+    parser.add_argument("--environment-manifest", type=Path, required=True)
+    parser.add_argument("--environment-manifest-sha256", required=True)
     args = parser.parse_args(argv)
     request = _strict_load(args.input_json)
-    scenes = [_parse_scene(item) for item in request["scenes"]]
+    if set(request) != {"scenes", "created_at_utc"}:
+        raise AnchorDomainError("anchor-domain request exact-key drift")
+    registry = load_verified_scene_registry(
+        bundle_root=args.bundle_root,
+        score_schema_path=args.score_schema,
+        source_manifest_path=args.source_manifest,
+        source_manifest_sha256=args.source_manifest_sha256,
+        export_receipt_path=args.export_receipt,
+        path_mapping_manifest_path=args.path_mapping_manifest,
+        path_mapping_manifest_sha256=args.path_mapping_manifest_sha256,
+        mapping_root=args.mapping_root,
+    )
+    scenes = [_parse_scene(item, registry) for item in request["scenes"]]
     if len(scenes) != 479:
         raise AnchorDomainError("production anchor domain requires exactly 479 scenes")
+    if {scene.segment_id for scene in scenes} != set(registry.by_segment):
+        raise AnchorDomainError("scene request does not equal the verified 479-scene universe")
     rows = build_anchor_domain_rows(scenes)
     artifact = encode_anchor_domain_csv(rows)
     manifest = build_manifest(
         artifact_bytes=artifact,
         rows=rows,
         generator_path=Path(__file__),
-        recovery_contract_sha256=request["recovery_contract_sha256"],
-        envelope_contract_sha256=request["envelope_contract_sha256"],
-        source_manifest_sha256=request["source_manifest_sha256"],
-        path_mapping_sha256=request["path_mapping_sha256"],
-        python_executable_sha256=request["python_executable_sha256"],
-        environment_manifest_sha256=request["environment_manifest_sha256"],
+        repo_root=Path(__file__).resolve().parents[2],
+        verified_scene_registry=registry,
+        python_executable_path=args.python_executable,
+        python_executable_sha256=args.python_executable_sha256,
+        environment_manifest_path=args.environment_manifest,
+        environment_manifest_sha256=args.environment_manifest_sha256,
         created_at_utc=request["created_at_utc"],
     )
     args.output_dir.mkdir(parents=True, exist_ok=True)

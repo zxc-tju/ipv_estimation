@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import copy
+import csv
 import hashlib
 import inspect
 import json
+import shutil
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -15,6 +18,7 @@ from scripts.rq014 import build_wod_scene_anchor_domain as DOMAIN
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests" / "fixtures" / "rq014_g2r_v1"
+W2B_FIXTURES = ROOT / "tests" / "fixtures" / "rq014_g2r_w2b"
 NC_IDS = (
     "NC_HISTORY_BRANCH_R04N_W10",
     "NC_HISTORY_BRANCH_R04N_W25",
@@ -34,6 +38,27 @@ def _nc_input(fixture_id: str) -> dict:
 
 def _nc_expected(fixture_id: str) -> dict:
     return _load(FIXTURES / f"{fixture_id.lower()}_expected.json")
+
+
+def _assert_nc_receipt_schema(receipt: dict) -> None:
+    assert set(receipt) == {
+        "schema_version", "control_id", "status", "implementation_path",
+        "implementation_size_bytes", "implementation_sha256", "estimator_sha256",
+        "python_executable_sha256", "environment_manifest_sha256", "fixtures",
+        "failure_or_NA", "created_at_utc",
+    }
+    assert receipt["schema_version"] == "rq014-nc-pretstar-history-only-receipt-v1"
+    assert receipt["control_id"] == "NC_PRETSTAR_HISTORY_ONLY"
+    assert [item["fixture_id"] for item in receipt["fixtures"]] == list(NC_IDS)
+    for item in receipt["fixtures"]:
+        assert set(item) == {
+            "fixture_id", "input_path", "input_size_bytes", "input_sha256",
+            "expected_path", "expected_size_bytes", "expected_sha256",
+            "observed_state_bytes_sha256", "observed_m3_context_bytes_sha256",
+            "observed_focal_reference_bytes_sha256",
+            "observed_counterpart_reference_bytes_sha256", "observed_ipv_bytes_sha256",
+            "observed_payload_sha256", "status",
+        }
 
 
 def test_w2_feature_kernel_reproduces_w1_32_column_golden_bytes_and_hash() -> None:
@@ -170,13 +195,14 @@ def test_w2_raw_position_port_is_deterministic_and_uses_kinematic_hv_hv_tokens()
     times = np.arange(14, dtype=float) * 0.25
     ego = np.column_stack([times, np.zeros(len(times))])
     counterpart = np.column_stack([10.0 - times, np.full(len(times), 0.5)])
+    focal_reference = M3.build_scene_focal_reference(ego, route_intent="GO_STRAIGHT")
     first = M3.build_wod_m3_input_row(
         ego,
         counterpart,
         sample_dt_s=0.25,
         case_start_timestamp_s=0.0,
         context_end_timestamp_s=2.5,
-        route_intent="GO_STRAIGHT",
+        scene_focal_reference=focal_reference,
         counterpart_is_vehicle=True,
     )
     second = M3.build_wod_m3_input_row(
@@ -185,7 +211,7 @@ def test_w2_raw_position_port_is_deterministic_and_uses_kinematic_hv_hv_tokens()
         sample_dt_s=0.25,
         case_start_timestamp_s=0.0,
         context_end_timestamp_s=2.5,
-        route_intent="GO_STRAIGHT",
+        scene_focal_reference=focal_reference,
         counterpart_is_vehicle=True,
     )
     assert M3.m3_input_row_bytes_and_sha256(first) == M3.m3_input_row_bytes_and_sha256(second)
@@ -204,7 +230,122 @@ def test_w2_raw_position_port_is_deterministic_and_uses_kinematic_hv_hv_tokens()
     )
 
 
-def test_w2_nc_kernel_reproduces_all_five_w1_pairs_and_future_invariance() -> None:
+def test_w2_scene_focal_reference_is_one_shared_byte_identity_for_c1_c2_c3(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    times = np.arange(14, dtype=float) * 0.25
+    shared_history = np.column_stack([times, np.zeros(len(times))])
+    focal_reference = M3.build_scene_focal_reference(
+        shared_history, route_intent="GO_STRAIGHT"
+    )
+    observed_reference_bytes: list[bytes] = []
+
+    def capture_reference(focal, counterpart, **kwargs):
+        observed_reference_bytes.append(np.asarray(focal.reference, dtype=float).tobytes())
+        row_count = len(np.asarray(focal.data))
+        return np.full((row_count, 2), 0.25), np.full((row_count, 2), 0.125)
+
+    monkeypatch.setattr(M3, "estimate_ipv_pair", capture_reference)
+    for offset in (0.0, 1.0, 2.0):
+        candidate = np.column_stack([times, np.full(len(times), offset)])
+        counterpart = np.column_stack([10.0 - times, np.full(len(times), 0.5)])
+        M3.build_wod_m3_input_row(
+            candidate,
+            counterpart,
+            sample_dt_s=0.25,
+            case_start_timestamp_s=0.0,
+            context_end_timestamp_s=2.5,
+            scene_focal_reference=focal_reference,
+            counterpart_is_vehicle=True,
+        )
+    assert len(observed_reference_bytes) == 30
+    assert set(observed_reference_bytes) == {np.asarray(focal_reference).tobytes()}
+    with pytest.raises(TypeError):
+        M3.build_wod_m3_input_row(
+            shared_history,
+            shared_history,
+            sample_dt_s=0.25,
+            case_start_timestamp_s=0.0,
+            context_end_timestamp_s=2.5,
+            counterpart_is_vehicle=True,
+        )
+
+
+@pytest.mark.parametrize("bad_index", [4, 8, 13])
+def test_w2_nonfinite_ipv_tail10_fails_closed_without_row_deletion(
+    bad_index: int, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    times = np.arange(14, dtype=float) * 0.25
+    ego = np.column_stack([times, np.zeros(len(times))])
+    counterpart = np.column_stack([10.0 - times, np.full(len(times), 0.5)])
+    focal_reference = M3.build_scene_focal_reference(ego, route_intent="GO_STRAIGHT")
+    ipv = np.full(len(times), 0.25)
+    error = np.full(len(times), 0.125)
+    ipv[bad_index] = np.nan if bad_index != 8 else np.inf
+    monkeypatch.setattr(
+        M3,
+        "_estimate_counterpart_ipv_series",
+        lambda *args, **kwargs: (ipv.copy(), error.copy()),
+    )
+    assembler_called = False
+
+    def forbidden_assembler(*args, **kwargs):
+        nonlocal assembler_called
+        assembler_called = True
+        raise AssertionError("assembler must not receive a shortened tail")
+
+    monkeypatch.setattr(M3, "build_m3_anchor_features", forbidden_assembler)
+    with pytest.raises(M3.M3ScoringNumericalFailure) as exc_info:
+        M3.build_wod_m3_input_row(
+            ego,
+            counterpart,
+            sample_dt_s=0.25,
+            case_start_timestamp_s=0.0,
+            context_end_timestamp_s=2.5,
+            scene_focal_reference=focal_reference,
+            counterpart_is_vehicle=True,
+        )
+    assert exc_info.value.status == "M3_SCORING_NUMERICAL_FAILURE"
+    assert exc_info.value.reason_code == "F_M3_SCORING_NUMERICAL_FAILURE"
+    assert not assembler_called
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("geometry_path_category", "HO"),
+        ("geometry_path_category", None),
+        ("geometry_path_relation", "ARBITRARY"),
+        ("turn_pair_label", "U-S"),
+        ("agent_type_pair", "AV;HV"),
+        ("vehicle_type_list", "['AV', 'HV']"),
+        ("av_included", "mixed"),
+        ("priority_role", "unknown"),
+    ],
+)
+def test_w2_categories_reject_every_noncontract_token(field: str, value: object) -> None:
+    fixture = _load(FIXTURES / "wod_m3_feature_construction_golden.json")
+    categories = dict(fixture["categories"])
+    categories[field] = value
+    with pytest.raises(M3.WodM3KernelError, match="invalid frozen category token"):
+        M3.build_m3_input_row_from_history(
+            fixture["history_rows"],
+            categories,
+            case_start_timestamp_s=fixture["case_start_timestamp_s"],
+        )
+    categories = dict(fixture["categories"])
+    categories["extra"] = "F"
+    with pytest.raises(M3.WodM3KernelError, match="exact seven frozen keys"):
+        M3.build_m3_input_row_from_history(
+            fixture["history_rows"],
+            categories,
+            case_start_timestamp_s=fixture["case_start_timestamp_s"],
+        )
+
+
+def test_w2_nc_kernel_reproduces_all_five_w1_pairs_and_future_invariance(
+    tmp_path: Path,
+) -> None:
     assert tuple(inspect.signature(M3.build_nc_history_only_payload).parameters) == (
         "fixture_id",
         "sample_dt_s",
@@ -217,12 +358,30 @@ def test_w2_nc_kernel_reproduces_all_five_w1_pairs_and_future_invariance() -> No
         "H_common", "M3_result", "envelope_result", "rating", "rating_derived_input",
     }
     assert forbidden.isdisjoint(inspect.signature(M3.build_nc_history_only_payload).parameters)
-    inputs = [_nc_input(fixture_id) for fixture_id in NC_IDS]
-    observed = M3.run_nc_pretstar_history_only_gate(inputs)
-    for fixture_id, payload in zip(NC_IDS, observed):
+    environment = tmp_path / "environment.json"
+    environment.write_bytes(b"{}\n")
+    python = Path(sys.executable).resolve(strict=True)
+    receipt = M3.run_nc_pretstar_history_only_gate(
+        repo_root=ROOT,
+        python_executable_path=python,
+        python_executable_sha256=hashlib.sha256(python.read_bytes()).hexdigest(),
+        environment_manifest_path=environment,
+        environment_manifest_sha256=hashlib.sha256(environment.read_bytes()).hexdigest(),
+        created_at_utc="2026-07-16T00:00:00Z",
+    )
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "PASS" and receipt["failure_or_NA"] == "NA"
+    assert [item["fixture_id"] for item in receipt["fixtures"]] == list(NC_IDS)
+    for fixture_id, observation in zip(NC_IDS, receipt["fixtures"]):
         expected_path = FIXTURES / f"{fixture_id.lower()}_expected.json"
-        assert payload == _nc_expected(fixture_id)
-        assert M3.canonical_json_bytes(payload) == expected_path.read_bytes()
+        expected = _nc_expected(fixture_id)
+        assert observation["status"] == "PASS"
+        assert observation["observed_m3_context_bytes_sha256"] == expected[
+            "m3_context_bytes_sha256"
+        ]
+        assert observation["observed_payload_sha256"] == next(
+            iter(expected["candidate_payload_sha256_by_ordinal"].values())
+        )
 
     future_input = _nc_input("NC_HISTORY_FUTURE_PERTURBATION")
     baseline = M3.build_nc_history_only_payload(
@@ -258,8 +417,47 @@ def test_w2_nc_kernel_reproduces_all_five_w1_pairs_and_future_invariance() -> No
     assert changed["candidate_payload_sha256_by_ordinal"] != baseline[
         "candidate_payload_sha256_by_ordinal"
     ]
-    with pytest.raises(M3.WodM3KernelError, match="five unique"):
-        M3.run_nc_pretstar_history_only_gate([*inputs, inputs[0]])
+
+    copied_root = tmp_path / "mutated-repo"
+    for relative in (
+        "reports/plans/RQ014_g2r_output_contract_v1.json",
+        "src/sociality_estimation/core/ipv_estimation.py",
+        "scripts/rq014/build_wod_m3_anchors.py",
+    ):
+        destination = copied_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / relative, destination)
+    shutil.copytree(FIXTURES, copied_root / FIXTURES.relative_to(ROOT))
+    mutated_input_path = (
+        copied_root / FIXTURES.relative_to(ROOT) / "nc_history_future_perturbation_input.json"
+    )
+    mutated_expected_path = (
+        copied_root / FIXTURES.relative_to(ROOT) / "nc_history_future_perturbation_expected.json"
+    )
+    mutated_input = _load(mutated_input_path)
+    mutated_input["ego_history_xy"][-1][0] = (
+        float.fromhex(mutated_input["ego_history_xy"][-1][0]) + 0.125
+    ).hex()
+    mutated_input_path.write_bytes(M3.canonical_json_bytes(mutated_input))
+    mutated_expected = M3.build_nc_history_only_payload(
+        fixture_id=mutated_input["fixture_id"],
+        sample_dt_s=mutated_input["sample_dt_s"],
+        ego_history_xy=mutated_input["ego_history_xy"],
+        counterpart_history_xy=mutated_input["counterpart_history_xy"],
+        route_intent=mutated_input["route_intent"],
+    )
+    mutated_expected_path.write_bytes(M3.canonical_json_bytes(mutated_expected))
+    failed = M3.run_nc_pretstar_history_only_gate(
+        repo_root=copied_root,
+        python_executable_path=python,
+        python_executable_sha256=hashlib.sha256(python.read_bytes()).hexdigest(),
+        environment_manifest_path=environment,
+        environment_manifest_sha256=hashlib.sha256(environment.read_bytes()).hexdigest(),
+        created_at_utc="2026-07-16T00:00:00Z",
+    )
+    _assert_nc_receipt_schema(failed)
+    assert failed["status"] == "FAIL"
+    assert failed["failure_or_NA"]["failure_class"] == "FIXTURE_HASH_MISMATCH"
 
 
 def _moving_ticks(start: int, stop: int, *, y: float = 0.0) -> dict[int, tuple[float, float]]:
@@ -337,6 +535,55 @@ def test_w2_anchor_domain_all_families_exact_csv_bytes_and_horizon_rules() -> No
         ]
         assert len(group) == 1
         assert group[0]["membership_status"] == "INELIGIBLE_TIMELINE_SUPPORT"
+
+
+def test_w2_h_common_is_largest_joint_tick_and_endpoint_hole_preserves_tf() -> None:
+    scene = _available_scene("joint-endpoint-hole")
+    sampling = dict(scene.sampling)
+    r04 = sampling["R04N"]
+    candidates = {key: dict(value) for key, value in r04.candidates.items()}
+    del candidates["C2"][20]
+    candidates["C2"][21] = (21.0, 1.0)
+    sampling["R04N"] = DOMAIN.SamplingTimelines(
+        candidates=candidates, counterpart=r04.counterpart
+    )
+    rows = DOMAIN.build_anchor_domain_rows(
+        [DOMAIN.SceneDomainInput(scene.segment_id, scene.path_type_or_NA, sampling)]
+    )
+    tf_h20 = [
+        row for row in rows
+        if row["feature_id"] == "F-R04N-TF" and row["horizon_id"] == "H20"
+    ]
+    tf_hfeas = [
+        row for row in rows
+        if row["feature_id"] == "F-R04N-TF" and row["horizon_id"] == "HFEAS"
+    ]
+    assert {row["h_common_tick_or_NA"] for row in tf_h20 + tf_hfeas} == {"19"}
+    assert [int(row["tau_tick_or_NA"]) for row in tf_h20] == list(range(4, 9))
+    assert [int(row["tau_tick_or_NA"]) for row in tf_hfeas] == list(range(4, 20))
+
+
+def test_w2_derived_state_overflow_is_fail_closed_nonfinite() -> None:
+    scene = _available_scene("overflow")
+    sampling = dict(scene.sampling)
+    r04 = sampling["R04N"]
+    candidates = {key: dict(value) for key, value in r04.candidates.items()}
+    candidates["C1"].update(
+        {0: (1.7e308, 0.0), 1: (-1.7e308, 0.0), 2: (1.7e308, 0.0)}
+    )
+    sampling["R04N"] = DOMAIN.SamplingTimelines(
+        candidates=candidates, counterpart=r04.counterpart
+    )
+    rows = DOMAIN.build_anchor_domain_rows(
+        [DOMAIN.SceneDomainInput(scene.segment_id, scene.path_type_or_NA, sampling)]
+    )
+    group = [
+        row for row in rows
+        if row["feature_id"] == "F-R04N-CH-W10" and row["horizon_id"] == "H20"
+    ]
+    assert len(group) == 1
+    assert group[0]["membership_status"] == "INELIGIBLE_STATE_NONFINITE"
+    assert group[0]["reason_code"] == "F_STATE_NONFINITE"
 
 
 def test_w2_anchor_domain_authority_example_has_exact_lf_csv_bytes() -> None:
@@ -442,6 +689,57 @@ def test_w2_anchor_domain_cli_loader_rejects_duplicate_and_nonfinite_json(tmp_pa
         DOMAIN._strict_load(nonfinite)
 
 
+def test_w2_scene_path_and_status_are_derived_only_after_full_upstream_validation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle = tmp_path / "bundle"
+    mapping_root = tmp_path / "mapping"
+    bundle.mkdir()
+    mapping_root.mkdir()
+    scene_manifest = bundle / "blind_scene_manifest.csv"
+    with scene_manifest.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle, lineterminator="\n")
+        writer.writerow(("segment_id", "candidate_geometry_available", "tstar_context_step"))
+        writer.writerow(("scene-000", "true", "10"))
+        for index in range(1, 479):
+            writer.writerow((f"scene-{index:03d}", "false", "NA"))
+    mapping_csv = mapping_root / "wod_path_type_mapping.csv"
+    mapping_csv.write_text(
+        "segment_id,tstar_context_step,path_type\nscene-000,10,CP\n", encoding="utf-8"
+    )
+    source_manifest = tmp_path / "file_manifest.json"
+    mapping_manifest = tmp_path / "mapping_manifest.json"
+    for path in (source_manifest, mapping_manifest):
+        path.write_bytes(b"{}\n")
+    calls: list[str] = []
+    monkeypatch.setattr(
+        DOMAIN, "validate_score_stripped_bundle", lambda **kwargs: calls.append("source")
+    )
+    monkeypatch.setattr(
+        DOMAIN,
+        "validate_wod_path_type_mapping_manifest",
+        lambda *args, **kwargs: calls.append("mapping"),
+    )
+    registry = DOMAIN.load_verified_scene_registry(
+        bundle_root=bundle,
+        score_schema_path=tmp_path / "schema.json",
+        source_manifest_path=source_manifest,
+        source_manifest_sha256=hashlib.sha256(source_manifest.read_bytes()).hexdigest(),
+        export_receipt_path=tmp_path / "receipt.json",
+        path_mapping_manifest_path=mapping_manifest,
+        path_mapping_manifest_sha256=hashlib.sha256(mapping_manifest.read_bytes()).hexdigest(),
+        mapping_root=mapping_root,
+    )
+    assert calls == ["source", "mapping"]
+    assert registry.by_segment["scene-000"] == ("CP", None)
+    assert registry.by_segment["scene-001"] == ("NA", "INELIGIBLE_BLIND")
+    with pytest.raises(DOMAIN.AnchorDomainError, match="only segment_id and resampled sampling"):
+        DOMAIN._parse_scene(
+            {"segment_id": "scene-000", "sampling": {}, "path_type_or_NA": "HO"},
+            registry,
+        )
+
+
 def test_w2_anchor_domain_479_scene_count_manifest_and_determinism() -> None:
     scenes = [
         DOMAIN.SceneDomainInput(
@@ -455,16 +753,56 @@ def test_w2_anchor_domain_479_scene_count_manifest_and_determinism() -> None:
     assert len({(row["segment_id"], row["feature_id"], row["horizon_id"]) for row in rows}) == 15328
     assert all(row["membership_status"] == "MISSING_WOD_PATH_TYPE" for row in rows)
     artifact = DOMAIN.encode_anchor_domain_csv(rows)
+    golden = W2B_FIXTURES / "anchor_domain_15328_golden.csv"
+    binding = _load(W2B_FIXTURES / "anchor_domain_15328_golden.binding.json")
+    assert artifact == golden.read_bytes()
+    assert len(artifact) == binding["artifact_size_bytes"] == 1272338
+    assert hashlib.sha256(artifact).hexdigest() == binding["artifact_sha256"] == (
+        "019f523406b0db89fffd5d24e503e04bee34abb625449879c88db07994ac2e84"
+    )
+    mutated = bytearray(artifact)
+    mutated[-2] ^= 1
+    assert hashlib.sha256(mutated).hexdigest() != binding["artifact_sha256"]
+
+
+def test_w2_anchor_manifest_rehashes_every_bound_input(tmp_path: Path) -> None:
+    scenes = [
+        DOMAIN.SceneDomainInput(
+            segment_id=f"scene-{index:03d}", path_type_or_NA="NA", sampling={}
+        )
+        for index in range(479)
+    ]
+    rows = DOMAIN.build_anchor_domain_rows(scenes)
+    artifact = DOMAIN.encode_anchor_domain_csv(rows)
+    source_manifest = tmp_path / "file_manifest.json"
+    mapping_manifest = tmp_path / "mapping_manifest.json"
+    environment_manifest = tmp_path / "environment.json"
+    python = Path(sys.executable).resolve(strict=True)
+    for path, payload in (
+        (source_manifest, b"source\n"),
+        (mapping_manifest, b"mapping\n"),
+        (environment_manifest, b"environment\n"),
+    ):
+        path.write_bytes(payload)
+    registry = DOMAIN.VerifiedSceneRegistry(
+        by_segment={scene.segment_id: ("NA", "MISSING_WOD_PATH_TYPE") for scene in scenes},
+        source_manifest_path=source_manifest,
+        source_manifest_sha256=hashlib.sha256(source_manifest.read_bytes()).hexdigest(),
+        path_mapping_manifest_path=mapping_manifest,
+        path_mapping_manifest_sha256=hashlib.sha256(mapping_manifest.read_bytes()).hexdigest(),
+    )
     kwargs = {
         "artifact_bytes": artifact,
         "rows": rows,
         "generator_path": ROOT / "scripts/rq014/build_wod_scene_anchor_domain.py",
-        "recovery_contract_sha256": "a" * 64,
-        "envelope_contract_sha256": "b" * 64,
-        "source_manifest_sha256": "c" * 64,
-        "path_mapping_sha256": "d" * 64,
-        "python_executable_sha256": "e" * 64,
-        "environment_manifest_sha256": "f" * 64,
+        "repo_root": ROOT,
+        "verified_scene_registry": registry,
+        "python_executable_path": python,
+        "python_executable_sha256": hashlib.sha256(python.read_bytes()).hexdigest(),
+        "environment_manifest_path": environment_manifest,
+        "environment_manifest_sha256": hashlib.sha256(
+            environment_manifest.read_bytes()
+        ).hexdigest(),
         "created_at_utc": "2026-07-16T00:00:00Z",
     }
     first = DOMAIN.build_manifest(**kwargs)
@@ -474,6 +812,9 @@ def test_w2_anchor_domain_479_scene_count_manifest_and_determinism() -> None:
     assert first["available_group_count"] == 0
     assert first["artifact_sha256"] == hashlib.sha256(artifact).hexdigest()
     assert M3.canonical_json_bytes(first) == M3.canonical_json_bytes(second)
+    source_manifest.write_bytes(b"mutated\n")
+    with pytest.raises(DOMAIN.AnchorDomainError, match="source manifest SHA-256 mismatch"):
+        DOMAIN.build_manifest(**kwargs)
 
 
 def test_w2_does_not_expose_scorer_or_managed_g2r_operation() -> None:
