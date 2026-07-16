@@ -45,6 +45,7 @@ _W1C_SPEC = importlib.util.spec_from_file_location("rq014_g2r_w1c_goldens", W1C_
 assert _W1C_SPEC is not None and _W1C_SPEC.loader is not None
 W1C = importlib.util.module_from_spec(_W1C_SPEC)
 _W1C_SPEC.loader.exec_module(W1C)
+_canonical_json_bytes = W1C.canonical_json_bytes
 
 
 def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -70,30 +71,6 @@ def _strict_loads(text: str) -> Any:
 
 def _strict_load(path: Path) -> Any:
     return _strict_loads(path.read_text(encoding="utf-8"))
-
-
-def _normalize_signed_zero(value: Any) -> Any:
-    if isinstance(value, float):
-        return 0.0 if value == 0.0 else value
-    if isinstance(value, list):
-        return [_normalize_signed_zero(item) for item in value]
-    if isinstance(value, dict):
-        return {key: _normalize_signed_zero(item) for key, item in value.items()}
-    return value
-
-
-def _canonical_json_bytes(value: Any) -> bytes:
-    normalized = _normalize_signed_zero(value)
-    return (
-        json.dumps(
-            normalized,
-            sort_keys=True,
-            separators=(",", ":"),
-            ensure_ascii=False,
-            allow_nan=False,
-        )
-        + "\n"
-    ).encode("utf-8")
 
 
 def _assert_exact_keys(payload: dict[str, Any], exact_keys: list[str]) -> None:
@@ -419,6 +396,42 @@ def test_all_ten_physical_time_readouts_and_a09_degenerate_cases_match_golden() 
             W1C.trapezoid_readouts(times, [0.0] * len(times), [0.0] * len(times), [0.0] * len(times))
 
 
+@pytest.mark.parametrize(
+    ("case_id", "inputs", "expected_or_failure"),
+    [
+        ("VALUE_EQUALS_LOWER", (1.0, 1.0, 3.0, 7.0), (0.0, 1.0, 2.0)),
+        ("VALUE_EQUALS_MEDIAN", (3.0, 1.0, 3.0, 7.0), (0.0, 0.0, 0.0)),
+        ("VALUE_EQUALS_UPPER", (7.0, 1.0, 3.0, 7.0), (0.0, 1.0, 4.0)),
+        ("NONFINITE_MEDIAN", (2.0, 1.0, math.nan, 7.0), "FAIL"),
+        ("NONFINITE_UPPER", (2.0, 1.0, 3.0, math.inf), "FAIL"),
+    ],
+)
+def test_bound_pointwise_helper_locks_boundary_inclusivity_and_finiteness(
+    case_id: str,
+    inputs: tuple[float, float, float, float],
+    expected_or_failure: tuple[float, float, float] | str,
+) -> None:
+    fixture_case = {
+        case["case_id"]: case
+        for case in _strict_load(READOUT_FIXTURE_PATH)["direct_pointwise_cases"]
+    }[case_id]
+    if expected_or_failure == "FAIL":
+        with pytest.raises(W1C.M3ScoringNumericalFailure):
+            W1C.pointwise_deviations(*inputs)
+        assert fixture_case["expected_deviations_hex_or_NA"] == "NA"
+        assert fixture_case["expected_status"] == "M3_SCORING_NUMERICAL_FAILURE"
+        assert fixture_case["expected_reason_code"] == "F_M3_SCORING_NUMERICAL_FAILURE"
+        return
+
+    observed = W1C.pointwise_deviations(*inputs)
+    assert observed == expected_or_failure
+    assert fixture_case["expected_deviations_hex_or_NA"] == {
+        key: value.hex() for key, value in zip(("nex", "nmd", "amd"), observed)
+    }
+    assert fixture_case["expected_status"] == "AVAILABLE"
+    assert fixture_case["expected_reason_code"] == "F_AVAILABLE_CONTINUE"
+
+
 def test_nc_history_only_five_pairs_and_future_leakage_regression_are_exact() -> None:
     contract = _strict_load(CONTRACT_PATH)
     gate = contract["nc_pretstar_history_only_gate"]
@@ -555,7 +568,10 @@ def test_d8_canonical_json_is_order_invariant_and_normalizes_signed_zero() -> No
         "columns": expected["columns"],
     }
     assert _canonical_json_bytes(reordered) == M3_INPUT_PATH.read_bytes()
-    assert _canonical_json_bytes({"z": -0.0, "a": 1}) == b'{"a":1,"z":0.0}\n'
+    assert _canonical_json_bytes is W1C.canonical_json_bytes
+    assert _canonical_json_bytes(
+        {"z": -0.0, "nested": [-0.0, {"zero": -0.0}], "a": 1}
+    ) == b'{"a":1,"nested":[0.0,{"zero":0.0}],"z":0.0}\n'
     with pytest.raises(ValueError, match="Out of range float values"):
         _canonical_json_bytes({"value": math.nan})
 
@@ -637,7 +653,7 @@ def test_w1_authority_uses_current_board_pins_and_no_obsolete_d10_narrative() ->
             ROOT / "reports/plans/RQ014_plan_v1p8_g2r_output_freeze_amendment_20260716.md",
         )
     )
-    assert "D10" not in authority_text
+    assert "row-level granular per A10 propagation" in authority_text
     assert "80181e38c8f37c9c2f2e3c1d74b754648e773485efa189532e5118bc27883d26" not in authority_text
 
 

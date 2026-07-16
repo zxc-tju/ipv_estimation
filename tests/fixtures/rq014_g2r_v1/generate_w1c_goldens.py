@@ -35,12 +35,26 @@ NC_CASES = (
 )
 
 
+def normalize_signed_zero(value: Any) -> Any:
+    """Apply the frozen D8 signed-zero rule recursively before serialization."""
+
+    if isinstance(value, float):
+        return 0.0 if value == 0.0 else value
+    if isinstance(value, list):
+        return [normalize_signed_zero(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(normalize_signed_zero(item) for item in value)
+    if isinstance(value, dict):
+        return {key: normalize_signed_zero(item) for key, item in value.items()}
+    return value
+
+
 def canonical_json_bytes(value: Any) -> bytes:
     """Return the W1 D8 canonical JSON representation."""
 
     return (
         json.dumps(
-            value,
+            normalize_signed_zero(value),
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=False,
@@ -340,7 +354,50 @@ def deviations_readouts_fixture() -> dict[str, Any]:
             (1.0.hex(), (-math.ulp(0.0)).hex(), 0.0.hex(), math.ulp(0.0).hex()),
         ),
     )
+    direct_pointwise_inputs = (
+        ("VALUE_EQUALS_LOWER", (1.0, 1.0, 3.0, 7.0)),
+        ("VALUE_EQUALS_MEDIAN", (3.0, 1.0, 3.0, 7.0)),
+        ("VALUE_EQUALS_UPPER", (7.0, 1.0, 3.0, 7.0)),
+        ("NONFINITE_MEDIAN", (2.0, 1.0, math.nan, 7.0)),
+        ("NONFINITE_UPPER", (2.0, 1.0, 3.0, math.inf)),
+    )
+
+    direct_pointwise_cases = []
+    for case_id, values in direct_pointwise_inputs:
+        encoded_inputs = {
+            key: (
+                "NONFINITE_NAN"
+                if math.isnan(value)
+                else "NONFINITE_POSITIVE_INFINITY"
+                if value == math.inf
+                else value.hex()
+            )
+            for key, value in zip(("value", "lower", "median", "upper"), values)
+        }
+        try:
+            deviations = pointwise_deviations(*values)
+        except M3ScoringNumericalFailure:
+            expected_deviations = "NA"
+            expected_reason_code = "F_M3_SCORING_NUMERICAL_FAILURE"
+            expected_status = "M3_SCORING_NUMERICAL_FAILURE"
+        else:
+            expected_deviations = {
+                key: value.hex()
+                for key, value in zip(("nex", "nmd", "amd"), deviations)
+            }
+            expected_reason_code = "F_AVAILABLE_CONTINUE"
+            expected_status = "AVAILABLE"
+        direct_pointwise_cases.append(
+            {
+                "case_id": case_id,
+                "expected_deviations_hex_or_NA": expected_deviations,
+                "expected_reason_code": expected_reason_code,
+                "expected_status": expected_status,
+                "inputs_hex_or_token": encoded_inputs,
+            }
+        )
     return {
+        "direct_pointwise_cases": direct_pointwise_cases,
         "degenerate_readout_cases": [
             {
                 "case_id": "SINGLE_ANCHOR_ZERO_DURATION",
@@ -537,6 +594,11 @@ def main() -> None:
 
     manifest_path = FIXTURE_ROOT / "fixture_manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["canonicalization"] = (
+        "recursively normalize signed zero to 0.0, then CPython 3.9 "
+        "json.dumps(sort_keys=True,separators=(',',':'),ensure_ascii=False,"
+        "allow_nan=False), UTF-8, exactly one terminal LF"
+    )
     existing = {
         Path(entry["path"]).name: entry
         for entry in manifest["construction_goldens"]
