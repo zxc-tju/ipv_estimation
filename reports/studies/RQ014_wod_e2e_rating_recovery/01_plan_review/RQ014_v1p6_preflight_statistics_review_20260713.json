@@ -115,15 +115,28 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The three-round W5o statistics ledger closes S1 by pinning the mirrored 1e-12 endpoint-equivalence tolerance exactly and inclusively at both bisect edges."
+    },
+    {
+      "evidence": [
+        "The W1 reviewed wave consists of df5a2b92 (authority plus seven artifact schemas), c4bf8e2f (deterministic construction goldens and contract tests), aba7ad54 (five NC pairs, ten readouts, and A09/A10 status propagation), and 03964a47 (bound-generator signed-zero normalization plus exact boundary/finiteness mutation locks).",
+        "Statistics round 1 on c4bf8e2f raised S1 for the stale PI decision-record digest and invented D10-to-A10 narrative, S2 for incorrectly deferring the scorer-independent NC_PRETSTAR_HISTORY_ONLY fixtures, and S3 for missing scorer-independent ten-readout plus A09/A10 goldens; execution governance independently returned NO_BLOCKER.",
+        "Round 2 on aba7ad54 closed S1 and S2 and supplied the NC/readout/status bytes, but statistics retained S3 because the bound generator preserved negative zero while a different test-only canonicalizer normalized it, direct v=L/M/U and nonfinite M/U helper cases were not mutation-locked, and the negative regression still named D10; execution governance remained NO_BLOCKER.",
+        "Round 3 on 03964a47 makes generator and test call the same recursive D8 signed-zero normalizer, freezes exact NEX/NMD/AMD outputs at v=L, v=M and v=U, maps nonfinite median and upper to M3_SCORING_NUMERICAL_FAILURE, and replaces the obsolete D10 assertion with the current A10 wording. Deterministic fixture regeneration, 30 targeted passes plus one A08/A15 skip, and 395 full-suite passes plus two skips close the residual.",
+        "Terminal statistics and execution-governance reviews returned NO_BLOCKER with distinct codex/w4-stat-reviewer and codex/w4-exec-reviewer identities on the 121-row review manifest SHA-256 4aea9a3d4cbe525883f6707c3fb806c0ee1c8b915a83cce3a4e2b751e4d178dd. G2R execution remains DENY and only A08/A15 pre-mask scorer bytes remain PENDING_W3_SCORER."
+      ],
+      "finding_id": "G2R-W1-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The three-round G2R W1 statistics ledger closes S1, S2, and S3 with signed-zero, boundary, finiteness, NC, readout, and status semantics frozen."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-15T15:16:29Z",
+  "reviewed_at_utc": "2026-07-16T09:10:31Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "40c04a2b690112d49f6ced674a421277f20f3ce0f6a286c28bfe186532431e5f",
+  "reviewed_manifest_sha256": "4aea9a3d4cbe525883f6707c3fb806c0ee1c8b915a83cce3a4e2b751e4d178dd",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
