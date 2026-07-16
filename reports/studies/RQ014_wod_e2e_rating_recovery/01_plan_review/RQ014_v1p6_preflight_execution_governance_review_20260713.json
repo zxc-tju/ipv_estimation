@@ -127,15 +127,27 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "W1 freezes output authority without enabling G2R execution, rating access, or an executable operation surface."
+    },
+    {
+      "evidence": [
+        "Execution governance returned NO_BLOCKER throughout the W2 review wave f5866072, 393b62f3, and caed0f51 while statistics raised and closed S1-S6 over three rounds.",
+        "W2 adds only the denied-operation WOD-to-M3 feature, anchor-domain, and NC kernels plus commit-tree tests/goldens. It does not add M3 scoring, 320-cell orchestration, managed-operation integration, a run-spec or launcher branch, central authorization, rating access, or an HPC submission surface.",
+        "The final 123-row review manifest SHA-256 5fc9eb4c0345c9640abf39e56228de2307ea309aa463d9c202e06e698be9ba65 adds exactly scripts/rq014/build_wod_m3_anchors.py and scripts/rq014/build_wod_scene_anchor_domain.py to the cumulative W1 authority surface; supporting W2 goldens and tests remain commit-tree evidence.",
+        "Terminal execution-governance and statistics reviews returned NO_BLOCKER with distinct codex/w4-exec-reviewer and codex/w4-stat-reviewer identities, zero unresolved blockers or majors, no rating access, and no HPC submission; rq014_r2_blind_feature_build remains centrally denied."
+      ],
+      "finding_id": "G2R-W2-E-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "W2 freezes the reviewed kernel bytes without enabling G2R execution, rating access, orchestration, or submission."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-16T09:10:32Z",
+  "reviewed_at_utc": "2026-07-16T11:40:08Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "4aea9a3d4cbe525883f6707c3fb806c0ee1c8b915a83cce3a4e2b751e4d178dd",
+  "reviewed_manifest_sha256": "5fc9eb4c0345c9640abf39e56228de2307ea309aa463d9c202e06e698be9ba65",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
