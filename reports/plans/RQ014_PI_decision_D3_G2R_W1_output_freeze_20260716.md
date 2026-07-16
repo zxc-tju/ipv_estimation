@@ -4,7 +4,7 @@ Date: 2026-07-16.
 
 Decision source: `.codex-fleet/rq014-execution-v1p6/board/g2r_w1_decision_record.md`,
 5,335 bytes, SHA-256
-`80181e38c8f37c9c2f2e3c1d74b754648e773485efa189532e5118bc27883d26`
+`8d600e2314a0bc0e1a400310d586695e8638679e11fbffe0b17cde078c659331`
 (the “decision record”). The decision record adopts the recommended drafts in
 `.codex-fleet/rq014-execution-v1p6/board/g2r_w1_design_proposal.md`, SHA-256
 `56f47c46b2808bf0d8da3c6c06c6f7fbc261f5e05fef62b6dc7eb9acd4b62d7d`,
@@ -38,8 +38,8 @@ the exact recommended-draft row that the decision record adopts at lines
 | A06 | “one row per canonical cell” in the terminal immutable 320-row predictor manifest. |
 | A07 | “A07 (WOD→32 M3 features) was NOT in the committed repo (forensics NOT_FOUND) but IS recoverable by PORTING the RQ012B OnSite M3-anchor builder to WOD. All 25 numeric formulas + 7 categoricals exist in the reference and the committed verifier (anchors.py/features.py).” |
 | A08 | “build a thin REVIEWED helper returning unmasked q_0p5 + calibrated lo_90/hi_90 via model.predict_tier_quantiles + calibrated_bounds, WITHOUT changing scorer bytes”. |
-| A09 | “require finite strict L<M<U; otherwise status M3_SCORING_NUMERICAL_FAILURE (row-level granular per D10 propagation), PENDING statistics-reviewer confirmation; freeze boundary inclusivity + signed-zero.” |
-| A10 | “granular candidate status; all-three scene mask fails; only contract/hash drift is global abort”. The decision record's literal `D10` cross-reference in A09 is retained as a provenance note and this amendment binds it to A10 because no D10 exists. |
+| A09 | “require finite strict L<M<U; otherwise status M3_SCORING_NUMERICAL_FAILURE (row-level granular per A10 propagation), PENDING statistics-reviewer confirmation; freeze boundary inclusivity + signed-zero.” |
+| A10 | “granular candidate status; all-three scene mask fails; only contract/hash drift is global abort”. |
 | A11 | “bind score-stripped file_manifest, mapping manifest (not table alone), spec-pinned UTC; replace stale v2 pointer via amendment”. |
 | A12 | “exact IEEE-754 hex arrays in canonical JSON; five registered fixture pairs”. |
 | A13 | “one umbrella manifest plus whole-file/slice SHA; no hash chain”. |
@@ -57,7 +57,7 @@ The decision record's A-resolution bullets are preserved verbatim here:
   model.predict_tier_quantiles + calibrated_bounds, WITHOUT changing scorer bytes; regenerate pre-mask goldens
   for the OOD fixture rows under v4 + independent parity check.
 - A09 invalid-interval = require finite strict L<M<U; otherwise status M3_SCORING_NUMERICAL_FAILURE (row-level
-  granular per D10 propagation), PENDING statistics-reviewer confirmation; freeze boundary inclusivity +
+  granular per A10 propagation), PENDING statistics-reviewer confirmation; freeze boundary inclusivity +
   signed-zero. (ordinary NEX/NMD/AMD formulas per recovery_lane_v3:203-225.)
 - Format A01-A06,A10-A14,A16-A18 = adopt the design-proposal recommended drafts: normalized two-table logical
   bank; canonical JSONL rows+LF+typed values+whole-file SHA (CSV only where already fixed); FULL 459,840 slots
@@ -75,10 +75,10 @@ categoricals exist in the reference and the committed verifier
 
 The exact status/reason identifiers and exact FAIL-object shapes needed to make
 A05/A10/A14 machine-valid were not enumerated in the decision record. W1a
-therefore freezes only deterministic schema/governance completions in
+therefore froze only deterministic schema/governance completions in
 `RQ014_g2r_output_contract_v1.json`; they add no rating field, model formula, or
-scientific branch. Fixture payload hashes remain explicit `PENDING_W1B`
-placeholders and cannot satisfy a future execution gate.
+scientific branch. W1b/W1c bind the locally computable scorer-independent
+fixtures. Only A08/A15 pre-mask scorer-output bytes remain `PENDING_W3_SCORER`.
 
 ## D1–D8 resolutions
 

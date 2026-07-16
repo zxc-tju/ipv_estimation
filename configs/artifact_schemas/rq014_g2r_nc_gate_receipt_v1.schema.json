@@ -86,11 +86,11 @@
           "failure_or_NA": {"const": "NA"},
           "fixtures": {
             "prefixItems": [
-              {"properties": {"status": {"const": "PASS"}}},
-              {"properties": {"status": {"const": "PASS"}}},
-              {"properties": {"status": {"const": "PASS"}}},
-              {"properties": {"status": {"const": "PASS"}}},
-              {"properties": {"status": {"const": "PASS"}}}
+              {"$ref": "#/$defs/passFixtureObservation"},
+              {"$ref": "#/$defs/passFixtureObservation"},
+              {"$ref": "#/$defs/passFixtureObservation"},
+              {"$ref": "#/$defs/passFixtureObservation"},
+              {"$ref": "#/$defs/passFixtureObservation"}
             ]
           }
         }
@@ -111,13 +111,27 @@
   ],
   "$defs": {
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "passFixtureObservation": {
+      "properties": {
+        "observed_state_bytes_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_m3_context_bytes_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_focal_reference_bytes_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_counterpart_reference_bytes_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_ipv_bytes_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_payload_sha256": {"$ref": "#/$defs/sha256"},
+        "status": {"const": "PASS"}
+      }
+    },
     "fixture": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "fixture_id", "input_path", "input_size_bytes", "input_sha256",
         "expected_path", "expected_size_bytes", "expected_sha256",
-        "observed_payload_sha256", "status"
+        "observed_state_bytes_sha256", "observed_m3_context_bytes_sha256",
+        "observed_focal_reference_bytes_sha256",
+        "observed_counterpart_reference_bytes_sha256",
+        "observed_ipv_bytes_sha256", "observed_payload_sha256", "status"
       ],
       "properties": {
         "fixture_id": {"type": "string", "minLength": 1},
@@ -127,6 +141,21 @@
         "expected_path": {"type": "string", "minLength": 1},
         "expected_size_bytes": {"type": "integer", "minimum": 1},
         "expected_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_state_bytes_sha256": {
+          "oneOf": [{"$ref": "#/$defs/sha256"}, {"const": "NA"}]
+        },
+        "observed_m3_context_bytes_sha256": {
+          "oneOf": [{"$ref": "#/$defs/sha256"}, {"const": "NA"}]
+        },
+        "observed_focal_reference_bytes_sha256": {
+          "oneOf": [{"$ref": "#/$defs/sha256"}, {"const": "NA"}]
+        },
+        "observed_counterpart_reference_bytes_sha256": {
+          "oneOf": [{"$ref": "#/$defs/sha256"}, {"const": "NA"}]
+        },
+        "observed_ipv_bytes_sha256": {
+          "oneOf": [{"$ref": "#/$defs/sha256"}, {"const": "NA"}]
+        },
         "observed_payload_sha256": {
           "oneOf": [{"$ref": "#/$defs/sha256"}, {"const": "NA"}]
         },

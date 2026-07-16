@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import importlib.util
+import inspect
 import json
 import math
 from pathlib import Path
@@ -27,6 +29,22 @@ GEOMETRY_FIXTURE_PATH = FIXTURE_ROOT / "geometry_path_crosstab_expected.json"
 CELL_ORDER_FIXTURE_PATH = FIXTURE_ROOT / "canonical_cell_order_golden.json"
 BLIND_FIXTURE_PATH = FIXTURE_ROOT / "blind_scene_predicate_golden.json"
 FIXTURE_MANIFEST_PATH = FIXTURE_ROOT / "fixture_manifest.json"
+READOUT_FIXTURE_PATH = FIXTURE_ROOT / "deviations_readouts_v1.json"
+STATUS_FIXTURE_PATH = FIXTURE_ROOT / "availability_statuses_v1.json"
+W1C_GENERATOR_PATH = FIXTURE_ROOT / "generate_w1c_goldens.py"
+NC_FIXTURE_IDS = (
+    "NC_HISTORY_BRANCH_R04N_W10",
+    "NC_HISTORY_BRANCH_R04N_W25",
+    "NC_HISTORY_BRANCH_R10L_W10",
+    "NC_HISTORY_BRANCH_R10L_W25",
+    "NC_HISTORY_FUTURE_PERTURBATION",
+)
+
+
+_W1C_SPEC = importlib.util.spec_from_file_location("rq014_g2r_w1c_goldens", W1C_GENERATOR_PATH)
+assert _W1C_SPEC is not None and _W1C_SPEC.loader is not None
+W1C = importlib.util.module_from_spec(_W1C_SPEC)
+_W1C_SPEC.loader.exec_module(W1C)
 
 
 def _reject_duplicate_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -161,6 +179,32 @@ def _blind_scene_eligible(example: dict[str, Any], cell_count: int) -> bool:
         if normalized[0] == normalized[1] == normalized[2]:
             return False
     return True
+
+
+def _build_nc_from_input(fixture: dict[str, Any]) -> dict[str, Any]:
+    return W1C.build_nc_history_only_payload(
+        fixture_id=fixture["fixture_id"],
+        sample_dt_s=fixture["sample_dt_s"],
+        ego_history_xy=fixture["ego_history_xy"],
+        counterpart_history_xy=fixture["counterpart_history_xy"],
+        route_intent=fixture["route_intent"],
+    )
+
+
+def _select_scene_failure(
+    rows: list[dict[str, Any]],
+    priority_by_reason: dict[str, int],
+) -> tuple[str, str]:
+    failures = [row for row in rows if row["status"] != "AVAILABLE"]
+    selected = min(
+        failures,
+        key=lambda row: (
+            priority_by_reason[row["reason_code"]],
+            row["candidate_ordinal"],
+            row["reason_code"].encode("utf-8"),
+        ),
+    )
+    return selected["status"], selected["reason_code"]
 
 
 def test_all_fixture_and_contract_json_is_strict_and_canonical() -> None:
@@ -328,6 +372,181 @@ def test_nex_nmd_amd_ordinary_finite_interval(value: float, expected: tuple[floa
     assert _deviations(value, 1.0, 3.0, 7.0) == expected
 
 
+def test_all_ten_physical_time_readouts_and_a09_degenerate_cases_match_golden() -> None:
+    contract = _strict_load(CONTRACT_PATH)
+    fixture = _strict_load(READOUT_FIXTURE_PATH)
+    ordinary = fixture["ordinary_case"]
+    observed_pointwise = []
+    for anchor in ordinary["anchors"]:
+        values = tuple(
+            float.fromhex(anchor[key])
+            for key in ("value_hex", "lower_hex", "median_hex", "upper_hex")
+        )
+        observed = W1C.pointwise_deviations(*values)
+        assert tuple(value.hex() for value in observed) == tuple(
+            anchor[key] for key in ("nex_hex", "nmd_hex", "amd_hex")
+        )
+        observed_pointwise.append(observed)
+
+    readouts = W1C.trapezoid_readouts(
+        [float.fromhex(anchor["tau_s_hex"]) for anchor in ordinary["anchors"]],
+        [values[0] for values in observed_pointwise],
+        [values[1] for values in observed_pointwise],
+        [values[2] for values in observed_pointwise],
+    )
+    assert fixture["readout_order"] == [row["readout_id"] for row in contract["readout_contract"]]
+    assert set(readouts) == set(fixture["readout_order"])
+    assert {key: value.hex() for key, value in sorted(readouts.items())} == ordinary[
+        "expected_readouts_hex"
+    ]
+
+    for case in fixture["invalid_interval_cases"]:
+        inputs = case["inputs_hex_or_token"]
+        values = tuple(
+            W1C._decode_token(inputs[key])
+            for key in ("value", "lower", "median", "upper")
+        )
+        if case["case_id"] == "STRICT_TINY_HALF_WIDTH_DERIVED_OVERFLOW":
+            assert values[1] < values[2] < values[3]
+        with pytest.raises(W1C.M3ScoringNumericalFailure):
+            W1C.pointwise_deviations(*values)
+        assert case["expected_status"] == "M3_SCORING_NUMERICAL_FAILURE"
+        assert case["expected_reason_code"] == "F_M3_SCORING_NUMERICAL_FAILURE"
+
+    for case in fixture["degenerate_readout_cases"]:
+        times = [float.fromhex(value) for value in case["times_s_hex"]]
+        with pytest.raises(W1C.M3ScoringNumericalFailure):
+            W1C.trapezoid_readouts(times, [0.0] * len(times), [0.0] * len(times), [0.0] * len(times))
+
+
+def test_nc_history_only_five_pairs_and_future_leakage_regression_are_exact() -> None:
+    contract = _strict_load(CONTRACT_PATH)
+    gate = contract["nc_pretstar_history_only_gate"]
+    assert gate["fixture_ids"] == list(NC_FIXTURE_IDS)
+    assert tuple(inspect.signature(W1C.build_nc_history_only_payload).parameters) == (
+        "fixture_id",
+        "sample_dt_s",
+        "ego_history_xy",
+        "counterpart_history_xy",
+        "route_intent",
+    )
+    assert not set(gate["function_signature_forbidden_inputs"]) & set(
+        inspect.signature(W1C.build_nc_history_only_payload).parameters
+    )
+
+    bindings = contract["fixture_bindings"]["nc_fixture_pairs"]
+    observed_by_id: dict[str, dict[str, Any]] = {}
+    for binding, fixture_id in zip(bindings, NC_FIXTURE_IDS):
+        assert binding["fixture_id"] == fixture_id
+        assert binding["binding_status"] == "BOUND_SCORER_INDEPENDENT"
+        input_path = ROOT / binding["input_path"]
+        expected_path = ROOT / binding["expected_path"]
+        assert input_path.stat().st_size == binding["input_size_bytes"]
+        assert expected_path.stat().st_size == binding["expected_size_bytes"]
+        assert hashlib.sha256(input_path.read_bytes()).hexdigest() == binding["input_sha256"]
+        assert hashlib.sha256(expected_path.read_bytes()).hexdigest() == binding["expected_sha256"]
+        fixture_input = _strict_load(input_path)
+        expected = _strict_load(expected_path)
+        _assert_exact_keys(fixture_input, gate["fixture_input_exact_keys"])
+        _assert_exact_keys(expected, gate["fixture_expected_exact_keys"])
+        assert _build_nc_from_input(fixture_input) == expected
+        assert len(set(expected["candidate_payload_sha256_by_ordinal"].values())) == 1
+        observed_by_id[fixture_id] = expected
+
+    future_binding = bindings[-1]
+    future_input = _strict_load(ROOT / future_binding["input_path"])
+    baseline = _build_nc_from_input(future_input)
+    post_tau_mutation = copy.deepcopy(future_input)
+    post_tau_mutation["base_candidate_futures"] = post_tau_mutation[
+        "perturbed_candidate_futures"
+    ]
+    post_tau_mutation["base_ego_future"] = post_tau_mutation["perturbed_ego_future"]
+    assert _build_nc_from_input(post_tau_mutation) == baseline
+
+    at_tau_mutation = copy.deepcopy(future_input)
+    terminal_x = float.fromhex(at_tau_mutation["ego_history_xy"][-1][0])
+    at_tau_mutation["ego_history_xy"][-1][0] = (terminal_x + 0.125).hex()
+    changed = _build_nc_from_input(at_tau_mutation)
+    assert changed["m3_context_bytes_sha256"] != baseline["m3_context_bytes_sha256"]
+    assert changed["candidate_payload_sha256_by_ordinal"] != baseline[
+        "candidate_payload_sha256_by_ordinal"
+    ]
+    r10l_w25 = observed_by_id["NC_HISTORY_BRANCH_R10L_W25"]
+    assert {
+        key: value for key, value in r10l_w25.items() if key != "fixture_id"
+    } == {key: value for key, value in baseline.items() if key != "fixture_id"}
+
+    receipt_schema = _strict_load(
+        ROOT / "configs/artifact_schemas/rq014_g2r_nc_gate_receipt_v1.schema.json"
+    )
+    fixture_schema = receipt_schema["$defs"]["fixture"]
+    assert fixture_schema["required"] == list(fixture_schema["properties"])
+    assert {
+        "observed_state_bytes_sha256",
+        "observed_m3_context_bytes_sha256",
+        "observed_focal_reference_bytes_sha256",
+        "observed_counterpart_reference_bytes_sha256",
+        "observed_ipv_bytes_sha256",
+        "observed_payload_sha256",
+    } <= set(fixture_schema["required"])
+
+
+def test_a10_candidate_scene_cell_and_global_status_propagation_is_exact() -> None:
+    contract = _strict_load(CONTRACT_PATH)
+    statuses = contract["status_contract"]
+    fixture = _strict_load(STATUS_FIXTURE_PATH)
+    assert fixture["candidate_status_rows"] == [
+        {
+            **row,
+            "available": row["status"] == "AVAILABLE",
+            "predictor_finite": row["status"] == "AVAILABLE",
+        }
+        for row in statuses["candidate_upstream_statuses"]
+    ]
+    priority_by_reason = {
+        row["reason_code"]: row["reason_priority"]
+        for row in statuses["candidate_upstream_statuses"]
+    }
+    precedence = fixture["candidate_precedence_case"]
+    assert _select_scene_failure(precedence["candidate_rows"], priority_by_reason) == (
+        precedence["expected_status"],
+        precedence["expected_reason_code"],
+    )
+
+    propagation = fixture["m3_numerical_failure_propagation"]
+    selected_status, selected_reason = _select_scene_failure(
+        propagation["candidate_rows"], priority_by_reason
+    )
+    scene = propagation["expected_scene_cell"]
+    assert (selected_status, selected_reason) == (
+        scene["scene_cell_status"],
+        scene["reason_code"],
+    )
+    assert scene == {
+        "all_three_available": False,
+        "all_three_deviations_finite": False,
+        "blind_cell_scene_eligible": False,
+        "deviation_vector_nonconstant": False,
+        "reason_code": "F_M3_SCORING_NUMERICAL_FAILURE",
+        "scene_cell_status": "M3_SCORING_NUMERICAL_FAILURE",
+    }
+    assert propagation["expected_cell"] == {
+        "cell_fatal_upstream_status_or_NA": "NA",
+        "cell_terminal_status": "TERMINAL",
+        "global_abort": False,
+        "reason_code": "F_M3_SCORING_NUMERICAL_FAILURE",
+    }
+    assert fixture["global_fatal_rows"] == [
+        {
+            **row,
+            "cell_fatal_upstream_status_or_NA": row["status"],
+            "cell_terminal_status": "CELL_FATAL",
+            "global_abort": True,
+        }
+        for row in statuses["global_fatal_status_reason_mappings"]
+    ]
+
+
 def test_d8_canonical_json_is_order_invariant_and_normalizes_signed_zero() -> None:
     expected = _strict_load(M3_INPUT_PATH)
     reordered = {
@@ -392,7 +611,37 @@ def test_g2r_operation_remains_centrally_denied_and_has_no_runnable_surface() ->
     assert not (ROOT / "scripts" / "rq014" / "run_g2r.py").exists()
 
 
-def test_fixture_manifest_binds_construction_bytes_and_defers_scorer_goldens() -> None:
+def test_w1_authority_uses_current_board_pins_and_no_obsolete_d10_narrative() -> None:
+    contract = _strict_load(CONTRACT_PATH)
+    assert contract["decision_evidence"] == {
+        "design_proposal": {
+            "path": ".codex-fleet/rq014-execution-v1p6/board/g2r_w1_design_proposal.md",
+            "sha256": "56f47c46b2808bf0d8da3c6c06c6f7fbc261f5e05fef62b6dc7eb9acd4b62d7d",
+            "size_bytes": 45181,
+        },
+        "pi_lead_decision": {
+            "path": ".codex-fleet/rq014-execution-v1p6/board/g2r_w1_decision_record.md",
+            "sha256": "8d600e2314a0bc0e1a400310d586695e8638679e11fbffe0b17cde078c659331",
+            "size_bytes": 5335,
+        },
+        "wod_port_design": {
+            "path": ".codex-fleet/rq014-execution-v1p6/board/g2r_w1_wod_port_design.md",
+            "sha256": "0a820ae1268f77822d549e40b1d60a85fbc9856bc481329733c6ffb18cb2a17e",
+            "size_bytes": 35427,
+        },
+    }
+    authority_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (
+            ROOT / "reports/plans/RQ014_PI_decision_D3_G2R_W1_output_freeze_20260716.md",
+            ROOT / "reports/plans/RQ014_plan_v1p8_g2r_output_freeze_amendment_20260716.md",
+        )
+    )
+    assert "D10" not in authority_text
+    assert "80181e38c8f37c9c2f2e3c1d74b754648e773485efa189532e5118bc27883d26" not in authority_text
+
+
+def test_fixture_manifest_binds_all_scorer_independent_goldens_and_only_defers_a08_a15() -> None:
     manifest = _strict_load(FIXTURE_MANIFEST_PATH)
     for entry in manifest["construction_goldens"]:
         path = ROOT / entry["path"]
@@ -416,10 +665,15 @@ def test_fixture_manifest_binds_construction_bytes_and_defers_scorer_goldens() -
     bindings = contract["fixture_bindings"]
     assert bindings["binding_status"] == "CONSTRUCTION_GOLDENS_BOUND_SCORER_GOLDENS_PENDING_W3"
     assert bindings["m3_pre_mask_golden"]["binding_status"] == "PENDING_W3_SCORER"
-    assert {item["binding_status"] for item in bindings["nc_fixture_pairs"]} == {"PENDING_W3_SCORER"}
+    assert deferred["deferred_artifacts"] == ["m3_pre_mask_expected.json (A08/A15)"]
+    assert {item["binding_status"] for item in bindings["nc_fixture_pairs"]} == {
+        "BOUND_SCORER_INDEPENDENT"
+    }
     bound_files = {
+        "availability_statuses_golden": STATUS_FIXTURE_PATH,
         "blind_scene_predicate_golden": BLIND_FIXTURE_PATH,
         "canonical_cell_order_golden": CELL_ORDER_FIXTURE_PATH,
+        "deviations_readouts_golden": READOUT_FIXTURE_PATH,
         "geometry_path_crosstab_golden": GEOMETRY_FIXTURE_PATH,
         "m3_input_row_golden": M3_INPUT_PATH,
         "schema_shape_goldens": SHAPES_PATH,
@@ -433,14 +687,14 @@ def test_fixture_manifest_binds_construction_bytes_and_defers_scorer_goldens() -
         assert binding["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
     assert "PENDING_W1B" not in CONTRACT_PATH.read_text(encoding="utf-8")
     assert not (FIXTURE_ROOT / "m3_pre_mask_expected.json").exists()
-    assert not any(FIXTURE_ROOT.glob("nc_*payload*.json"))
+    assert "NC_" not in json.dumps(deferred, sort_keys=True)
 
 
 @pytest.mark.skip(
     reason=(
-        "PENDING_W3_SCORER: A08/A15 pre-mask M3 outputs and NC payload hashes require "
-        "the reviewed managed-v4 scikit-learn 1.6.1/joblib 1.5.3 scorer run"
+        "PENDING_W3_SCORER: only A08/A15 pre-mask M3 q_0p5/lo_90/hi_90 bytes "
+        "require the reviewed managed-v4 scikit-learn 1.6.1/joblib 1.5.3 scorer run"
     )
 )
-def test_m3_pre_mask_and_nc_payload_goldens_under_reviewed_v4_scorer() -> None:
-    """W3 must replace this skip only after binding real scorer-produced bytes."""
+def test_m3_pre_mask_goldens_under_reviewed_v4_scorer() -> None:
+    """W3 must replace this skip only after binding real A08/A15 scorer bytes."""

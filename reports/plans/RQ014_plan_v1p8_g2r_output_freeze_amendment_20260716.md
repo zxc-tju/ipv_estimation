@@ -88,14 +88,19 @@ raw-UTF-8 scene, candidate-ordinal order; terminal values use typed NA rather
 than row deletion, null, NaN, infinity, or sentinels. CSV is retained only for
 the already frozen scene-anchor and common-support blind artifacts.
 
-Only finite strict `L<M<U` permits NEX/NMD/AMD. Equality at either boundary,
-nonfinite inputs, or an invalid interval produces row-level
-`M3_SCORING_NUMERICAL_FAILURE`; this A09 choice remains explicitly subject to
-statistics review before execution authorization. Failures are candidate
-granular, make the all-three scene mask false, and do not globally abort unless
-authority/schema/hash integrity or the NC leakage gate fails. The decision
-record's `D10` reference is treated as A10 because D1–D8 are the complete D
-ledger.
+Only finite strict `L<M<U` permits NEX/NMD/AMD, and all three derived binary64
+deviations must also remain finite. Equality at either boundary, nonfinite
+inputs, an invalid interval, or a strict but subnormal-width interval whose
+division overflows produces row-level `M3_SCORING_NUMERICAL_FAILURE`; this A09
+choice remains explicitly subject to statistics review before execution
+authorization. Per A10, failures are candidate granular, make the all-three
+scene mask false, and do not globally abort unless authority/schema/hash
+integrity or the NC leakage gate fails.
+Candidate and scene-cell failure selection uses the frozen F-stage reason
+priority (scene ties then use candidate ordinal and raw UTF-8 reason code). A
+nonfatal cell remains `TERMINAL`; its representative failure is selected by
+reason priority, raw UTF-8 segment ID, candidate ordinal, and raw UTF-8 reason
+code. Only a registered global-fatal mapping produces `CELL_FATAL`.
 
 The output contract instantiates the otherwise unnamed A05/A10 status/reason
 namespace and the A12/A14 receipt failure objects as deterministic governance
@@ -111,13 +116,13 @@ the lane-v3/G2R F-stage registry frozen in
 pointer to recovery lane v2 is superseded for this G2R consumer and must not be
 followed. The immutable anchor-domain artifact bytes are not rewritten.
 
-## W1/W1b and future-wave boundary
+## W1/W1b/W1c and future-wave boundary
 
-This W1a wave freezes authority, contract, and seven JSON Schemas only. Fixture
-paths/hashes are explicit `PENDING_W1B` bindings and cannot pass a gate. W1b
-must add the deterministic golden payloads, exact hashes, exact-key tests,
-formula/boundary tests, status propagation tests, and candidate-manifest/G1/
-bundle cascade.
+W1a froze authority, the output contract, and seven JSON Schemas. W1b bound the
+initial deterministic construction fixtures. W1c binds the five history-only
+NC pairs, the ten readout reductions, and A09/A10 numerical-failure propagation
+without invoking the scorer. Only A08/A15 pre-mask `q_0p5/lo_90/hi_90` expected
+bytes remain `PENDING_W3_SCORER`; no pending fixture can pass its future gate.
 
 No environment v5 is required: future G2R remains bound to the reviewed v4
 closure when separately authorized. This amendment does not edit
