@@ -321,17 +321,15 @@ def test_w3_scorer_artifact_gate_rejects_unreviewed_bytes(tmp_path: Path) -> Non
         W3.score_pre_mask_m3([_strict_load(M3_INPUT_FIXTURE)], fake)
 
 
-def test_w3_keeps_a08_a15_bindings_pending_and_operation_denied() -> None:
+def test_w3_binds_a08_a15_at_portable_parity_and_keeps_operation_denied() -> None:
     contract = _strict_load(ROOT / W3.G2R_OUTPUT_CONTRACT_PATH)
-    assert contract["fixture_bindings"]["m3_pre_mask_golden"] == {
-        "binding_status": "PENDING_W3_SCORER",
-        "environment": "reviewed managed v4 closure",
-        "independent_parity": "PENDING_W3_SCORER",
-        "path": "PENDING_W3_SCORER",
-        "planned_path": "tests/fixtures/rq014_g2r_v1/m3_pre_mask_expected.json",
-        "sha256": "PENDING_W3_SCORER",
-        "size_bytes": "PENDING_W3_SCORER",
-    }
+    binding = contract["fixture_bindings"]["m3_pre_mask_golden"]
+    assert binding["binding_status"] == "BOUND_W3_PORTABLE_PARITY_1E-7"
+    assert binding["sha256"] == (
+        "e7c332a13d18187f2b671042d459af91db8702dcda15917b773692858c44534f"
+    )
+    assert binding["independent_parity"]["absolute_tolerance"] == 1e-7
+    assert "PENDING_W3_SCORER" not in json.dumps(contract, sort_keys=True)
     assert contract["future_operation_binding"]["central_authorization"] == "DENY"
     authorization = _strict_load(ROOT / "configs/research_authorization.json")
     assert "rq014_r2_blind_feature_build" not in authorization["authorizations"]["RQ014"][
