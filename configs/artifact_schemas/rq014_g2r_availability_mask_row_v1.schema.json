@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/rq014-g2r-availability-mask-row-v1.json",
+  "title": "RQ014 G2R availability-mask JSONL row",
+  "type": "object",
+  "additionalProperties": false,
+  "x-rq014-stored-key-order": "CPYTHON_3P9_SORT_KEYS_TRUE",
+  "x-rq014-logical-key-order": [
+    "schema_version",
+    "cell_index",
+    "cell_id",
+    "segment_id",
+    "candidates",
+    "all_three_available",
+    "all_three_deviations_finite",
+    "deviation_vector_nonconstant",
+    "blind_cell_scene_eligible",
+    "scene_cell_status",
+    "reason_code"
+  ],
+  "required": [
+    "schema_version",
+    "cell_index",
+    "cell_id",
+    "segment_id",
+    "candidates",
+    "all_three_available",
+    "all_three_deviations_finite",
+    "deviation_vector_nonconstant",
+    "blind_cell_scene_eligible",
+    "scene_cell_status",
+    "reason_code"
+  ],
+  "properties": {
+    "schema_version": {"const": "rq014-g2r-availability-mask-row-v1"},
+    "cell_index": {"type": "integer", "minimum": 0, "maximum": 319},
+    "cell_id": {"$ref": "#/$defs/cellId"},
+    "segment_id": {"type": "string", "minLength": 1},
+    "candidates": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/candidateMask"}, {"properties": {"candidate_ordinal": {"const": 1}, "candidate_id": {"const": "C1"}}}]},
+        {"allOf": [{"$ref": "#/$defs/candidateMask"}, {"properties": {"candidate_ordinal": {"const": 2}, "candidate_id": {"const": "C2"}}}]},
+        {"allOf": [{"$ref": "#/$defs/candidateMask"}, {"properties": {"candidate_ordinal": {"const": 3}, "candidate_id": {"const": "C3"}}}]}
+      ],
+      "items": false
+    },
+    "all_three_available": {"type": "boolean"},
+    "all_three_deviations_finite": {"type": "boolean"},
+    "deviation_vector_nonconstant": {"type": "boolean"},
+    "blind_cell_scene_eligible": {"type": "boolean"},
+    "scene_cell_status": {"$ref": "#/$defs/upstreamStatus"},
+    "reason_code": {"$ref": "#/$defs/reasonCode"}
+  },
+  "$defs": {
+    "cellId": {"type": "string", "pattern": "^RR3-(R04N|R10L)-(CH-W10|CH-W25|LF-W10|LF-W25|HF-W10|HF-W25|TP|TF)-(H20|HFEAS)-(NEX_MEAN|NEX_MAX|NEX_LAST|NEX_FOUT|NMD_MEAN|NMD_MAX|NMD_LAST|AMD_MEAN|AMD_MAX|AMD_LAST)$"},
+    "reasonCode": {
+      "enum": [
+        "F_AVAILABLE_CONTINUE",
+        "F_SAFE_PRIMITIVE_OR_FIXTURE_GATE",
+        "F_MISSING_COUNTERPART_IDENTITY",
+        "F_AMBIGUOUS_COUNTERPART_IDENTITY",
+        "F_MISSING_WOD_PATH_TYPE",
+        "F_AMBIGUOUS_WOD_PATH_TYPE",
+        "F_UNRECOGNIZED_PATH_TYPE",
+        "F_DRIFTED_COUNTERPART_IDENTITY",
+        "F_COUNTERPART_NOT_VEHICLE",
+        "F_TIMELINE_SUPPORT",
+        "F_TIMELINE_SOURCE_GAP",
+        "F_TIMELINE_GRID_PHASE",
+        "F_TIMELINE_SEAM",
+        "F_STATE_NONFINITE",
+        "F_UNDEFINED_HEADING",
+        "F_IPV_NUMERICAL",
+        "F_INELIGIBLE_REFERENCE",
+        "F_M3_SCORING_NUMERICAL_FAILURE"
+      ]
+    },
+    "upstreamStatus": {
+      "enum": [
+        "AVAILABLE", "INELIGIBLE_BLIND", "MISSING_COUNTERPART_IDENTITY",
+        "AMBIGUOUS_COUNTERPART_IDENTITY", "MISSING_WOD_PATH_TYPE",
+        "AMBIGUOUS_WOD_PATH_TYPE", "UNRECOGNIZED_PATH_TYPE",
+        "DRIFTED_COUNTERPART_IDENTITY", "INELIGIBLE_COUNTERPART_CLASS",
+        "INELIGIBLE_TIMELINE_SUPPORT", "INELIGIBLE_TIMELINE_SOURCE_GAP",
+        "INELIGIBLE_TIMELINE_GRID_PHASE", "INELIGIBLE_TIMELINE_SEAM",
+        "INELIGIBLE_STATE_NONFINITE", "INELIGIBLE_UNDEFINED_HEADING",
+        "INELIGIBLE_IPV_NUMERICAL", "INELIGIBLE_REFERENCE",
+        "M3_SCORING_NUMERICAL_FAILURE"
+      ]
+    },
+    "candidateMask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_ordinal", "candidate_id", "available", "predictor_finite", "upstream_status", "reason_code"],
+      "properties": {
+        "candidate_ordinal": {"enum": [1, 2, 3]},
+        "candidate_id": {"enum": ["C1", "C2", "C3"]},
+        "available": {"type": "boolean"},
+        "predictor_finite": {"type": "boolean"},
+        "upstream_status": {"$ref": "#/$defs/upstreamStatus"},
+        "reason_code": {"$ref": "#/$defs/reasonCode"}
+      }
+    }
+  }
+}

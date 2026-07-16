@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/rq014-g2r-output-manifest-v1.json",
+  "title": "RQ014 G2R umbrella output manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "x-rq014-stored-key-order": "CPYTHON_3P9_SORT_KEYS_TRUE",
+  "x-rq014-logical-key-order": [
+    "schema_version",
+    "operation",
+    "run_id",
+    "git_commit",
+    "created_at_utc",
+    "source_contracts",
+    "lineage",
+    "artifacts",
+    "counts",
+    "canonical_cell_ids_sha256",
+    "common_support_id",
+    "forbidden_output_scan",
+    "status"
+  ],
+  "required": [
+    "schema_version", "operation", "run_id", "git_commit", "created_at_utc",
+    "source_contracts", "lineage", "artifacts", "counts",
+    "canonical_cell_ids_sha256", "common_support_id",
+    "forbidden_output_scan", "status"
+  ],
+  "properties": {
+    "schema_version": {"const": "rq014-g2r-output-manifest-v1"},
+    "operation": {"const": "rq014_r2_blind_feature_build"},
+    "run_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+    "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "created_at_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"},
+    "source_contracts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recovery_lane_v3", "envelope_builder_contract_v2", "m3_feature_spec_contract", "config_space_v1p6", "execution_contract_v1p5"],
+      "properties": {
+        "recovery_lane_v3": {"allOf": [{"$ref": "#/$defs/sourceRef"}, {"properties": {"relative_path": {"const": "reports/plans/RQ014_recovery_lane_v3.json"}}}]},
+        "envelope_builder_contract_v2": {"allOf": [{"$ref": "#/$defs/sourceRef"}, {"properties": {"relative_path": {"const": "reports/plans/RQ014_envelope_builder_contract_v2.json"}}}]},
+        "m3_feature_spec_contract": {"allOf": [{"$ref": "#/$defs/sourceRef"}, {"properties": {"relative_path": {"const": "models/rq009_m3/feature_spec_contract.json"}}}]},
+        "config_space_v1p6": {"allOf": [{"$ref": "#/$defs/sourceRef"}, {"properties": {"relative_path": {"const": "reports/plans/RQ014_config_space_v1p6.yaml"}}}]},
+        "execution_contract_v1p5": {"allOf": [{"$ref": "#/$defs/sourceRef"}, {"properties": {"relative_path": {"const": "reports/plans/RQ014_execution_contract_v1p5.json"}}}]}
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_manifest", "sanitization_receipt", "materialization_ledger",
+        "wod_path_type_mapping_manifest", "m3_artifact", "m3_manifest",
+        "m3_feature_spec_contract", "environment_manifest", "python_executable",
+        "contract_preflight_receipt", "contract_preflight_done",
+        "resource_pilot_receipt", "resource_pilot_done", "code_snapshot"
+      ],
+      "properties": {
+        "input_manifest": {"$ref": "#/$defs/fileRef"},
+        "sanitization_receipt": {"$ref": "#/$defs/fileRef"},
+        "materialization_ledger": {"$ref": "#/$defs/fileRef"},
+        "wod_path_type_mapping_manifest": {"$ref": "#/$defs/fileRef"},
+        "m3_artifact": {"$ref": "#/$defs/fileRef"},
+        "m3_manifest": {"$ref": "#/$defs/fileRef"},
+        "m3_feature_spec_contract": {"$ref": "#/$defs/fileRef"},
+        "environment_manifest": {"$ref": "#/$defs/fileRef"},
+        "python_executable": {"$ref": "#/$defs/fileRef"},
+        "contract_preflight_receipt": {"$ref": "#/$defs/fileRef"},
+        "contract_preflight_done": {"$ref": "#/$defs/fileRef"},
+        "resource_pilot_receipt": {"$ref": "#/$defs/fileRef"},
+        "resource_pilot_done": {"$ref": "#/$defs/fileRef"},
+        "code_snapshot": {"$ref": "#/$defs/fileRef"}
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wod_scene_anchor_domain", "wod_scene_anchor_domain_manifest",
+        "g2r_anchor_scores", "g2r_blind_feature_bank",
+        "g2r_availability_masks", "common_support_blind_manifest",
+        "g2r_predictor_manifest", "nc_pretstar_history_only_receipt"
+      ],
+      "properties": {
+        "wod_scene_anchor_domain": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactRef"},
+            {"properties": {"relative_path": {"const": "wod_scene_anchor_domain.csv"}, "schema_version": {"const": "rq014-wod-scene-anchor-domain-v1"}}}
+          ]
+        },
+        "wod_scene_anchor_domain_manifest": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactRef"},
+            {"properties": {"relative_path": {"const": "wod_scene_anchor_domain_manifest.json"}, "schema_version": {"const": "rq014-wod-scene-anchor-domain-manifest-v1"}, "row_count": {"const": 1}}}
+          ]
+        },
+        "g2r_anchor_scores": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactRef"},
+            {"properties": {"relative_path": {"const": "g2r_anchor_scores.jsonl"}, "schema_version": {"const": "rq014-g2r-anchor-score-row-v1"}}}
+          ]
+        },
+        "g2r_blind_feature_bank": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactRef"},
+            {"properties": {"relative_path": {"const": "g2r_blind_feature_bank.jsonl"}, "schema_version": {"const": "rq014-g2r-blind-feature-row-v1"}, "row_count": {"const": 459840}}}
+          ]
+        },
+        "g2r_availability_masks": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactRef"},
+            {"properties": {"relative_path": {"const": "g2r_availability_masks.jsonl"}, "schema_version": {"const": "rq014-g2r-availability-mask-row-v1"}, "row_count": {"const": 153280}}}
+          ]
+        },
+        "common_support_blind_manifest": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactRef"},
+            {"properties": {"relative_path": {"const": "common_support_blind_manifest.csv"}, "schema_version": {"const": "rq014-common-support-blind-manifest-v1"}, "row_count": {"type": "integer", "minimum": 0, "maximum": 479}}}
+          ]
+        },
+        "g2r_predictor_manifest": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactRef"},
+            {"properties": {"relative_path": {"const": "g2r_predictor_manifest.jsonl"}, "schema_version": {"const": "rq014-g2r-predictor-manifest-row-v1"}, "row_count": {"const": 320}}}
+          ]
+        },
+        "nc_pretstar_history_only_receipt": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactRef"},
+            {"properties": {"relative_path": {"const": "nc_pretstar_history_only_receipt.json"}, "schema_version": {"const": "rq014-nc-pretstar-history-only-receipt-v1"}, "row_count": {"const": 1}}}
+          ]
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registered_scene_count", "candidate_slots_per_scene",
+        "registered_feature_family_count", "registered_horizon_count",
+        "registered_readout_count", "registered_cell_count",
+        "feature_bank_row_count", "availability_mask_row_count",
+        "predictor_manifest_row_count", "anchor_domain_group_count",
+        "common_support_scene_count"
+      ],
+      "properties": {
+        "registered_scene_count": {"const": 479},
+        "candidate_slots_per_scene": {"const": 3},
+        "registered_feature_family_count": {"const": 16},
+        "registered_horizon_count": {"const": 2},
+        "registered_readout_count": {"const": 10},
+        "registered_cell_count": {"const": 320},
+        "feature_bank_row_count": {"const": 459840},
+        "availability_mask_row_count": {"const": 153280},
+        "predictor_manifest_row_count": {"const": 320},
+        "anchor_domain_group_count": {"const": 15328},
+        "common_support_scene_count": {"type": "integer", "minimum": 0, "maximum": 479}
+      }
+    },
+    "canonical_cell_ids_sha256": {"const": "db280b77a5fba7e7bb8546da9d2d22337e66c1b1d267d8f8acd281326eaaadee"},
+    "common_support_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "forbidden_output_scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rating_field_count", "leaderboard_file_count", "recovery_ledger_file_count"],
+      "properties": {
+        "rating_field_count": {"const": 0},
+        "leaderboard_file_count": {"const": 0},
+        "recovery_ledger_file_count": {"const": 0}
+      }
+    },
+    "status": {"const": "COMPLETE"}
+  },
+  "$defs": {
+    "fileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "size_bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "size_bytes": {"type": "integer", "minimum": 0},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relative_path", "size_bytes", "sha256"],
+      "properties": {
+        "relative_path": {"type": "string", "minLength": 1},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relative_path", "schema_version", "size_bytes", "sha256", "row_count"],
+      "properties": {
+        "relative_path": {"type": "string", "minLength": 1},
+        "schema_version": {"type": "string", "minLength": 1},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "row_count": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

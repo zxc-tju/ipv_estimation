@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/rq014-g2r-nc-gate-receipt-v1.json",
+  "title": "RQ014 G2R NC_PRETSTAR_HISTORY_ONLY gate receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "x-rq014-stored-key-order": "CPYTHON_3P9_SORT_KEYS_TRUE",
+  "x-rq014-logical-key-order": [
+    "schema_version",
+    "control_id",
+    "status",
+    "implementation_path",
+    "implementation_size_bytes",
+    "implementation_sha256",
+    "estimator_sha256",
+    "python_executable_sha256",
+    "environment_manifest_sha256",
+    "fixtures",
+    "failure_or_NA",
+    "created_at_utc"
+  ],
+  "required": [
+    "schema_version", "control_id", "status", "implementation_path",
+    "implementation_size_bytes", "implementation_sha256", "estimator_sha256",
+    "python_executable_sha256", "environment_manifest_sha256", "fixtures",
+    "failure_or_NA", "created_at_utc"
+  ],
+  "properties": {
+    "schema_version": {"const": "rq014-nc-pretstar-history-only-receipt-v1"},
+    "control_id": {"const": "NC_PRETSTAR_HISTORY_ONLY"},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "implementation_path": {"type": "string", "minLength": 1},
+    "implementation_size_bytes": {"type": "integer", "minimum": 1},
+    "implementation_sha256": {"$ref": "#/$defs/sha256"},
+    "estimator_sha256": {"$ref": "#/$defs/sha256"},
+    "python_executable_sha256": {"$ref": "#/$defs/sha256"},
+    "environment_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "fixtures": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/fixture"}, {"properties": {"fixture_id": {"const": "NC_HISTORY_BRANCH_R04N_W10"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fixture"}, {"properties": {"fixture_id": {"const": "NC_HISTORY_BRANCH_R04N_W25"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fixture"}, {"properties": {"fixture_id": {"const": "NC_HISTORY_BRANCH_R10L_W10"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fixture"}, {"properties": {"fixture_id": {"const": "NC_HISTORY_BRANCH_R10L_W25"}}}]},
+        {"allOf": [{"$ref": "#/$defs/fixture"}, {"properties": {"fixture_id": {"const": "NC_HISTORY_FUTURE_PERTURBATION"}}}]}
+      ],
+      "items": false
+    },
+    "failure_or_NA": {
+      "oneOf": [
+        {"const": "NA"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "fixture_id_or_NA", "failure_class", "message"],
+          "properties": {
+            "kind": {"const": "RUNTIME_FAILURE"},
+            "fixture_id_or_NA": {
+              "enum": [
+                "NA", "NC_HISTORY_BRANCH_R04N_W10",
+                "NC_HISTORY_BRANCH_R04N_W25", "NC_HISTORY_BRANCH_R10L_W10",
+                "NC_HISTORY_BRANCH_R10L_W25", "NC_HISTORY_FUTURE_PERTURBATION"
+              ]
+            },
+            "failure_class": {
+              "enum": [
+                "INPUT_CONTRACT_FAILURE", "IMPLEMENTATION_HASH_MISMATCH",
+                "FIXTURE_HASH_MISMATCH", "HISTORY_BRANCH_FAILURE",
+                "CANDIDATE_OR_FUTURE_LEAKAGE", "PAYLOAD_MISMATCH"
+              ]
+            },
+            "message": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "created_at_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASS"}}},
+      "then": {
+        "properties": {
+          "failure_or_NA": {"const": "NA"},
+          "fixtures": {
+            "prefixItems": [
+              {"properties": {"status": {"const": "PASS"}}},
+              {"properties": {"status": {"const": "PASS"}}},
+              {"properties": {"status": {"const": "PASS"}}},
+              {"properties": {"status": {"const": "PASS"}}},
+              {"properties": {"status": {"const": "PASS"}}}
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "failure_or_NA": {
+            "type": "object",
+            "properties": {"kind": {"const": "RUNTIME_FAILURE"}}
+          },
+          "fixtures": {
+            "contains": {"properties": {"status": {"const": "FAIL"}}},
+            "minContains": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixture_id", "input_path", "input_size_bytes", "input_sha256",
+        "expected_path", "expected_size_bytes", "expected_sha256",
+        "observed_payload_sha256", "status"
+      ],
+      "properties": {
+        "fixture_id": {"type": "string", "minLength": 1},
+        "input_path": {"type": "string", "minLength": 1},
+        "input_size_bytes": {"type": "integer", "minimum": 1},
+        "input_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_path": {"type": "string", "minLength": 1},
+        "expected_size_bytes": {"type": "integer", "minimum": 1},
+        "expected_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_payload_sha256": {
+          "oneOf": [{"$ref": "#/$defs/sha256"}, {"const": "NA"}]
+        },
+        "status": {"enum": ["PASS", "FAIL"]}
+      }
+    }
+  }
+}
