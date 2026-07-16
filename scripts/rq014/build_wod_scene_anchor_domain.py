@@ -76,6 +76,16 @@ RECOVERY_CONTRACT_PATH = Path("reports/plans/RQ014_recovery_lane_v3.json")
 RECOVERY_CONTRACT_SHA256 = "a23141e27e43f4c718f75ad48fb0356beac7ce8fb705243cf18191187efbd4ba"
 ENVELOPE_CONTRACT_PATH = Path("reports/plans/RQ014_envelope_builder_contract_v2.json")
 ENVELOPE_CONTRACT_SHA256 = "407d63209764896a673aa94811f9dd8b60a57a047d17e8cee0a3465c55b8c8a4"
+TEMPORAL_TICK_FORMULAS = {
+    "CH-W10": ("tau_tick-rate_hz", "tau_tick"),
+    "CH-W25": ("tau_tick-5*rate_hz/2", "tau_tick"),
+    "LF-W10": ("tau_tick", "tau_tick+rate_hz"),
+    "LF-W25": ("tau_tick", "tau_tick+5*rate_hz/2"),
+    "HF-W10": ("tau_tick-rate_hz", "tau_tick+rate_hz"),
+    "HF-W25": ("tau_tick-5*rate_hz/2", "tau_tick+5*rate_hz/2"),
+    "TP": ("0", "tau_tick"),
+    "TF": ("0", "h_common_tick"),
+}
 
 
 class AnchorDomainError(ValueError):
@@ -108,6 +118,16 @@ class VerifiedSceneRegistry:
     source_manifest_sha256: str
     path_mapping_manifest_path: Path
     path_mapping_manifest_sha256: str
+
+
+@dataclass(frozen=True)
+class ExpectedGroupMembership:
+    """Contract-derived source-of-truth for one stored anchor-domain group."""
+
+    status: str
+    ticks: tuple[int, ...]
+    path_type_or_NA: str
+    h_common_tick_or_NA: str
 
 
 def _terminal_row(
@@ -333,6 +353,185 @@ def encode_anchor_domain_csv(rows: Sequence[Mapping[str, str]]) -> bytes:
     return data
 
 
+def _assert_frozen_membership_axes() -> None:
+    """Bind executable axes/formulas to the two checksum-frozen authorities."""
+
+    repo_root = Path(__file__).resolve().parents[2]
+    recovery_path = repo_root / RECOVERY_CONTRACT_PATH
+    envelope_path = repo_root / ENVELOPE_CONTRACT_PATH
+    if hashlib.sha256(recovery_path.read_bytes()).hexdigest() != RECOVERY_CONTRACT_SHA256:
+        raise AnchorDomainError("recovery-lane authority SHA-256 drift")
+    if hashlib.sha256(envelope_path.read_bytes()).hexdigest() != ENVELOPE_CONTRACT_SHA256:
+        raise AnchorDomainError("envelope authority SHA-256 drift")
+    recovery = json.loads(recovery_path.read_text(encoding="utf-8"))
+    envelope = json.loads(envelope_path.read_text(encoding="utf-8"))
+    bank = recovery["rating_blind_feature_bank"]
+    recovery_sampling = tuple(
+        (item["sampling_id"], item["rate_hz"]) for item in bank["sampling_axis"]
+    )
+    recovery_temporal = tuple(
+        item["temporal_id"] for item in bank["temporal_axis"]["recipes"]
+    )
+    recovery_horizons = tuple(item["horizon_id"] for item in bank["horizon_axis"])
+    envelope_families = tuple(
+        (item["feature_id"], item["sampling_id"], item["temporal_id"])
+        for item in envelope["feature_families"]
+    )
+    expected_families = tuple(
+        (f"F-{sampling_id}-{temporal_id}", sampling_id, temporal_id)
+        for sampling_id, _ in SAMPLING_AXIS
+        for temporal_id in TEMPORAL_AXIS
+    )
+    envelope_formulas = {
+        item["temporal_id"]: (
+            item["lower_tick_formula"],
+            item["upper_tick_formula"],
+        )
+        for item in envelope["temporal_recipes"]
+    }
+    horizon_contract = envelope["horizon_anchor_contract"]
+    if (
+        recovery_sampling != SAMPLING_AXIS
+        or recovery_temporal != TEMPORAL_AXIS
+        or recovery_horizons != HORIZON_AXIS
+        or envelope_families != expected_families
+        or envelope_formulas != TEMPORAL_TICK_FORMULAS
+        or horizon_contract["H20"]["candidate_tau_ticks"]
+        != "integer closed interval rate_hz..2*rate_hz"
+        or horizon_contract["HFEAS"]["candidate_tau_ticks"]
+        != "integer closed interval rate_hz..h_common_tick, empty when h_common_tick<rate_hz"
+        or horizon_contract["HFEAS"]["filter"]
+        != "retain only candidate ticks satisfying window_completeness"
+    ):
+        raise AnchorDomainError("frozen sampling/temporal/horizon axis drift")
+
+
+def derive_expected_anchor_memberships(
+    scenes: Sequence[SceneDomainInput],
+) -> dict[tuple[str, str, str], ExpectedGroupMembership]:
+    """Independently derive every exact H20/HFEAS tick set from frozen axes.
+
+    This computation consumes the verified source timelines, the two sampling
+    rates, all eight temporal-window formulas, and the two horizon rules.  It
+    never inspects produced anchor-domain rows, so output mutations cannot
+    redefine their own expected membership.
+    """
+
+    _assert_frozen_membership_axes()
+    segment_ids = [scene.segment_id for scene in scenes]
+    if len(segment_ids) != len(set(segment_ids)):
+        raise AnchorDomainError("duplicate segment_id in expected-membership source")
+    expected: dict[tuple[str, str, str], ExpectedGroupMembership] = {}
+    for scene in sorted(scenes, key=lambda item: item.segment_id.encode("utf-8")):
+        scene_terminal = _resolved_path_status(scene)
+        for sampling_id, rate_hz in SAMPLING_AXIS:
+            timelines = scene.sampling.get(sampling_id)
+            sampling_terminal = scene_terminal or (
+                timelines.terminal_status
+                if timelines is not None
+                else "INELIGIBLE_TIMELINE_SUPPORT"
+            )
+            h_common_tick: int | None = None
+            if timelines is not None and sampling_terminal is None:
+                if set(timelines.candidates) != {"C1", "C2", "C3"}:
+                    sampling_terminal = "INELIGIBLE_TIMELINE_SUPPORT"
+                else:
+                    source_branches = [
+                        timelines.candidates[candidate_id]
+                        for candidate_id in ("C1", "C2", "C3")
+                    ] + [timelines.counterpart]
+                    if any(not branch for branch in source_branches):
+                        sampling_terminal = "INELIGIBLE_TIMELINE_SUPPORT"
+                    else:
+                        joint_ticks = set(source_branches[0]).intersection(
+                            *(set(branch) for branch in source_branches[1:])
+                        )
+                        nonnegative = [tick for tick in joint_ticks if tick >= 0]
+                        if nonnegative:
+                            h_common_tick = max(nonnegative)
+                        else:
+                            sampling_terminal = "INELIGIBLE_TIMELINE_SUPPORT"
+            for temporal_id in TEMPORAL_AXIS:
+                feature_id = f"F-{sampling_id}-{temporal_id}"
+                h_common_field = (
+                    str(h_common_tick)
+                    if temporal_id == "TF" and h_common_tick is not None
+                    else "NA"
+                )
+                if sampling_terminal is not None or timelines is None or h_common_tick is None:
+                    status = sampling_terminal or "INELIGIBLE_TIMELINE_SUPPORT"
+                    for horizon_id in HORIZON_AXIS:
+                        expected[(scene.segment_id, feature_id, horizon_id)] = (
+                            ExpectedGroupMembership(
+                                status=status,
+                                ticks=(),
+                                path_type_or_NA=scene.path_type_or_NA,
+                                h_common_tick_or_NA=h_common_field,
+                            )
+                        )
+                    continue
+
+                eligible_ticks = tuple(
+                    tick
+                    for tick in range(rate_hz, h_common_tick + 1)
+                    if _window_status(
+                        timelines,
+                        temporal_id=temporal_id,
+                        tau_tick=tick,
+                        rate_hz=rate_hz,
+                        h_common_tick=h_common_tick,
+                    )
+                    == "AVAILABLE"
+                )
+                required_h20 = tuple(range(rate_hz, 2 * rate_hz + 1))
+                h20_complete = (
+                    2 * rate_hz <= h_common_tick
+                    and all(tick in eligible_ticks for tick in required_h20)
+                )
+                if h20_complete:
+                    expected[(scene.segment_id, feature_id, "H20")] = (
+                        ExpectedGroupMembership(
+                            status="AVAILABLE",
+                            ticks=required_h20,
+                            path_type_or_NA=scene.path_type_or_NA,
+                            h_common_tick_or_NA=h_common_field,
+                        )
+                    )
+                    expected[(scene.segment_id, feature_id, "HFEAS")] = (
+                        ExpectedGroupMembership(
+                            status="AVAILABLE",
+                            ticks=eligible_ticks,
+                            path_type_or_NA=scene.path_type_or_NA,
+                            h_common_tick_or_NA=h_common_field,
+                        )
+                    )
+                else:
+                    h20_statuses = [
+                        _window_status(
+                            timelines,
+                            temporal_id=temporal_id,
+                            tau_tick=tick,
+                            rate_hz=rate_hz,
+                            h_common_tick=h_common_tick,
+                        )
+                        if tick <= h_common_tick
+                        else "INELIGIBLE_TIMELINE_SUPPORT"
+                        for tick in required_h20
+                    ]
+                    failures = [status for status in h20_statuses if status != "AVAILABLE"]
+                    failure = min(failures, key=lambda status: STATUS_PRIORITY[status])
+                    for horizon_id in HORIZON_AXIS:
+                        expected[(scene.segment_id, feature_id, horizon_id)] = (
+                            ExpectedGroupMembership(
+                                status=failure,
+                                ticks=(),
+                                path_type_or_NA=scene.path_type_or_NA,
+                                h_common_tick_or_NA=h_common_field,
+                            )
+                        )
+    return expected
+
+
 def build_anchor_domain_rows(scenes: Sequence[SceneDomainInput]) -> list[dict[str, str]]:
     """Build rows for raw-UTF8 sorted scenes and validate every group."""
 
@@ -341,14 +540,27 @@ def build_anchor_domain_rows(scenes: Sequence[SceneDomainInput]) -> list[dict[st
         raise AnchorDomainError("duplicate segment_id")
     ordered = sorted(scenes, key=lambda scene: scene.segment_id.encode("utf-8"))
     rows = [row for scene in ordered for row in build_scene_anchor_rows(scene)]
-    validate_anchor_domain_rows(rows, expected_scene_count=len(scenes))
+    validate_anchor_domain_rows(
+        rows,
+        expected_scene_count=len(scenes),
+        source_scenes=ordered,
+    )
     return rows
 
 
 def validate_anchor_domain_rows(
-    rows: Sequence[Mapping[str, str]], *, expected_scene_count: int = 479
+    rows: Sequence[Mapping[str, str]],
+    *,
+    expected_scene_count: int = 479,
+    source_scenes: Sequence[SceneDomainInput] | None = None,
 ) -> None:
-    """Validate group count, order, and AVAILABLE/terminal exclusivity."""
+    """Validate exact contract-derived ticks, group order, and terminal exclusivity."""
+
+    if source_scenes is None:
+        raise AnchorDomainError("verified source scenes for expected tick memberships are required")
+    if len(source_scenes) != expected_scene_count:
+        raise AnchorDomainError("expected-membership source scene count drift")
+    expected_memberships = derive_expected_anchor_memberships(source_scenes)
 
     feature_order = {feature_id: index for index, feature_id in enumerate(FEATURE_FAMILIES)}
     horizon_order = {horizon_id: index for index, horizon_id in enumerate(HORIZON_AXIS)}
@@ -361,6 +573,8 @@ def validate_anchor_domain_rows(
     expected_groups = expected_scene_count * len(FEATURE_FAMILIES) * len(HORIZON_AXIS)
     if len(groups) != expected_groups:
         raise AnchorDomainError(f"anchor-domain group count {len(groups)} != {expected_groups}")
+    if set(expected_memberships) != set(groups):
+        raise AnchorDomainError("expected anchor-domain group universe drift")
     expected_order = sorted(
         groups,
         key=lambda key: (
@@ -372,6 +586,7 @@ def validate_anchor_domain_rows(
     available_paths_by_scene: dict[str, set[str]] = {}
     ticks_by_group: dict[tuple[str, str, str], tuple[int, ...]] = {}
     for key, group in groups.items():
+        expected_membership = expected_memberships[key]
         temporal_id = key[1].split("-", 2)[2]
         sampling_id = key[1].split("-")[1]
         rate_hz = dict(SAMPLING_AXIS)[sampling_id]
@@ -382,10 +597,18 @@ def validate_anchor_domain_rows(
                 row["reason_code"] != "F_AVAILABLE_CONTINUE" for row in group
             ):
                 raise AnchorDomainError(f"invalid AVAILABLE group: {key}")
+            if (
+                expected_membership.status != "AVAILABLE"
+                or tuple(ticks) != expected_membership.ticks
+            ):
+                raise AnchorDomainError(f"exact eligible tick-set drift: {key}")
             if len({row["path_type_or_NA"] for row in group}) != 1:
                 raise AnchorDomainError(f"path-type drift in AVAILABLE group: {key}")
             path_type = group[0]["path_type_or_NA"]
-            if path_type not in PATH_TYPES:
+            if (
+                path_type not in PATH_TYPES
+                or path_type != expected_membership.path_type_or_NA
+            ):
                 raise AnchorDomainError(f"invalid AVAILABLE path type: {key}")
             available_paths_by_scene.setdefault(key[0], set()).add(path_type)
             if key[2] == "H20" and ticks != list(range(rate_hz, 2 * rate_hz + 1)):
@@ -394,6 +617,8 @@ def validate_anchor_domain_rows(
                 raise AnchorDomainError(f"HFEAS lower-bound drift: {key}")
             ticks_by_group[key] = tuple(ticks)
             h_values = {row["h_common_tick_or_NA"] for row in group}
+            if h_values != {expected_membership.h_common_tick_or_NA}:
+                raise AnchorDomainError(f"expected h_common binding drift: {key}")
             if (temporal_id == "TF" and (len(h_values) != 1 or "NA" in h_values)) or (
                 temporal_id != "TF" and h_values != {"NA"}
             ):
@@ -411,6 +636,14 @@ def validate_anchor_domain_rows(
         ):
             raise AnchorDomainError(f"terminal reason-code drift: {key}")
         else:
+            if (
+                expected_membership.status != group[0]["membership_status"]
+                or expected_membership.ticks
+                or expected_membership.path_type_or_NA != group[0]["path_type_or_NA"]
+                or expected_membership.h_common_tick_or_NA
+                != group[0]["h_common_tick_or_NA"]
+            ):
+                raise AnchorDomainError(f"exact terminal membership drift: {key}")
             h_common = group[0]["h_common_tick_or_NA"]
             if temporal_id != "TF" and h_common != "NA":
                 raise AnchorDomainError(f"non-TF terminal h_common drift: {key}")

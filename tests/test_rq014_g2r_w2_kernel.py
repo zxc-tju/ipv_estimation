@@ -619,13 +619,16 @@ def test_w2_anchor_domain_authority_example_has_exact_lf_csv_bytes() -> None:
 
 
 def test_w2_anchor_domain_validator_rejects_cross_group_and_membership_drift() -> None:
-    rows = DOMAIN.build_anchor_domain_rows([_available_scene()])
+    scene = _available_scene()
+    rows = DOMAIN.build_anchor_domain_rows([scene])
     path_drift = copy.deepcopy(rows)
     next(
         row for row in path_drift if row["feature_id"] == "F-R04N-LF-W10"
     )["path_type_or_NA"] = "HO"
-    with pytest.raises(DOMAIN.AnchorDomainError, match="path-type drift|cross-group"):
-        DOMAIN.validate_anchor_domain_rows(path_drift, expected_scene_count=1)
+    with pytest.raises(DOMAIN.AnchorDomainError, match="path type|path-type|cross-group"):
+        DOMAIN.validate_anchor_domain_rows(
+            path_drift, expected_scene_count=1, source_scenes=[scene]
+        )
 
     h20_drift = copy.deepcopy(rows)
     h20_drift.remove(
@@ -637,8 +640,10 @@ def test_w2_anchor_domain_validator_rejects_cross_group_and_membership_drift() -
             and row["tau_tick_or_NA"] == "4"
         )
     )
-    with pytest.raises(DOMAIN.AnchorDomainError, match="H20 membership drift"):
-        DOMAIN.validate_anchor_domain_rows(h20_drift, expected_scene_count=1)
+    with pytest.raises(DOMAIN.AnchorDomainError, match="tick-set drift|H20 membership drift"):
+        DOMAIN.validate_anchor_domain_rows(
+            h20_drift, expected_scene_count=1, source_scenes=[scene]
+        )
 
     hfeas_drift = copy.deepcopy(rows)
     first_hfeas_index = next(
@@ -650,8 +655,10 @@ def test_w2_anchor_domain_validator_rejects_cross_group_and_membership_drift() -
     below_range = copy.deepcopy(hfeas_drift[first_hfeas_index])
     below_range["tau_tick_or_NA"] = "-1"
     hfeas_drift.insert(first_hfeas_index, below_range)
-    with pytest.raises(DOMAIN.AnchorDomainError, match="HFEAS lower-bound drift"):
-        DOMAIN.validate_anchor_domain_rows(hfeas_drift, expected_scene_count=1)
+    with pytest.raises(DOMAIN.AnchorDomainError, match="tick-set drift|HFEAS lower-bound drift"):
+        DOMAIN.validate_anchor_domain_rows(
+            hfeas_drift, expected_scene_count=1, source_scenes=[scene]
+        )
 
     negative_ticks = {tick: (float(tick), 0.0) for tick in range(-5, 0)}
     negative_scene = DOMAIN.SceneDomainInput(
@@ -672,9 +679,96 @@ def test_w2_anchor_domain_validator_rejects_cross_group_and_membership_drift() -
     next(
         row for row in terminal_h_common_drift if row["feature_id"] == "F-R04N-CH-W10"
     )["h_common_tick_or_NA"] = "4"
-    with pytest.raises(DOMAIN.AnchorDomainError, match="non-TF terminal h_common drift"):
+    with pytest.raises(
+        DOMAIN.AnchorDomainError,
+        match="exact terminal membership drift|non-TF terminal h_common drift",
+    ):
         DOMAIN.validate_anchor_domain_rows(
-            terminal_h_common_drift, expected_scene_count=1
+            terminal_h_common_drift,
+            expected_scene_count=1,
+            source_scenes=[negative_scene],
+        )
+
+
+def test_w2c_all_16_families_exact_tick_sets_reject_delete_and_add_mutations() -> None:
+    scene = _available_scene("exact-tick-set")
+    expected = DOMAIN.derive_expected_anchor_memberships([scene])
+    rows = DOMAIN.build_anchor_domain_rows([scene])
+    DOMAIN.validate_anchor_domain_rows(
+        rows, expected_scene_count=1, source_scenes=[scene]
+    )
+    with pytest.raises(DOMAIN.AnchorDomainError, match="expected tick memberships"):
+        DOMAIN.validate_anchor_domain_rows(rows, expected_scene_count=1)
+
+    for feature_id in DOMAIN.FEATURE_FAMILIES:
+        sampling_id = feature_id.split("-")[1]
+        temporal_id = feature_id.split("-", 2)[2]
+        rate_hz = dict(DOMAIN.SAMPLING_AXIS)[sampling_id]
+        for horizon_id in DOMAIN.HORIZON_AXIS:
+            key = (scene.segment_id, feature_id, horizon_id)
+            expected_ticks = expected[key].ticks
+            assert expected[key].status == "AVAILABLE"
+            hfeas_last = {
+                "CH-W10": 5 * rate_hz,
+                "CH-W25": 5 * rate_hz,
+                "LF-W10": 4 * rate_hz,
+                "LF-W25": 5 * rate_hz // 2,
+                "HF-W10": 4 * rate_hz,
+                "HF-W25": 5 * rate_hz // 2,
+                "TP": 5 * rate_hz,
+                "TF": 5 * rate_hz,
+            }[temporal_id]
+            independently_expected_ticks = tuple(
+                range(
+                    rate_hz,
+                    (2 * rate_hz if horizon_id == "H20" else hfeas_last) + 1,
+                )
+            )
+            assert expected_ticks == independently_expected_ticks
+            group_indices = [
+                index
+                for index, row in enumerate(rows)
+                if (row["segment_id"], row["feature_id"], row["horizon_id"]) == key
+            ]
+            assert tuple(int(rows[index]["tau_tick_or_NA"]) for index in group_indices) == (
+                expected_ticks
+            )
+            for delete_offset in (0, len(group_indices) // 2, len(group_indices) - 1):
+                deleted = copy.deepcopy(rows)
+                del deleted[group_indices[delete_offset]]
+                with pytest.raises(DOMAIN.AnchorDomainError, match="exact eligible tick-set drift"):
+                    DOMAIN.validate_anchor_domain_rows(
+                        deleted,
+                        expected_scene_count=1,
+                        source_scenes=[scene],
+                    )
+
+            added = copy.deepcopy(rows)
+            spurious = copy.deepcopy(added[group_indices[-1]])
+            spurious["tau_tick_or_NA"] = str(expected_ticks[-1] + 1)
+            added.insert(group_indices[-1] + 1, spurious)
+            with pytest.raises(DOMAIN.AnchorDomainError, match="exact eligible tick-set drift"):
+                DOMAIN.validate_anchor_domain_rows(
+                    added,
+                    expected_scene_count=1,
+                    source_scenes=[scene],
+                )
+
+    ch_w10_hfeas = copy.deepcopy(rows)
+    ch_w10_hfeas.remove(
+        next(
+            row
+            for row in ch_w10_hfeas
+            if row["feature_id"] == "F-R04N-CH-W10"
+            and row["horizon_id"] == "HFEAS"
+            and row["tau_tick_or_NA"] == "9"
+        )
+    )
+    with pytest.raises(DOMAIN.AnchorDomainError, match="exact eligible tick-set drift"):
+        DOMAIN.validate_anchor_domain_rows(
+            ch_w10_hfeas,
+            expected_scene_count=1,
+            source_scenes=[scene],
         )
 
 
@@ -748,7 +842,10 @@ def test_w2_anchor_domain_479_scene_count_manifest_and_determinism() -> None:
         for index in range(479)
     ]
     rows = DOMAIN.build_anchor_domain_rows(scenes)
-    DOMAIN.validate_anchor_domain_rows(rows)
+    DOMAIN.validate_anchor_domain_rows(
+        rows,
+        source_scenes=scenes,
+    )
     assert len(rows) == 15328
     assert len({(row["segment_id"], row["feature_id"], row["horizon_id"]) for row in rows}) == 15328
     assert all(row["membership_status"] == "MISSING_WOD_PATH_TYPE" for row in rows)
