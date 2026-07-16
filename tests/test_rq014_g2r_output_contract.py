@@ -6,9 +6,13 @@ import importlib.util
 import inspect
 import json
 import math
+import os
 from pathlib import Path
+import subprocess
+import sys
 from typing import Any, Iterator
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -32,6 +36,8 @@ FIXTURE_MANIFEST_PATH = FIXTURE_ROOT / "fixture_manifest.json"
 READOUT_FIXTURE_PATH = FIXTURE_ROOT / "deviations_readouts_v1.json"
 STATUS_FIXTURE_PATH = FIXTURE_ROOT / "availability_statuses_v1.json"
 W1C_GENERATOR_PATH = FIXTURE_ROOT / "generate_w1c_goldens.py"
+PRE_MASK_FIXTURE_PATH = FIXTURE_ROOT / "m3_pre_mask_expected.json"
+PORTABLE_M3_FIXTURE_PATH = ROOT / "tests/fixtures/m3_verifier_portable_fixture.json"
 NC_FIXTURE_IDS = (
     "NC_HISTORY_BRANCH_R04N_W10",
     "NC_HISTORY_BRANCH_R04N_W25",
@@ -657,7 +663,7 @@ def test_w1_authority_uses_current_board_pins_and_no_obsolete_d10_narrative() ->
     assert "80181e38c8f37c9c2f2e3c1d74b754648e773485efa189532e5118bc27883d26" not in authority_text
 
 
-def test_fixture_manifest_binds_all_scorer_independent_goldens_and_only_defers_a08_a15() -> None:
+def test_fixture_manifest_binds_all_construction_and_a08_a15_goldens() -> None:
     manifest = _strict_load(FIXTURE_MANIFEST_PATH)
     for entry in manifest["construction_goldens"]:
         path = ROOT / entry["path"]
@@ -667,21 +673,25 @@ def test_fixture_manifest_binds_all_scorer_independent_goldens_and_only_defers_a
         path = ROOT / entry["path"]
         assert path.stat().st_size == entry["size_bytes"]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"]
-    deferred = manifest["scorer_dependent_bindings"]
-    assert deferred["status"] == "PENDING_W3_SCORER"
-    assert deferred["generated_scorer_output_file_count"] == 0
-    assert deferred["local_builder_assessment"] == {
-        "artifact_hash_and_size_match": True,
-        "reviewed_managed_v4_closure": False,
-        "version_compatible_python_stack": True,
+    scorer_bindings = manifest["scorer_dependent_bindings"]
+    assert scorer_bindings["status"] == "BOUND_W3_PORTABLE_PARITY_1E-7"
+    assert scorer_bindings["generated_scorer_output_file_count"] == 1
+    assert scorer_bindings["golden"] == {
+        "path": str(PRE_MASK_FIXTURE_PATH.relative_to(ROOT)),
+        "sha256": hashlib.sha256(PRE_MASK_FIXTURE_PATH.read_bytes()).hexdigest(),
+        "size_bytes": PRE_MASK_FIXTURE_PATH.stat().st_size,
     }
-    assert deferred["required_environment"]["scikit_learn"] == "1.6.1"
-    assert deferred["required_environment"]["joblib"] == "1.5.3"
+    assert scorer_bindings["generation_environment"]["scikit_learn"] == "1.6.1"
+    assert scorer_bindings["generation_environment"]["joblib"] == "1.5.3"
+    assert scorer_bindings["parity_standard"]["absolute_tolerance"] == 1e-7
+    assert scorer_bindings["parity_standard"]["relative_tolerance"] == 0.0
     contract = _strict_load(CONTRACT_PATH)
     bindings = contract["fixture_bindings"]
-    assert bindings["binding_status"] == "CONSTRUCTION_GOLDENS_BOUND_SCORER_GOLDENS_PENDING_W3"
-    assert bindings["m3_pre_mask_golden"]["binding_status"] == "PENDING_W3_SCORER"
-    assert deferred["deferred_artifacts"] == ["m3_pre_mask_expected.json (A08/A15)"]
+    assert bindings["binding_status"] == "ALL_CONSTRUCTION_AND_SCORER_GOLDENS_BOUND"
+    assert (
+        bindings["m3_pre_mask_golden"]["binding_status"]
+        == "BOUND_W3_PORTABLE_PARITY_1E-7"
+    )
     assert {item["binding_status"] for item in bindings["nc_fixture_pairs"]} == {
         "BOUND_SCORER_INDEPENDENT"
     }
@@ -702,15 +712,61 @@ def test_fixture_manifest_binds_all_scorer_independent_goldens_and_only_defers_a
         assert binding["size_bytes"] == path.stat().st_size
         assert binding["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
     assert "PENDING_W1B" not in CONTRACT_PATH.read_text(encoding="utf-8")
-    assert not (FIXTURE_ROOT / "m3_pre_mask_expected.json").exists()
-    assert "NC_" not in json.dumps(deferred, sort_keys=True)
+    assert "PENDING_W3_SCORER" not in CONTRACT_PATH.read_text(encoding="utf-8")
+    assert "PENDING_W3_SCORER" not in json.dumps(manifest, sort_keys=True)
+    assert PRE_MASK_FIXTURE_PATH.is_file()
+    assert "NC_" not in json.dumps(scorer_bindings, sort_keys=True)
 
 
-@pytest.mark.skip(
-    reason=(
-        "PENDING_W3_SCORER: only A08/A15 pre-mask M3 q_0p5/lo_90/hi_90 bytes "
-        "require the reviewed managed-v4 scikit-learn 1.6.1/joblib 1.5.3 scorer run"
+def test_m3_pre_mask_goldens_match_portable_fixture_at_1e7(tmp_path: Path) -> None:
+    """A08/A15 use the reviewed portable M3 rtol=0, atol=1e-7 standard."""
+
+    golden = _strict_load(PRE_MASK_FIXTURE_PATH)
+    portable = _strict_load(PORTABLE_M3_FIXTURE_PATH)
+    assert golden["parity_standard"] == {
+        "absolute_tolerance": 1e-7,
+        "relative_tolerance": 0.0,
+        "reviewed_test_reference": "tests/test_verifier_runtime.py:152",
+        "source_fixture_path": "tests/fixtures/m3_verifier_portable_fixture.json",
+        "source_fixture_sha256": (
+            "ae62b9fddba53308d319ccef5a70d56a9f0ae243fe009aa3f85e36cb20fcee37"
+        ),
+        "source_fixture_size_bytes": 13179,
+    }
+    scorer_path = Path(
+        os.environ.get(
+            "SOCIALITY_M3_SCORER", ROOT / "models/rq009_m3/m3_scorer.joblib"
+        )
     )
-)
-def test_m3_pre_mask_goldens_under_reviewed_v4_scorer() -> None:
-    """W3 must replace this skip only after binding real A08/A15 scorer bytes."""
+    observed_path = tmp_path / "m3_pre_mask_expected.json"
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = "src:."
+    subprocess.run(
+        [
+            sys.executable,
+            "tests/fixtures/rq014_g2r_v1/generate_w3b_pre_mask_golden.py",
+            "--scorer",
+            str(scorer_path),
+            "--output",
+            str(observed_path),
+        ],
+        cwd=ROOT,
+        env=environment,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    observed = _strict_load(observed_path)
+    assert len(observed["rows"]) == len(golden["rows"]) == 2
+    for expected, actual in zip(golden["rows"], observed["rows"]):
+        index = actual["portable_fixture_row_index"]
+        assert actual["fixture_label"] == expected["fixture_label"]
+        assert portable["rows"][index]["fixture_label"] == expected["fixture_label"]
+        assert actual["support_gate_pass"] is expected["support_gate_pass"]
+        assert actual["ood_abstain"] is expected["ood_abstain"]
+        np.testing.assert_allclose(
+            [actual["q_0p5"], actual["lo_90"], actual["hi_90"]],
+            [expected["q_0p5"], expected["lo_90"], expected["hi_90"]],
+            rtol=0.0,
+            atol=1e-7,
+        )

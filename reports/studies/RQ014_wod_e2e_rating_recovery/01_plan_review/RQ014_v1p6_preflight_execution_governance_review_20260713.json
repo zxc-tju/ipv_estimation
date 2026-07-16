@@ -139,15 +139,28 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "W2 freezes the reviewed kernel bytes without enabling G2R execution, rating access, orchestration, or submission."
+    },
+    {
+      "evidence": [
+        "First-round execution-governance review of the W3 wave bb732c504704c3b3aa18c467e2d5b2072d287920 and d239853f355ea4c8d263302def6f6e9c9640e1ce returned NO_BLOCKER, independently of the statistics review.",
+        "W3 adds the denied-operation deviation/readout and pre-mask scorer integration module, portable A08/A15 golden evidence, and the minimal output-contract-to-W2 hash-pin cascade; it does not add 320-cell orchestration, managed-operation integration, a run spec, launcher branch, central authorization, rating access, or an HPC submission surface.",
+        "The deterministic 124-row review manifest SHA-256 e33eb539c8d3b6b4cd486d5019a57a92948e268ec3d6495804e466b94526431e updates the output-contract and anchor-builder rows and adds exactly scripts/rq014/score_wod_m3_deviations.py; W3 goldens, their generator, and tests remain commit-tree evidence under the W1e/W2d bundle convention.",
+        "The output contract reports ALL_CONSTRUCTION_AND_SCORER_GOLDENS_BOUND with no PENDING placeholder, while future_operation_binding.central_authorization remains DENY and reports/plans/RQ014_execution_contract_v1p5.json still denies rq014_r2_blind_feature_build.",
+        "Terminal execution-governance and statistics reviews returned NO_BLOCKER with distinct codex/w4-exec-reviewer and codex/w4-stat-reviewer identities, zero unresolved blockers or majors, no rating access, and no HPC submission."
+      ],
+      "finding_id": "G2R-W3-E-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "First-round execution governance returns NO_BLOCKER and freezes W3 scoring bytes without enabling G2R execution or rating access."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-16T11:40:08Z",
+  "reviewed_at_utc": "2026-07-16T15:17:21Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "5fc9eb4c0345c9640abf39e56228de2307ea309aa463d9c202e06e698be9ba65",
+  "reviewed_manifest_sha256": "e33eb539c8d3b6b4cd486d5019a57a92948e268ec3d6495804e466b94526431e",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

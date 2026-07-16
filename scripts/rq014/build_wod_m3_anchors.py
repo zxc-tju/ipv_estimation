@@ -93,7 +93,7 @@ ALIGNMENT_PRIMARY = "anchor_at_tau_history_only"
 ALIGNMENT_SENSITIVITY = "terminal_minus_6_rows"
 G2R_OUTPUT_CONTRACT_PATH = Path("reports/plans/RQ014_g2r_output_contract_v1.json")
 G2R_OUTPUT_CONTRACT_SHA256 = (
-    "87d16ff3073e74dba363badf6f78c573d49538da47edc693144f3973ce171b1a"
+    "b4d33dbc0291015bba51ff935f381ed0aa2a2b57b2ccd02ceb374380907e6a20"
 )
 NC_FIXTURE_IDS = (
     "NC_HISTORY_BRANCH_R04N_W10",

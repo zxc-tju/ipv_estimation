@@ -140,15 +140,28 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The three-round G2R W2 statistics ledger closes S1-S6, including exact source-derived anchor tick membership, with terminal dual NO_BLOCKER."
+    },
+    {
+      "evidence": [
+        "First-round statistics review of the W3 wave bb732c504704c3b3aa18c467e2d5b2072d287920 and d239853f355ea4c8d263302def6f6e9c9640e1ce returned NO_BLOCKER, independently of the execution-governance review.",
+        "W3a implements pointwise NEX/NMD/AMD, all ten MEAN/MAX/LAST/FOUT readouts, A09 invalid-interval handling, A10 propagation, and a direct pre-mask scorer integration through model.predict_tier_quantiles plus calibrated_bounds; the scorer artifact and verifier scorer bytes are unchanged.",
+        "Statistics ratified the lead's 1e-7 portable-parity ruling for A08/A15 because the pre-mask rows use the same pinned M3 artifact class and frozen portable fixture ae62b9fddba53308d319ccef5a70d56a9f0ae243fe009aa3f85e36cb20fcee37 whose reviewed tolerance is asserted at tests/test_verifier_runtime.py:152; the measured exact-v4 cross-platform delta 4.95e-11 is below that bound.",
+        "W3b binds the two pre-mask golden rows at SHA-256 e7c332a13d18187f2b671042d459af91db8702dcda15917b773692858c44534f, removes the last PENDING_W3_SCORER placeholder, and cascades only the changed output-contract digest into the W2 anchor builder; W2 science logic and all W1/W2 golden outputs remain byte-identical.",
+        "Terminal statistics and execution-governance reviews returned NO_BLOCKER with distinct codex/w4-stat-reviewer and codex/w4-exec-reviewer identities on the deterministic 124-row review manifest SHA-256 e33eb539c8d3b6b4cd486d5019a57a92948e268ec3d6495804e466b94526431e, leaving zero unresolved blockers or majors."
+      ],
+      "finding_id": "G2R-W3-S-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "First-round statistics review ratifies the 1e-7 A08/A15 portable-parity standard and returns NO_BLOCKER on the W3 scoring wave."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-16T11:40:07Z",
+  "reviewed_at_utc": "2026-07-16T15:17:20Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "5fc9eb4c0345c9640abf39e56228de2307ea309aa463d9c202e06e698be9ba65",
+  "reviewed_manifest_sha256": "e33eb539c8d3b6b4cd486d5019a57a92948e268ec3d6495804e466b94526431e",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
