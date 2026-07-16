@@ -128,15 +128,27 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The three-round G2R W1 statistics ledger closes S1, S2, and S3 with signed-zero, boundary, finiteness, NC, readout, and status semantics frozen."
+    },
+    {
+      "evidence": [
+        "Round 1 reviewed W2 kernel commit f5866072: the eight temporal bounds, D4 alignment, W1 canonical row SHA-256 9ecc870d825b39239be06ea142dca1691b9834f882cf3ccd662f87eafde33762, five NC outputs, and numeric formulas were correct, but statistics raised S1-S6 over scene-level focal reference reuse, fail-closed nonfinite IPV handling, exact categorical tokens, committed NC fixture verification plus receipt emission, joint-support H_common, and anchor-domain input verification/mutation locking; execution governance returned NO_BLOCKER.",
+        "Round 2 reviewed commit 393b62f3: S1-S5 closed and S6 gained verified source manifests, overflow rejection, lineage rehashing, and an independent 15,328-group golden at SHA-256 019f523406b0db89fffd5d24e503e04bee34abb625449879c88db07994ac2e84; statistics retained only the S6 residual that deletion of a required CH-W10/HFEAS tau=9 row could pass because validation did not independently assert exact per-family tick membership.",
+        "Round 3 reviewed commit caed0f51: validation now checksum-binds the recovery-lane and envelope authorities, derives the exact H20/HFEAS membership from verified source timelines for both sampling rates and all eight temporal families, and rejects missing, interior, endpoint, or additional ticks for all 16 sampling-by-temporal families. The 15,328-group golden and all W1 construction/NC bytes remain byte-identical.",
+        "Terminal statistics and execution-governance reviews returned NO_BLOCKER with distinct codex/w4-stat-reviewer and codex/w4-exec-reviewer identities on the 123-row review manifest SHA-256 5fc9eb4c0345c9640abf39e56228de2307ea309aa463d9c202e06e698be9ba65, leaving zero unresolved blockers or majors."
+      ],
+      "finding_id": "G2R-W2-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The three-round G2R W2 statistics ledger closes S1-S6, including exact source-derived anchor tick membership, with terminal dual NO_BLOCKER."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-16T09:10:31Z",
+  "reviewed_at_utc": "2026-07-16T11:40:07Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "4aea9a3d4cbe525883f6707c3fb806c0ee1c8b915a83cce3a4e2b751e4d178dd",
+  "reviewed_manifest_sha256": "5fc9eb4c0345c9640abf39e56228de2307ea309aa463d9c202e06e698be9ba65",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
