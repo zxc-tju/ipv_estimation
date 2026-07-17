@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-15.
+Last reviewed: 2026-07-17.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -286,6 +286,18 @@ question index in `STUDIES.md`.
   candidate but remains non-submittable pending fresh review, G1/bundle, validate-only, and explicit pre-submit PI
   confirmation; stop and preserve. Local receipt/log copies are
   under `.codex-fleet/rq014-execution-v1p6/board/w4g_evidence/pf_*`.
+- **RQ014 G2R W1-W4 merged; W5a defines a managed surface but does not authorize it
+  (2026-07-17).** `origin/main` `8ebd94ca` contains the frozen output schemas,
+  WOD-to-M3/anchor/NC kernel, scoring/readouts, and 320-cell rating-blind orchestration.
+  W5a adds the schema-v2 template, exact v4 closed-snapshot launcher path, profile
+  `rq014-g2r-cpu-v1` (`amd`, 1/1/16 CPU, 32G, 04:00:00, thread caps 1), atomic
+  rating-blind output publication, immutable receipt, and PASS-only DONE. The operation
+  remains `DENY_PENDING_ACCEPTED_PREFLIGHT_PILOT_AND_PI_BUDGET` and absent from
+  `research_authorization.json`; validate/submit therefore fail closed. The execution-
+  contract pin cascade invalidates the prior materialization/preflight/pilot lineage by
+  design: after review/G1/bundle and separate W5b authorization, operators must rebuild
+  the materialization ledger and rerun preflight and pilot against the new contract SHA.
+  No rating access, HPC action, publish, or submit is authorized by W5a.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py

@@ -266,7 +266,10 @@ def test_recovery_lane_searches_true_history_future_and_combined_windows_without
     assert operations["rq014_r2_blind_feature_build"]["status"].startswith("DENY_")
     assert operations["rq014_r3_full_rating_join_and_rank"]["status"].startswith("DENY_")
     assert operations["rq014_r4_clean_replay"]["status"].startswith("DENY_")
-    assert operations["rq014_r2_blind_feature_build"]["scientific_contracts"] == [recovery_path]
+    assert operations["rq014_r2_blind_feature_build"]["scientific_contracts"] == [
+        recovery_path,
+        "reports/plans/RQ014_g2r_output_contract_v1.json",
+    ]
     assert operations["rq014_r3_full_rating_join_and_rank"]["scientific_contract"] == recovery_path
     assert operations["rq014_r4_clean_replay"]["scientific_contract"] == recovery_path
     g2 = execution["staged_input_manifests"]["G2"]
