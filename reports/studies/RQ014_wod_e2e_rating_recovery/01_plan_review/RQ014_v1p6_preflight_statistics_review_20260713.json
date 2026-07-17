@@ -165,15 +165,27 @@
       "severity": "BLOCKER",
       "status": "RESOLVED",
       "summary": "The three-round G2R W4 statistics ledger closes S1-S3 and B1-B2 with frozen mixed-branch selection and W3-consistent portable scorer numerics."
+    },
+    {
+      "evidence": [
+        "First-round statistics review of W5a integration commit f39c4f097a32feb03876a1d2d4ff65069ffd96aa returned NO_BLOCKER independently of the execution-governance review.",
+        "W5a defines the managed rq014_r2_blind_feature_build surface with the frozen 320-cell rating-blind scope, v4 and M3 bindings, W2/W3/W4 closed-snapshot modules, accepted resource-pilot lineage, and atomic receipt plus PASS-only DONE semantics; it does not join ratings, produce a leaderboard, or produce a recovery ledger.",
+        "The required hash-pin cascade binds launcher SHA-256 7f528cf7bbcc0f6cc5090f10261442f61f5ab630307ae41f5a0fa1c884067be5, wrapper SHA-256 8cc6da3f34b74b52be09f2231ddfc9e9104294463f9774aef5042cee88a26856, execution-contract SHA-256 3c8f4587ab052f0cd5d4950913841d69bbc07ebf0ac6b3bceafdd9f5ae6f96a6, and G2R-output-contract SHA-256 3be8da8e49fddee75ce387b502c0d1d6e16da232d34e208da4c66e2a4d2f36dc while the reviewed W1-W4 science outputs remain byte-identical.",
+        "Terminal statistics and execution-governance reviews returned NO_BLOCKER with distinct codex/w4-stat-reviewer and codex/w4-exec-reviewer identities on the deterministic 140-row review manifest SHA-256 2d32d6c6040967873fb0faa1d67e00d7c52ce46551e82c3be7515b0347b70ea7. Zero blockers or majors remain; rq014_r2_blind_feature_build remains DENY, absent from allowed_operations, and has no g2r_decision_path."
+      ],
+      "finding_id": "G2R-W5A-S-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "First-round statistics review returns NO_BLOCKER on the W5a managed integration and pin cascade while G2R remains centrally denied."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-17T04:51:12Z",
+  "reviewed_at_utc": "2026-07-17T10:39:28Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "212df84be9766ff94d3d5a73d8cc18d23df506cab94e23686ad738daf768d497",
+  "reviewed_manifest_sha256": "2d32d6c6040967873fb0faa1d67e00d7c52ce46551e82c3be7515b0347b70ea7",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
