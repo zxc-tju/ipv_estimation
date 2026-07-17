@@ -322,6 +322,7 @@ RQ014_REVIEW_REQUIRED_PATHS = {
     "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
     "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",
     "reports/plans/RQ014_PI_decision_D2_resource_pilot_20260714.md",
+    "reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md",
     "reports/plans/RQ014_PI_decision_envelope_identification_20260713.md",
     "reports/plans/RQ014_blind_anchor_receipt_v1p5.json",
     "reports/plans/RQ014_config_space_v1p5.yaml",
@@ -2093,10 +2094,15 @@ def _validate_rq014_operation_contract(
         if (
             not isinstance(operation, dict)
             or operation.get("status")
-            != "DENY_PENDING_ACCEPTED_PREFLIGHT_PILOT_AND_PI_BUDGET"
+            != "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_ACCEPTED_PI_BUDGET"
             or operation.get("rating_access") != "FORBIDDEN"
             or operation.get("rating_join") != "FORBIDDEN"
             or operation.get("observed_rating_statistics") != "FORBIDDEN"
+            or operation.get("required_gates")
+            != {
+                "g0": "CLOSED_WITH_INACCESSIBLE_SURFACES",
+                "formal_g1": "FORMAL_G1_PASS",
+            }
             or operation.get("run_spec_schema_version") != 2
             or operation.get("resource_profile_id") != RQ014_G2R_PROFILE
             or operation.get("required_prior_receipts")
@@ -2112,7 +2118,7 @@ def _validate_rq014_operation_contract(
                 "sha256_binding": "RUN_SPEC_AND_FORMAL_G1_FINAL_BUNDLE",
             }
         ):
-            raise ValueError("RQ014 G2R denied integration-surface contract drift")
+            raise ValueError("RQ014 G2R authorized integration-surface contract drift")
         if resource_profile_id != RQ014_G2R_PROFILE:
             raise ValueError("Run spec resource profile differs from operation contract")
         return
@@ -2207,7 +2213,7 @@ def _require_rq014_operation_executable(operation: Any, *, operation_name: str) 
         != "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_ACCEPTED_PI_BUDGET"
     ):
         raise ValueError(
-            "RQ014 G2R operation remains centrally denied pending separate authorization"
+            "RQ014 G2R operation is not conditionally authorized after accepted PI budget"
         )
 
 
@@ -2219,11 +2225,10 @@ def _validate_rq014_central_authorization_shape(
         "decision_path",
         "preflight_decision_path",
         "pilot_decision_path",
+        "g2r_decision_path",
         "formal_g1_path",
         "execution_contract_path",
     }
-    if operation_name == RQ014_G2R_OPERATION:
-        required_authority_fields.add("g2r_decision_path")
     if not isinstance(rq, dict) or set(rq) != required_authority_fields:
         if operation_name == RQ014_G2R_OPERATION:
             raise ValueError(
@@ -2445,6 +2450,10 @@ def _validate_rq014_spec(
 
     repo_roots = [repo]
     contract = load_rq014_json(execution_contract_path)
+    if spec["operation"] == RQ014_G2R_OPERATION and contract.get(
+        "authorization", {}
+    ).get("g2r_decision_path") != decision_relative_path:
+        raise ValueError("RQ014 G2R execution-contract decision path drift")
     gate_contract = contract.get("gate_contract", {})
     if gate_contract.get("formal_g1_source") != RQ014_FORMAL_G1:
         raise ValueError("RQ014 execution contract formal-G1 path drift")
@@ -2555,7 +2564,7 @@ def _validate_rq014_spec(
     }
     expected_future_g2r_binding = {
         **expected_v4_binding,
-        "status": "ACTIVE_FOR_DEFINED_G2R_SURFACE_EXECUTION_STILL_CENTRALLY_DENIED",
+        "status": "ACTIVE_FOR_AUTHORIZED_RQ014_R2_BLIND_FEATURE_BUILD",
     }
     if (
         bindings[RQ014_EXPORT_OPERATION] != expected_v3_binding

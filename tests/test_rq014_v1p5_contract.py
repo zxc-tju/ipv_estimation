@@ -140,6 +140,7 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
         "rq014_g2_resource_pilot",
+        "rq014_r2_blind_feature_build",
     ]
     assert authorization["authorizations"]["RQ014"]["preflight_decision_path"] == (
         "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
@@ -176,6 +177,7 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
         "rq014_g2_resource_pilot",
+        "rq014_r2_blind_feature_build",
     ]
 
 
@@ -263,7 +265,15 @@ def test_recovery_lane_searches_true_history_future_and_combined_windows_without
         == recovery_schema
     )
     operations = execution["authorization"]["registered_operations"]
-    assert operations["rq014_r2_blind_feature_build"]["status"].startswith("DENY_")
+    assert operations["rq014_r2_blind_feature_build"]["status"] == (
+        "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_ACCEPTED_PI_BUDGET"
+    )
+    assert operations["rq014_r2_blind_feature_build"]["rating_access"] == "FORBIDDEN"
+    assert operations["rq014_r2_blind_feature_build"]["rating_join"] == "FORBIDDEN"
+    central = load_json(ROOT / "configs" / "research_authorization.json")
+    assert central["authorizations"]["RQ014"]["g2r_decision_path"] == (
+        "reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md"
+    )
     assert operations["rq014_r3_full_rating_join_and_rank"]["status"].startswith("DENY_")
     assert operations["rq014_r4_clean_replay"]["status"].startswith("DENY_")
     assert operations["rq014_r2_blind_feature_build"]["scientific_contracts"] == [

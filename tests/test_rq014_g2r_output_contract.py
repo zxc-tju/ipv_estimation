@@ -617,19 +617,24 @@ def test_g2r_artifact_schemas_reject_rating_leaderboard_and_recovery_ledger_fiel
     assert operation_schema["properties"]["recovery_ledger_written"]["const"] is False
 
 
-def test_g2r_operation_surface_is_defined_but_remains_centrally_denied() -> None:
+def test_g2r_operation_surface_is_authorized_but_remains_rating_blind() -> None:
     contract = _strict_load(CONTRACT_PATH)
-    assert contract["authority_status"] == "W1_OUTPUT_SCHEMA_FROZEN_OPERATION_DENIED"
+    assert contract["authority_status"] == "W5B_G2R_OPERATION_AUTHORIZED_RATING_BLIND_ONLY"
     assert contract["future_operation_binding"] == {
-        "batching": "DEFINED_W5A_EXECUTION_STILL_CENTRALLY_DENIED",
-        "central_authorization": "DENY",
-        "launcher": "DEFINED_W5A_EXECUTION_STILL_CENTRALLY_DENIED",
-        "resource_profile": "DEFINED_W5A_EXECUTION_STILL_CENTRALLY_DENIED",
-        "retry": "DEFINED_W5A_EXECUTION_STILL_CENTRALLY_DENIED",
-        "run_spec": "DEFINED_W5A_EXECUTION_STILL_CENTRALLY_DENIED",
+        "batching": "ACTIVE_W5B_AUTHORIZED_RATING_BLIND_ONLY",
+        "central_authorization": "ALLOWED",
+        "launcher": "ACTIVE_W5B_AUTHORIZED_RATING_BLIND_ONLY",
+        "resource_profile": "ACTIVE_W5B_AUTHORIZED_RATING_BLIND_ONLY",
+        "retry": "ACTIVE_W5B_AUTHORIZED_RATING_BLIND_ONLY",
+        "run_spec": "ACTIVE_W5B_AUTHORIZED_RATING_BLIND_ONLY",
     }
     authorization = _strict_load(ROOT / "configs" / "research_authorization.json")
-    assert "rq014_r2_blind_feature_build" not in authorization["authorizations"]["RQ014"]["allowed_operations"]
+    assert "rq014_r2_blind_feature_build" in authorization["authorizations"]["RQ014"]["allowed_operations"]
+    assert contract["operation_boundary"]["operation_authorization"] == (
+        "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_ACCEPTED_PI_BUDGET"
+    )
+    assert contract["operation_boundary"]["rating_access"] == "NONE"
+    assert contract["operation_boundary"]["rating_join"] == "FORBIDDEN"
     assert not (ROOT / "scripts" / "rq014" / "run_g2r.py").exists()
     assert (ROOT / "configs/run_specs/RQ014_g2r.template.json").is_file()
 
