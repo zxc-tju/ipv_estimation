@@ -323,7 +323,7 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, str]:
         },
     }
     execution_contract["managed_hpc_contract"]["future_g2r_environment_binding"] = {
-        "status": "ACTIVE_FOR_DEFINED_G2R_SURFACE_EXECUTION_STILL_CENTRALLY_DENIED",
+        "status": "ACTIVE_FOR_AUTHORIZED_RQ014_R2_BLIND_FEATURE_BUILD",
         "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
         "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v4.json"),
         "size_bytes": launcher.RQ014_ENVIRONMENT_V4_SIZE_BYTES,
@@ -559,6 +559,7 @@ def test_round2_through_round5_and_g0_provenance_are_required_review_bytes() -> 
             "RQ014_v1p5_round4_remediation_20260712.md"
         ),
         "reports/plans/RQ014_plan_v1p5_review_manifest_round5_blocked_20260712.sha256",
+        "reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md",
         (
             "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/"
             "RQ014_v1p5_statistics_review_round5_blocked_20260712.json"
@@ -698,7 +699,7 @@ def test_reviewed_runtime_references_use_operation_bound_environment_locks() -> 
         },
     }
     assert contract["future_g2r_environment_binding"] == {
-        "status": "ACTIVE_FOR_DEFINED_G2R_SURFACE_EXECUTION_STILL_CENTRALLY_DENIED",
+        "status": "ACTIVE_FOR_AUTHORIZED_RQ014_R2_BLIND_FEATURE_BUILD",
         "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
         "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
         "size_bytes": 6148,
@@ -820,6 +821,7 @@ def test_preflight_and_resource_pilot_are_conditionally_registered_for_review() 
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
         "rq014_g2_resource_pilot",
+        "rq014_r2_blind_feature_build",
     ]
     assert authorization["authorizations"]["RQ014"]["preflight_decision_path"] == (
         "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
@@ -921,7 +923,7 @@ def _materialized_g2r_spec() -> dict[str, object]:
     return payload
 
 
-def test_g2r_managed_surface_is_exact_but_centrally_denied() -> None:
+def test_g2r_managed_surface_is_exact_and_conditionally_authorized() -> None:
     execution = json.loads(
         (ROOT / "reports/plans/RQ014_execution_contract_v1p5.json").read_text(
             encoding="utf-8"
@@ -930,30 +932,43 @@ def test_g2r_managed_surface_is_exact_but_centrally_denied() -> None:
     operation = execution["authorization"]["registered_operations"][
         launcher.RQ014_G2R_OPERATION
     ]
-    assert operation["status"] == "DENY_PENDING_ACCEPTED_PREFLIGHT_PILOT_AND_PI_BUDGET"
+    assert execution["authorization"]["g2r_decision_path"] == (
+        "reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md"
+    )
+    assert operation["status"] == (
+        "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_ACCEPTED_PI_BUDGET"
+    )
+    assert operation["required_gates"] == {
+        "g0": "CLOSED_WITH_INACCESSIBLE_SURFACES",
+        "formal_g1": "FORMAL_G1_PASS",
+    }
     launcher._validate_rq014_operation_contract(
         operation,
         operation_name=launcher.RQ014_G2R_OPERATION,
         resource_profile_id=launcher.RQ014_G2R_PROFILE,
     )
-    with pytest.raises(ValueError, match="remains centrally denied"):
-        launcher._require_rq014_operation_executable(
-            operation, operation_name=launcher.RQ014_G2R_OPERATION
-        )
+    launcher._require_rq014_operation_executable(
+        operation, operation_name=launcher.RQ014_G2R_OPERATION
+    )
     authorization = json.loads(
         (ROOT / "configs/research_authorization.json").read_text(encoding="utf-8")
     )
-    assert launcher.RQ014_G2R_OPERATION not in authorization["authorizations"]["RQ014"][
+    assert launcher.RQ014_G2R_OPERATION in authorization["authorizations"]["RQ014"][
         "allowed_operations"
     ]
+    assert authorization["authorizations"]["RQ014"]["g2r_decision_path"] == (
+        "reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md"
+    )
+    assert (ROOT / authorization["authorizations"]["RQ014"]["g2r_decision_path"]).is_file()
+    launcher._validate_rq014_central_authorization_shape(
+        authorization["authorizations"]["RQ014"],
+        operation_name=launcher.RQ014_G2R_OPERATION,
+    )
     spec = launcher.load_spec_from_value(_materialized_g2r_spec())
     assert spec["g2r_scope"] == launcher.RQ014_G2R_SCOPE
     assert spec["resource_profile_id"] == "rq014-g2r-cpu-v1"
-    with pytest.raises(ValueError, match="Operation is not authorized"):
-        launcher.validate_spec(spec, base=launcher.DEFAULT_BASE, repo=ROOT)
-
     injected = json.loads(json.dumps(authorization["authorizations"]["RQ014"]))
-    injected["allowed_operations"].append(launcher.RQ014_G2R_OPERATION)
+    del injected["g2r_decision_path"]
     with pytest.raises(ValueError, match="separate central authorization decision field"):
         launcher._validate_rq014_central_authorization_shape(
             injected, operation_name=launcher.RQ014_G2R_OPERATION

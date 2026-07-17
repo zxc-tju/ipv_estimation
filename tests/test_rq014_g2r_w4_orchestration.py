@@ -716,9 +716,9 @@ def test_w4_staged_write_is_exact_and_noclobber(
         W4.write_staged_artifacts(output_root, mini_build)
 
 
-def test_w4_keeps_managed_operation_denied_and_frozen_boundaries() -> None:
+def test_w4_authorization_keeps_standalone_kernel_rating_blind() -> None:
     authorization = _strict_load(ROOT / "configs" / "research_authorization.json")
-    assert W4.OPERATION not in authorization["authorizations"]["RQ014"][
+    assert W4.OPERATION in authorization["authorizations"]["RQ014"][
         "allowed_operations"
     ]
     source = (ROOT / "scripts" / "rq014" / "build_g2r_blind_outputs.py").read_text()

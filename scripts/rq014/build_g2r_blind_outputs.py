@@ -37,7 +37,7 @@ from scripts.rq014.wod_ipv_preprocessing import state_sequence_from_window_xy
 
 G2R_OUTPUT_CONTRACT_PATH = Path("reports/plans/RQ014_g2r_output_contract_v1.json")
 G2R_OUTPUT_CONTRACT_SHA256 = (
-    "3be8da8e49fddee75ce387b502c0d1d6e16da232d34e208da4c66e2a4d2f36dc"
+    "b066c090ab90316595574890c2b8a8a5ed1bd87d9041f0ce829501e9e4ed1116"
 )
 OPERATION = "rq014_r2_blind_feature_build"
 EXPECTED_SCENE_COUNT = 479
@@ -306,12 +306,13 @@ def _load_contract(repo_root: Path | None = None) -> Mapping[str, Any]:
         raise G2ROrchestrationError("G2R output contract SHA-256 drift")
     contract = _strict_json(path)
     if (
-        contract.get("authority_status") != "W1_OUTPUT_SCHEMA_FROZEN_OPERATION_DENIED"
+        contract.get("authority_status")
+        != "W5B_G2R_OPERATION_AUTHORIZED_RATING_BLIND_ONLY"
         or contract.get("operation") != OPERATION
         or contract.get("future_operation_binding", {}).get("central_authorization")
-        != "DENY"
+        != "ALLOWED"
     ):
-        raise G2ROrchestrationError("G2R operation-denial authority drift")
+        raise G2ROrchestrationError("G2R authorized-operation authority drift")
     if tuple(contract["grid_contract"]["readout_axis"]) != W3.READOUT_ORDER:
         raise G2ROrchestrationError("W2/W3 readout order drift")
     return contract

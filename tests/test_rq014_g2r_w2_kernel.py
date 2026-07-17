@@ -914,13 +914,13 @@ def test_w2_anchor_manifest_rehashes_every_bound_input(tmp_path: Path) -> None:
         DOMAIN.build_manifest(**kwargs)
 
 
-def test_w2_does_not_expose_scorer_or_managed_g2r_operation() -> None:
+def test_w2_does_not_expose_scorer_and_authorization_stays_rating_blind() -> None:
     source = (ROOT / "scripts/rq014/build_wod_m3_anchors.py").read_text(encoding="utf-8")
     assert "m3_scorer.joblib" not in source
     contract = _load(ROOT / "reports/plans/RQ014_g2r_output_contract_v1.json")
-    assert contract["future_operation_binding"]["central_authorization"] == "DENY"
+    assert contract["future_operation_binding"]["central_authorization"] == "ALLOWED"
     authorization = _load(ROOT / "configs/research_authorization.json")
-    assert "rq014_r2_blind_feature_build" not in authorization["authorizations"][
+    assert "rq014_r2_blind_feature_build" in authorization["authorizations"][
         "RQ014"
     ]["allowed_operations"]
     assert not (ROOT / "scripts/rq014/run_g2r.py").exists()

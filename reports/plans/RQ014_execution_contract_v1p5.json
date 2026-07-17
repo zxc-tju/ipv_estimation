@@ -43,6 +43,7 @@
     "missing_or_malformed_contract": "DENY",
     "central_authority": "configs/research_authorization.json",
     "scoped_decision": "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
+    "g2r_decision_path": "reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md",
     "effective_rule": "ALLOW only when the operation is centrally allowlisted, registered below, all required gates and reviewed hashes match, every prerequisite receipt validates, and every prohibition passes; any DENY or missing value wins",
     "registered_operations": {
       "rq014_g2_declassification_export": {
@@ -169,10 +170,14 @@
         "required_prior_receipts": ["rq014-g2-blind-build-v1"]
       },
       "rq014_r2_blind_feature_build": {
-        "status": "DENY_PENDING_ACCEPTED_PREFLIGHT_PILOT_AND_PI_BUDGET",
+        "status": "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_ACCEPTED_PI_BUDGET",
         "rating_access": "FORBIDDEN",
         "rating_join": "FORBIDDEN",
         "observed_rating_statistics": "FORBIDDEN",
+        "required_gates": {
+          "g0": "CLOSED_WITH_INACCESSIBLE_SURFACES",
+          "formal_g1": "FORMAL_G1_PASS"
+        },
         "scientific_contracts": [
           "reports/plans/RQ014_recovery_lane_v3.json",
           "reports/plans/RQ014_g2r_output_contract_v1.json"
@@ -530,9 +535,9 @@
     "wrapper_capability_contract": "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at /share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, opens fd9 at the exact managed submit_research_run.sh, hashes and executes that retained fd9; the wrapper must inherit both descriptors and may not create them; before any RQ014 registry-materializer or preflight preload, the launcher requires exact /proc/self/fd targets, regular non-symlink fixed paths, and fstat st_dev/st_ino/st_mode equality; this is not a cryptographic secret against deliberate same-account descriptor emulation",
     "production_spec_root": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs",
     "production_spec_contract": "direct-child regular non-symlink read-only canonical JSON; one O_NOFOLLOW descriptor read with retained exact bytes passed through validation, sealing and submission; no path reopen",
-    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 8cc6da3f34b74b52be09f2231ddfc9e9104294463f9774aef5042cee88a26856 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
+    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" e28a8a73f083727a69fa6a06f0957349ca10cecf2f6cf55a6ba92b5fc706d27d /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
     "operator_wrapper_size_bytes": 8108,
-    "operator_wrapper_sha256": "8cc6da3f34b74b52be09f2231ddfc9e9104294463f9774aef5042cee88a26856",
+    "operator_wrapper_sha256": "e28a8a73f083727a69fa6a06f0957349ca10cecf2f6cf55a6ba92b5fc706d27d",
     "operator_environment_boundary": "BASH_ENV ENV LD_PRELOAD PYTHONHOME PYTHONPATH HPC_SOCIALITY_ROOT and every SBATCH_* variable are rejected; launcher then re-execs in an empty environment",
     "slurm_environment_export": "NIL_ON_DIRECTIVE_AND_SBATCH_COMMAND; NONE_IS_FORBIDDEN_BECAUSE_IT_CAN_RECONSTRUCT_THE_LOGIN_ENVIRONMENT",
     "code_execution_surface": "read only final-contract-bundle registered regular-file blobs from the exact declared published Git commit tree into a closed run-root snapshot; verify each blob against the registered digest and hash the snapshot receipt and bundle manifest before execution; the sole external scientific byte is the separately spec-bound M3 scorer, which is retained-descriptor verified and never deserialized by contract preflight; dirty or untracked worktree bytes, Git worktree checkout, hooks, filters and unregistered files are forbidden",
@@ -586,7 +591,7 @@
       }
     },
     "future_g2r_environment_binding": {
-      "status": "ACTIVE_FOR_DEFINED_G2R_SURFACE_EXECUTION_STILL_CENTRALLY_DENIED",
+      "status": "ACTIVE_FOR_AUTHORIZED_RQ014_R2_BLIND_FEATURE_BUILD",
       "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
       "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v4.json",
       "size_bytes": 6148,

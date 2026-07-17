@@ -330,8 +330,8 @@ def test_w3_binds_a08_a15_at_portable_parity_and_keeps_operation_denied() -> Non
     )
     assert binding["independent_parity"]["absolute_tolerance"] == 1e-7
     assert "PENDING_W3_SCORER" not in json.dumps(contract, sort_keys=True)
-    assert contract["future_operation_binding"]["central_authorization"] == "DENY"
+    assert contract["future_operation_binding"]["central_authorization"] == "ALLOWED"
     authorization = _strict_load(ROOT / "configs/research_authorization.json")
-    assert "rq014_r2_blind_feature_build" not in authorization["authorizations"]["RQ014"][
+    assert "rq014_r2_blind_feature_build" in authorization["authorizations"]["RQ014"][
         "allowed_operations"
     ]

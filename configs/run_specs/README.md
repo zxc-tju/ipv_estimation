@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 8cc6da3f34b74b52be09f2231ddfc9e9104294463f9774aef5042cee88a26856 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" e28a8a73f083727a69fa6a06f0957349ca10cecf2f6cf55a6ba92b5fc706d27d /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -159,10 +159,14 @@ OpenBLAS, MKL, NumExpr, vecLib and BLIS thread caps all equal 1). It binds v4,
 the frozen output contract, W2/W3/W4 closed-snapshot modules, M3 artifact, and
 the export/preflight/pilot lineage, and publishes the six rating-blind artifact
 families only as an atomic PASS set with an immutable receipt and PASS-only
-DONE. This is a defined integration surface only: `rq014_r2_blind_feature_build`
-remains `DENY_PENDING_ACCEPTED_PREFLIGHT_PILOT_AND_PI_BUDGET`, is absent from
-the central allowlist, and cannot validate or submit until a separate reviewed
-authorization decision and fresh upstream lineage are installed.
+DONE. W5b decision `RQ014_PI_decision_D3_G2R_authorize_20260717.md` records the
+accepted preflight, PASS resource pilot, and PI-approved compute budget and adds
+only `rq014_r2_blind_feature_build` to the central allowlist. Rating access,
+rating join, observed rating statistics, leaderboard output, and recovery-ledger
+output remain forbidden; r3/D4 remains denied. Authorization does not reuse stale
+lineage or itself submit work: a published reviewed commit, fresh contract-bound
+upstream lineage, immutable production spec, successful validate-only, and the
+explicit operator submit step remain required.
 
 Schema v2 is fixed by `research_run_spec_v2.schema.json`, while the managed
 standard-library interpreter receipt is fixed by
