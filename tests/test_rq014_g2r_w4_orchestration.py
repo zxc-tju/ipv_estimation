@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-import copy
 import hashlib
 import json
+import os
+import pickle
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -10,13 +13,13 @@ import pytest
 from scripts.rq014 import build_g2r_blind_outputs as W4
 from scripts.rq014 import build_wod_m3_anchors as W2
 from scripts.rq014 import build_wod_scene_anchor_domain as DOMAIN
-from scripts.rq014 import score_wod_m3_deviations as W3
 
 
 ROOT = Path(__file__).resolve().parents[1]
 W1 = ROOT / "tests" / "fixtures" / "rq014_g2r_v1"
 W2B = ROOT / "tests" / "fixtures" / "rq014_g2r_w2b"
 W4_FIXTURES = ROOT / "tests" / "fixtures" / "rq014_g2r_w4"
+SCORER = ROOT / "models" / "rq009_m3" / "m3_scorer.joblib"
 
 
 def _strict_load(path: Path):
@@ -38,72 +41,44 @@ def _strict_load(path: Path):
     )
 
 
-def _scene(segment_id: str, offsets: tuple[float, float, float]) -> W4.SceneBlindInput:
-    sampling = {}
-    for sampling_id, rate_hz in DOMAIN.SAMPLING_AXIS:
-        ticks = range(-3 * rate_hz, 5 * rate_hz + 1)
-        candidates = {
-            candidate_id: {
-                tick: (float(tick), 0.0 if tick <= 0 else offsets[ordinal - 1])
-                for tick in ticks
-            }
-            for ordinal, candidate_id in W4.CANDIDATES
-        }
-        sampling[sampling_id] = DOMAIN.SamplingTimelines(
-            candidates=candidates,
-            counterpart={tick: (float(tick), 2.0) for tick in ticks},
-        )
+def _real_scene() -> W4.SceneBlindInput:
+    candidate = {
+        tick: (float(tick), 0.02 * float(tick) ** 2) for tick in range(-9, 9)
+    }
+    counterpart = {
+        tick: (0.8 * float(tick) + 1.0, 2.0 - 0.05 * float(tick))
+        for tick in range(-9, 9)
+    }
     return W4.SceneBlindInput(
-        domain=DOMAIN.SceneDomainInput(segment_id, "CP", sampling),
+        domain=DOMAIN.SceneDomainInput(
+            "scene-real",
+            "CP",
+            {
+                "R04N": DOMAIN.SamplingTimelines(
+                    candidates={candidate_id: candidate for _, candidate_id in W4.CANDIDATES},
+                    counterpart=counterpart,
+                )
+            },
+        ),
+        route_intent="straight",
+    )
+
+
+def _structural_scene() -> W4.SceneBlindInput:
+    return W4.SceneBlindInput(
+        domain=DOMAIN.SceneDomainInput(
+            "scene-structural",
+            "NA",
+            {},
+            terminal_status="INELIGIBLE_BLIND",
+        ),
         route_intent="straight",
     )
 
 
 def _fixture_inputs():
-    # Deliberately supply reverse lexical order; stored rows must use raw UTF-8 order.
-    scenes = (
-        _scene("scene-2", (0.0, 0.3, 0.4)),
-        _scene("scene-10", (0.0, 0.1, 0.2)),
-    )
+    scenes = (_structural_scene(), _real_scene())
     domain_rows = DOMAIN.build_anchor_domain_rows([scene.domain for scene in scenes])
-    base_m3_row = _strict_load(W1 / "m3_input_row_expected.json")
-
-    def feature_builder(candidate_positions, _counterpart_positions, **kwargs):
-        marker = float(candidate_positions[kwargs["tau_tick"]][1])
-        if (
-            marker == 0.3
-            and kwargs["rate_hz"] == 10
-            and kwargs["temporal_id"] == "TF"
-            and kwargs["tau_tick"] == 10
-        ):
-            raise W4.CandidateTerminalError(
-                "M3_SCORING_NUMERICAL_FAILURE",
-                "F_M3_SCORING_NUMERICAL_FAILURE",
-                "deterministic fixture candidate failure",
-            )
-        row = copy.deepcopy(base_m3_row)
-        row["values"][0] = marker + kwargs["tau_tick"] / kwargs["rate_hz"]
-        return row
-
-    def ipv_estimator(*, candidate_positions, tau_tick, **_kwargs):
-        return float(candidate_positions[tau_tick][1])
-
-    def score_rows(rows):
-        output = []
-        for row in rows:
-            _, row_sha256 = W2.m3_input_row_bytes_and_sha256(row)
-            output.append(
-                W3.PreMaskM3Score(
-                    m3_input_row_sha256=row_sha256,
-                    q_0p5=0.0,
-                    lo_90=-0.05,
-                    hi_90=0.05,
-                    support_gate_pass=True,
-                    ood_abstain=False,
-                )
-            )
-        return output
-
     lineage = {
         key: {
             "path": f"fixture/{key}",
@@ -135,31 +110,63 @@ def _fixture_inputs():
             1,
         ),
     }
-    return scenes, domain_rows, feature_builder, ipv_estimator, score_rows, lineage, prerequisite_artifacts
+    return scenes, domain_rows, lineage, prerequisite_artifacts
 
 
-def _build_fixture() -> W4.BlindOutputBuild:
-    scenes, domain_rows, feature_builder, ipv_estimator, score_rows, lineage, refs = (
-        _fixture_inputs()
-    )
+def _build_fixture_in_process() -> W4.BlindOutputBuild:
+    scenes, domain_rows, lineage, refs = _fixture_inputs()
     return W4.build_blind_output_artifacts(
         scenes,
         domain_rows,
-        score_rows=score_rows,
         run_id="RQ014_G2R_W4_FIXTURE",
         git_commit="1" * 40,
         created_at_utc="2026-07-17T00:00:00Z",
         lineage=lineage,
         prerequisite_artifacts=refs,
-        feature_builder=feature_builder,
-        candidate_ipv_estimator=ipv_estimator,
+        scorer_path=SCORER,
         fixture_mode=True,
     )
 
 
+def _build_fixture(tmp_path: Path) -> W4.BlindOutputBuild:
+    """Run the real scorer in an isolated process, then return its exact bytes.
+
+    Scikit-learn initializes an OpenMP runtime when the pinned scorer predicts.
+    Keeping that runtime in the pytest process can poison the later resource-
+    pilot fork pool on macOS.  Process isolation preserves the real W2-to-W3
+    integration while ensuring that the scorer runtime exits with its child.
+    """
+    payload_path = tmp_path / "mini_build.pickle"
+    test_path = Path(__file__).resolve()
+    command = (
+        "import pickle, runpy\n"
+        f"namespace = runpy.run_path({str(test_path)!r})\n"
+        "build = namespace['_build_fixture_in_process']()\n"
+        f"with open({str(payload_path)!r}, 'wb') as handle:\n"
+        "    pickle.dump(build, handle, protocol=pickle.HIGHEST_PROTOCOL)\n"
+    )
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = os.pathsep.join(
+        value
+        for value in (str(ROOT), str(ROOT / "src"), environment.get("PYTHONPATH"))
+        if value
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", command],
+        cwd=ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=900,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    return pickle.loads(payload_path.read_bytes())
+
+
 @pytest.fixture(scope="module")
-def mini_build() -> W4.BlindOutputBuild:
-    return _build_fixture()
+def mini_build(tmp_path_factory: pytest.TempPathFactory) -> W4.BlindOutputBuild:
+    return _build_fixture(tmp_path_factory.mktemp("rq014-g2r-w4-mini-build"))
 
 
 def test_w4_reproduces_w1_order_predicate_schema_shapes_and_anchor_golden() -> None:
@@ -214,27 +221,14 @@ def test_w4_mini_universe_emits_all_six_canonical_artifacts_and_bound_slices(
     mini_build: W4.BlindOutputBuild,
 ) -> None:
     assert tuple(mini_build.artifacts) == W4.DIRECT_ARTIFACT_NAMES
-    assert mini_build.common_support_ids == ("scene-10",)
-    assert W4.scene_passes_blind_predicate(mini_build.mask_rows, "scene-10")
-    assert not W4.scene_passes_blind_predicate(mini_build.mask_rows, "scene-2")
+    assert mini_build.common_support_ids == ()
+    assert not W4.scene_passes_blind_predicate(mini_build.mask_rows, "scene-real")
+    assert not W4.scene_passes_blind_predicate(
+        mini_build.mask_rows, "scene-structural"
+    )
     assert len(mini_build.feature_rows) == 320 * 2 * 3
     assert len(mini_build.mask_rows) == 320 * 2
     assert len(mini_build.predictor_rows) == 320
-    terminal_features = [
-        row
-        for row in mini_build.feature_rows
-        if row["upstream_status"] == "M3_SCORING_NUMERICAL_FAILURE"
-    ]
-    assert len(terminal_features) == 20
-    assert {
-        (row["segment_id"], row["candidate_id"], row["reason_code"])
-        for row in terminal_features
-    } == {("scene-2", "C2", "F_M3_SCORING_NUMERICAL_FAILURE")}
-    assert sum(
-        row["scene_cell_status"] == "M3_SCORING_NUMERICAL_FAILURE"
-        for row in mini_build.mask_rows
-    ) == 20
-    assert sum(row["terminal_candidate_slot_count"] == 1 for row in mini_build.predictor_rows) == 20
     assert all(
         data.endswith(b"\n") and b"\r" not in data
         for data in mini_build.artifacts.values()
@@ -306,9 +300,9 @@ def test_w4_mini_universe_emits_all_six_canonical_artifacts_and_bound_slices(
 
 
 def test_w4_mini_universe_is_deterministic_and_matches_bound_fixture(
-    mini_build: W4.BlindOutputBuild,
+    mini_build: W4.BlindOutputBuild, tmp_path: Path,
 ) -> None:
-    second = _build_fixture()
+    second = _build_fixture(tmp_path)
     assert second.artifacts == mini_build.artifacts
     expected = _strict_load(W4_FIXTURES / "mini_universe_artifact_manifest.json")
     observed = {
@@ -322,25 +316,91 @@ def test_w4_mini_universe_is_deterministic_and_matches_bound_fixture(
     assert observed == expected["artifacts"]
     assert expected["common_support_ids"] == list(mini_build.common_support_ids)
     assert expected["production_full_scale_execution"] == "DEFERRED_W5_HPC"
+    assert expected["pipeline_bindings"] == {
+        "candidate_ipv_estimator": (
+            "scripts/rq014/build_g2r_blind_outputs.py:"
+            "_default_candidate_ipv_estimator"
+        ),
+        "feature_builder": (
+            "scripts/rq014/build_wod_m3_anchors.py:"
+            "build_feature_family_m3_input_row"
+        ),
+        "m3_context_alignment": W2.ALIGNMENT_PRIMARY,
+        "scorer_sha256": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253",
+    }
 
 
-def test_w4_production_cardinality_and_scorer_hash_gates_fail_closed(tmp_path: Path) -> None:
-    scenes, domain_rows, feature_builder, ipv_estimator, score_rows, lineage, refs = (
-        _fixture_inputs()
-    )
-    with pytest.raises(W4.G2ROrchestrationError, match="exactly 479 scenes"):
+def test_w4_terminal_only_structural_scene_propagates_ineligible_blind(
+    mini_build: W4.BlindOutputBuild,
+) -> None:
+    structural_features = [
+        row
+        for row in mini_build.feature_rows
+        if row["segment_id"] == "scene-structural"
+    ]
+    assert len(structural_features) == 320 * 3
+    assert {
+        (row["upstream_status"], row["reason_code"])
+        for row in structural_features
+    } == {("INELIGIBLE_BLIND", "F_SAFE_PRIMITIVE_OR_FIXTURE_GATE")}
+    structural_masks = [
+        row
+        for row in mini_build.mask_rows
+        if row["segment_id"] == "scene-structural"
+    ]
+    assert len(structural_masks) == 320
+    assert {row["scene_cell_status"] for row in structural_masks} == {
+        "INELIGIBLE_BLIND"
+    }
+
+
+def test_w4_d4_primary_fingerprint_rejects_sensitivity_mutation(
+    mini_build: W4.BlindOutputBuild,
+) -> None:
+    expected = _strict_load(W4_FIXTURES / "mini_universe_artifact_manifest.json")
+    binding = expected["d4_primary_anchor_binding"]
+    matching = [
+        row
+        for row in mini_build.anchor_score_rows
+        if all(row[key] == value for key, value in binding["row_identity"].items())
+    ]
+    assert len(matching) == 1
+    assert matching[0]["m3_input_row_sha256_or_NA"] == binding["m3_input_row_sha256"]
+
+    scene = _real_scene()
+    sampling = scene.domain.sampling["R04N"]
+    focal_reference = W4._scene_focal_reference(scene)
+    with pytest.raises(W2.WodM3KernelError):
+        W2.build_feature_family_m3_input_row(
+            sampling.candidates["C1"],
+            sampling.counterpart,
+            temporal_id="CH-W10",
+            tau_tick=8,
+            rate_hz=4,
+            h_common_tick=8,
+            case_start_tick=-9,
+            scene_focal_reference=focal_reference,
+            counterpart_is_vehicle=True,
+            m3_context_alignment=W2.ALIGNMENT_SENSITIVITY,
+        )
+
+
+def test_w4_production_rejects_injected_producer() -> None:
+    scenes, domain_rows, lineage, refs = _fixture_inputs()
+    with pytest.raises(W4.G2ROrchestrationError, match="forbids injected"):
         W4.build_blind_output_artifacts(
             scenes,
             domain_rows,
-            score_rows=score_rows,
             run_id="RQ014_G2R_W4_FIXTURE",
             git_commit="1" * 40,
             created_at_utc="2026-07-17T00:00:00Z",
             lineage=lineage,
             prerequisite_artifacts=refs,
-            feature_builder=feature_builder,
-            candidate_ipv_estimator=ipv_estimator,
+            score_rows=lambda _rows: (),
         )
+
+
+def test_w4_scorer_hash_gate_fails_closed(tmp_path: Path) -> None:
     fake_scorer = tmp_path / "m3_scorer.joblib"
     fake_scorer.write_bytes(b"not reviewed")
     with pytest.raises(W4.G2ROrchestrationError, match="size or SHA-256 mismatch"):

@@ -12,6 +12,8 @@ operation receipts, retry, and launcher integration remain W5 work.
 Production output schemas fix 479 scenes and 320 cells.  ``fixture_mode`` is a
 test-only seam for small deterministic universes: it exercises the identical
 row/order/hash machinery but is rejected by the production cardinality gate.
+Only that seam accepts injected producers; production hard-binds the W2 feature
+and IPV implementations plus a checksum-verified W3 scorer.
 """
 from __future__ import annotations
 
@@ -449,6 +451,14 @@ def _joint_tick_bounds(sampling: DOMAIN.SamplingTimelines) -> tuple[int, int]:
     return min(joint), max(joint)
 
 
+def _position_track_sha256(positions: Mapping[int, Sequence[float]]) -> str:
+    payload = [
+        [int(tick), float(positions[tick][0]), float(positions[tick][1])]
+        for tick in sorted(positions)
+    ]
+    return hashlib.sha256(W2.canonical_json_bytes(payload)).hexdigest()
+
+
 def _default_candidate_ipv_estimator(
     *,
     candidate_positions: Mapping[int, Sequence[float]],
@@ -610,12 +620,23 @@ def build_anchor_score_rows(
     by_segment = {scene.domain.segment_id: scene for scene in ordered_scenes}
     if len(by_segment) != len(scenes):
         raise G2ROrchestrationError("duplicate scene input")
+    available_segments = {
+        str(row["segment_id"])
+        for row in anchor_domain_rows
+        if row["membership_status"] == "AVAILABLE"
+    }
     focal_references = {
-        segment_id: _scene_focal_reference(scene) for segment_id, scene in by_segment.items()
+        segment_id: _scene_focal_reference(by_segment[segment_id])
+        for segment_id in sorted(available_segments, key=lambda value: value.encode("utf-8"))
     }
     feature_order = {feature_id: index for index, feature_id in enumerate(DOMAIN.FEATURE_FAMILIES)}
     pending: list[tuple[int, dict[str, Any], Mapping[str, Any], float]] = []
     emitted: dict[tuple[int, int], dict[str, Any]] = {}
+    canonical_feature_builder = feature_builder is W2.build_feature_family_m3_input_row
+    canonical_ipv_estimator = candidate_ipv_estimator is _default_candidate_ipv_estimator
+    track_digests: dict[tuple[str, str, str], str] = {}
+    m3_rows: dict[tuple[str, str, str, int], Mapping[str, Any]] = {}
+    candidate_ipvs: dict[tuple[str, str, str, int, int], float] = {}
 
     available_domain_index = -1
     for domain_row in anchor_domain_rows:
@@ -654,27 +675,81 @@ def build_anchor_score_rows(
             }
             try:
                 candidate_positions = sampling.candidates[candidate_id]
-                candidate_ipv = candidate_ipv_estimator(
-                    candidate_positions=candidate_positions,
-                    counterpart_positions=sampling.counterpart,
-                    temporal_id=temporal_id,
-                    tau_tick=tau_tick,
-                    rate_hz=rate_hz,
-                    h_common_tick=h_common_tick,
-                    scene_focal_reference=focal_references[segment_id],
-                )
-                m3_row = feature_builder(
-                    candidate_positions,
-                    sampling.counterpart,
-                    temporal_id=temporal_id,
-                    tau_tick=tau_tick,
-                    rate_hz=rate_hz,
-                    h_common_tick=h_common_tick,
-                    case_start_tick=case_start_tick,
-                    scene_focal_reference=focal_references[segment_id],
-                    counterpart_is_vehicle=scene.counterpart_is_vehicle,
-                    m3_context_alignment=W2.ALIGNMENT_PRIMARY,
-                )
+                track_key = (segment_id, sampling_id, candidate_id)
+                if track_key not in track_digests:
+                    track_digests[track_key] = _position_track_sha256(candidate_positions)
+                track_sha256 = track_digests[track_key]
+                if canonical_ipv_estimator:
+                    start_tick, end_tick = W2.temporal_window_bounds(
+                        temporal_id, tau_tick, rate_hz, h_common_tick
+                    )
+                    ipv_key = (
+                        segment_id,
+                        sampling_id,
+                        track_sha256,
+                        start_tick,
+                        end_tick,
+                    )
+                    if ipv_key not in candidate_ipvs:
+                        candidate_ipvs[ipv_key] = candidate_ipv_estimator(
+                            candidate_positions=candidate_positions,
+                            counterpart_positions=sampling.counterpart,
+                            temporal_id=temporal_id,
+                            tau_tick=tau_tick,
+                            rate_hz=rate_hz,
+                            h_common_tick=h_common_tick,
+                            scene_focal_reference=focal_references[segment_id],
+                        )
+                    candidate_ipv = candidate_ipvs[ipv_key]
+                else:
+                    candidate_ipv = candidate_ipv_estimator(
+                        candidate_positions=candidate_positions,
+                        counterpart_positions=sampling.counterpart,
+                        temporal_id=temporal_id,
+                        tau_tick=tau_tick,
+                        rate_hz=rate_hz,
+                        h_common_tick=h_common_tick,
+                        scene_focal_reference=focal_references[segment_id],
+                    )
+                if canonical_feature_builder:
+                    _, _, context_tick = W2.select_feature_family_context(
+                        candidate_positions,
+                        sampling.counterpart,
+                        temporal_id=temporal_id,
+                        tau_tick=tau_tick,
+                        rate_hz=rate_hz,
+                        h_common_tick=h_common_tick,
+                        case_start_tick=case_start_tick,
+                        alignment=W2.ALIGNMENT_PRIMARY,
+                    )
+                    m3_key = (segment_id, sampling_id, track_sha256, context_tick)
+                    if m3_key not in m3_rows:
+                        m3_rows[m3_key] = feature_builder(
+                            candidate_positions,
+                            sampling.counterpart,
+                            temporal_id=temporal_id,
+                            tau_tick=tau_tick,
+                            rate_hz=rate_hz,
+                            h_common_tick=h_common_tick,
+                            case_start_tick=case_start_tick,
+                            scene_focal_reference=focal_references[segment_id],
+                            counterpart_is_vehicle=scene.counterpart_is_vehicle,
+                            m3_context_alignment=W2.ALIGNMENT_PRIMARY,
+                        )
+                    m3_row = m3_rows[m3_key]
+                else:
+                    m3_row = feature_builder(
+                        candidate_positions,
+                        sampling.counterpart,
+                        temporal_id=temporal_id,
+                        tau_tick=tau_tick,
+                        rate_hz=rate_hz,
+                        h_common_tick=h_common_tick,
+                        case_start_tick=case_start_tick,
+                        scene_focal_reference=focal_references[segment_id],
+                        counterpart_is_vehicle=scene.counterpart_is_vehicle,
+                        m3_context_alignment=W2.ALIGNMENT_PRIMARY,
+                    )
                 W2.m3_input_row_bytes_and_sha256(m3_row)
                 if not math.isfinite(float(candidate_ipv)):
                     raise CandidateTerminalError(
@@ -893,18 +968,44 @@ def build_blind_output_artifacts(
     scenes: Sequence[SceneBlindInput],
     anchor_domain_rows: Sequence[Mapping[str, str]],
     *,
-    score_rows: ScoreRows,
     run_id: str,
     git_commit: str,
     created_at_utc: str,
     lineage: Mapping[str, Mapping[str, Any]],
     prerequisite_artifacts: Mapping[str, ArtifactReference],
-    feature_builder: FeatureBuilder = W2.build_feature_family_m3_input_row,
-    candidate_ipv_estimator: CandidateIpvEstimator = _default_candidate_ipv_estimator,
+    scorer_path: Path | None = None,
+    score_rows: ScoreRows | None = None,
+    feature_builder: FeatureBuilder | None = None,
+    candidate_ipv_estimator: CandidateIpvEstimator | None = None,
     fixture_mode: bool = False,
     repo_root: Path | None = None,
 ) -> BlindOutputBuild:
     """Build all six standalone W4 artifacts in canonical stored-byte order."""
+
+    if not fixture_mode:
+        if any(
+            producer is not None
+            for producer in (score_rows, feature_builder, candidate_ipv_estimator)
+        ):
+            raise G2ROrchestrationError(
+                "production G2R forbids injected feature/IPV/scorer producers"
+            )
+        if scorer_path is None:
+            raise G2ROrchestrationError("production G2R requires the pinned M3 scorer path")
+        score_rows = load_verified_scorer_rows(scorer_path)
+        feature_builder = W2.build_feature_family_m3_input_row
+        candidate_ipv_estimator = _default_candidate_ipv_estimator
+    else:
+        if score_rows is not None and scorer_path is not None:
+            raise G2ROrchestrationError("fixture scorer path/callback is ambiguous")
+        if score_rows is None:
+            if scorer_path is None:
+                raise G2ROrchestrationError("fixture mode requires a scorer path or callback")
+            score_rows = load_verified_scorer_rows(scorer_path)
+        feature_builder = feature_builder or W2.build_feature_family_m3_input_row
+        candidate_ipv_estimator = (
+            candidate_ipv_estimator or _default_candidate_ipv_estimator
+        )
 
     contract = _load_contract(repo_root)
     status_by_reason, priority = _status_tables(contract)
@@ -914,6 +1015,8 @@ def build_blind_output_artifacts(
         raise G2ROrchestrationError("duplicate segment_id")
     ordered_scenes = sorted(scenes, key=lambda item: item.domain.segment_id.encode("utf-8"))
     scene_ids = [scene.domain.segment_id for scene in ordered_scenes]
+    if fixture_mode and len(ordered_scenes) >= EXPECTED_SCENE_COUNT:
+        raise G2ROrchestrationError("fixture mode cannot emit a production-size universe")
     if not fixture_mode and len(ordered_scenes) != EXPECTED_SCENE_COUNT:
         raise G2ROrchestrationError("production G2R requires exactly 479 scenes")
     if set(lineage) != LINEAGE_KEYS:
