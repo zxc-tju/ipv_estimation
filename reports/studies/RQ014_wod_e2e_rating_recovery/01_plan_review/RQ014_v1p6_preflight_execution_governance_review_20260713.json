@@ -179,24 +179,24 @@
     },
     {
       "evidence": [
-        "The effective authorization is exact-key and fail closed: rq014_r2_blind_feature_build now has CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_ACCEPTED_PI_BUDGET, the required G0 and Formal-G1 gates, accepted preflight/pilot/budget receipts, and the reviewed v4 environment binding; unknown or non-allowlisted operations remain denied.",
-        "The new PI decision explicitly authorizes only the rating-blind 320-cell bank. The managed G2R operation still rejects rating access, joins, observed rating statistics, leaderboard output and recovery-ledger output, while r3_full_rating_join_and_rank remains a separate D4 decision and is not centrally allowlisted.",
-        "The launcher-to-wrapper-to-execution-contract-to-output-contract pin cascade is complete, the output contract is activated without changing science formulas or golden payloads, and the managed tests cover the allowed status, exact central decision path, v4 binding, G2R spec shape, closed-snapshot modules, receipt/DONE semantics, and rejection of malformed authority.",
-        "The exact deterministic 141-row authorization review manifest is SHA-256 ded79261df6b6b8fe05203684fd728830669738f28c08388280cac3b7813cd7a. Both distinct reviewers return NO_BLOCKER with zero unresolved blockers or majors; this local wave performed no publish, HPC mutation, Slurm submission, or rating access."
+        "The fix-A decision no longer treats pilot job 1930942 as a full-G2R cost measurement: it discloses the synthetic feature substrate, preserves real exact-IPV feature construction as UNMEASURED, and records explicit PI acceptance of that bounded residual without weakening a runtime or science gate.",
+        "The actual G2R run remains separately user-authorized and monitored under the reviewed 16-CPU/32G/04:00:00 profile; the four-hour ceiling is fail closed, and managed publication still requires an immutable PASS receipt plus PASS-only DONE.",
+        "The effective authorization is unchanged from W5b: rq014_r2_blind_feature_build is the sole newly allowed operation, its exact g2r_decision_path and v4 binding remain active, and rating access/join/statistics plus D4, leaderboard, and recovery-ledger work remain forbidden.",
+        "The corrected deterministic 141-row reviewed manifest is SHA-256 5e50fc05ef3620bdd90b54a8e4129192135cddb2e9e02d32ec9bac9c03c393ed. Both distinct reviewers return NO_BLOCKER with zero unresolved blockers or majors; this local regeneration performed no publish, HPC mutation, Slurm submission, or rating access."
       ],
-      "finding_id": "G2R-W5B-AUTH-E-N01",
+      "finding_id": "G2R-W5B-FIX-E-N02",
       "severity": "NOTE",
       "status": "NO_FINDING",
-      "summary": "First-round execution-governance review returns NO_BLOCKER on the exact r2 allowlist transition and fail-closed managed boundary."
+      "summary": "Execution governance remains NO_BLOCKER after the honest-cost correction because authorization and runtime ceilings remain exact and fail closed."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-17T11:47:00Z",
+  "reviewed_at_utc": "2026-07-17T15:18:30Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "ded79261df6b6b8fe05203684fd728830669738f28c08388280cac3b7813cd7a",
+  "reviewed_manifest_sha256": "5e50fc05ef3620bdd90b54a8e4129192135cddb2e9e02d32ec9bac9c03c393ed",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
