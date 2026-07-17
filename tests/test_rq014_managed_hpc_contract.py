@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -12,6 +13,7 @@ import pytest
 
 import scripts.hpc.prepare_research_run as launcher
 from scripts.rq014.materialize_registry import sha256_file
+from scripts.rq014 import run_managed_g2
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -313,6 +315,19 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, str]:
             "size_bytes": launcher.RQ014_ENVIRONMENT_V4_SIZE_BYTES,
             "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
         },
+        launcher.RQ014_G2R_OPERATION: {
+            "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+            "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v4.json"),
+            "size_bytes": launcher.RQ014_ENVIRONMENT_V4_SIZE_BYTES,
+            "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+        },
+    }
+    execution_contract["managed_hpc_contract"]["future_g2r_environment_binding"] = {
+        "status": "ACTIVE_FOR_DEFINED_G2R_SURFACE_EXECUTION_STILL_CENTRALLY_DENIED",
+        "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+        "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v4.json"),
+        "size_bytes": launcher.RQ014_ENVIRONMENT_V4_SIZE_BYTES,
+        "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
     }
     execution_contract["managed_hpc_contract"]["stdlib_integrity"].update(
         root=str(stdlib_root),
@@ -676,9 +691,14 @@ def test_reviewed_runtime_references_use_operation_bound_environment_locks() -> 
             "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
             "size_bytes": 6148, "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
         },
+        launcher.RQ014_G2R_OPERATION: {
+            "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+            "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
+            "size_bytes": 6148, "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+        },
     }
     assert contract["future_g2r_environment_binding"] == {
-        "status": "MANDATORY_WHEN_A_G2R_OPERATION_IS_SEPARATELY_AUTHORIZED",
+        "status": "ACTIVE_FOR_DEFINED_G2R_SURFACE_EXECUTION_STILL_CENTRALLY_DENIED",
         "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
         "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
         "size_bytes": 6148,
@@ -868,6 +888,481 @@ def test_preflight_and_resource_pilot_are_conditionally_registered_for_review() 
     assert schema["$defs"]["pilotScope"]["properties"]["env_v4_required"] == {
         "const": True
     }
+    g2r_branch = schema["oneOf"][3]
+    assert g2r_branch["properties"]["operation"] == {
+        "const": launcher.RQ014_G2R_OPERATION
+    }
+    assert g2r_branch["properties"]["resource_profile_id"] == {
+        "const": launcher.RQ014_G2R_PROFILE
+    }
+    assert g2r_branch["properties"]["g2r_output_contract"]["const"]["path"].endswith(
+        launcher.RQ014_G2R_OUTPUT_CONTRACT
+    )
+    assert set(g2r_branch["required"]) >= {
+        "resource_pilot_receipt",
+        "resource_pilot_done",
+        "g2r_output_contract",
+        "g2r_scope",
+    }
+    assert schema["$defs"]["g2rScope"]["additionalProperties"] is False
+
+
+def _materialized_g2r_spec() -> dict[str, object]:
+    payload = json.loads(
+        (ROOT / "configs/run_specs/RQ014_g2r.template.json").read_text(encoding="utf-8")
+    )
+    payload["run_id"] = "RQ014_2_blind_feature_build_fixture_deadbeef"
+    payload["git_commit"] = "1" * 40
+    payload["declassification_export_commit"] = "2" * 40
+    payload["created_at_utc"] = "2026-07-17T00:00:00Z"
+    for value in payload.values():
+        if isinstance(value, dict) and value.get("sha256") == "0" * 64:
+            value["sha256"] = "3" * 64
+    return payload
+
+
+def test_g2r_managed_surface_is_exact_but_centrally_denied() -> None:
+    execution = json.loads(
+        (ROOT / "reports/plans/RQ014_execution_contract_v1p5.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    operation = execution["authorization"]["registered_operations"][
+        launcher.RQ014_G2R_OPERATION
+    ]
+    assert operation["status"] == "DENY_PENDING_ACCEPTED_PREFLIGHT_PILOT_AND_PI_BUDGET"
+    launcher._validate_rq014_operation_contract(
+        operation,
+        operation_name=launcher.RQ014_G2R_OPERATION,
+        resource_profile_id=launcher.RQ014_G2R_PROFILE,
+    )
+    with pytest.raises(ValueError, match="remains centrally denied"):
+        launcher._require_rq014_operation_executable(
+            operation, operation_name=launcher.RQ014_G2R_OPERATION
+        )
+    authorization = json.loads(
+        (ROOT / "configs/research_authorization.json").read_text(encoding="utf-8")
+    )
+    assert launcher.RQ014_G2R_OPERATION not in authorization["authorizations"]["RQ014"][
+        "allowed_operations"
+    ]
+    spec = launcher.load_spec_from_value(_materialized_g2r_spec())
+    assert spec["g2r_scope"] == launcher.RQ014_G2R_SCOPE
+    assert spec["resource_profile_id"] == "rq014-g2r-cpu-v1"
+    with pytest.raises(ValueError, match="Operation is not authorized"):
+        launcher.validate_spec(spec, base=launcher.DEFAULT_BASE, repo=ROOT)
+
+    injected = json.loads(json.dumps(authorization["authorizations"]["RQ014"]))
+    injected["allowed_operations"].append(launcher.RQ014_G2R_OPERATION)
+    with pytest.raises(ValueError, match="separate central authorization decision field"):
+        launcher._validate_rq014_central_authorization_shape(
+            injected, operation_name=launcher.RQ014_G2R_OPERATION
+        )
+
+
+@pytest.mark.parametrize(
+    "missing",
+    [
+        "resource_pilot_receipt",
+        "resource_pilot_done",
+        "g2r_output_contract",
+        "g2r_scope",
+        "created_at_utc",
+    ],
+)
+def test_g2r_spec_requires_every_new_exact_key(missing: str) -> None:
+    payload = _materialized_g2r_spec()
+    del payload[missing]
+    with pytest.raises(ValueError, match="Run spec v2 keys differ"):
+        launcher.load_spec_from_value(payload)
+
+
+def test_g2r_and_existing_specs_reject_cross_branch_fields() -> None:
+    g2r = _materialized_g2r_spec()
+    g2r["pilot_scope"] = {
+        "cell_selection_rule_id": "LANE_V3_NON_M3_COST_EXTREMES_V1",
+        "non_m3_stages": ["source_load", "window_assembly", "feature_prep"],
+        "m3_stage_enabled": True,
+        "env_v4_required": True,
+        "m3_cost_estimate": "MEASURED",
+    }
+    with pytest.raises(ValueError, match="unexpected=.*pilot_scope"):
+        launcher.load_spec_from_value(g2r)
+
+    export = {
+        "schema_version": 2,
+        "rq_id": "RQ014",
+        "run_id": "RQ014_fixture_export",
+        "operation": launcher.RQ014_EXPORT_OPERATION,
+        "git_commit": "1" * 40,
+        "formal_g1": {"path": "formal", "sha256": "1" * 64},
+        "contract_bundle": {"path": "bundle", "sha256": "1" * 64},
+        "environment_manifest": {"path": "environment", "sha256": "1" * 64},
+        "resource_profile_id": launcher.RQ014_EXPORT_RESOURCE_PROFILE,
+        "scene_bundles": [
+            {"path": f"scene-{index}", "sha256": f"{index + 1:064x}"}
+            for index in range(8)
+        ],
+        "readiness_table": {"path": "readiness", "sha256": "9" * 64},
+        "counterpart_tracks": {"path": "counterpart", "sha256": "a" * 64},
+        "created_at_utc": "2026-07-17T00:00:00Z",
+        "g2r_scope": launcher.RQ014_G2R_SCOPE,
+    }
+    with pytest.raises(ValueError, match="unexpected=.*g2r_scope"):
+        launcher.load_spec_from_value(export)
+
+
+def test_g2r_code_preload_and_receipt_done_contract(tmp_path: Path) -> None:
+    registered = {
+        relative: sha256_file(ROOT / relative)
+        for relative in (
+            *launcher.RQ014_G2R_PRELOAD_PATHS,
+            *launcher.RQ014_G2R_MODEL_BINDING_PATHS,
+        )
+    }
+    output_contract_sha256 = sha256_file(ROOT / launcher.RQ014_G2R_OUTPUT_CONTRACT)
+    registered[launcher.RQ014_G2R_OUTPUT_CONTRACT] = output_contract_sha256
+    binding_spec = _materialized_g2r_spec()
+    binding_spec["g2r_output_contract"]["path"] = str(
+        ROOT / launcher.RQ014_G2R_OUTPUT_CONTRACT
+    )
+    binding_spec["g2r_output_contract"]["sha256"] = output_contract_sha256
+    contract_path, module_bindings, model_bindings = (
+        launcher._validate_rq014_g2r_code_bindings(
+        repo=ROOT,
+        registered=registered,
+        spec=binding_spec,
+        )
+    )
+    assert contract_path == (ROOT / launcher.RQ014_G2R_OUTPUT_CONTRACT).resolve()
+    assert module_bindings == {
+        relative: registered[relative] for relative in launcher.RQ014_G2R_MODULE_PATHS
+    }
+    assert model_bindings == {
+        relative: registered[relative]
+        for relative in launcher.RQ014_G2R_MODEL_BINDING_PATHS
+    }
+    command = launcher._rq014_isolated_python_command(
+        python=Path("/managed/python"),
+        code=Path("/closed/code"),
+        entrypoint="scripts/rq014/run_managed_g2.py",
+        arguments=["blind-feature-build"],
+        isolated_sys_path=["/stdlib"],
+        site_packages_root="/site-packages",
+    )
+    module_rows = json.loads(command[command.index(launcher._RQ014_EXACT_PATH_BOOTSTRAP) + 3])
+    module_names = [row[0] for row in module_rows]
+    assert module_names[-4:] == [
+        "scripts.rq014.build_wod_m3_anchors",
+        "scripts.rq014.build_wod_scene_anchor_domain",
+        "scripts.rq014.score_wod_m3_deviations",
+        "scripts.rq014.build_g2r_blind_outputs",
+    ]
+
+    output_manifest = tmp_path / "g2r_output_manifest.json"
+    output_manifest.write_bytes(b'{"status":"COMPLETE"}\n')
+    receipt = run_managed_g2._g2r_pass_receipt(
+        run_id="RQ014_fixture_g2r",
+        git_commit="1" * 40,
+        created_at_utc="2026-07-17T00:00:00Z",
+        output_manifest_path=output_manifest,
+    )
+    receipt_schema = json.loads(
+        (
+            ROOT / "configs/artifact_schemas/rq014_g2r_operation_receipt_v1.schema.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert set(receipt) == set(receipt_schema["required"])
+    assert receipt["status"] == "PASS" and receipt["terminal_cell_count"] == 320
+    payload = canonical = launcher._canonical_spec_bytes(receipt)
+    done = {
+        "schema_version": "rq014-managed-operation-done-v1",
+        "operation": launcher.RQ014_G2R_OPERATION,
+        "receipt_sha256": hashlib.sha256(payload).hexdigest(),
+        "status": "PASS",
+    }
+    assert set(done) == {"schema_version", "operation", "receipt_sha256", "status"}
+    assert canonical.endswith(b"\n")
+
+    pass_output = tmp_path / "pass-output"
+    run_managed_g2._write_managed_outcome(
+        output=pass_output,
+        receipt=receipt,
+        receipt_name="rq014_r2_blind_feature_build_receipt.json",
+        operation_name=launcher.RQ014_G2R_OPERATION,
+    )
+    persisted = pass_output / "rq014_r2_blind_feature_build_receipt.json"
+    done_payload = json.loads((pass_output / "DONE.json").read_text(encoding="utf-8"))
+    assert done_payload["receipt_sha256"] == sha256_file(persisted)
+    assert (persisted.stat().st_mode & 0o777) == 0o444
+
+    fail_output = tmp_path / "fail-output"
+    fail_receipt = run_managed_g2._runtime_failure_receipt(
+        run_id="RQ014_fixture_g2r",
+        git_commit="1" * 40,
+        created_at_utc="2026-07-17T00:00:00Z",
+        stage="SOURCE_LOAD",
+        failure_class="SOURCE_LOAD_FAILURE",
+        error=ValueError("fixture failure"),
+        nc_gate_status="FAIL",
+    )
+    run_managed_g2._write_managed_outcome(
+        output=fail_output,
+        receipt=fail_receipt,
+        receipt_name="rq014_r2_blind_feature_build_receipt.json",
+        operation_name=launcher.RQ014_G2R_OPERATION,
+    )
+    assert not (fail_output / "DONE.json").exists()
+    assert set(fail_receipt) == set(receipt_schema["required"])
+    assert fail_receipt["output_manifest"] == {
+        "kind": "NA",
+        "reason_code": "OUTPUTS_NOT_PUBLISHED",
+    }
+
+
+def test_g2r_exact_path_bootstrap_executes_all_managed_modules() -> None:
+    isolated_sys_path = json.loads(
+        subprocess.check_output(
+            [
+                sys.executable,
+                "-I",
+                "-S",
+                "-B",
+                "-X",
+                "utf8",
+                "-c",
+                "import json,sys; print(json.dumps(sys.path))",
+            ],
+            text=True,
+        )
+    )
+    site_root = next(
+        value for value in sys.path if value.endswith(("site-packages", "dist-packages"))
+    )
+    command = launcher._rq014_isolated_python_command(
+        python=Path(sys.executable),
+        code=ROOT,
+        entrypoint="scripts/rq014/run_managed_g2.py",
+        arguments=["blind-feature-build", "--help"],
+        isolated_sys_path=isolated_sys_path,
+        site_packages_root=site_root,
+    )
+    result = subprocess.run(command, text=True, capture_output=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert "usage:" in result.stdout and "blind-feature-build" in result.stdout
+
+
+def test_g2r_counterpart_identity_and_class_are_read_from_verified_source(
+    tmp_path: Path,
+) -> None:
+    schema_path = ROOT / "reports/plans/RQ014_score_stripped_schema_v1.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    columns = schema["files"]["counterpart_tracks.csv"]["columns"]
+    path = tmp_path / "counterpart_tracks.csv"
+    rows = [
+        dict.fromkeys(columns, "0"),
+        dict.fromkeys(columns, "0"),
+    ]
+    rows[0].update(
+        segment_id="scene-a", counterpart_track_id="track-a", class_name="VEHICLE"
+    )
+    rows[1].update(
+        segment_id="scene-b", counterpart_track_id="track-b", class_name="PEDESTRIAN"
+    )
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = __import__("csv").DictWriter(handle, fieldnames=columns, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+    assert run_managed_g2._read_counterpart_vehicle_flags(
+        tmp_path, schema_path, {"scene-a", "scene-b"}
+    ) == {"scene-a": True, "scene-b": False}
+    with path.open("a", encoding="utf-8", newline="") as handle:
+        rows[0]["counterpart_track_id"] = "track-other"
+        writer = __import__("csv").DictWriter(handle, fieldnames=columns, lineterminator="\n")
+        writer.writerow(rows[0])
+    with pytest.raises(ValueError, match="exactly one frozen counterpart identity"):
+        run_managed_g2._read_counterpart_vehicle_flags(
+            tmp_path, schema_path, {"scene-a"}
+        )
+
+
+def test_g2r_resource_pilot_lineage_is_exact_and_fail_closed(tmp_path: Path) -> None:
+    def ref(name: str, payload: bytes = b"{}\n") -> dict[str, str]:
+        path = tmp_path / name
+        path.write_bytes(payload)
+        return {"path": str(path), "sha256": sha256_file(path)}
+
+    spec = _materialized_g2r_spec()
+    for key in (
+        "input_manifest",
+        "sanitization_receipt",
+        "materialization_ledger",
+        "wod_path_type_mapping_manifest",
+        "contract_preflight_receipt",
+        "contract_preflight_done",
+        "declassification_export_receipt",
+        "declassification_export_done",
+    ):
+        spec[key] = ref(key)
+    pilot = {
+        "schema_version": "rq014-g2-resource-pilot-receipt-v1",
+        "operation": launcher.RQ014_RESOURCE_PILOT_OPERATION,
+        "status": "PASS",
+        "rating_access": "NONE",
+        "rating_join": "NONE",
+        "observed_rating_statistics": "NONE",
+        "failed_stage_count": 0,
+        "cell_selection": {"registered_cell_count": 320},
+        "projection": {
+            "m3_cost_estimate": "MEASURED",
+            "combined_g2r_cost_estimate": "MEASURED",
+            "env_v4_required": True,
+        },
+        "lineage": {
+            "input_manifest_sha256": spec["input_manifest"]["sha256"],
+            "sanitization_receipt_sha256": spec["sanitization_receipt"]["sha256"],
+            "materialization_ledger_sha256": spec["materialization_ledger"]["sha256"],
+            "wod_path_type_mapping_manifest_sha256": spec[
+                "wod_path_type_mapping_manifest"
+            ]["sha256"],
+            "m3_artifact_sha256": spec["m3_artifact"]["sha256"],
+            "contract_preflight_receipt_sha256": spec["contract_preflight_receipt"][
+                "sha256"
+            ],
+            "contract_preflight_done_sha256": spec["contract_preflight_done"]["sha256"],
+            "declassification_export_receipt_sha256": spec[
+                "declassification_export_receipt"
+            ]["sha256"],
+            "declassification_export_done_sha256": spec[
+                "declassification_export_done"
+            ]["sha256"],
+        },
+    }
+    receipt = ref(
+        "pilot.json", json.dumps(pilot, sort_keys=True).encode("utf-8") + b"\n"
+    )
+    done_payload = {
+        "schema_version": "rq014-managed-operation-done-v1",
+        "operation": launcher.RQ014_RESOURCE_PILOT_OPERATION,
+        "receipt_sha256": receipt["sha256"],
+        "status": "PASS",
+    }
+    done = ref(
+        "pilot-DONE.json",
+        json.dumps(done_payload, sort_keys=True).encode("utf-8") + b"\n",
+    )
+    assert launcher._validate_rq014_resource_pilot_receipt_chain(
+        receipt_path=Path(receipt["path"]), done_path=Path(done["path"]), spec=spec
+    )["status"] == "PASS"
+    pilot["projection"]["m3_cost_estimate"] = "EXPLICITLY_UNMEASURED"
+    Path(receipt["path"]).write_bytes(
+        json.dumps(pilot, sort_keys=True).encode("utf-8") + b"\n"
+    )
+    with pytest.raises(ValueError, match="not an exact PASS"):
+        launcher._validate_rq014_resource_pilot_receipt_chain(
+            receipt_path=Path(receipt["path"]), done_path=Path(done["path"]), spec=spec
+        )
+
+
+def test_g2r_sbatch_surface_uses_v4_profile_and_exact_closed_modules(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(launcher, "_stdlib_shell_checks", lambda validated: "")
+    monkeypatch.setattr(launcher, "_site_packages_shell_checks", lambda validated: "")
+    monkeypatch.setattr(launcher, "_native_library_shell_checks", lambda validated: "")
+    run_root = tmp_path / "run"
+    code = run_root / "code"
+    shared = {
+        "m3_artifact_path": "/managed/m3_scorer.joblib",
+        "m3_artifact_size_bytes": 88306301,
+        "m3_artifact_sha256": launcher.MODEL_SHA256,
+        "input_manifest_path": "/managed/input.json",
+        "input_manifest_sha256": "1" * 64,
+        "sanitization_receipt_path": "/managed/sanitization.json",
+        "sanitization_receipt_sha256": "2" * 64,
+        "materialization_ledger_path": "/managed/ledger.json",
+        "materialization_ledger_sha256": "3" * 64,
+        "wod_path_type_mapping_manifest_path": "/managed/mapping.json",
+        "wod_path_type_mapping_manifest_sha256": "4" * 64,
+        "declassification_export_receipt_path": "/managed/export.json",
+        "declassification_export_receipt_sha256": "5" * 64,
+        "declassification_export_done_path": "/managed/export-DONE.json",
+        "declassification_export_done_sha256": "6" * 64,
+        "contract_preflight_receipt_path": "/managed/preflight.json",
+        "contract_preflight_receipt_sha256": "7" * 64,
+        "contract_preflight_done_path": "/managed/preflight-DONE.json",
+        "contract_preflight_done_sha256": "8" * 64,
+        "resource_pilot_receipt_path": "/managed/pilot.json",
+        "resource_pilot_receipt_sha256": "9" * 64,
+        "resource_pilot_done_path": "/managed/pilot-DONE.json",
+        "resource_pilot_done_sha256": "a" * 64,
+        "score_stripped_bundle_manifest_path": "/managed/file_manifest.json",
+        "score_stripped_bundle_manifest_sha256": "b" * 64,
+    }
+    validated = {
+        **shared,
+        "run_id": "RQ014_fixture_g2r",
+        "commit": "c" * 40,
+        "created_at_utc": "2026-07-17T00:00:00Z",
+        "entrypoint": "scripts/rq014/run_managed_g2.py",
+        "fixed_subcommand": "blind-feature-build",
+        "score_stripped_bundle_root": "/managed/bundle",
+        "wod_path_type_mapping_root": "/managed/mapping-root",
+        "g2r_output_contract_sha256": sha256_file(
+            ROOT / launcher.RQ014_G2R_OUTPUT_CONTRACT
+        ),
+        "g2r_module_bindings": {
+            relative: sha256_file(ROOT / relative)
+            for relative in launcher.RQ014_G2R_MODULE_PATHS
+        },
+        "g2r_model_bindings": {
+            relative: sha256_file(ROOT / relative)
+            for relative in launcher.RQ014_G2R_MODEL_BINDING_PATHS
+        },
+        "environment_manifest_path": "/managed/environment-v4.json",
+        "environment_manifest_sha256": "d" * 64,
+        "python_executable_path": "/managed/python",
+        "python_executable_sha256": "e" * 64,
+        "isolated_sys_path": ["/stdlib"],
+        "site_packages_root": "/site-packages",
+        "job_name": "zxc-rq014-g2r-fixture",
+        "slurm_profile": {
+            "partition": "amd",
+            "nodes": 1,
+            "ntasks": 1,
+            "cpus_per_task": 16,
+            "memory": "32G",
+            "time": "04:00:00",
+        },
+        "run_spec_sha256": "f" * 64,
+        "code_snapshot_receipt_sha256": "0" * 64,
+        "authorization_sha256": "1" * 64,
+        "execution_contract_sha256": "2" * 64,
+        "formal_g1_relative_path": launcher.RQ014_FORMAL_G1,
+        "formal_g1_sha256": "3" * 64,
+        "contract_bundle_relative_path": launcher.RQ014_FINAL_BUNDLE,
+        "contract_bundle_sha256": "4" * 64,
+    }
+    script = launcher.render_rq014_sbatch(
+        validated=validated,
+        base=Path("/managed"),
+        repo=ROOT,
+        run_root=run_root,
+        code=code,
+        sealed_spec_path=run_root / "manifests/run_spec.json",
+    )
+    assert "#SBATCH --cpus-per-task=16" in script
+    assert "#SBATCH --mem=32G" in script and "#SBATCH --time=04:00:00" in script
+    assert "blind-feature-build" in script
+    for relative in launcher.RQ014_G2R_MODULE_PATHS:
+        assert str(code / relative) in script
+    assert "--g2r-output-contract-sha256" in script
+    assert "--m3-manifest-sha256" in script
+    assert "--m3-feature-contract-sha256" in script
+    for relative in launcher.RQ014_G2R_MODEL_BINDING_PATHS:
+        assert str(code / relative) in script
+    assert "--resource-pilot-receipt" in script
+    assert "RQ014_CLOSURE_GATE_FAIL g2r:output-root:absent" in script
 
 
 def test_allowlist_change_invalidates_old_formal_g1_before_preflight_submit() -> None:

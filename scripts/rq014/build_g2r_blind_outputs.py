@@ -37,7 +37,7 @@ from scripts.rq014.wod_ipv_preprocessing import state_sequence_from_window_xy
 
 G2R_OUTPUT_CONTRACT_PATH = Path("reports/plans/RQ014_g2r_output_contract_v1.json")
 G2R_OUTPUT_CONTRACT_SHA256 = (
-    "b4d33dbc0291015bba51ff935f381ed0aa2a2b57b2ccd02ceb374380907e6a20"
+    "3be8da8e49fddee75ce387b502c0d1d6e16da232d34e208da4c66e2a4d2f36dc"
 )
 OPERATION = "rq014_r2_blind_feature_build"
 EXPECTED_SCENE_COUNT = 479

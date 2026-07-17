@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 32900f6a9b3d89eb56de5fa4d158c89fbb85408be53427d280bbd0866ea1abae /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 8cc6da3f34b74b52be09f2231ddfc9e9104294463f9774aef5042cee88a26856 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -152,6 +152,17 @@ otherwise the run fails closed with no DONE and `EXPLICITLY_UNMEASURED` fields.
 The parity fixture is checksum evidence only, not workload input. This implementation
 does not remove the fresh-review, Formal-G1, bundle, immutable-spec,
 validate-only, and explicit PI stop gates before submission.
+
+The W5a G2R managed surface is `RQ014_g2r.template.json` with profile
+`rq014-g2r-cpu-v1` (`amd`, 1 node, 1 task, 16 CPUs, 32G, 04:00:00; OMP,
+OpenBLAS, MKL, NumExpr, vecLib and BLIS thread caps all equal 1). It binds v4,
+the frozen output contract, W2/W3/W4 closed-snapshot modules, M3 artifact, and
+the export/preflight/pilot lineage, and publishes the six rating-blind artifact
+families only as an atomic PASS set with an immutable receipt and PASS-only
+DONE. This is a defined integration surface only: `rq014_r2_blind_feature_build`
+remains `DENY_PENDING_ACCEPTED_PREFLIGHT_PILOT_AND_PI_BUDGET`, is absent from
+the central allowlist, and cannot validate or submit until a separate reviewed
+authorization decision and fresh upstream lineage are installed.
 
 Schema v2 is fixed by `research_run_spec_v2.schema.json`, while the managed
 standard-library interpreter receipt is fixed by

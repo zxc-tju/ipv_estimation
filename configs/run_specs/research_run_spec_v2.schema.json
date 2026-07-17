@@ -23,7 +23,8 @@
       "enum": [
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
-        "rq014_g2_resource_pilot"
+        "rq014_g2_resource_pilot",
+        "rq014_r2_blind_feature_build"
       ]
     },
     "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
@@ -55,7 +56,11 @@
     "contract_preflight_receipt": {"$ref": "#/$defs/fileRef"},
     "contract_preflight_done": {"$ref": "#/$defs/fileRef"},
     "wod_path_type_mapping_manifest": {"$ref": "#/$defs/fileRef"},
-    "pilot_scope": {"$ref": "#/$defs/pilotScope"}
+    "pilot_scope": {"$ref": "#/$defs/pilotScope"},
+    "resource_pilot_receipt": {"$ref": "#/$defs/fileRef"},
+    "resource_pilot_done": {"$ref": "#/$defs/fileRef"},
+    "g2r_output_contract": {"$ref": "#/$defs/fileRef"},
+    "g2r_scope": {"$ref": "#/$defs/g2rScope"}
   },
   "oneOf": [
     {
@@ -80,7 +85,11 @@
           {"required": ["wod_path_type_mapping_manifest"]},
           {"required": ["contract_preflight_receipt"]},
           {"required": ["contract_preflight_done"]},
-          {"required": ["pilot_scope"]}
+          {"required": ["pilot_scope"]},
+          {"required": ["resource_pilot_receipt"]},
+          {"required": ["resource_pilot_done"]},
+          {"required": ["g2r_output_contract"]},
+          {"required": ["g2r_scope"]}
         ]
       }
     },
@@ -109,7 +118,11 @@
           {"required": ["wod_path_type_mapping_manifest"]},
           {"required": ["contract_preflight_receipt"]},
           {"required": ["contract_preflight_done"]},
-          {"required": ["pilot_scope"]}
+          {"required": ["pilot_scope"]},
+          {"required": ["resource_pilot_receipt"]},
+          {"required": ["resource_pilot_done"]},
+          {"required": ["g2r_output_contract"]},
+          {"required": ["g2r_scope"]}
         ]
       }
     },
@@ -138,7 +151,45 @@
           {"required": ["scene_bundles"]},
           {"required": ["readiness_table"]},
           {"required": ["counterpart_tracks"]},
-          {"required": ["created_at_utc"]}
+          {"required": ["created_at_utc"]},
+          {"required": ["resource_pilot_receipt"]},
+          {"required": ["resource_pilot_done"]},
+          {"required": ["g2r_output_contract"]},
+          {"required": ["g2r_scope"]}
+        ]
+      }
+    },
+    {
+      "properties": {
+        "operation": {"const": "rq014_r2_blind_feature_build"},
+        "resource_profile_id": {"const": "rq014-g2r-cpu-v1"},
+        "environment_manifest": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v4.json", "sha256": "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"}},
+        "g2r_output_contract": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_g2r_output_contract_v1.json", "sha256": "3be8da8e49fddee75ce387b502c0d1d6e16da232d34e208da4c66e2a4d2f36dc"}}
+      },
+      "required": [
+        "declassification_export_commit",
+        "m3_artifact",
+        "input_manifest",
+        "sanitization_receipt",
+        "materialization_ledger",
+        "wod_path_type_mapping_manifest",
+        "declassification_export_receipt",
+        "declassification_export_done",
+        "contract_preflight_receipt",
+        "contract_preflight_done",
+        "resource_pilot_receipt",
+        "resource_pilot_done",
+        "g2r_output_contract",
+        "g2r_scope",
+        "created_at_utc"
+      ],
+      "not": {
+        "anyOf": [
+          {"required": ["scene_bundles"]},
+          {"required": ["readiness_table"]},
+          {"required": ["counterpart_tracks"]},
+          {"required": ["m3_parity_fixture"]},
+          {"required": ["pilot_scope"]}
         ]
       }
     }
@@ -185,6 +236,30 @@
         "m3_stage_enabled": {"const": true},
         "env_v4_required": {"const": true},
         "m3_cost_estimate": {"const": "MEASURED"}
+      }
+    },
+    "g2rScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registered_scene_count",
+        "registered_cell_count",
+        "candidate_slots_per_scene",
+        "m3_context_alignment",
+        "rating_access",
+        "rating_join",
+        "observed_rating_statistics",
+        "publication_rule"
+      ],
+      "properties": {
+        "registered_scene_count": {"const": 479},
+        "registered_cell_count": {"const": 320},
+        "candidate_slots_per_scene": {"const": 3},
+        "m3_context_alignment": {"const": "anchor_at_tau_history_only"},
+        "rating_access": {"const": "NONE"},
+        "rating_join": {"const": "FORBIDDEN"},
+        "observed_rating_statistics": {"const": "FORBIDDEN"},
+        "publication_rule": {"const": "ATOMIC_PASS_ONLY"}
       }
     }
   }

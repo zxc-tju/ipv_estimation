@@ -26,7 +26,7 @@ from scripts.rq014.build_wod_m3_anchors import (
 
 G2R_OUTPUT_CONTRACT_PATH = Path("reports/plans/RQ014_g2r_output_contract_v1.json")
 G2R_OUTPUT_CONTRACT_SHA256 = (
-    "b4d33dbc0291015bba51ff935f381ed0aa2a2b57b2ccd02ceb374380907e6a20"
+    "3be8da8e49fddee75ce387b502c0d1d6e16da232d34e208da4c66e2a4d2f36dc"
 )
 M3_SCORER_SHA256 = "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
 M3_SCORER_SIZE_BYTES = 88_306_301

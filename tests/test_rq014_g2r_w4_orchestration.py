@@ -724,4 +724,6 @@ def test_w4_keeps_managed_operation_denied_and_frozen_boundaries() -> None:
     source = (ROOT / "scripts" / "rq014" / "build_g2r_blind_outputs.py").read_text()
     assert "rq014_r2_blind_feature_build_receipt.json" not in source
     assert "DONE.json" not in source
-    assert not (ROOT / "configs" / "run_specs" / "RQ014_g2r.template.json").exists()
+    template = _strict_load(ROOT / "configs" / "run_specs" / "RQ014_g2r.template.json")
+    assert template["operation"] == W4.OPERATION
+    assert template["resource_profile_id"] == "rq014-g2r-cpu-v1"

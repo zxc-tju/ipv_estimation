@@ -2,8 +2,8 @@
 
 Date: 2026-07-16.
 
-Status: authority/schema freeze only; `rq014_r2_blind_feature_build` remains
-DENY and has no runnable surface in this wave.
+Status: W1 authority/schema freeze with a W5a managed integration surface;
+`rq014_r2_blind_feature_build` remains centrally DENY and non-executable.
 
 ## Authority and precedence
 
@@ -24,7 +24,7 @@ This amendment supplements, and does not rewrite, these exact science bytes:
    `9818f20b5a844a4dfd4ba21233f5dd9f00eee2373034fac7f869481511ea490e`,
    controls the frozen M3/estimator bindings and existing DENY state.
 5. `RQ014_execution_contract_v1p5.json`, SHA-256
-   `acc44ac831ffafc22ad5f8b641204ed5ee1e0944b9693e2609ad5938e862cc28`,
+   `3c8f4587ab052f0cd5d4950913841d69bbc07ebf0ac6b3bceafdd9f5ae6f96a6`,
    controls the rating boundary, managed lineage, v4 requirement, and current
    operation denial.
 

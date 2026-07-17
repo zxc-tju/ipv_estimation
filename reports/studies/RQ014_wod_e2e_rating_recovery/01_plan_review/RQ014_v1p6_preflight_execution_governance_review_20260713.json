@@ -164,15 +164,27 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "Execution governance remains NO_BLOCKER across W4 and freezes standalone orchestration without enabling G2R execution, rating access, or submission."
+    },
+    {
+      "evidence": [
+        "First-round execution-governance review of W5a integration commit f39c4f097a32feb03876a1d2d4ff65069ffd96aa returned NO_BLOCKER independently of the statistics review.",
+        "The managed surface is fail closed: exact G2R spec keys and lineage are validated before submission, code and runtime inputs are preloaded from reviewed paths, the v4 closure and M3 artifact are reverified, and publication is atomic with a FAIL receipt and no DONE on runtime failure or a PASS receipt plus DONE only on success.",
+        "The deterministic 140-row review manifest SHA-256 2d32d6c6040967873fb0faa1d67e00d7c52ce46551e82c3be7515b0347b70ea7 includes the new G2R run-spec template and every closed-snapshot runtime dependency. Runtime-bound NC fixture rows are manifest-bound; other W1-W4 goldens and tests remain commit-tree evidence.",
+        "Terminal execution-governance and statistics reviews returned NO_BLOCKER with distinct codex/w4-exec-reviewer and codex/w4-stat-reviewer identities, zero unresolved blockers or majors, no rating access, and no HPC submission. The execution contract retains DENY_PENDING_ACCEPTED_PREFLIGHT_PILOT_AND_PI_BUDGET, central allowed_operations omits rq014_r2_blind_feature_build, and no g2r_decision_path exists."
+      ],
+      "finding_id": "G2R-W5A-E-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "First-round execution governance returns NO_BLOCKER on W5a's fail-closed managed surface without granting G2R authorization."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-17T04:51:13Z",
+  "reviewed_at_utc": "2026-07-17T10:39:29Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "212df84be9766ff94d3d5a73d8cc18d23df506cab94e23686ad738daf768d497",
+  "reviewed_manifest_sha256": "2d32d6c6040967873fb0faa1d67e00d7c52ce46551e82c3be7515b0347b70ea7",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

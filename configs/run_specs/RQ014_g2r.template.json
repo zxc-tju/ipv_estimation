@@ -1,0 +1,81 @@
+{
+  "schema_version": 2,
+  "rq_id": "RQ014",
+  "run_id": "RQ014_2_blind_feature_build_REPLACE_UTC_REPLACE_PLAN_SHA8",
+  "operation": "rq014_r2_blind_feature_build",
+  "git_commit": "0000000000000000000000000000000000000000",
+  "declassification_export_commit": "0000000000000000000000000000000000000000",
+  "formal_g1": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "contract_bundle": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "environment_manifest": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v4.json",
+    "sha256": "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"
+  },
+  "input_manifest": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/REPLACE_PREFLIGHT_RUN_ID/input_manifest.g2.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "sanitization_receipt": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/inputs/RQ014/wod_rated479_score_stripped/v1/sanitization_receipt.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "materialization_ledger": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/REPLACE_PREFLIGHT_RUN_ID/materialization_ledger.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "wod_path_type_mapping_manifest": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/inputs/RQ014/wod_path_type_mapping/v1/manifest.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "m3_artifact": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/checkpoints/rq009_m3/m3_scorer.joblib",
+    "size_bytes": 88306301,
+    "sha256": "b04999aba29a82fb71a97ac22c728479a7734e24a0b32189d08f95184d74f253"
+  },
+  "declassification_export_receipt": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/REPLACE_EXPORT_RUN_ID/outputs/rq014_g2_declassification_export_receipt.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "declassification_export_done": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/REPLACE_EXPORT_RUN_ID/outputs/DONE.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "contract_preflight_receipt": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/REPLACE_PREFLIGHT_RUN_ID/outputs/rq014_g2_contract_preflight_receipt.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "contract_preflight_done": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/REPLACE_PREFLIGHT_RUN_ID/outputs/DONE.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "resource_pilot_receipt": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/REPLACE_PILOT_RUN_ID/outputs/rq014_g2_resource_pilot_receipt.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "resource_pilot_done": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/REPLACE_PILOT_RUN_ID/outputs/DONE.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "g2r_output_contract": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_g2r_output_contract_v1.json",
+    "sha256": "3be8da8e49fddee75ce387b502c0d1d6e16da232d34e208da4c66e2a4d2f36dc"
+  },
+  "g2r_scope": {
+    "registered_scene_count": 479,
+    "registered_cell_count": 320,
+    "candidate_slots_per_scene": 3,
+    "m3_context_alignment": "anchor_at_tau_history_only",
+    "rating_access": "NONE",
+    "rating_join": "FORBIDDEN",
+    "observed_rating_statistics": "FORBIDDEN",
+    "publication_rule": "ATOMIC_PASS_ONLY"
+  },
+  "created_at_utc": "REPLACE_UTC_SECONDS",
+  "resource_profile_id": "rq014-g2r-cpu-v1"
+}
