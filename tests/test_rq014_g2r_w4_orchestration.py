@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import pickle
 import subprocess
@@ -13,6 +14,7 @@ import pytest
 from scripts.rq014 import build_g2r_blind_outputs as W4
 from scripts.rq014 import build_wod_m3_anchors as W2
 from scripts.rq014 import build_wod_scene_anchor_domain as DOMAIN
+from scripts.rq014 import score_wod_m3_deviations as W3
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,6 +22,27 @@ W1 = ROOT / "tests" / "fixtures" / "rq014_g2r_v1"
 W2B = ROOT / "tests" / "fixtures" / "rq014_g2r_w2b"
 W4_FIXTURES = ROOT / "tests" / "fixtures" / "rq014_g2r_w4"
 SCORER = ROOT / "models" / "rq009_m3" / "m3_scorer.joblib"
+SCORER_ANCHOR_FIELDS = (
+    "m3_q_0p5",
+    "m3_lo_90",
+    "m3_hi_90",
+    "nex",
+    "nmd",
+    "amd",
+)
+ANCHOR_NUMERIC_IDENTITY_FIELDS = (
+    "segment_id",
+    "feature_id",
+    "horizon_id",
+    "tau_tick",
+    "candidate_ordinal",
+)
+FEATURE_NUMERIC_IDENTITY_FIELDS = (
+    "cell_index",
+    "segment_id",
+    "candidate_ordinal",
+)
+PORTABLE_ATOL = 1e-7
 
 
 def _strict_load(path: Path):
@@ -43,11 +66,11 @@ def _strict_load(path: Path):
 
 def _real_scene() -> W4.SceneBlindInput:
     candidate = {
-        tick: (float(tick), 0.02 * float(tick) ** 2) for tick in range(-9, 9)
+        tick: (float(tick), 0.02 * float(tick) ** 2) for tick in range(-12, 9)
     }
     counterpart = {
         tick: (0.8 * float(tick) + 1.0, 2.0 - 0.05 * float(tick))
-        for tick in range(-9, 9)
+        for tick in range(-12, 9)
     }
     return W4.SceneBlindInput(
         domain=DOMAIN.SceneDomainInput(
@@ -72,6 +95,44 @@ def _structural_scene() -> W4.SceneBlindInput:
             {},
             terminal_status="INELIGIBLE_BLIND",
         ),
+        route_intent="straight",
+    )
+
+
+def _available_sampling(rate_hz: int) -> DOMAIN.SamplingTimelines:
+    ticks = range(-12, 2 * rate_hz + 1)
+    candidate = {
+        tick: (
+            float(tick) / rate_hz,
+            0.02 * (float(tick) / rate_hz) ** 2,
+        )
+        for tick in ticks
+    }
+    counterpart = {
+        tick: (
+            0.8 * float(tick) / rate_hz + 1.0,
+            2.0 - 0.05 * float(tick) / rate_hz,
+        )
+        for tick in ticks
+    }
+    return DOMAIN.SamplingTimelines(
+        candidates={candidate_id: candidate for _, candidate_id in W4.CANDIDATES},
+        counterpart=counterpart,
+    )
+
+
+def _mixed_sampling_scene(available_sampling_id: str) -> W4.SceneBlindInput:
+    terminal = DOMAIN.SamplingTimelines(
+        candidates={},
+        counterpart={},
+        terminal_status="INELIGIBLE_TIMELINE_SUPPORT",
+    )
+    sampling = {
+        "R04N": _available_sampling(4) if available_sampling_id == "R04N" else terminal,
+        "R10L": _available_sampling(10) if available_sampling_id == "R10L" else terminal,
+    }
+    return W4.SceneBlindInput(
+        domain=DOMAIN.SceneDomainInput("scene-mixed", "CP", sampling),
         route_intent="straight",
     )
 
@@ -111,6 +172,177 @@ def _fixture_inputs():
         ),
     }
     return scenes, domain_rows, lineage, prerequisite_artifacts
+
+
+def _identity_digest(rows, fields) -> str:
+    identities = [[row[field] for field in fields] for row in rows]
+    return hashlib.sha256(W2.canonical_json_bytes(identities)).hexdigest()
+
+
+def _portable_structure(build: W4.BlindOutputBuild) -> dict:
+    """Remove only scorer-portable numerics and hashes derived from their bytes."""
+
+    anchor_rows = []
+    for source in build.anchor_score_rows:
+        row = dict(source)
+        for field in SCORER_ANCHOR_FIELDS:
+            value = row[field]
+            if value.get("kind") == "FINITE_FLOAT":
+                row[field] = {
+                    "kind": "FINITE_FLOAT",
+                    "value": "PORTABLE_ATOL_1E-7",
+                }
+        anchor_rows.append(row)
+
+    feature_rows = []
+    for source in build.feature_rows:
+        row = dict(source)
+        if row["predictor_value"].get("kind") == "FINITE_FLOAT":
+            row["predictor_value"] = {
+                "kind": "FINITE_FLOAT",
+                "value": "PORTABLE_ATOL_1E-7",
+            }
+        row["anchor_slice_sha256"] = "SCORER_DERIVED_SHA256"
+        feature_rows.append(row)
+
+    predictor_rows = []
+    for source in build.predictor_rows:
+        row = dict(source)
+        for field in (
+            "anchor_score_slice_sha256",
+            "feature_bank_slice_sha256",
+            "availability_mask_slice_sha256",
+        ):
+            row[field] = "SCORER_DERIVED_SHA256"
+        predictor_rows.append(row)
+
+    return {
+        "anchor_score_rows": anchor_rows,
+        "common_support_ids": list(build.common_support_ids),
+        "feature_rows": feature_rows,
+        "mask_rows": [dict(row) for row in build.mask_rows],
+        "predictor_rows": predictor_rows,
+        "row_counts": dict(build.row_counts),
+    }
+
+
+def _scorer_numeric_projection(build: W4.BlindOutputBuild) -> dict:
+    anchor_rows = [
+        row for row in build.anchor_score_rows if row["upstream_status"] == "AVAILABLE"
+    ]
+    feature_rows = [
+        row
+        for row in build.feature_rows
+        if row["predictor_value"].get("kind") == "FINITE_FLOAT"
+    ]
+    return {
+        "absolute_tolerance": PORTABLE_ATOL,
+        "anchor_rows": {
+            "identity_fields": list(ANCHOR_NUMERIC_IDENTITY_FIELDS),
+            "identity_sha256": _identity_digest(
+                anchor_rows, ANCHOR_NUMERIC_IDENTITY_FIELDS
+            ),
+            "row_count": len(anchor_rows),
+            "values_by_field": {
+                field: [row[field]["value"] for row in anchor_rows]
+                for field in SCORER_ANCHOR_FIELDS
+            },
+        },
+        "feature_rows": {
+            "identity_fields": list(FEATURE_NUMERIC_IDENTITY_FIELDS),
+            "identity_sha256": _identity_digest(
+                feature_rows, FEATURE_NUMERIC_IDENTITY_FIELDS
+            ),
+            "predictor_values": [
+                row["predictor_value"]["value"] for row in feature_rows
+            ],
+            "row_count": len(feature_rows),
+        },
+        "portable_fixture_sha256": (
+            "ae62b9fddba53308d319ccef5a70d56a9f0ae243fe009aa3f85e36cb20fcee37"
+        ),
+        "relative_tolerance": 0.0,
+        "reviewed_test_reference": "tests/test_verifier_runtime.py:152",
+    }
+
+
+def _d4_input_row(alignment: str) -> dict:
+    scene = _real_scene()
+    sampling = scene.domain.sampling["R04N"]
+    focal_reference = W4._scene_focal_reference(scene, {"R04N"})
+    return W2.build_feature_family_m3_input_row(
+        sampling.candidates["C1"],
+        sampling.counterpart,
+        temporal_id="CH-W10",
+        tau_tick=8,
+        rate_hz=4,
+        h_common_tick=8,
+        case_start_tick=-12,
+        scene_focal_reference=focal_reference,
+        counterpart_is_vehicle=True,
+        m3_context_alignment=alignment,
+    )
+
+
+def _assert_portable_numerics(
+    build: W4.BlindOutputBuild, expected: dict
+) -> None:
+    observed = _scorer_numeric_projection(build)
+    assert {
+        key: observed[key]
+        for key in (
+            "absolute_tolerance",
+            "portable_fixture_sha256",
+            "relative_tolerance",
+            "reviewed_test_reference",
+        )
+    } == {
+        key: expected[key]
+        for key in (
+            "absolute_tolerance",
+            "portable_fixture_sha256",
+            "relative_tolerance",
+            "reviewed_test_reference",
+        )
+    }
+    assert expected["absolute_tolerance"] == PORTABLE_ATOL
+    assert expected["relative_tolerance"] == 0.0
+    for section, value_key in (
+        ("anchor_rows", "values_by_field"),
+        ("feature_rows", "predictor_values"),
+    ):
+        assert observed[section]["identity_fields"] == expected[section][
+            "identity_fields"
+        ]
+        assert observed[section]["identity_sha256"] == expected[section][
+            "identity_sha256"
+        ]
+        assert observed[section]["row_count"] == expected[section]["row_count"]
+        if section == "anchor_rows":
+            assert set(observed[section][value_key]) == set(
+                expected[section][value_key]
+            )
+            for field in SCORER_ANCHOR_FIELDS:
+                assert len(observed[section][value_key][field]) == len(
+                    expected[section][value_key][field]
+                ) == expected[section]["row_count"]
+                for actual, frozen in zip(
+                    observed[section][value_key][field],
+                    expected[section][value_key][field],
+                ):
+                    assert math.isclose(
+                        actual, frozen, rel_tol=0.0, abs_tol=PORTABLE_ATOL
+                    )
+        else:
+            assert len(observed[section][value_key]) == len(
+                expected[section][value_key]
+            ) == expected[section]["row_count"]
+            for actual, frozen in zip(
+                observed[section][value_key], expected[section][value_key]
+            ):
+                assert math.isclose(
+                    actual, frozen, rel_tol=0.0, abs_tol=PORTABLE_ATOL
+                )
 
 
 def _build_fixture_in_process() -> W4.BlindOutputBuild:
@@ -217,6 +449,71 @@ def test_w4_reproduces_w1_order_predicate_schema_shapes_and_anchor_golden() -> N
     assert binding["group_count"] == 15_328
 
 
+@pytest.mark.parametrize("available_sampling_id", ["R10L", "R04N"])
+def test_w4_focal_reference_selects_frozen_order_available_sampling_branch(
+    available_sampling_id: str,
+) -> None:
+    scene = _mixed_sampling_scene(available_sampling_id)
+    domain_rows = DOMAIN.build_anchor_domain_rows([scene.domain])
+    available_rows = [
+        row for row in domain_rows if row["membership_status"] == "AVAILABLE"
+    ]
+    assert available_rows
+    assert {
+        row["feature_id"].split("-", 2)[1] for row in available_rows
+    } == {available_sampling_id}
+
+    sampling = scene.domain.sampling[available_sampling_id]
+    shared_ticks = set.intersection(
+        *(set(sampling.candidates[candidate_id]) for _, candidate_id in W4.CANDIDATES)
+    )
+    history = [
+        sampling.candidates["C1"][tick]
+        for tick in sorted(shared_ticks)
+        if tick <= 0
+    ]
+    expected_reference = W2.build_scene_focal_reference(
+        history, route_intent=scene.route_intent
+    ).tolist()
+    observed_references = []
+    base_row = _strict_load(W1 / "m3_input_row_expected.json")
+
+    def feature_builder(_candidate, _counterpart, **kwargs):
+        observed_references.append(kwargs["scene_focal_reference"].tolist())
+        return base_row
+
+    def ipv_estimator(**_kwargs):
+        return 0.0
+
+    def score_rows(rows):
+        output = []
+        for row in rows:
+            _, row_sha256 = W2.m3_input_row_bytes_and_sha256(row)
+            output.append(
+                W3.PreMaskM3Score(
+                    m3_input_row_sha256=row_sha256,
+                    q_0p5=0.0,
+                    lo_90=-1.0,
+                    hi_90=1.0,
+                    support_gate_pass=True,
+                    ood_abstain=False,
+                )
+            )
+        return output
+
+    anchor_rows = W4.build_anchor_score_rows(
+        [scene],
+        domain_rows,
+        score_rows=score_rows,
+        feature_builder=feature_builder,
+        candidate_ipv_estimator=ipv_estimator,
+    )
+    assert anchor_rows
+    assert {row["sampling_id"] for row in anchor_rows} == {available_sampling_id}
+    assert observed_references
+    assert all(reference == expected_reference for reference in observed_references)
+
+
 def test_w4_mini_universe_emits_all_six_canonical_artifacts_and_bound_slices(
     mini_build: W4.BlindOutputBuild,
 ) -> None:
@@ -305,16 +602,17 @@ def test_w4_mini_universe_is_deterministic_and_matches_bound_fixture(
     second = _build_fixture(tmp_path)
     assert second.artifacts == mini_build.artifacts
     expected = _strict_load(W4_FIXTURES / "mini_universe_artifact_manifest.json")
-    observed = {
-        name: {
-            "sha256": hashlib.sha256(data).hexdigest(),
-            "size_bytes": len(data),
-            "row_count": mini_build.row_counts[name],
-        }
-        for name, data in mini_build.artifacts.items()
-    }
-    assert observed == expected["artifacts"]
+    assert expected["same_runtime_determinism"] == "BYTE_EXACT_ALL_SIX_ARTIFACTS_X2"
+    assert dict(mini_build.row_counts) == expected["artifact_row_counts"]
     assert expected["common_support_ids"] == list(mini_build.common_support_ids)
+    structure_bytes = W2.canonical_json_bytes(_portable_structure(mini_build))
+    assert len(structure_bytes) == expected["portable_structure"]["size_bytes"]
+    assert hashlib.sha256(structure_bytes).hexdigest() == expected[
+        "portable_structure"
+    ]["sha256"]
+    _assert_portable_numerics(
+        mini_build, expected["scorer_numeric_portable_projection"]
+    )
     assert expected["production_full_scale_execution"] == "DEFERRED_W5_HPC"
     assert expected["pipeline_bindings"] == {
         "candidate_ipv_estimator": (
@@ -358,31 +656,29 @@ def test_w4_d4_primary_fingerprint_rejects_sensitivity_mutation(
     mini_build: W4.BlindOutputBuild,
 ) -> None:
     expected = _strict_load(W4_FIXTURES / "mini_universe_artifact_manifest.json")
-    binding = expected["d4_primary_anchor_binding"]
+    binding = expected["d4_input_binding"]
+    primary = binding["primary"]
+    primary_bytes = bytes.fromhex(primary["canonical_json_utf8_hex"])
+    assert len(primary_bytes) == primary["size_bytes"]
+    assert hashlib.sha256(primary_bytes).hexdigest() == primary["sha256"]
+    assert primary["alignment"] == W2.ALIGNMENT_PRIMARY
     matching = [
         row
         for row in mini_build.anchor_score_rows
         if all(row[key] == value for key, value in binding["row_identity"].items())
     ]
     assert len(matching) == 1
-    assert matching[0]["m3_input_row_sha256_or_NA"] == binding["m3_input_row_sha256"]
+    assert matching[0]["m3_input_row_sha256_or_NA"] == primary["sha256"]
 
-    scene = _real_scene()
-    sampling = scene.domain.sampling["R04N"]
-    focal_reference = W4._scene_focal_reference(scene)
-    with pytest.raises(W2.WodM3KernelError):
-        W2.build_feature_family_m3_input_row(
-            sampling.candidates["C1"],
-            sampling.counterpart,
-            temporal_id="CH-W10",
-            tau_tick=8,
-            rate_hz=4,
-            h_common_tick=8,
-            case_start_tick=-9,
-            scene_focal_reference=focal_reference,
-            counterpart_is_vehicle=True,
-            m3_context_alignment=W2.ALIGNMENT_SENSITIVITY,
-        )
+    sensitivity = binding["sensitivity"]
+    sensitivity_bytes, sensitivity_sha256 = W2.m3_input_row_bytes_and_sha256(
+        _d4_input_row(W2.ALIGNMENT_SENSITIVITY)
+    )
+    assert sensitivity["alignment"] == W2.ALIGNMENT_SENSITIVITY
+    assert sensitivity_bytes.hex() == sensitivity["canonical_json_utf8_hex"]
+    assert len(sensitivity_bytes) == sensitivity["size_bytes"]
+    assert sensitivity_sha256 == sensitivity["sha256"]
+    assert sensitivity_sha256 != primary["sha256"]
 
 
 def test_w4_production_rejects_injected_producer() -> None:

@@ -24,7 +24,7 @@ import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Mapping, Sequence
+from typing import Any, Callable, Collection, Mapping, Sequence
 
 import numpy as np
 
@@ -418,12 +418,29 @@ def _status_tables(contract: Mapping[str, Any]) -> tuple[dict[str, str], dict[st
     return status, priority
 
 
-def _scene_focal_reference(scene: SceneBlindInput) -> np.ndarray:
-    """Derive the one C1/C2/C3-identical pre-tstar scene reference."""
+def _scene_focal_reference(
+    scene: SceneBlindInput, available_sampling_ids: Collection[str]
+) -> np.ndarray:
+    """Derive the scene reference from the first frozen-order AVAILABLE branch.
 
-    sampling = scene.domain.sampling.get("R04N") or scene.domain.sampling.get("R10L")
-    if sampling is None:
-        raise G2ROrchestrationError("scene has no registered sampling branch")
+    Recovery lane v3 orders feature families by its declared sampling axis and
+    requires exact AVAILABLE anchor groups to execute while terminal groups emit
+    no value.  A merely present terminal sampling branch is therefore never a
+    legal source for the reference.
+    """
+
+    available = set(available_sampling_ids)
+    registered = {sampling_id for sampling_id, _ in DOMAIN.SAMPLING_AXIS}
+    if not available or not available <= registered:
+        raise G2ROrchestrationError("scene has no registered AVAILABLE sampling branch")
+    sampling_id = next(
+        sampling_id
+        for sampling_id, _ in DOMAIN.SAMPLING_AXIS
+        if sampling_id in available
+    )
+    sampling = scene.domain.sampling.get(sampling_id)
+    if sampling is None or sampling.terminal_status is not None:
+        raise G2ROrchestrationError("AVAILABLE sampling branch is absent or terminal")
     candidate_ticks = [set(sampling.candidates[candidate]) for _, candidate in CANDIDATES]
     shared_ticks = sorted(set.intersection(*candidate_ticks))
     history_ticks = [tick for tick in shared_ticks if tick <= 0]
@@ -620,14 +637,20 @@ def build_anchor_score_rows(
     by_segment = {scene.domain.segment_id: scene for scene in ordered_scenes}
     if len(by_segment) != len(scenes):
         raise G2ROrchestrationError("duplicate scene input")
-    available_segments = {
-        str(row["segment_id"])
-        for row in anchor_domain_rows
-        if row["membership_status"] == "AVAILABLE"
-    }
+    available_sampling_by_segment: dict[str, set[str]] = {}
+    for row in anchor_domain_rows:
+        if row["membership_status"] != "AVAILABLE":
+            continue
+        segment_id = str(row["segment_id"])
+        sampling_id = str(row["feature_id"]).split("-", 2)[1]
+        available_sampling_by_segment.setdefault(segment_id, set()).add(sampling_id)
     focal_references = {
-        segment_id: _scene_focal_reference(by_segment[segment_id])
-        for segment_id in sorted(available_segments, key=lambda value: value.encode("utf-8"))
+        segment_id: _scene_focal_reference(
+            by_segment[segment_id], available_sampling_by_segment[segment_id]
+        )
+        for segment_id in sorted(
+            available_sampling_by_segment, key=lambda value: value.encode("utf-8")
+        )
     }
     feature_order = {feature_id: index for index, feature_id in enumerate(DOMAIN.FEATURE_FAMILIES)}
     pending: list[tuple[int, dict[str, Any], Mapping[str, Any], float]] = []
