@@ -180,22 +180,22 @@
     },
     {
       "evidence": [
-        "The authorization evidence closes the three named prerequisites: accepted D1 preflight; D2 pilot job 1930942 with PASS receipt SHA-256 0f192b4e6b5db6b2ba4e889ac365f0a5e037c320673813d022a9d115c41cc184, eight passing stages and zero failures; and the PI-approved D3 projection of 0.046839937489001185 parallel wall-clock hours and 0.6670795025147223 CPU-hours for all 320 cells.",
-        "The central allowlist changes by exactly one operation, rq014_r2_blind_feature_build, and binds reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md. The execution and G2R output contracts retain rating_access NONE/FORBIDDEN, rating_join FORBIDDEN, observed statistics FORBIDDEN, and forbid leaderboard and recovery-ledger outputs; r3/D4 and r4 remain denied.",
-        "The W5b cascade is governance-only: launcher SHA-256 c8bbdfe2a9676445bc4298bfe5f3d1cf4be8b023d053f07c36e08ccbc06127f6, wrapper SHA-256 e28a8a73f083727a69fa6a06f0957349ca10cecf2f6cf55a6ba92b5fc706d27d, execution-contract SHA-256 48facb573064c5ebfba55fe7607431f01111f730767d08bbbfce300c6745c6c4, and output-contract SHA-256 b066c090ab90316595574890c2b8a8a5ed1bd87d9041f0ce829501e9e4ed1116 are mutually pinned while the four frozen science contracts and all W1-W4 golden payloads remain unchanged.",
-        "The exact deterministic 141-row authorization review manifest is SHA-256 ded79261df6b6b8fe05203684fd728830669738f28c08388280cac3b7813cd7a. Statistics and execution-governance reviewers are distinct, no rating value or HPC state was accessed, and zero unresolved blockers or majors remain."
+        "Statistics S1 found that the prior W5b decision and review overgeneralized pilot job 1930942: board/runbook_next.md:232-246 says the pilot hashes synthetic derived state and scores synthetic support rows, and explicitly marks real exact-IPV feature-preparation cost UNMEASURED.",
+        "RQ014_PI_decision_D3_G2R_authorize_20260717.md:37-50 now states that the pilot measured M3 model load and the dominant approximately six-second-per-cell M3 scoring term on a synthetic feature substrate; its non-M3 feature preparation was synthetic, so the 0.046839937489001185-hour/0.6670795025147223-CPU-hour figures are M3-dominated projections and not measurements of full G2R cost.",
+        "The same decision at lines 52-59 records that the PI was informed in the 2026-07-17 status report and explicitly accepts the residual on 2026-07-17, bounded by geometry-based exact-IPV work expected but not proven cheap, approximately 85x wall margin over the approximately 0.047-hour M3 projection, and a user-authorized monitored submit with a fail-closed 04:00:00 ceiling.",
+        "The authorization delta otherwise remains exact: only rq014_r2_blind_feature_build is newly allowlisted, rating access/join/statistics and D4/leaderboard/recovery-ledger work remain forbidden, the four science contracts and all W1-W4 golden payloads are byte-identical, and the deterministic 141-row reviewed manifest is SHA-256 ded79261df6b6b8fe05203684fd728830669738f28c08388280cac3b7813cd7a."
       ],
-      "finding_id": "G2R-W5B-AUTH-S-N01",
-      "severity": "NOTE",
-      "status": "NO_FINDING",
-      "summary": "First-round statistics review returns NO_BLOCKER on the narrow G2R authorization while the rating boundary and frozen science remain exact."
+      "finding_id": "G2R-W5B-AUTH-S-R02",
+      "severity": "MAJOR",
+      "status": "RESOLVED",
+      "summary": "S1 is closed by disclosing the synthetic pilot substrate and unmeasured exact-IPV cost, with explicit PI acceptance of the bounded residual budget risk."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-17T11:47:00Z",
+  "reviewed_at_utc": "2026-07-17T15:02:00Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
   "reviewed_manifest_sha256": "ded79261df6b6b8fe05203684fd728830669738f28c08388280cac3b7813cd7a",
   "reviewer_agent": "codex/w4-stat-reviewer",

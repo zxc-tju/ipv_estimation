@@ -34,13 +34,29 @@ write a leaderboard or a recovery ledger. The rating join and rank operation
    Every measured stage passed, every failure-taxonomy count is zero, and the
    receipt records `rating_access=NONE`, `rating_join=NONE`, and
    `observed_rating_statistics=NONE`.
-3. **D3 compute budget approved.** The PI-approved measurement record is
+3. **D3 compute budget approved with an explicitly accepted residual.** The
+   PI-reviewed measurement record is
    `.codex-fleet/rq014-execution-v1p6/board/runbook_next.md` (SHA-256
    `9774bae47d5a2064a5f2e526e90db3ca56c9a2a763eb0a160e2fca734baecc69`,
-   2026-07-17 D3 entry). It binds pilot job `1930942` and projects the full
-   320-cell G2R at `0.046839937489001185` parallel wall-clock hours (about
-   2.8 minutes), `0.6670795025147223` CPU-hours, and about 11 GB peak RSS,
-   comfortably inside the reviewed 16-CPU/32G/04:00:00 profile.
+   2026-07-17 D3 entry, especially lines 225-249). Pilot job `1930942`
+   measured M3 model load and M3 scoring on a **synthetic feature substrate**;
+   M3 scoring was the dominant measured term at about six seconds per cell.
+   The pilot's non-M3 feature preparation was also synthetic. It did **not**
+   measure the real exact-IPV WOD feature-construction path, whose production
+   cost therefore remains `UNMEASURED`. The recorded
+   `0.046839937489001185` parallel wall-clock hours (about 2.8 minutes),
+   `0.6670795025147223` CPU-hours, and about 11 GB peak RSS are an
+   M3-dominated projection from the measured pilot substrate, not a claim that
+   the pilot measured the full 320-cell G2R cost.
+
+   The PI was informed of this boundary in the 2026-07-17 status report and,
+   on 2026-07-17, explicitly accepts the residual compute-budget risk. That
+   acceptance is bounded by all three of the following facts: (a) the omitted
+   exact-IPV feature work is geometry-based and is expected to be cheap, but
+   that expectation is not a measurement; (b) the reviewed four-hour wall
+   limit provides about 85 times the M3-dominated parallel projection of
+   approximately `0.047` hours; and (c) the actual 320-cell run remains a
+   user-authorized, monitored submit with a fail-closed `04:00:00` ceiling.
 4. **The implementation is complete and reviewed.** W1 through W4 froze and
    tested the schemas/goldens, WOD-to-M3/anchor/NC kernel, scoring/readouts, and
    rating-blind 320-cell orchestration. W5a added only the managed operation
