@@ -153,15 +153,27 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "First-round statistics review ratifies the 1e-7 A08/A15 portable-parity standard and returns NO_BLOCKER on the W3 scoring wave."
+    },
+    {
+      "evidence": [
+        "Round 1 reviewed W4 orchestration commit 5f8dd9f9215d34918f916aa5c75a3b0d57937e35: execution governance returned NO_BLOCKER, while statistics raised S1 because terminal-only structural scenes crashed before INELIGIBLE_BLIND propagation, S2 because the mini-universe golden stubbed W2/IPV/scoring and did not lock D4 alignment, and S3 because production accepted arbitrary producer callbacks capable of fabricating COMPLETE rating-blind outputs.",
+        "Round 2 reviewed W4b commit afd762980815988a61996e7372f3c1e40938fc4f: S1-S3 closed through AVAILABLE-only focal-reference construction, real W2-to-W3 scorer-backed mini integration, and production callback lockdown. Statistics then raised B1 because the focal-reference selector still preferred a present terminal R04N branch over an AVAILABLE R10L branch, and B2 because whole-artifact scorer hashes incorrectly required cross-platform bit identity despite W3's reviewed rtol=0, atol=1e-7 portable standard; execution governance again returned NO_BLOCKER.",
+        "Round 3 reviewed W4c commit 42c925008a296ac6a101447baffd404f26963abf: B1 closes by selecting the first AVAILABLE sampling branch in the frozen R04N-then-R10L lane order, with both mixed terminal/AVAILABLE directions executed. B2 closes by freezing primary and sensitivity D4 input rows byte-exactly at distinct SHA-256 values 9e3d5ffb9de7b9ae8b5c905108c1c377987ead91e0aa776c340a4cf00d56ced2 and 8ed6c92a550da4196376ec6c2ff54bb51daa8b11d6ef5cfa6c7f53eb346c530a, while all scorer-derived intervals, deviations and finite readouts compare at the reviewed 1e-7 tolerance and same-runtime artifacts remain byte-exact twice.",
+        "Terminal statistics and execution-governance reviews returned NO_BLOCKER with distinct codex/w4-stat-reviewer and codex/w4-exec-reviewer identities on the deterministic 125-row review manifest SHA-256 212df84be9766ff94d3d5a73d8cc18d23df506cab94e23686ad738daf768d497, which adds exactly scripts/rq014/build_g2r_blind_outputs.py at SHA-256 99f77e3a2b849487dffe23314ee0eb029e4e70f13685a4e4770bd6532edbdb72. Zero blockers or majors remain; G2R execution stays DENY."
+      ],
+      "finding_id": "G2R-W4-S-R01",
+      "severity": "BLOCKER",
+      "status": "RESOLVED",
+      "summary": "The three-round G2R W4 statistics ledger closes S1-S3 and B1-B2 with frozen mixed-branch selection and W3-consistent portable scorer numerics."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-16T15:17:20Z",
+  "reviewed_at_utc": "2026-07-17T04:51:12Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "e33eb539c8d3b6b4cd486d5019a57a92948e268ec3d6495804e466b94526431e",
+  "reviewed_manifest_sha256": "212df84be9766ff94d3d5a73d8cc18d23df506cab94e23686ad738daf768d497",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

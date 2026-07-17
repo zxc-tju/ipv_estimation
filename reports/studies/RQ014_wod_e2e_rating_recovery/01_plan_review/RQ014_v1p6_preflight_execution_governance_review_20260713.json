@@ -152,15 +152,27 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "First-round execution governance returns NO_BLOCKER and freezes W3 scoring bytes without enabling G2R execution or rating access."
+    },
+    {
+      "evidence": [
+        "Execution governance independently returned NO_BLOCKER throughout all three W4 review rounds at commits 5f8dd9f9215d34918f916aa5c75a3b0d57937e35, afd762980815988a61996e7372f3c1e40938fc4f, and 42c925008a296ac6a101447baffd404f26963abf while statistics raised and closed S1-S3 plus B1-B2.",
+        "W4 adds only the standalone rating-blind 320-cell output orchestration and commit-tree fixture/test evidence. Production hard-binds the reviewed W2 feature and IPV producers plus the checksum-verified W3 scorer, fixture callbacks cannot emit a production universe, terminal scenes remain fail closed, rating_access is NONE, and no leaderboard or recovery ledger is produced.",
+        "The deterministic 125-row review manifest SHA-256 212df84be9766ff94d3d5a73d8cc18d23df506cab94e23686ad738daf768d497 adds exactly scripts/rq014/build_g2r_blind_outputs.py at SHA-256 99f77e3a2b849487dffe23314ee0eb029e4e70f13685a4e4770bd6532edbdb72; W4 goldens and tests remain commit-tree evidence under the W1e/W2d/W3c convention.",
+        "Terminal execution-governance and statistics reviews returned NO_BLOCKER with distinct codex/w4-exec-reviewer and codex/w4-stat-reviewer identities, zero unresolved blockers or majors, no rating access, and no HPC submission. The central authorization still omits rq014_r2_blind_feature_build and no managed operation, launcher branch, run spec, receipt or DONE surface was added."
+      ],
+      "finding_id": "G2R-W4-E-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Execution governance remains NO_BLOCKER across W4 and freezes standalone orchestration without enabling G2R execution, rating access, or submission."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-16T15:17:21Z",
+  "reviewed_at_utc": "2026-07-17T04:51:13Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "e33eb539c8d3b6b4cd486d5019a57a92948e268ec3d6495804e466b94526431e",
+  "reviewed_manifest_sha256": "212df84be9766ff94d3d5a73d8cc18d23df506cab94e23686ad738daf768d497",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
