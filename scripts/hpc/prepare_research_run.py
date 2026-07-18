@@ -177,10 +177,10 @@ RQ014_PREFLIGHT_RESOURCE_PROFILE = "rq014-g2-preflight-cpu-v1"
 RQ014_RESOURCE_PILOT_PROFILE = "rq014-g2-resource-pilot-cpu-v1"
 RQ014_G2R_PROFILE = "rq014-g2r-cpu-v1"
 RQ014_ENVIRONMENT_V4_PATH = str(
-    RQ014_MANAGED_BASE / "manifests" / "RQ014" / "managed_python_environment_v4.json"
+    RQ014_MANAGED_BASE / "manifests" / "RQ014" / "managed_python_environment_v5.json"
 )
 RQ014_ENVIRONMENT_V4_SHA256 = (
-    "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"
+    "75b01f9406d3c44b4eb9b6c70be77ae17bcda8851796348f39cf5a9ddb775781"
 )
 RQ014_M3_PARITY_FIXTURE = "tests/fixtures/m3_verifier_portable_fixture.json"
 RQ014_M3_PARITY_FIXTURE_SHA256 = (
@@ -222,9 +222,9 @@ RQ014_G2R_SCOPE = {
     "observed_rating_statistics": "FORBIDDEN",
     "publication_rule": "ATOMIC_PASS_ONLY",
 }
-RQ014_ENVIRONMENT_V4_SIZE_BYTES = 6148
+RQ014_ENVIRONMENT_V4_SIZE_BYTES = 6371
 RQ014_ENVIRONMENT_V4_PYTHON_SHA256 = (
-    "347ef80f613d30f53a137545e6f68dae65d18554cee376c129aa1aaaab9270f7"
+    "39e516d70e503b01280dcb93500cddb0672f2a4f79e9308158ba6dd662e05ef5"
 )
 RQ014_ENVIRONMENT_V4_STDLIB = {
     "regular_file_count": 1849,
@@ -232,30 +232,30 @@ RQ014_ENVIRONMENT_V4_STDLIB = {
     "symlink_count": 0,
     "special_file_count": 0,
     "checksum_manifest_size_bytes": 360696,
-    "checksum_manifest_sha256": "0e9f0cad3d576fcacfbcbc093e813aabafc432df453a15e2bc872f832bc692e7",
+    "checksum_manifest_sha256": "bf2d68607c088ffcc819e577df293e31ca0d58dd885c8b39e847db1bfc539bd1",
 }
 RQ014_ENVIRONMENT_V4_SITE_PACKAGES = {
-    "regular_file_count": 12206,
-    "regular_file_total_size_bytes": 487535728,
+    "regular_file_count": 14497,
+    "regular_file_total_size_bytes": 575200049,
     "symlink_count": 0,
     "special_file_count": 0,
-    "checksum_manifest_size_bytes": 2687140,
-    "checksum_manifest_sha256": "fe420c24a554e640544724b9db17353675b6d17d3d01190a2cc22a7dd103852a",
-    "distribution_manifest_size_bytes": 222929,
-    "distribution_manifest_sha256": "de30460a5c1949b7e23de732a59a4c414c2dd5738059ef39339fe758f79fd737",
+    "checksum_manifest_size_bytes": 3182172,
+    "checksum_manifest_sha256": "140ea8f7e9c63b3f615cb5e34577024962e5222428e085b1a8486cd952663710",
+    "distribution_manifest_size_bytes": 254653,
+    "distribution_manifest_sha256": "77a3ab34fa796d3c847215eaac19b2d63200a0945e215fd02baadc6235940bf9",
 }
 RQ014_ENVIRONMENT_V4_NATIVE = {
-    "consumer_count": 369,
-    "row_count": 94,
-    "resolved_regular_file_count": 45,
-    "resolved_regular_file_total_size_bytes": 209669255,
+    "consumer_count": 416,
+    "row_count": 123,
+    "resolved_regular_file_count": 64,
+    "resolved_regular_file_total_size_bytes": 226260746,
     "symlink_row_count": 31,
     "multi_hop_count": 0,
-    "manifest_size_bytes": 31328,
-    "manifest_sha256": "02a4f2e46b47f847027a066f075c91b59b536728764e0bebca97614b31980918",
+    "manifest_size_bytes": 42034,
+    "manifest_sha256": "948c05b498cb7938ac0de9c409bac34b553497eaa9e202230506373b424b93cf",
 }
 RQ014_ENVIRONMENT_V4_PARITY_SHA256 = (
-    "4c5e4c57aad4e765771440024f33e171e68e73aae8036f7c2f6275f3a2f86306"
+    "458a941ae16ef7f96a6988de79f808d69c7651b4080472b11410bfe3c1383ed9"
 )
 RQ014_WRAPPER_CAPABILITY_CONTRACT = (
     "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at "
@@ -1735,7 +1735,7 @@ def _validate_rq014_environment_manifest_v4(
     }
     if set(manifest) != required:
         raise ValueError("RQ014 environment v4 manifest exact-key drift")
-    environment_root = base / "envs" / "ipv-m3-v4"
+    environment_root = base / "envs" / "ipv-m3-v5"
     python = environment_root / "bin" / "python3.9"
     stdlib_root = environment_root / "lib" / "python3.9"
     lib_dynload = stdlib_root / "lib-dynload"
@@ -1744,7 +1744,7 @@ def _validate_rq014_environment_manifest_v4(
     expected_sys_path = [str(zip_path), str(stdlib_root), str(lib_dynload)]
     if (
         manifest["schema_version"] != "rq014-managed-python-environment-v4-candidate"
-        or manifest["environment_id"] != "ipv-m3-v4"
+        or manifest["environment_id"] != "ipv-m3-v5"
         or manifest["execution_dependencies"]
         != "PYTHON_STANDARD_LIBRARY_PLUS_PINNED_SITE_PACKAGES_AND_RECURSIVE_NATIVE_CLOSURE"
         or manifest["isolated_python_flags"] != ["-I", "-S", "-B", "-X", "utf8"]
@@ -1847,7 +1847,7 @@ def _validate_rq014_environment_manifest_v4(
         "status": "PASS", "rating_inputs_accessed": False,
         "raw_max_abs_diff": 4.952394050405928e-11,
         "fixture_precision_max_abs_diff": 0.0, "recorded_atol": 1e-7,
-        "receipt_path": str(base / "manifests" / "RQ014" / "staging_env_v4" / "m3_rating_free_parity_v1.json"),
+        "receipt_path": str(base / "manifests" / "RQ014" / "staging_env_v5" / "m3_rating_free_parity_v1.json"),
         "receipt_size_bytes": 3471, "receipt_sha256": RQ014_ENVIRONMENT_V4_PARITY_SHA256,
     }:
         raise ValueError("RQ014 environment v4 parity evidence drift")
@@ -2558,7 +2558,7 @@ def _validate_rq014_spec(
     }
     expected_v4_binding = {
         "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
-        "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v4.json"),
+        "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v5.json"),
         "size_bytes": RQ014_ENVIRONMENT_V4_SIZE_BYTES,
         "sha256": RQ014_ENVIRONMENT_V4_SHA256,
     }
