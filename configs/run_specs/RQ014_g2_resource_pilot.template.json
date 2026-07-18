@@ -14,8 +14,8 @@
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
   "environment_manifest": {
-    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v4.json",
-    "sha256": "1fbca7709d0ae913cf0bb73621fffa666981486973267fce51d221fce0f6d7d9"
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v5.json",
+    "sha256": "75b01f9406d3c44b4eb9b6c70be77ae17bcda8851796348f39cf5a9ddb775781"
   },
   "input_manifest": {
     "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/REPLACE_PREFLIGHT_RUN_ID/input_manifest.g2.json",
