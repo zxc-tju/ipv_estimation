@@ -197,7 +197,7 @@
   "review_role": "statistics",
   "reviewed_at_utc": "2026-07-17T15:18:00Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "5e50fc05ef3620bdd90b54a8e4129192135cddb2e9e02d32ec9bac9c03c393ed",
+  "reviewed_manifest_sha256": "a43ffc8292adc73ce45f27c9b865ff2d320c8975aab135dab6b88dcba5091ebf",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,
