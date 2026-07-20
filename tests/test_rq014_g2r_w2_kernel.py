@@ -40,6 +40,68 @@ def _nc_expected(fixture_id: str) -> dict:
     return _load(FIXTURES / f"{fixture_id.lower()}_expected.json")
 
 
+def _rehash_nc_candidate_payload(payload: dict) -> None:
+    candidate_hash = M3._nc_candidate_payload_sha256(payload)
+    payload["candidate_payload_sha256_by_ordinal"] = {
+        str(ordinal): candidate_hash for ordinal in (1, 2, 3)
+    }
+
+
+def _rehash_nc_ipv_and_candidate_payload(payload: dict) -> None:
+    payload["ipv_bytes_sha256"] = M3._component_hash(
+        M3._nc_ipv_payload(payload["ipv_float_values"])
+    )
+    _rehash_nc_candidate_payload(payload)
+
+
+def _run_synthetic_nc_gate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    observed_mutation,
+    *,
+    expected_mutation=None,
+    builder_exception: Exception | None = None,
+) -> dict:
+    def replay_expected(*, fixture_id: str, **_kwargs) -> dict:
+        payload = copy.deepcopy(_nc_expected(fixture_id))
+        observed_mutation(payload, fixture_id)
+        return payload
+
+    if builder_exception is None:
+        monkeypatch.setattr(M3, "build_nc_history_only_payload", replay_expected)
+    else:
+        def fail_build(**_kwargs) -> dict:
+            raise builder_exception
+
+        monkeypatch.setattr(M3, "build_nc_history_only_payload", fail_build)
+    if expected_mutation is not None:
+        strict_load = M3._strict_load
+
+        def load_with_expected_mutation(path: Path) -> dict:
+            payload = strict_load(path)
+            if path.name.endswith("_expected.json"):
+                expected_mutation(payload, payload["fixture_id"])
+            return payload
+
+        monkeypatch.setattr(M3, "_strict_load", load_with_expected_mutation)
+    monkeypatch.setattr(
+        M3,
+        "G2R_OUTPUT_CONTRACT_SHA256",
+        M3.sha256_file(ROOT / M3.G2R_OUTPUT_CONTRACT_PATH),
+    )
+    environment = tmp_path / "environment.json"
+    environment.write_bytes(b"{}\n")
+    python = Path(sys.executable).resolve(strict=True)
+    return M3.run_nc_pretstar_history_only_gate(
+        repo_root=ROOT,
+        python_executable_path=python,
+        python_executable_sha256=hashlib.sha256(python.read_bytes()).hexdigest(),
+        environment_manifest_path=environment,
+        environment_manifest_sha256=hashlib.sha256(environment.read_bytes()).hexdigest(),
+        created_at_utc="2026-07-20T00:00:00Z",
+    )
+
+
 def _assert_nc_receipt_schema(receipt: dict) -> None:
     assert set(receipt) == {
         "schema_version", "control_id", "status", "implementation_path",
@@ -345,6 +407,7 @@ def test_w2_categories_reject_every_noncontract_token(field: str, value: object)
 
 def test_w2_nc_kernel_reproduces_all_five_w1_pairs_and_future_invariance(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     assert tuple(inspect.signature(M3.build_nc_history_only_payload).parameters) == (
         "fixture_id",
@@ -361,6 +424,11 @@ def test_w2_nc_kernel_reproduces_all_five_w1_pairs_and_future_invariance(
     environment = tmp_path / "environment.json"
     environment.write_bytes(b"{}\n")
     python = Path(sys.executable).resolve(strict=True)
+    monkeypatch.setattr(
+        M3,
+        "G2R_OUTPUT_CONTRACT_SHA256",
+        M3.sha256_file(ROOT / M3.G2R_OUTPUT_CONTRACT_PATH),
+    )
     receipt = M3.run_nc_pretstar_history_only_gate(
         repo_root=ROOT,
         python_executable_path=python,
@@ -376,12 +444,18 @@ def test_w2_nc_kernel_reproduces_all_five_w1_pairs_and_future_invariance(
         expected_path = FIXTURES / f"{fixture_id.lower()}_expected.json"
         expected = _nc_expected(fixture_id)
         assert observation["status"] == "PASS"
-        assert observation["observed_m3_context_bytes_sha256"] == expected[
-            "m3_context_bytes_sha256"
-        ]
-        assert observation["observed_payload_sha256"] == next(
-            iter(expected["candidate_payload_sha256_by_ordinal"].values())
-        )
+        for observed_key, expected_key in (
+            ("observed_state_bytes_sha256", "state_bytes_sha256"),
+            ("observed_m3_context_bytes_sha256", "m3_context_bytes_sha256"),
+            ("observed_focal_reference_bytes_sha256", "focal_reference_bytes_sha256"),
+            (
+                "observed_counterpart_reference_bytes_sha256",
+                "counterpart_reference_bytes_sha256",
+            ),
+        ):
+            assert observation[observed_key] == expected[expected_key]
+        assert len(observation["observed_ipv_bytes_sha256"]) == 64
+        assert len(observation["observed_payload_sha256"]) == 64
 
     future_input = _nc_input("NC_HISTORY_FUTURE_PERTURBATION")
     baseline = M3.build_nc_history_only_payload(
@@ -458,6 +532,212 @@ def test_w2_nc_kernel_reproduces_all_five_w1_pairs_and_future_invariance(
     _assert_nc_receipt_schema(failed)
     assert failed["status"] == "FAIL"
     assert failed["failure_or_NA"]["failure_class"] == "FIXTURE_HASH_MISMATCH"
+
+
+def test_w2_nc_value_divergent_but_equal_error_passes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def perturb(payload: dict, _fixture_id: str) -> None:
+        if payload["fixture_id"] == NC_IDS[0]:
+            payload["ipv_float_values"]["counterpart_ipv"] = (
+                M3.NC_IPV_VALUE_MIN / 2
+            )
+            _rehash_nc_ipv_and_candidate_payload(payload)
+
+    receipt = _run_synthetic_nc_gate(tmp_path, monkeypatch, perturb)
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "PASS"
+    assert receipt["failure_or_NA"] == "NA"
+
+
+def test_w2_nc_error_anchor_accepts_within_1e5_perturbation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def perturb(payload: dict, _fixture_id: str) -> None:
+        if payload["fixture_id"] == NC_IDS[0]:
+            payload["ipv_float_values"]["counterpart_ipv_error"] += (
+                M3.NC_IPV_ERROR_ATOL / 2
+            )
+            _rehash_nc_ipv_and_candidate_payload(payload)
+
+    receipt = _run_synthetic_nc_gate(tmp_path, monkeypatch, perturb)
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "PASS"
+    assert receipt["failure_or_NA"] == "NA"
+
+
+def test_w2_nc_error_anchor_rejects_beyond_1e5_perturbation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def perturb(payload: dict, _fixture_id: str) -> None:
+        if payload["fixture_id"] == NC_IDS[0]:
+            payload["ipv_float_values"]["counterpart_ipv_error"] += (
+                2 * M3.NC_IPV_ERROR_ATOL
+            )
+            _rehash_nc_ipv_and_candidate_payload(payload)
+
+    receipt = _run_synthetic_nc_gate(tmp_path, monkeypatch, perturb)
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_or_NA"]["failure_class"] == "PAYLOAD_MISMATCH"
+    assert receipt["failure_or_NA"]["message"].startswith(
+        "IPV_PORTABLE_PARITY_MISMATCH:"
+    )
+
+
+@pytest.mark.parametrize(
+    ("source", "key", "nonfinite"),
+    [
+        ("observed", "counterpart_ipv", float("nan")),
+        ("observed", "ego_ipv_error", float("inf")),
+        ("golden", "ego_ipv", float("-inf")),
+        ("golden", "counterpart_ipv_error", float("nan")),
+    ],
+)
+def test_w2_nc_nonfinite_ipv_or_error_fails_closed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    source: str,
+    key: str,
+    nonfinite: float,
+) -> None:
+    def perturb(payload: dict, fixture_id: str) -> None:
+        if fixture_id == NC_IDS[0]:
+            payload["ipv_float_values"][key] = nonfinite
+
+    def noop(_payload: dict, _fixture_id: str) -> None:
+        return None
+
+    receipt = _run_synthetic_nc_gate(
+        tmp_path,
+        monkeypatch,
+        perturb if source == "observed" else noop,
+        expected_mutation=perturb if source == "golden" else None,
+    )
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_or_NA"]["failure_class"] == "PAYLOAD_MISMATCH"
+    assert receipt["failure_or_NA"]["message"].startswith("IPV_NONFINITE:")
+
+
+def test_w2_nc_nonfinite_estimator_result_uses_distinct_gate_detail(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def noop(_payload: dict, _fixture_id: str) -> None:
+        return None
+
+    receipt = _run_synthetic_nc_gate(
+        tmp_path,
+        monkeypatch,
+        noop,
+        builder_exception=M3.NCIPVNonfiniteError("synthetic non-finite terminal pair"),
+    )
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_or_NA"]["failure_class"] == "PAYLOAD_MISMATCH"
+    assert receipt["failure_or_NA"]["message"].startswith("IPV_NONFINITE:")
+
+
+def test_w2_nc_ipv_outside_exact_solver_candidate_hull_fails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def perturb(payload: dict, fixture_id: str) -> None:
+        if fixture_id == NC_IDS[0]:
+            payload["ipv_float_values"]["counterpart_ipv"] = (
+                M3.NC_IPV_VALUE_MAX + 1e-6
+            )
+            _rehash_nc_ipv_and_candidate_payload(payload)
+
+    receipt = _run_synthetic_nc_gate(tmp_path, monkeypatch, perturb)
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_or_NA"]["failure_class"] == "PAYLOAD_MISMATCH"
+    assert receipt["failure_or_NA"]["message"].startswith("IPV_OUT_OF_BOUNDS:")
+
+
+def test_w2_nc_future_invariance_is_direct_and_exact_in_process(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def perturb(payload: dict, fixture_id: str) -> None:
+        if fixture_id == "NC_HISTORY_FUTURE_PERTURBATION":
+            payload["ipv_float_values"]["counterpart_ipv"] += 0.125
+            _rehash_nc_ipv_and_candidate_payload(payload)
+
+    receipt = _run_synthetic_nc_gate(tmp_path, monkeypatch, perturb)
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_or_NA"]["failure_class"] == (
+        "CANDIDATE_OR_FUTURE_LEAKAGE"
+    )
+    assert receipt["failure_or_NA"]["message"] == (
+        "strictly post-tau perturbation changed NC bytes"
+    )
+
+
+def test_w2_nc_byte_exact_component_mismatch_fails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def perturb(payload: dict, fixture_id: str) -> None:
+        if fixture_id == NC_IDS[0]:
+            payload["state_bytes_sha256"] = "0" * 64
+            _rehash_nc_candidate_payload(payload)
+
+    receipt = _run_synthetic_nc_gate(tmp_path, monkeypatch, perturb)
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_or_NA"]["failure_class"] == "PAYLOAD_MISMATCH"
+    assert receipt["failure_or_NA"]["message"] == (
+        "BYTE_EXACT_COMPONENT_MISMATCH: state_bytes_sha256"
+    )
+
+
+@pytest.mark.parametrize("drift", ("extra", "missing"))
+def test_w2_nc_observed_payload_schema_key_drift_fails_closed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    drift: str,
+) -> None:
+    def perturb(payload: dict, fixture_id: str) -> None:
+        if fixture_id != NC_IDS[0]:
+            return
+        if drift == "extra":
+            payload["unexpected_top_level_key"] = "forbidden"
+        else:
+            payload.pop("state_bytes_sha256")
+
+    receipt = _run_synthetic_nc_gate(tmp_path, monkeypatch, perturb)
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_or_NA"]["failure_class"] == "PAYLOAD_MISMATCH"
+    assert receipt["failure_or_NA"]["message"].startswith(
+        "SCHEMA_KEY_DRIFT: observed"
+    )
+
+
+def test_w2_nc_candidate_ordinal_copies_must_match_in_process_payload_hash(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def perturb(payload: dict, fixture_id: str) -> None:
+        if fixture_id == NC_IDS[0]:
+            payload["candidate_payload_sha256_by_ordinal"]["3"] = "0" * 64
+
+    receipt = _run_synthetic_nc_gate(tmp_path, monkeypatch, perturb)
+    _assert_nc_receipt_schema(receipt)
+    assert receipt["status"] == "FAIL"
+    assert receipt["failure_or_NA"]["failure_class"] == (
+        "CANDIDATE_OR_FUTURE_LEAKAGE"
+    )
+    assert receipt["failure_or_NA"]["message"].startswith(
+        "NC ordinal-copy invariant failed:"
+    )
 
 
 def _moving_ticks(start: int, stop: int, *, y: float = 0.0) -> dict[int, tuple[float, float]]:

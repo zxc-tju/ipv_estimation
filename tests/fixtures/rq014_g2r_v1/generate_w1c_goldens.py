@@ -33,6 +33,19 @@ NC_CASES = (
     ("NC_HISTORY_BRANCH_R10L_W25", "R10L", 2.5, 0.1),
     ("NC_HISTORY_FUTURE_PERTURBATION", "R10L", 2.5, 0.1),
 )
+NC_IPV_FLOAT_KEYS = (
+    "counterpart_ipv_error",
+    "counterpart_ipv",
+    "ego_ipv_error",
+    "ego_ipv",
+)
+NC_COMPONENT_HASH_KEYS = (
+    "counterpart_reference_bytes_sha256",
+    "focal_reference_bytes_sha256",
+    "m3_context_bytes_sha256",
+    "state_bytes_sha256",
+    "ipv_bytes_sha256",
+)
 
 
 def normalize_signed_zero(value: Any) -> Any:
@@ -143,6 +156,26 @@ def _component_hash(payload: Any) -> str:
     return sha256_bytes(canonical_json_bytes(payload))
 
 
+def _nc_ipv_payload(ipv_float_values: dict[str, float]) -> dict[str, str]:
+    return {
+        "counterpart_ipv_error_hex": ipv_float_values["counterpart_ipv_error"].hex(),
+        "counterpart_ipv_hex": ipv_float_values["counterpart_ipv"].hex(),
+        "ego_ipv_error_hex": ipv_float_values["ego_ipv_error"].hex(),
+        "ego_ipv_hex": ipv_float_values["ego_ipv"].hex(),
+        "schema_version": "rq014-g2r-nc-ipv-v1",
+    }
+
+
+def _nc_candidate_payload_sha256(payload: dict[str, Any]) -> str:
+    candidate_payload = {
+        **{key: payload[key] for key in NC_COMPONENT_HASH_KEYS},
+        "control_id": "NC_PRETSTAR_HISTORY_ONLY",
+        "schema_version": "rq014-g2r-nc-candidate-payload-v1",
+        "terminal_status": "AVAILABLE",
+    }
+    return _component_hash(candidate_payload)
+
+
 def build_nc_history_only_payload(
     *,
     fixture_id: str,
@@ -213,13 +246,13 @@ def build_nc_history_only_payload(
     terminal_values = np.concatenate([ipv_values[-1], ipv_errors[-1]])
     if not np.all(np.isfinite(terminal_values)):
         raise ValueError("NC exact estimator did not produce a finite terminal pair")
-    ipv_payload = {
-        "counterpart_ipv_error_hex": float(ipv_errors[-1, 1]).hex(),
-        "counterpart_ipv_hex": float(ipv_values[-1, 1]).hex(),
-        "ego_ipv_error_hex": float(ipv_errors[-1, 0]).hex(),
-        "ego_ipv_hex": float(ipv_values[-1, 0]).hex(),
-        "schema_version": "rq014-g2r-nc-ipv-v1",
+    ipv_float_values = {
+        "counterpart_ipv_error": float(ipv_errors[-1, 1]),
+        "counterpart_ipv": float(ipv_values[-1, 1]),
+        "ego_ipv_error": float(ipv_errors[-1, 0]),
+        "ego_ipv": float(ipv_values[-1, 0]),
     }
+    ipv_payload = _nc_ipv_payload(ipv_float_values)
 
     component_hashes = {
         "counterpart_reference_bytes_sha256": _component_hash(
@@ -230,20 +263,15 @@ def build_nc_history_only_payload(
         "m3_context_bytes_sha256": _component_hash(context_payload),
         "state_bytes_sha256": _component_hash(state_payload),
     }
-    candidate_payload = {
-        **component_hashes,
-        "control_id": "NC_PRETSTAR_HISTORY_ONLY",
-        "schema_version": "rq014-g2r-nc-candidate-payload-v1",
-        "terminal_status": "AVAILABLE",
-    }
-    candidate_payload_sha256 = _component_hash(candidate_payload)
+    candidate_payload_sha256 = _nc_candidate_payload_sha256(component_hashes)
     return {
         **component_hashes,
         "candidate_payload_sha256_by_ordinal": {
             str(ordinal): candidate_payload_sha256 for ordinal in (1, 2, 3)
         },
         "fixture_id": fixture_id,
-        "schema_version": "rq014-g2r-nc-fixture-expected-v1",
+        "ipv_float_values": ipv_float_values,
+        "schema_version": "rq014-g2r-nc-fixture-expected-v2",
         "terminal_status": "AVAILABLE",
     }
 
