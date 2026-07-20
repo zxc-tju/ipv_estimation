@@ -1201,6 +1201,59 @@ def test_g2r_counterpart_identity_and_class_are_read_from_verified_source(
         )
 
 
+def test_g2r_counterpart_class_resolves_confidence_weighted_majority(
+    tmp_path: Path,
+) -> None:
+    schema_path = ROOT / "reports/plans/RQ014_score_stripped_schema_v1.json"
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    columns = schema["files"]["counterpart_tracks.csv"]["columns"]
+    path = tmp_path / "counterpart_tracks.csv"
+    row_values = [
+        ("title-case", "track-title", "Vehicle", "0.95"),
+        ("majority", "track-majority", "Vehicle", "0.95"),
+        ("majority", "track-majority", "Vehicle", "0.88"),
+        ("majority", "track-majority", "Pedestrian", "0.23"),
+        ("reverse-majority", "track-reverse", "Pedestrian", "0.95"),
+        ("reverse-majority", "track-reverse", "Pedestrian", "0.88"),
+        ("reverse-majority", "track-reverse", "Vehicle", "0.23"),
+        ("empty-only", "track-empty", "", "0.99"),
+        ("empty-filter", "track-filter", "", "0.99"),
+        ("empty-filter", "track-filter", "Vehicle", "0.23"),
+        ("tie", "track-tie", "Pedestrian", "0.5"),
+        ("tie", "track-tie", "Vehicle", "0.5"),
+    ]
+    rows = [dict.fromkeys(columns, "0") for _ in row_values]
+    for row, (segment_id, counterpart_track_id, class_name, confidence) in zip(
+        rows, row_values
+    ):
+        row.update(
+            segment_id=segment_id,
+            counterpart_track_id=counterpart_track_id,
+            class_name=class_name,
+            detector_confidence=confidence,
+        )
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = __import__("csv").DictWriter(handle, fieldnames=columns, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+    flags = run_managed_g2._read_counterpart_vehicle_flags(
+        tmp_path,
+        schema_path,
+        {"title-case", "majority", "reverse-majority", "empty-filter", "tie"},
+    )
+    assert flags == {
+        "empty-filter": True,
+        "majority": True,
+        "reverse-majority": False,
+        "tie": True,
+        "title-case": True,
+    }
+    with pytest.raises(ValueError, match="at least one non-empty"):
+        run_managed_g2._read_counterpart_vehicle_flags(
+            tmp_path, schema_path, {"empty-only"}
+        )
+
+
 def test_g2r_resource_pilot_lineage_is_exact_and_fail_closed(tmp_path: Path) -> None:
     def ref(name: str, payload: bytes = b"{}\n") -> dict[str, str]:
         path = tmp_path / name

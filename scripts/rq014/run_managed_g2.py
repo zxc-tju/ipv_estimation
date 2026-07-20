@@ -88,7 +88,7 @@ def _read_counterpart_vehicle_flags(
     schema = json.loads(score_schema_path.read_text(encoding="utf-8"))
     expected_columns = schema["files"]["counterpart_tracks.csv"]["columns"]
     identities: dict[str, set[str]] = {}
-    classes: dict[str, set[str]] = {}
+    class_confidence: dict[str, dict[str, float]] = {}
     path = bundle_root / "counterpart_tracks.csv"
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -97,20 +97,30 @@ def _read_counterpart_vehicle_flags(
         for row in reader:
             segment_id = row["segment_id"]
             identities.setdefault(segment_id, set()).add(row["counterpart_track_id"])
-            classes.setdefault(segment_id, set()).add(row["class_name"])
+            per_class = class_confidence.setdefault(segment_id, {})
+            per_class[row["class_name"]] = per_class.get(row["class_name"], 0.0) + float(
+                row["detector_confidence"]
+            )
     flags: dict[str, bool] = {}
     for segment_id in sorted(required_segments, key=lambda value: value.encode("utf-8")):
         segment_ids = identities.get(segment_id, set())
-        segment_classes = classes.get(segment_id, set())
         if len(segment_ids) != 1 or "" in segment_ids:
             raise ValueError(
                 f"G2R requires exactly one frozen counterpart identity for {segment_id}"
             )
-        if len(segment_classes) != 1 or "" in segment_classes:
+        # Detector class labels can flip within one track (low-confidence noise); resolve to the
+        # confidence-weighted majority class. Require at least one non-empty class.
+        per_class = {
+            name: total
+            for name, total in class_confidence.get(segment_id, {}).items()
+            if name != ""
+        }
+        if not per_class:
             raise ValueError(
-                f"G2R requires exactly one frozen counterpart class for {segment_id}"
+                f"G2R requires at least one non-empty frozen counterpart class for {segment_id}"
             )
-        flags[segment_id] = next(iter(segment_classes)) == "VEHICLE"
+        resolved_class = max(per_class, key=lambda name: (per_class[name], name))
+        flags[segment_id] = resolved_class.upper() == "VEHICLE"
     return flags
 
 
