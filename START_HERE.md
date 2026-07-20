@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-17.
+Last reviewed: 2026-07-20.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -300,6 +300,22 @@ question index in `STUDIES.md`.
   construction. This local authority wave performs no HPC action: operators must still
   publish/sync the reviewed commit, rebuild fresh upstream lineage against its contract,
   materialize an immutable G2R spec, pass validate-only, and use the explicit submit step.
+- **RQ014 NC gate portability repair passed Linux preverification and entered its
+  Phase 2 governance freeze (2026-07-20).** The third
+  rating-blind 320-cell attempt reached the NC gate after source registration, then
+  failed because macOS and managed-Linux SLSQP IPV bytes differed while state,
+  M3-context, and both reference components stayed byte-identical. Managed-Linux
+  preverification then rejected the first hybrid patch 5/5: R10L-W25 and its future
+  control reached different IPV point estimates with errors equal to `1.9e-13`,
+  exposing a degenerate equal-error solution set. The PI-final error-anchored option
+  keeps those four component hashes and both same-process controls exact, compares
+  only the two committed IPV errors at `rtol=0`, `atol=1e-5`, and treats IPV values as
+  non-anchored provenance that must be finite and within the exact solver candidate
+  hull `[-3*pi/8,3*pi/8]`. Revised Mac and managed-Linux env-v5 replays both pass
+  5/5. The Phase 2 change set binds the final output-contract hash through all three
+  code consumers and regenerates the 141-row review manifest, two formal reviews,
+  Formal G1, and the 145-row checksum bundle. It remains an uncommitted Lead handoff;
+  no submit or rating-access authority is added.
 - RQ014 focused verification command uses the existing verifier environment:
   `.venv_ipv_verifier/bin/python -m pytest -q tests/test_rq014_v1p5_contract.py
   tests/test_rq014_score_stripped_export.py tests/test_hpc_run_launcher.py

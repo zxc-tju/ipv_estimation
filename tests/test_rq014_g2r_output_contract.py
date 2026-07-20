@@ -438,10 +438,93 @@ def test_bound_pointwise_helper_locks_boundary_inclusivity_and_finiteness(
     assert fixture_case["expected_reason_code"] == "F_AVAILABLE_CONTINUE"
 
 
-def test_nc_history_only_five_pairs_and_future_leakage_regression_are_exact() -> None:
+def test_nc_history_only_five_pairs_follow_error_anchored_portability() -> None:
     contract = _strict_load(CONTRACT_PATH)
     gate = contract["nc_pretstar_history_only_gate"]
     assert gate["fixture_ids"] == list(NC_FIXTURE_IDS)
+    comparison = gate["error_anchored_comparison"]
+    assert comparison["byte_exact_component_hashes"] == [
+        "state_bytes_sha256",
+        "m3_context_bytes_sha256",
+        "focal_reference_bytes_sha256",
+        "counterpart_reference_bytes_sha256",
+    ]
+    assert comparison["ipv_error_anchor"] == {
+        "absolute_tolerance": 1e-5,
+        "dtype": "float",
+        "equal_nan": False,
+        "float_keys": ["counterpart_ipv_error", "ego_ipv_error"],
+        "nonfinite": "FAIL",
+        "relative_tolerance": 0.0,
+        "tolerance_basis": (
+            "PI decision 2026-07-20: threefold margin over measured "
+            "cross-platform maximum error delta 3.1e-6"
+        ),
+    }
+    assert comparison["ipv_value_validation"] == {
+        "bounds_inclusive": [-3 * math.pi / 8, 3 * math.pi / 8],
+        "float_keys": ["counterpart_ipv", "ego_ipv"],
+        "golden_role": "PROVENANCE_ONLY_NON_ANCHORED_REFERENCE",
+        "nonfinite": "FAIL",
+        "observed_rule": "FINITE_AND_WITHIN_EXACT_SOLVER_CANDIDATE_CONVEX_HULL",
+        "source": "src/sociality_estimation/core/agent.py:63,156-161,243-254",
+    }
+    assert comparison["not_golden_compared_hashes"] == [
+        "ipv_bytes_sha256",
+        "candidate_payload_sha256_by_ordinal",
+    ]
+    assert comparison["stored_ipv_float_keys"] == list(W1C.NC_IPV_FLOAT_KEYS)
+
+    def assert_error_anchored_equal(
+        observed: dict[str, Any],
+        expected: dict[str, Any],
+        *,
+        compare_fixture_id: bool = True,
+    ) -> None:
+        exact_keys = [
+            "schema_version",
+            "terminal_status",
+            *comparison["byte_exact_component_hashes"],
+        ]
+        if compare_fixture_id:
+            exact_keys.append("fixture_id")
+        for key in exact_keys:
+            assert observed[key] == expected[key]
+        for payload in (observed, expected):
+            assert payload["ipv_bytes_sha256"] == W1C._component_hash(
+                W1C._nc_ipv_payload(payload["ipv_float_values"])
+            )
+            candidate_hash = W1C._nc_candidate_payload_sha256(payload)
+            assert payload["candidate_payload_sha256_by_ordinal"] == {
+                str(ordinal): candidate_hash for ordinal in (1, 2, 3)
+            }
+            values = payload["ipv_float_values"]
+            assert all(math.isfinite(values[key]) for key in W1C.NC_IPV_FLOAT_KEYS)
+            lower, upper = comparison["ipv_value_validation"]["bounds_inclusive"]
+            assert all(
+                lower <= values[key] <= upper
+                for key in comparison["ipv_value_validation"]["float_keys"]
+            )
+        np.testing.assert_allclose(
+            np.asarray(
+                [
+                    observed["ipv_float_values"][key]
+                    for key in comparison["ipv_error_anchor"]["float_keys"]
+                ],
+                dtype=float,
+            ),
+            np.asarray(
+                [
+                    expected["ipv_float_values"][key]
+                    for key in comparison["ipv_error_anchor"]["float_keys"]
+                ],
+                dtype=float,
+            ),
+            rtol=comparison["ipv_error_anchor"]["relative_tolerance"],
+            atol=comparison["ipv_error_anchor"]["absolute_tolerance"],
+            equal_nan=comparison["ipv_error_anchor"]["equal_nan"],
+        )
+
     assert tuple(inspect.signature(W1C.build_nc_history_only_payload).parameters) == (
         "fixture_id",
         "sample_dt_s",
@@ -468,8 +551,7 @@ def test_nc_history_only_five_pairs_and_future_leakage_regression_are_exact() ->
         expected = _strict_load(expected_path)
         _assert_exact_keys(fixture_input, gate["fixture_input_exact_keys"])
         _assert_exact_keys(expected, gate["fixture_expected_exact_keys"])
-        assert _build_nc_from_input(fixture_input) == expected
-        assert len(set(expected["candidate_payload_sha256_by_ordinal"].values())) == 1
+        assert_error_anchored_equal(_build_nc_from_input(fixture_input), expected)
         observed_by_id[fixture_id] = expected
 
     future_binding = bindings[-1]
@@ -491,9 +573,7 @@ def test_nc_history_only_five_pairs_and_future_leakage_regression_are_exact() ->
         "candidate_payload_sha256_by_ordinal"
     ]
     r10l_w25 = observed_by_id["NC_HISTORY_BRANCH_R10L_W25"]
-    assert {
-        key: value for key, value in r10l_w25.items() if key != "fixture_id"
-    } == {key: value for key, value in baseline.items() if key != "fixture_id"}
+    assert_error_anchored_equal(baseline, r10l_w25, compare_fixture_id=False)
 
     receipt_schema = _strict_load(
         ROOT / "configs/artifact_schemas/rq014_g2r_nc_gate_receipt_v1.schema.json"

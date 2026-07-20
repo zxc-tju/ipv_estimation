@@ -24,6 +24,7 @@ import pandas as pd
 from scripts.rq014.wod_ipv_adapter import configure_ipv_estimator_timing
 from scripts.rq014.wod_ipv_preprocessing import state_sequence_from_window_xy
 from scripts.rq014.wod_reference_builder import build_ego_route_reference
+from sociality_estimation.core.agent import resolve_ipv_candidate_values
 from sociality_estimation.core.ipv_estimation import MotionSequence, estimate_ipv_pair
 from sociality_estimation.verifier.anchors import build_m3_anchor_features
 from sociality_estimation.verifier.features import wrap_angle
@@ -93,7 +94,7 @@ ALIGNMENT_PRIMARY = "anchor_at_tau_history_only"
 ALIGNMENT_SENSITIVITY = "terminal_minus_6_rows"
 G2R_OUTPUT_CONTRACT_PATH = Path("reports/plans/RQ014_g2r_output_contract_v1.json")
 G2R_OUTPUT_CONTRACT_SHA256 = (
-    "b066c090ab90316595574890c2b8a8a5ed1bd87d9041f0ce829501e9e4ed1116"
+    "397585550d6a7f977cee0d5e8b82ba0c8756e5cc66b657bd03c93a1a49b4593d"
 )
 NC_FIXTURE_IDS = (
     "NC_HISTORY_BRANCH_R04N_W10",
@@ -102,6 +103,41 @@ NC_FIXTURE_IDS = (
     "NC_HISTORY_BRANCH_R10L_W25",
     "NC_HISTORY_FUTURE_PERTURBATION",
 )
+NC_IPV_FLOAT_KEYS = (
+    "counterpart_ipv_error",
+    "counterpart_ipv",
+    "ego_ipv_error",
+    "ego_ipv",
+)
+NC_IPV_ERROR_KEYS = ("counterpart_ipv_error", "ego_ipv_error")
+NC_IPV_VALUE_KEYS = ("counterpart_ipv", "ego_ipv")
+NC_EXACT_COMPONENT_HASH_KEYS = (
+    "counterpart_reference_bytes_sha256",
+    "focal_reference_bytes_sha256",
+    "m3_context_bytes_sha256",
+    "state_bytes_sha256",
+)
+NC_COMPONENT_HASH_KEYS = (
+    *NC_EXACT_COMPONENT_HASH_KEYS,
+    "ipv_bytes_sha256",
+)
+NC_PAYLOAD_TOPLEVEL_KEYS = frozenset(
+    {
+        *NC_COMPONENT_HASH_KEYS,
+        "candidate_payload_sha256_by_ordinal",
+        "fixture_id",
+        "ipv_float_values",
+        "schema_version",
+        "terminal_status",
+    }
+)
+NC_IPV_ERROR_ATOL = 1e-5
+NC_IPV_ERROR_RTOL = 0.0
+_NC_EXACT_IPV_CANDIDATES = np.asarray(
+    resolve_ipv_candidate_values("exact"), dtype=float
+)
+NC_IPV_VALUE_MIN = float(np.min(_NC_EXACT_IPV_CANDIDATES))
+NC_IPV_VALUE_MAX = float(np.max(_NC_EXACT_IPV_CANDIDATES))
 _CATEGORY_ALLOWED_VALUES = {
     "geometry_path_category": frozenset({"F", "CP", "MP"}),
     "geometry_path_relation": frozenset({"F", "O-C", "C-C", "P-M", "P-P"}),
@@ -117,6 +153,10 @@ _CATEGORY_ALLOWED_VALUES = {
 
 class WodM3KernelError(ValueError):
     """Fail-closed construction error in the rating-blind W2 kernel."""
+
+
+class NCIPVNonfiniteError(WodM3KernelError):
+    """A committed or observed NC IPV payload contains a non-finite float."""
 
 
 class M3ScoringNumericalFailure(WodM3KernelError):
@@ -584,6 +624,73 @@ def _component_hash(payload: Any) -> str:
     return hashlib.sha256(canonical_json_bytes(payload)).hexdigest()
 
 
+def _nc_ipv_payload(ipv_float_values: Mapping[str, Any]) -> dict[str, str]:
+    """Return the byte-hash preimage for four finite binary64 IPV values."""
+
+    if set(ipv_float_values) != set(NC_IPV_FLOAT_KEYS):
+        raise WodM3KernelError("NC IPV float values exact-key drift")
+    values: dict[str, float] = {}
+    for key in NC_IPV_FLOAT_KEYS:
+        value = ipv_float_values[key]
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise WodM3KernelError(f"NC IPV float value is not numeric: {key}")
+        values[key] = float(value)
+        if not math.isfinite(values[key]):
+            raise NCIPVNonfiniteError(f"NC IPV float value is nonfinite: {key}")
+    return {
+        "counterpart_ipv_error_hex": values["counterpart_ipv_error"].hex(),
+        "counterpart_ipv_hex": values["counterpart_ipv"].hex(),
+        "ego_ipv_error_hex": values["ego_ipv_error"].hex(),
+        "ego_ipv_hex": values["ego_ipv"].hex(),
+        "schema_version": "rq014-g2r-nc-ipv-v1",
+    }
+
+
+def _nc_candidate_payload_sha256(payload: Mapping[str, Any]) -> str:
+    candidate_payload = {
+        **{key: payload[key] for key in NC_COMPONENT_HASH_KEYS},
+        "control_id": "NC_PRETSTAR_HISTORY_ONLY",
+        "schema_version": "rq014-g2r-nc-candidate-payload-v1",
+        "terminal_status": "AVAILABLE",
+    }
+    return _component_hash(candidate_payload)
+
+
+def _nc_ipv_values_and_validate_hash(payload: Mapping[str, Any]) -> dict[str, float]:
+    ipv_float_values = payload.get("ipv_float_values")
+    if not isinstance(ipv_float_values, Mapping):
+        raise WodM3KernelError("NC IPV float values must be an object")
+    ipv_payload = _nc_ipv_payload(ipv_float_values)
+    if payload.get("ipv_bytes_sha256") != _component_hash(ipv_payload):
+        raise WodM3KernelError("NC IPV bytes hash is inconsistent with its float values")
+    return {key: float(ipv_float_values[key]) for key in NC_IPV_FLOAT_KEYS}
+
+
+def _nc_ipv_out_of_bounds_keys(ipv_float_values: Mapping[str, float]) -> list[str]:
+    """Return IPV point estimates outside the exact solver candidate hull."""
+
+    return [
+        key
+        for key in NC_IPV_VALUE_KEYS
+        if not NC_IPV_VALUE_MIN <= ipv_float_values[key] <= NC_IPV_VALUE_MAX
+    ]
+
+
+def _validate_nc_candidate_ordinal_hashes(payload: Mapping[str, Any]) -> None:
+    candidate_hashes = payload.get("candidate_payload_sha256_by_ordinal")
+    if not isinstance(candidate_hashes, Mapping) or set(candidate_hashes) != {
+        "1",
+        "2",
+        "3",
+    }:
+        raise WodM3KernelError("NC candidate ordinal hash keys drift")
+    candidate_payload_sha256 = _nc_candidate_payload_sha256(payload)
+    if any(value != candidate_payload_sha256 for value in candidate_hashes.values()):
+        raise WodM3KernelError(
+            "NC candidate ordinal hashes do not copy the in-process payload hash"
+        )
+
+
 def build_nc_history_only_payload(
     *,
     fixture_id: str,
@@ -646,14 +753,16 @@ def build_nc_history_only_payload(
     )
     terminal = np.concatenate([ipv_values[-1], ipv_errors[-1]])
     if not np.all(np.isfinite(terminal)):
-        raise WodM3KernelError("NC exact estimator did not produce a finite terminal pair")
-    ipv_payload = {
-        "counterpart_ipv_error_hex": float(ipv_errors[-1, 1]).hex(),
-        "counterpart_ipv_hex": float(ipv_values[-1, 1]).hex(),
-        "ego_ipv_error_hex": float(ipv_errors[-1, 0]).hex(),
-        "ego_ipv_hex": float(ipv_values[-1, 0]).hex(),
-        "schema_version": "rq014-g2r-nc-ipv-v1",
+        raise NCIPVNonfiniteError(
+            "NC exact estimator did not produce a finite terminal pair"
+        )
+    ipv_float_values = {
+        "counterpart_ipv_error": float(ipv_errors[-1, 1]),
+        "counterpart_ipv": float(ipv_values[-1, 1]),
+        "ego_ipv_error": float(ipv_errors[-1, 0]),
+        "ego_ipv": float(ipv_values[-1, 0]),
     }
+    ipv_payload = _nc_ipv_payload(ipv_float_values)
     component_hashes = {
         "counterpart_reference_bytes_sha256": _component_hash(counterpart_reference_payload),
         "focal_reference_bytes_sha256": _component_hash(focal_reference_payload),
@@ -661,20 +770,15 @@ def build_nc_history_only_payload(
         "m3_context_bytes_sha256": _component_hash(context_payload),
         "state_bytes_sha256": _component_hash(state_payload),
     }
-    candidate_payload = {
-        **component_hashes,
-        "control_id": "NC_PRETSTAR_HISTORY_ONLY",
-        "schema_version": "rq014-g2r-nc-candidate-payload-v1",
-        "terminal_status": "AVAILABLE",
-    }
-    candidate_hash = _component_hash(candidate_payload)
+    candidate_hash = _nc_candidate_payload_sha256(component_hashes)
     return {
         **component_hashes,
         "candidate_payload_sha256_by_ordinal": {
             str(ordinal): candidate_hash for ordinal in (1, 2, 3)
         },
         "fixture_id": fixture_id,
-        "schema_version": "rq014-g2r-nc-fixture-expected-v1",
+        "ipv_float_values": ipv_float_values,
+        "schema_version": "rq014-g2r-nc-fixture-expected-v2",
         "terminal_status": "AVAILABLE",
     }
 
@@ -748,13 +852,6 @@ def run_nc_pretstar_history_only_gate(
             "perturbed_ego_future", "route_intent", "sample_dt_s", "sampling_id",
             "schema_version", "window_s",
         }
-        expected_keys = {
-            "candidate_payload_sha256_by_ordinal",
-            "counterpart_reference_bytes_sha256", "fixture_id",
-            "focal_reference_bytes_sha256", "ipv_bytes_sha256",
-            "m3_context_bytes_sha256", "schema_version", "state_bytes_sha256",
-            "terminal_status",
-        }
         for index, binding in enumerate(bindings):
             failure_fixture = binding["fixture_id"]
             if binding.get("binding_status") != "BOUND_SCORER_INDEPENDENT":
@@ -775,11 +872,40 @@ def run_nc_pretstar_history_only_gate(
                     raise WodM3KernelError(f"committed NC {label} bytes drift")
             fixture = _strict_load(input_path)
             expected = _strict_load(expected_path)
-            if set(fixture) != input_keys or set(expected) != expected_keys:
+            if set(fixture) != input_keys:
                 failure_class = "INPUT_CONTRACT_FAILURE"
-                raise WodM3KernelError("NC fixture exact-key drift")
+                raise WodM3KernelError("NC input fixture exact-key drift")
+            expected_payload_keys = set(expected)
+            if expected_payload_keys != NC_PAYLOAD_TOPLEVEL_KEYS:
+                failure_class = "PAYLOAD_MISMATCH"
+                missing = sorted(NC_PAYLOAD_TOPLEVEL_KEYS - expected_payload_keys)
+                extra = sorted(expected_payload_keys - NC_PAYLOAD_TOPLEVEL_KEYS)
+                raise WodM3KernelError(
+                    "SCHEMA_KEY_DRIFT: golden "
+                    f"missing={missing or ['NA']} extra={extra or ['NA']}"
+                )
             if fixture["fixture_id"] != failure_fixture or expected["fixture_id"] != failure_fixture:
                 raise WodM3KernelError("NC fixture identity differs from committed binding")
+            if expected["schema_version"] != "rq014-g2r-nc-fixture-expected-v2":
+                raise WodM3KernelError("NC expected fixture schema-version drift")
+            try:
+                expected_ipv_values = _nc_ipv_values_and_validate_hash(expected)
+                _validate_nc_candidate_ordinal_hashes(expected)
+            except NCIPVNonfiniteError as exc:
+                failure_class = "PAYLOAD_MISMATCH"
+                raise WodM3KernelError(
+                    f"IPV_NONFINITE: golden NC IPV payload is non-finite: {exc}"
+                ) from exc
+            except Exception as exc:
+                failure_class = "INPUT_CONTRACT_FAILURE"
+                raise WodM3KernelError(f"NC expected fixture is inconsistent: {exc}") from exc
+            expected_out_of_bounds = _nc_ipv_out_of_bounds_keys(expected_ipv_values)
+            if expected_out_of_bounds:
+                failure_class = "PAYLOAD_MISMATCH"
+                raise WodM3KernelError(
+                    "IPV_OUT_OF_BOUNDS: golden NC IPV value outside exact-solver "
+                    "candidate hull: " + ",".join(expected_out_of_bounds)
+                )
             try:
                 observed = build_nc_history_only_payload(
                     fixture_id=failure_fixture,
@@ -788,16 +914,88 @@ def run_nc_pretstar_history_only_gate(
                     counterpart_history_xy=fixture["counterpart_history_xy"],
                     route_intent=str(fixture["route_intent"]),
                 )
+            except NCIPVNonfiniteError as exc:
+                failure_class = "PAYLOAD_MISMATCH"
+                raise WodM3KernelError(
+                    f"IPV_NONFINITE: observed NC exact estimator is non-finite: {exc}"
+                ) from exc
             except Exception as exc:
                 failure_class = "HISTORY_BRANCH_FAILURE"
                 raise WodM3KernelError(f"NC history branch failed: {exc}") from exc
-            if observed != expected or canonical_json_bytes(observed) != expected_path.read_bytes():
+            schema_key_drift: list[str] = []
+            for label, payload in (("observed", observed), ("golden", expected)):
+                payload_keys = set(payload)
+                if payload_keys != NC_PAYLOAD_TOPLEVEL_KEYS:
+                    missing = sorted(NC_PAYLOAD_TOPLEVEL_KEYS - payload_keys)
+                    extra = sorted(payload_keys - NC_PAYLOAD_TOPLEVEL_KEYS)
+                    schema_key_drift.append(
+                        f"{label} missing={missing or ['NA']} extra={extra or ['NA']}"
+                    )
+            if schema_key_drift:
                 failure_class = "PAYLOAD_MISMATCH"
-                raise WodM3KernelError("NC observed payload differs from committed expected bytes")
-            candidate_hashes = observed["candidate_payload_sha256_by_ordinal"]
-            if set(candidate_hashes) != {"1", "2", "3"} or len(set(candidate_hashes.values())) != 1:
+                raise WodM3KernelError(
+                    "SCHEMA_KEY_DRIFT: " + "; ".join(schema_key_drift)
+                )
+            try:
+                observed_ipv_values = _nc_ipv_values_and_validate_hash(observed)
+            except NCIPVNonfiniteError as exc:
+                failure_class = "PAYLOAD_MISMATCH"
+                raise WodM3KernelError(
+                    f"IPV_NONFINITE: observed NC IPV payload is non-finite: {exc}"
+                ) from exc
+            except Exception as exc:
+                failure_class = "HISTORY_BRANCH_FAILURE"
+                raise WodM3KernelError(f"NC observed IPV payload is inconsistent: {exc}") from exc
+            observed_out_of_bounds = _nc_ipv_out_of_bounds_keys(observed_ipv_values)
+            if observed_out_of_bounds:
+                failure_class = "PAYLOAD_MISMATCH"
+                raise WodM3KernelError(
+                    "IPV_OUT_OF_BOUNDS: observed NC IPV value outside exact-solver "
+                    "candidate hull: " + ",".join(observed_out_of_bounds)
+                )
+            try:
+                _validate_nc_candidate_ordinal_hashes(observed)
+            except Exception as exc:
                 failure_class = "CANDIDATE_OR_FUTURE_LEAKAGE"
-                raise WodM3KernelError("NC candidate payload hashes are not identical")
+                raise WodM3KernelError(f"NC ordinal-copy invariant failed: {exc}") from exc
+            exact_keys = (
+                *NC_EXACT_COMPONENT_HASH_KEYS,
+                "fixture_id",
+                "schema_version",
+                "terminal_status",
+            )
+            exact_mismatches = [
+                key for key in exact_keys if observed.get(key) != expected.get(key)
+            ]
+            if exact_mismatches:
+                failure_class = "PAYLOAD_MISMATCH"
+                raise WodM3KernelError(
+                    "BYTE_EXACT_COMPONENT_MISMATCH: " + ",".join(exact_mismatches)
+                )
+            # Point-estimate IPV values are non-anchored provenance: the exact
+            # solver may choose different members of an equal-error solution set
+            # across platforms.  Only finite, in-domain membership is required.
+            try:
+                np.testing.assert_allclose(
+                    np.asarray(
+                        [observed_ipv_values[key] for key in NC_IPV_ERROR_KEYS],
+                        dtype=float,
+                    ),
+                    np.asarray(
+                        [expected_ipv_values[key] for key in NC_IPV_ERROR_KEYS],
+                        dtype=float,
+                    ),
+                    rtol=NC_IPV_ERROR_RTOL,
+                    atol=NC_IPV_ERROR_ATOL,
+                    equal_nan=False,
+                )
+            except AssertionError as exc:
+                failure_class = "PAYLOAD_MISMATCH"
+                raise WodM3KernelError(
+                    "IPV_PORTABLE_PARITY_MISMATCH: observed IPV errors exceed "
+                    "rtol=0.0, atol=1e-5"
+                ) from exc
+            candidate_hashes = observed["candidate_payload_sha256_by_ordinal"]
             observation = observations[index]
             observation.update(
                 {
