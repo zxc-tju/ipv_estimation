@@ -2896,9 +2896,9 @@ def _validate_rq014_spec(
                 "partition": "amd",
                 "nodes": 1,
                 "ntasks": 1,
-                "cpus_per_task": 16,
-                "memory": "32G",
-                "time": "04:00:00",
+                "cpus_per_task": 32,
+                "memory": "64G",
+                "time": "24:00:00",
             },
             "thread_limits": {
                 "OMP_NUM_THREADS": "1",

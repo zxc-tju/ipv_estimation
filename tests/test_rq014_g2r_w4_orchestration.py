@@ -87,13 +87,34 @@ def _real_scene() -> W4.SceneBlindInput:
     )
 
 
-def _structural_scene() -> W4.SceneBlindInput:
+def _structural_scene(segment_id: str = "scene-structural") -> W4.SceneBlindInput:
     return W4.SceneBlindInput(
         domain=DOMAIN.SceneDomainInput(
-            "scene-structural",
+            segment_id,
             "NA",
             {},
             terminal_status="INELIGIBLE_BLIND",
+        ),
+        route_intent="straight",
+    )
+
+
+def _worker_failure_scene(segment_id: str) -> W4.SceneBlindInput:
+    candidate = {-1: (-1.0, 0.0), 0: (0.0, 0.0)}
+    counterpart = {-1: (0.0, 1.0), 0: (1.0, 1.0)}
+    return W4.SceneBlindInput(
+        domain=DOMAIN.SceneDomainInput(
+            segment_id,
+            "CP",
+            {
+                "R04N": DOMAIN.SamplingTimelines(
+                    candidates={
+                        candidate_id: candidate
+                        for _, candidate_id in W4.CANDIDATES
+                    },
+                    counterpart=counterpart,
+                )
+            },
         ),
         route_intent="straight",
     )
@@ -137,9 +158,16 @@ def _mixed_sampling_scene(available_sampling_id: str) -> W4.SceneBlindInput:
     )
 
 
-def _fixture_inputs():
-    scenes = (_structural_scene(), _real_scene())
-    domain_rows = DOMAIN.build_anchor_domain_rows([scene.domain for scene in scenes])
+def _fixture_inputs(
+    scenes: tuple[W4.SceneBlindInput, ...] | None = None,
+    domain_rows: list[dict[str, str]] | None = None,
+):
+    if scenes is None:
+        scenes = (_structural_scene(), _real_scene())
+    if domain_rows is None:
+        domain_rows = DOMAIN.build_anchor_domain_rows(
+            [scene.domain for scene in scenes]
+        )
     lineage = {
         key: {
             "path": f"fixture/{key}",
@@ -172,6 +200,17 @@ def _fixture_inputs():
         ),
     }
     return scenes, domain_rows, lineage, prerequisite_artifacts
+
+
+def _declared_source_refs(contract, _repo_root):
+    return {
+        source_id: {
+            "relative_path": contract["source_bindings"][source_id]["path"],
+            "size_bytes": contract["source_bindings"][source_id]["size_bytes"],
+            "sha256": contract["source_bindings"][source_id]["sha256"],
+        }
+        for source_id in W4.SOURCE_CONTRACT_IDS
+    }
 
 
 def _identity_digest(rows, fields) -> str:
@@ -345,7 +384,28 @@ def _assert_portable_numerics(
                 )
 
 
-def _build_fixture_in_process() -> W4.BlindOutputBuild:
+def _install_sandbox_sysconf_fallback() -> None:
+    """Permit multiprocessing semaphores in the restricted test sandbox."""
+
+    real_sysconf = W4.os.sysconf
+
+    def sandbox_safe_sysconf(name):
+        try:
+            return real_sysconf(name)
+        except PermissionError:
+            if name == "SC_SEM_NSEMS_MAX":
+                return -1
+            raise
+
+    W4.os.sysconf = sandbox_safe_sysconf
+
+
+def _build_fixture_in_process(worker_count: int | None = None) -> W4.BlindOutputBuild:
+    if worker_count is not None:
+        W4.G2R_PREPASS_MAX_WORKERS = worker_count
+    _install_sandbox_sysconf_fallback()
+    # Phase 1 deliberately leaves governance digests for the Phase 2 cascade.
+    W4._source_contract_refs = _declared_source_refs
     scenes, domain_rows, lineage, refs = _fixture_inputs()
     return W4.build_blind_output_artifacts(
         scenes,
@@ -360,7 +420,9 @@ def _build_fixture_in_process() -> W4.BlindOutputBuild:
     )
 
 
-def _build_fixture(tmp_path: Path) -> W4.BlindOutputBuild:
+def _build_fixture(
+    tmp_path: Path, worker_count: int | None = None
+) -> W4.BlindOutputBuild:
     """Run the real scorer in an isolated process, then return its exact bytes.
 
     Scikit-learn initializes an OpenMP runtime when the pinned scorer predicts.
@@ -368,12 +430,13 @@ def _build_fixture(tmp_path: Path) -> W4.BlindOutputBuild:
     pilot fork pool on macOS.  Process isolation preserves the real W2-to-W3
     integration while ensuring that the scorer runtime exits with its child.
     """
+    tmp_path.mkdir(parents=True, exist_ok=True)
     payload_path = tmp_path / "mini_build.pickle"
     test_path = Path(__file__).resolve()
     command = (
         "import pickle, runpy\n"
         f"namespace = runpy.run_path({str(test_path)!r})\n"
-        "build = namespace['_build_fixture_in_process']()\n"
+        f"build = namespace['_build_fixture_in_process']({worker_count!r})\n"
         f"with open({str(payload_path)!r}, 'wb') as handle:\n"
         "    pickle.dump(build, handle, protocol=pickle.HIGHEST_PROTOCOL)\n"
     )
@@ -393,12 +456,21 @@ def _build_fixture(tmp_path: Path) -> W4.BlindOutputBuild:
         check=False,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
+    progress = [
+        line
+        for line in completed.stdout.splitlines()
+        if line.startswith("g2r-prepass scene ")
+    ]
+    assert len(progress) == 2
+    assert all(line.endswith("s") for line in progress)
     return pickle.loads(payload_path.read_bytes())
 
 
 @pytest.fixture(scope="module")
 def mini_build(tmp_path_factory: pytest.TempPathFactory) -> W4.BlindOutputBuild:
-    return _build_fixture(tmp_path_factory.mktemp("rq014-g2r-w4-mini-build"))
+    return _build_fixture(
+        tmp_path_factory.mktemp("rq014-g2r-w4-mini-build"), worker_count=2
+    )
 
 
 def test_w4_reproduces_w1_order_predicate_schema_shapes_and_anchor_golden() -> None:
@@ -512,6 +584,85 @@ def test_w4_focal_reference_selects_frozen_order_available_sampling_branch(
     assert {row["sampling_id"] for row in anchor_rows} == {available_sampling_id}
     assert observed_references
     assert all(reference == expected_reference for reference in observed_references)
+
+
+def test_w4_parallel_prepass_is_byte_identical_to_serial(
+    tmp_path: Path, mini_build: W4.BlindOutputBuild,
+) -> None:
+    serial = _build_fixture(tmp_path / "serial", worker_count=1)
+    parallel = mini_build
+
+    assert tuple(serial.artifacts) == tuple(parallel.artifacts) == W4.DIRECT_ARTIFACT_NAMES
+    for name in W4.DIRECT_ARTIFACT_NAMES:
+        assert parallel.artifacts[name] == serial.artifacts[name]
+
+
+def test_w4_scene_worker_is_scorer_free_and_returns_complete_failures() -> None:
+    test_path = Path(__file__).resolve()
+    command = f"""
+import math
+import os
+import runpy
+import sys
+
+def scorer_module(name):
+    return (name == 'joblib' or name.startswith('joblib.') or
+            name == 'sociality_estimation.verifier.scorer')
+
+assert not any(scorer_module(name) for name in sys.modules)
+namespace = runpy.run_path({str(test_path)!r})
+W4 = namespace['W4']
+assert not any(scorer_module(name) for name in sys.modules)
+scene = namespace['_worker_failure_scene']('scene-worker')
+domain_row = {{
+    'segment_id': 'scene-worker',
+    'feature_id': 'F-R04N-CH-W10',
+    'horizon_id': 'H20',
+    'path_type_or_NA': 'CP',
+    'h_common_tick_or_NA': 'NA',
+    'tau_tick_or_NA': '4',
+    'membership_status': 'AVAILABLE',
+    'reason_code': 'F_AVAILABLE_CONTINUE',
+}}
+status_by_reason, _ = W4._status_tables(W4._load_contract())
+task = W4._ScenePrepassTask(
+    scene=scene,
+    indexed_domain_rows=((0, domain_row),),
+    status_by_reason=tuple(status_by_reason.items()),
+)
+W4._initialize_g2r_prepass_worker()
+result = W4._run_g2r_scene_prepass(task)
+assert not any(scorer_module(name) for name in sys.modules)
+assert result.segment_id == 'scene-worker'
+assert result.pending == ()
+assert [(index, ordinal) for index, ordinal, _ in result.emitted] == [
+    (0, 1), (0, 2), (0, 3)
+]
+assert all(
+    set(row) == W4.ANCHOR_SCORE_KEYS and
+    row['upstream_status'] == 'INELIGIBLE_TIMELINE_SUPPORT' and
+    row['reason_code'] == 'F_TIMELINE_SUPPORT'
+    for _, _, row in result.emitted
+)
+assert math.isfinite(result.elapsed_s) and result.elapsed_s >= 0.0
+assert all(os.environ[var] == '1' for var in W4._G2R_BLAS_THREAD_VARIABLES)
+"""
+    environment = os.environ.copy()
+    environment["PYTHONPATH"] = os.pathsep.join(
+        value
+        for value in (str(ROOT), str(ROOT / "src"), environment.get("PYTHONPATH"))
+        if value
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", command],
+        cwd=ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
 
 
 def test_w4_mini_universe_emits_all_six_canonical_artifacts_and_bound_slices(
