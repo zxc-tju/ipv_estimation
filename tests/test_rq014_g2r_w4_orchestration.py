@@ -597,6 +597,162 @@ def test_w4_parallel_prepass_is_byte_identical_to_serial(
         assert parallel.artifacts[name] == serial.artifacts[name]
 
 
+def test_w4_spawn_prepass_resolves_exact_path_modules_under_launcher_isolation(
+    tmp_path: Path,
+) -> None:
+    from scripts.hpc import prepare_research_run as launcher
+
+    isolated_sys_path = json.loads(
+        subprocess.check_output(
+            [
+                "/usr/bin/env",
+                "-i",
+                sys.executable,
+                "-I",
+                "-S",
+                "-B",
+                "-X",
+                "utf8",
+                "-c",
+                "import json,sys; print(json.dumps(sys.path))",
+            ],
+            text=True,
+        )
+    )
+    assert str(ROOT) not in isolated_sys_path
+    assert str(ROOT / "src") not in isolated_sys_path
+    site_root = next(
+        value
+        for value in sys.path
+        if value.endswith(("site-packages", "dist-packages"))
+    )
+    probe_path = tmp_path / "isolated_spawn_probe.py"
+    probe_path.write_text(
+        f"""
+import json
+import sys
+
+
+def canonical_bytes(result):
+    pending, emitted = result
+    payload = {{
+        "pending": pending,
+        "emitted": [
+            [index, ordinal, row]
+            for (index, ordinal), row in sorted(emitted.items())
+        ],
+    }}
+    return json.dumps(
+        payload, allow_nan=False, separators=(",", ":"), sort_keys=True
+    ).encode("utf-8")
+
+
+def main():
+    repo_root = {str(ROOT)!r}
+    src_root = {str(ROOT / 'src')!r}
+    assert repo_root not in sys.path
+    assert src_root not in sys.path
+    W4 = sys.modules["scripts.rq014.build_g2r_blind_outputs"]
+    DOMAIN = sys.modules["scripts.rq014.build_wod_scene_anchor_domain"]
+    W2 = sys.modules["scripts.rq014.build_wod_m3_anchors"]
+    candidate = {{-1: (-1.0, 0.0), 0: (0.0, 0.0)}}
+    counterpart = {{-1: (0.0, 1.0), 0: (1.0, 1.0)}}
+    status_by_reason, _ = W4._status_tables(W4._load_contract())
+    tasks = []
+    for available_index, segment_id in enumerate(("scene-a", "scene-b")):
+        scene = W4.SceneBlindInput(
+            domain=DOMAIN.SceneDomainInput(
+                segment_id,
+                "CP",
+                {{
+                    "R04N": DOMAIN.SamplingTimelines(
+                        candidates={{
+                            candidate_id: candidate
+                            for _, candidate_id in W4.CANDIDATES
+                        }},
+                        counterpart=counterpart,
+                    )
+                }},
+            ),
+            route_intent="straight",
+        )
+        domain_row = {{
+            "segment_id": segment_id,
+            "feature_id": "F-R04N-CH-W10",
+            "horizon_id": "H20",
+            "path_type_or_NA": "CP",
+            "h_common_tick_or_NA": "NA",
+            "tau_tick_or_NA": "4",
+            "membership_status": "AVAILABLE",
+            "reason_code": "F_AVAILABLE_CONTINUE",
+        }}
+        tasks.append(
+            W4._ScenePrepassTask(
+                scene=scene,
+                indexed_domain_rows=((available_index, domain_row),),
+                status_by_reason=tuple(status_by_reason.items()),
+            )
+        )
+    producers = {{
+        "feature_builder": W2.build_feature_family_m3_input_row,
+        "candidate_ipv_estimator": W4._default_candidate_ipv_estimator,
+    }}
+    real_cpu_count = W4.os.cpu_count
+    real_sysconf = W4.os.sysconf
+    def sandbox_safe_sysconf(name):
+        try:
+            return real_sysconf(name)
+        except PermissionError:
+            if name == "SC_SEM_NSEMS_MAX":
+                return -1
+            raise
+    try:
+        W4.os.cpu_count = lambda: 4
+        W4.os.sysconf = sandbox_safe_sysconf
+        W4.G2R_PREPASS_MAX_WORKERS = 1
+        serial = W4._collect_scene_prepass_results(tasks, **producers)
+        assert repo_root not in sys.path
+        assert src_root not in sys.path
+        W4.G2R_PREPASS_MAX_WORKERS = 2
+        parallel = W4._collect_scene_prepass_results(tasks, **producers)
+    finally:
+        W4.os.cpu_count = real_cpu_count
+        W4.os.sysconf = real_sysconf
+    assert repo_root in sys.path
+    assert src_root in sys.path
+    assert canonical_bytes(parallel) == canonical_bytes(serial)
+    print("ISOLATED_SPAWN_MATCH")
+
+
+if __name__ == "__main__":
+    main()
+""",
+        encoding="utf-8",
+    )
+    command = launcher._rq014_isolated_python_command(
+        python=Path(sys.executable),
+        code=ROOT,
+        entrypoint="scripts/rq014/run_managed_g2.py",
+        arguments=["blind-feature-build"],
+        isolated_sys_path=isolated_sys_path,
+        site_packages_root=site_root,
+    )
+    entrypoint_index = command.index(
+        str(ROOT / "scripts/rq014/run_managed_g2.py")
+    )
+    command[entrypoint_index:] = [str(probe_path)]
+    completed = subprocess.run(
+        ["/usr/bin/env", "-i", *command],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert "ISOLATED_SPAWN_MATCH" in completed.stdout
+
+
 def test_w4_scene_worker_is_scorer_free_and_returns_complete_failures() -> None:
     test_path = Path(__file__).resolve()
     command = f"""

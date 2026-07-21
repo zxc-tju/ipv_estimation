@@ -300,15 +300,19 @@ question index in `STUDIES.md`.
   construction. This local authority wave performs no HPC action: operators must still
   publish/sync the reviewed commit, rebuild fresh upstream lineage against its contract,
   materialize an immutable G2R spec, pass validate-only, and use the explicit submit step.
-- **RQ014 G2R scene-parallel Phase 2 handoff (2026-07-21; commit 5e86d1d2, no HPC
-  submit).** The rating-blind W2/IPV scene prepass now uses spawned process workers
-  while the parent preserves canonical merge order and the single unchanged M3 batch.
-  The current `rq014-g2r-cpu-v1` candidate is 32 CPU, 64G, and 24:00:00; local real-kernel
-  mini-universe serial-versus-pool output is byte-identical across all six artifacts.
-  The 141-row review manifest and 145-row checksum bundle verify after the full governance
-  cascade, and the shadow-venv full suite reproducibly reports 404 passed, 1 skipped, and the 25 adjudicated
-  environment-only failures with no new IDs. Real-scene HPC identity remains pending;
-  use the rating-free `parallel_identity_probe.py` handoff before production submission.
+- **RQ014 G2R scene-parallel spawn-bootstrap repair (2026-07-21; no HPC submit by
+  this task).** Production run 5 failed at 4m39s because the managed `env -i`/`-I -S`
+  exact-path bootstrap preloaded `scripts.*` only in the parent while leaving the repo and
+  `src` roots absent from inherited `sys.path`; spawned workers therefore failed during
+  unpickling with `ModuleNotFoundError: scripts`. Immediately before pool construction,
+  the parent now idempotently inserts those two roots so children can resolve the same
+  modules by name; spawn, worker initialization, canonical merge order, the single M3
+  batch, and all numeric work are unchanged. The exact launcher-shaped regression passes
+  and reproduces the original exception when the two-root insertion is removed. Targeted
+  W4 passed 14/14; the shadow-venv full suite reports 452 passed, 1 skipped, and exactly
+  the 25 adjudicated environment failures with zero W4 errors or new IDs. The current
+  `rq014-g2r-cpu-v1` remains 32 CPU, 64G, and 24:00:00; publish/sync, validate-only, the
+  rating-free `parallel_identity_probe.py`, and a production retry remain operator steps.
 - **RQ014 NC gate portability repair passed Linux preverification and entered its
   Phase 2 governance freeze (2026-07-20).** The third
   rating-blind 320-cell attempt reached the NC gate after source registration, then
