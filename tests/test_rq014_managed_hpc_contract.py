@@ -1398,9 +1398,9 @@ def test_g2r_sbatch_surface_uses_v4_profile_and_exact_closed_modules(
             "partition": "amd",
             "nodes": 1,
             "ntasks": 1,
-            "cpus_per_task": 16,
-            "memory": "32G",
-            "time": "04:00:00",
+            "cpus_per_task": 32,
+            "memory": "64G",
+            "time": "24:00:00",
         },
         "run_spec_sha256": "f" * 64,
         "code_snapshot_receipt_sha256": "0" * 64,
@@ -1419,8 +1419,8 @@ def test_g2r_sbatch_surface_uses_v4_profile_and_exact_closed_modules(
         code=code,
         sealed_spec_path=run_root / "manifests/run_spec.json",
     )
-    assert "#SBATCH --cpus-per-task=16" in script
-    assert "#SBATCH --mem=32G" in script and "#SBATCH --time=04:00:00" in script
+    assert "#SBATCH --cpus-per-task=32" in script
+    assert "#SBATCH --mem=64G" in script and "#SBATCH --time=24:00:00" in script
     assert "blind-feature-build" in script
     for relative in launcher.RQ014_G2R_MODULE_PATHS:
         assert str(code / relative) in script

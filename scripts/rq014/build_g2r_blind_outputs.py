@@ -21,12 +21,14 @@ import csv
 import hashlib
 import io
 import math
+import multiprocessing as mp
+import os
 import re
+import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Collection, Mapping, Sequence
-
-import numpy as np
 
 from scripts.rq014 import build_wod_m3_anchors as W2
 from scripts.rq014 import build_wod_scene_anchor_domain as DOMAIN
@@ -45,6 +47,7 @@ EXPECTED_CELL_COUNT = 320
 EXPECTED_FEATURE_BANK_ROWS = 459_840
 EXPECTED_MASK_ROWS = 153_280
 EXPECTED_ANCHOR_GROUP_COUNT = 15_328
+G2R_PREPASS_MAX_WORKERS = 30
 CANDIDATES = ((1, "C1"), (2, "C2"), (3, "C3"))
 DIRECT_ARTIFACT_NAMES = (
     "g2r_anchor_scores.jsonl",
@@ -262,10 +265,44 @@ class BlindOutputBuild:
     common_support_ids: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class _ScenePrepassTask:
+    """Picklable scene-local W2/IPV work submitted in canonical scene order."""
+
+    scene: SceneBlindInput
+    indexed_domain_rows: tuple[tuple[int, Mapping[str, str]], ...]
+    status_by_reason: tuple[tuple[str, str], ...]
+
+
+@dataclass(frozen=True)
+class _ScenePrepassResult:
+    """Scorer-free scene result merged by the parent in canonical order."""
+
+    segment_id: str
+    pending: tuple[tuple[int, dict[str, Any], dict[str, Any], float], ...]
+    emitted: tuple[tuple[int, int, dict[str, Any]], ...]
+    elapsed_s: float
+
+
 FeatureBuilder = Callable[..., Mapping[str, Any]]
 CandidateIpvEstimator = Callable[..., float]
 ScoreRows = Callable[[Sequence[Mapping[str, Any]]], Sequence[W3.PreMaskM3Score]]
 _UTC_SECONDS = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$")
+_G2R_BLAS_THREAD_VARIABLES = (
+    "OMP_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "NUMEXPR_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS",
+    "BLIS_NUM_THREADS",
+)
+
+
+def _initialize_g2r_prepass_worker() -> None:
+    """Pin native math libraries before a spawned worker imports NumPy."""
+
+    for variable in _G2R_BLAS_THREAD_VARIABLES:
+        os.environ[variable] = "1"
 
 
 def _repo_root(repo_root: Path | None = None) -> Path:
@@ -421,7 +458,7 @@ def _status_tables(contract: Mapping[str, Any]) -> tuple[dict[str, str], dict[st
 
 def _scene_focal_reference(
     scene: SceneBlindInput, available_sampling_ids: Collection[str]
-) -> np.ndarray:
+) -> Sequence[Sequence[float]]:
     """Derive the scene reference from the first frozen-order AVAILABLE branch.
 
     Recovery lane v3 orders feature families by its declared sampling axis and
@@ -429,6 +466,8 @@ def _scene_focal_reference(
     no value.  A merely present terminal sampling branch is therefore never a
     legal source for the reference.
     """
+
+    import numpy as np
 
     available = set(available_sampling_ids)
     registered = {sampling_id for sampling_id, _ in DOMAIN.SAMPLING_AXIS}
@@ -487,6 +526,8 @@ def _default_candidate_ipv_estimator(
     h_common_tick: int,
     scene_focal_reference: Sequence[Sequence[float]],
 ) -> float:
+    import numpy as np
+
     start_tick, end_tick = W2.temporal_window_bounds(
         temporal_id, tau_tick, rate_hz, h_common_tick
     )
@@ -615,6 +656,360 @@ def _score_with_numerical_isolation(
     return [item for item in output if item is not None]
 
 
+def _compute_g2r_scene_prepass(
+    task: _ScenePrepassTask,
+    *,
+    feature_builder: FeatureBuilder,
+    candidate_ipv_estimator: CandidateIpvEstimator,
+) -> _ScenePrepassResult:
+    """Compute one scene's W2/IPV inputs without loading or calling M3."""
+
+    started = time.monotonic()
+    scene = task.scene
+    segment_id = scene.domain.segment_id
+    status_by_reason = dict(task.status_by_reason)
+    available_sampling_ids = {
+        str(domain_row["feature_id"]).split("-", 2)[1]
+        for _, domain_row in task.indexed_domain_rows
+    }
+    focal_reference = (
+        _scene_focal_reference(scene, available_sampling_ids)
+        if task.indexed_domain_rows
+        else None
+    )
+    feature_order = {
+        feature_id: index
+        for index, feature_id in enumerate(DOMAIN.FEATURE_FAMILIES)
+    }
+    rate_by_sampling = dict(DOMAIN.SAMPLING_AXIS)
+    pending: list[tuple[int, dict[str, Any], dict[str, Any], float]] = []
+    emitted: list[tuple[int, int, dict[str, Any]]] = []
+    canonical_feature_builder = feature_builder is W2.build_feature_family_m3_input_row
+    canonical_ipv_estimator = (
+        candidate_ipv_estimator is _default_candidate_ipv_estimator
+    )
+    track_digests: dict[tuple[str, str, str], str] = {}
+    m3_rows: dict[tuple[str, str, str, int], dict[str, Any]] = {}
+    candidate_ipvs: dict[tuple[str, str, str, int, int], float] = {}
+
+    for available_domain_index, domain_row in task.indexed_domain_rows:
+        if domain_row["segment_id"] != segment_id:
+            raise G2ROrchestrationError("scene prepass received a foreign domain row")
+        feature_id = domain_row["feature_id"]
+        try:
+            sampling_id, temporal_id = feature_id.split("-", 2)[1:]
+            feature_index = feature_order[feature_id]
+            rate_hz = rate_by_sampling[sampling_id]
+            tau_tick = int(domain_row["tau_tick_or_NA"])
+            sampling = scene.domain.sampling[sampling_id]
+        except (KeyError, TypeError, ValueError) as exc:
+            raise G2ROrchestrationError(
+                "malformed AVAILABLE anchor-domain row"
+            ) from exc
+        case_start_tick, h_common_tick = _joint_tick_bounds(sampling)
+        if (
+            temporal_id == "TF"
+            and int(domain_row["h_common_tick_or_NA"]) != h_common_tick
+        ):
+            raise G2ROrchestrationError("TF h_common binding drift")
+        for candidate_ordinal, candidate_id in CANDIDATES:
+            base = {
+                "schema_version": "rq014-g2r-anchor-score-row-v1",
+                "segment_id": segment_id,
+                "feature_index": feature_index,
+                "feature_id": feature_id,
+                "sampling_id": sampling_id,
+                "temporal_id": temporal_id,
+                "horizon_id": domain_row["horizon_id"],
+                "tau_tick": tau_tick,
+                "candidate_ordinal": candidate_ordinal,
+                "candidate_id": candidate_id,
+                "path_type": domain_row["path_type_or_NA"],
+            }
+            try:
+                candidate_positions = sampling.candidates[candidate_id]
+                track_key = (segment_id, sampling_id, candidate_id)
+                if track_key not in track_digests:
+                    track_digests[track_key] = _position_track_sha256(
+                        candidate_positions
+                    )
+                track_sha256 = track_digests[track_key]
+                if canonical_ipv_estimator:
+                    start_tick, end_tick = W2.temporal_window_bounds(
+                        temporal_id, tau_tick, rate_hz, h_common_tick
+                    )
+                    ipv_key = (
+                        segment_id,
+                        sampling_id,
+                        track_sha256,
+                        start_tick,
+                        end_tick,
+                    )
+                    if ipv_key not in candidate_ipvs:
+                        candidate_ipvs[ipv_key] = candidate_ipv_estimator(
+                            candidate_positions=candidate_positions,
+                            counterpart_positions=sampling.counterpart,
+                            temporal_id=temporal_id,
+                            tau_tick=tau_tick,
+                            rate_hz=rate_hz,
+                            h_common_tick=h_common_tick,
+                            scene_focal_reference=focal_reference,
+                        )
+                    candidate_ipv = candidate_ipvs[ipv_key]
+                else:
+                    candidate_ipv = candidate_ipv_estimator(
+                        candidate_positions=candidate_positions,
+                        counterpart_positions=sampling.counterpart,
+                        temporal_id=temporal_id,
+                        tau_tick=tau_tick,
+                        rate_hz=rate_hz,
+                        h_common_tick=h_common_tick,
+                        scene_focal_reference=focal_reference,
+                    )
+                if canonical_feature_builder:
+                    _, _, context_tick = W2.select_feature_family_context(
+                        candidate_positions,
+                        sampling.counterpart,
+                        temporal_id=temporal_id,
+                        tau_tick=tau_tick,
+                        rate_hz=rate_hz,
+                        h_common_tick=h_common_tick,
+                        case_start_tick=case_start_tick,
+                        alignment=W2.ALIGNMENT_PRIMARY,
+                    )
+                    m3_key = (
+                        segment_id,
+                        sampling_id,
+                        track_sha256,
+                        context_tick,
+                    )
+                    if m3_key not in m3_rows:
+                        m3_rows[m3_key] = dict(
+                            feature_builder(
+                                candidate_positions,
+                                sampling.counterpart,
+                                temporal_id=temporal_id,
+                                tau_tick=tau_tick,
+                                rate_hz=rate_hz,
+                                h_common_tick=h_common_tick,
+                                case_start_tick=case_start_tick,
+                                scene_focal_reference=focal_reference,
+                                counterpart_is_vehicle=scene.counterpart_is_vehicle,
+                                m3_context_alignment=W2.ALIGNMENT_PRIMARY,
+                            )
+                        )
+                    m3_row = m3_rows[m3_key]
+                else:
+                    m3_row = dict(
+                        feature_builder(
+                            candidate_positions,
+                            sampling.counterpart,
+                            temporal_id=temporal_id,
+                            tau_tick=tau_tick,
+                            rate_hz=rate_hz,
+                            h_common_tick=h_common_tick,
+                            case_start_tick=case_start_tick,
+                            scene_focal_reference=focal_reference,
+                            counterpart_is_vehicle=scene.counterpart_is_vehicle,
+                            m3_context_alignment=W2.ALIGNMENT_PRIMARY,
+                        )
+                    )
+                W2.m3_input_row_bytes_and_sha256(m3_row)
+                if not math.isfinite(float(candidate_ipv)):
+                    raise CandidateTerminalError(
+                        "INELIGIBLE_IPV_NUMERICAL",
+                        "F_IPV_NUMERICAL",
+                        "candidate IPV is nonfinite",
+                    )
+            except Exception as exc:  # classification is explicit and fail closed below
+                failure = _candidate_terminal_from_exception(exc)
+                if failure is None:
+                    raise G2ROrchestrationError(
+                        "unexpected W2 candidate failure"
+                    ) from exc
+                if status_by_reason.get(failure.reason_code) != failure.status:
+                    raise G2ROrchestrationError("candidate failure namespace drift")
+                emitted.append(
+                    (
+                        available_domain_index,
+                        candidate_ordinal,
+                        _failure_anchor_row(base, failure),
+                    )
+                )
+                continue
+            pending.append(
+                (available_domain_index, base, m3_row, float(candidate_ipv))
+            )
+
+    return _ScenePrepassResult(
+        segment_id=segment_id,
+        pending=tuple(pending),
+        emitted=tuple(emitted),
+        elapsed_s=time.monotonic() - started,
+    )
+
+
+def _run_g2r_scene_prepass(task: _ScenePrepassTask) -> _ScenePrepassResult:
+    """Spawn-safe canonical worker entrypoint; deliberately scorer-free."""
+
+    import numpy as np
+
+    del np
+    return _compute_g2r_scene_prepass(
+        task,
+        feature_builder=W2.build_feature_family_m3_input_row,
+        candidate_ipv_estimator=_default_candidate_ipv_estimator,
+    )
+
+
+def _scene_prepass_tasks(
+    ordered_scenes: Sequence[SceneBlindInput],
+    anchor_domain_rows: Sequence[Mapping[str, str]],
+    status_by_reason: Mapping[str, str],
+) -> tuple[_ScenePrepassTask, ...]:
+    rows_by_segment: dict[str, list[tuple[int, Mapping[str, str]]]] = {
+        scene.domain.segment_id: [] for scene in ordered_scenes
+    }
+    available_domain_index = -1
+    for domain_row in anchor_domain_rows:
+        if domain_row["membership_status"] != "AVAILABLE":
+            continue
+        available_domain_index += 1
+        segment_id = domain_row["segment_id"]
+        try:
+            rows_by_segment[segment_id].append(
+                (available_domain_index, dict(domain_row))
+            )
+        except KeyError as exc:
+            raise G2ROrchestrationError(
+                "anchor domain names an unknown scene"
+            ) from exc
+    status_items = tuple(status_by_reason.items())
+    return tuple(
+        _ScenePrepassTask(
+            scene=scene,
+            indexed_domain_rows=tuple(rows_by_segment[scene.domain.segment_id]),
+            status_by_reason=status_items,
+        )
+        for scene in ordered_scenes
+    )
+
+
+def _collect_scene_prepass_results(
+    tasks: Sequence[_ScenePrepassTask],
+    *,
+    feature_builder: FeatureBuilder,
+    candidate_ipv_estimator: CandidateIpvEstimator,
+) -> tuple[
+    list[tuple[int, dict[str, Any], dict[str, Any], float]],
+    dict[tuple[int, int], dict[str, Any]],
+]:
+    """Run scene tasks, then flatten only by canonical submission order."""
+
+    canonical_producers = (
+        feature_builder is W2.build_feature_family_m3_input_row
+        and candidate_ipv_estimator is _default_candidate_ipv_estimator
+    )
+    max_workers = min(
+        G2R_PREPASS_MAX_WORKERS,
+        max(1, (os.cpu_count() or 1) - 2),
+    )
+    results_by_segment: dict[str, _ScenePrepassResult] = {}
+
+    # Pin before spawn so fresh interpreters inherit the caps while importing
+    # their modules. Restore the parent before its single M3 scoring call.
+    previous_blas_values = {
+        variable: os.environ.get(variable)
+        for variable in _G2R_BLAS_THREAD_VARIABLES
+    }
+    if canonical_producers:
+        _initialize_g2r_prepass_worker()
+    try:
+        if max_workers == 1 or not canonical_producers:
+            for completed_count, task in enumerate(tasks, start=1):
+                if canonical_producers:
+                    result = _run_g2r_scene_prepass(task)
+                else:
+                    result = _compute_g2r_scene_prepass(
+                        task,
+                        feature_builder=feature_builder,
+                        candidate_ipv_estimator=candidate_ipv_estimator,
+                    )
+                if result.segment_id != task.scene.domain.segment_id:
+                    raise G2ROrchestrationError(
+                        "scene prepass returned the wrong key"
+                    )
+                if result.segment_id in results_by_segment:
+                    raise G2ROrchestrationError(
+                        "scene prepass returned a duplicate key"
+                    )
+                results_by_segment[result.segment_id] = result
+                print(
+                    f"g2r-prepass scene {completed_count}/{len(tasks)} "
+                    f"{result.segment_id} {result.elapsed_s:.3f}s",
+                    flush=True,
+                )
+        else:
+            context = mp.get_context("spawn")
+            with ProcessPoolExecutor(
+                max_workers=max_workers,
+                mp_context=context,
+                initializer=_initialize_g2r_prepass_worker,
+            ) as executor:
+                future_to_segment = {
+                    executor.submit(
+                        _run_g2r_scene_prepass, task
+                    ): task.scene.domain.segment_id
+                    for task in tasks
+                }
+                for completed_count, future in enumerate(
+                    as_completed(future_to_segment), start=1
+                ):
+                    expected_segment_id = future_to_segment[future]
+                    result = future.result()
+                    if result.segment_id != expected_segment_id:
+                        raise G2ROrchestrationError(
+                            "scene prepass returned the wrong key"
+                        )
+                    if result.segment_id in results_by_segment:
+                        raise G2ROrchestrationError(
+                            "scene prepass returned a duplicate key"
+                        )
+                    results_by_segment[result.segment_id] = result
+                    print(
+                        f"g2r-prepass scene {completed_count}/{len(tasks)} "
+                        f"{result.segment_id} {result.elapsed_s:.3f}s",
+                        flush=True,
+                    )
+    finally:
+        if canonical_producers:
+            for variable, previous in previous_blas_values.items():
+                if previous is None:
+                    os.environ.pop(variable, None)
+                else:
+                    os.environ[variable] = previous
+
+    pending: list[tuple[int, dict[str, Any], dict[str, Any], float]] = []
+    emitted: dict[tuple[int, int], dict[str, Any]] = {}
+    for task in tasks:
+        segment_id = task.scene.domain.segment_id
+        try:
+            result = results_by_segment[segment_id]
+        except KeyError as exc:
+            raise G2ROrchestrationError(
+                "scene prepass silently omitted a scene"
+            ) from exc
+        pending.extend(result.pending)
+        for domain_index, candidate_ordinal, row in result.emitted:
+            key = (domain_index, candidate_ordinal)
+            if key in emitted:
+                raise G2ROrchestrationError(
+                    "scene prepass emitted a duplicate candidate"
+                )
+            emitted[key] = row
+    return pending, emitted
+
+
 def build_anchor_score_rows(
     scenes: Sequence[SceneBlindInput],
     anchor_domain_rows: Sequence[Mapping[str, str]],
@@ -638,162 +1033,14 @@ def build_anchor_score_rows(
     by_segment = {scene.domain.segment_id: scene for scene in ordered_scenes}
     if len(by_segment) != len(scenes):
         raise G2ROrchestrationError("duplicate scene input")
-    available_sampling_by_segment: dict[str, set[str]] = {}
-    for row in anchor_domain_rows:
-        if row["membership_status"] != "AVAILABLE":
-            continue
-        segment_id = str(row["segment_id"])
-        sampling_id = str(row["feature_id"]).split("-", 2)[1]
-        available_sampling_by_segment.setdefault(segment_id, set()).add(sampling_id)
-    focal_references = {
-        segment_id: _scene_focal_reference(
-            by_segment[segment_id], available_sampling_by_segment[segment_id]
-        )
-        for segment_id in sorted(
-            available_sampling_by_segment, key=lambda value: value.encode("utf-8")
-        )
-    }
-    feature_order = {feature_id: index for index, feature_id in enumerate(DOMAIN.FEATURE_FAMILIES)}
-    pending: list[tuple[int, dict[str, Any], Mapping[str, Any], float]] = []
-    emitted: dict[tuple[int, int], dict[str, Any]] = {}
-    canonical_feature_builder = feature_builder is W2.build_feature_family_m3_input_row
-    canonical_ipv_estimator = candidate_ipv_estimator is _default_candidate_ipv_estimator
-    track_digests: dict[tuple[str, str, str], str] = {}
-    m3_rows: dict[tuple[str, str, str, int], Mapping[str, Any]] = {}
-    candidate_ipvs: dict[tuple[str, str, str, int, int], float] = {}
-
-    available_domain_index = -1
-    for domain_row in anchor_domain_rows:
-        if domain_row["membership_status"] != "AVAILABLE":
-            continue
-        available_domain_index += 1
-        segment_id = domain_row["segment_id"]
-        scene = by_segment.get(segment_id)
-        if scene is None:
-            raise G2ROrchestrationError("anchor domain names an unknown scene")
-        feature_id = domain_row["feature_id"]
-        try:
-            sampling_id, temporal_id = feature_id.split("-", 2)[1:]
-            feature_index = feature_order[feature_id]
-            rate_hz = dict(DOMAIN.SAMPLING_AXIS)[sampling_id]
-            tau_tick = int(domain_row["tau_tick_or_NA"])
-            sampling = scene.domain.sampling[sampling_id]
-        except (KeyError, TypeError, ValueError) as exc:
-            raise G2ROrchestrationError("malformed AVAILABLE anchor-domain row") from exc
-        case_start_tick, h_common_tick = _joint_tick_bounds(sampling)
-        if temporal_id == "TF" and int(domain_row["h_common_tick_or_NA"]) != h_common_tick:
-            raise G2ROrchestrationError("TF h_common binding drift")
-        for candidate_ordinal, candidate_id in CANDIDATES:
-            base = {
-                "schema_version": "rq014-g2r-anchor-score-row-v1",
-                "segment_id": segment_id,
-                "feature_index": feature_index,
-                "feature_id": feature_id,
-                "sampling_id": sampling_id,
-                "temporal_id": temporal_id,
-                "horizon_id": domain_row["horizon_id"],
-                "tau_tick": tau_tick,
-                "candidate_ordinal": candidate_ordinal,
-                "candidate_id": candidate_id,
-                "path_type": domain_row["path_type_or_NA"],
-            }
-            try:
-                candidate_positions = sampling.candidates[candidate_id]
-                track_key = (segment_id, sampling_id, candidate_id)
-                if track_key not in track_digests:
-                    track_digests[track_key] = _position_track_sha256(candidate_positions)
-                track_sha256 = track_digests[track_key]
-                if canonical_ipv_estimator:
-                    start_tick, end_tick = W2.temporal_window_bounds(
-                        temporal_id, tau_tick, rate_hz, h_common_tick
-                    )
-                    ipv_key = (
-                        segment_id,
-                        sampling_id,
-                        track_sha256,
-                        start_tick,
-                        end_tick,
-                    )
-                    if ipv_key not in candidate_ipvs:
-                        candidate_ipvs[ipv_key] = candidate_ipv_estimator(
-                            candidate_positions=candidate_positions,
-                            counterpart_positions=sampling.counterpart,
-                            temporal_id=temporal_id,
-                            tau_tick=tau_tick,
-                            rate_hz=rate_hz,
-                            h_common_tick=h_common_tick,
-                            scene_focal_reference=focal_references[segment_id],
-                        )
-                    candidate_ipv = candidate_ipvs[ipv_key]
-                else:
-                    candidate_ipv = candidate_ipv_estimator(
-                        candidate_positions=candidate_positions,
-                        counterpart_positions=sampling.counterpart,
-                        temporal_id=temporal_id,
-                        tau_tick=tau_tick,
-                        rate_hz=rate_hz,
-                        h_common_tick=h_common_tick,
-                        scene_focal_reference=focal_references[segment_id],
-                    )
-                if canonical_feature_builder:
-                    _, _, context_tick = W2.select_feature_family_context(
-                        candidate_positions,
-                        sampling.counterpart,
-                        temporal_id=temporal_id,
-                        tau_tick=tau_tick,
-                        rate_hz=rate_hz,
-                        h_common_tick=h_common_tick,
-                        case_start_tick=case_start_tick,
-                        alignment=W2.ALIGNMENT_PRIMARY,
-                    )
-                    m3_key = (segment_id, sampling_id, track_sha256, context_tick)
-                    if m3_key not in m3_rows:
-                        m3_rows[m3_key] = feature_builder(
-                            candidate_positions,
-                            sampling.counterpart,
-                            temporal_id=temporal_id,
-                            tau_tick=tau_tick,
-                            rate_hz=rate_hz,
-                            h_common_tick=h_common_tick,
-                            case_start_tick=case_start_tick,
-                            scene_focal_reference=focal_references[segment_id],
-                            counterpart_is_vehicle=scene.counterpart_is_vehicle,
-                            m3_context_alignment=W2.ALIGNMENT_PRIMARY,
-                        )
-                    m3_row = m3_rows[m3_key]
-                else:
-                    m3_row = feature_builder(
-                        candidate_positions,
-                        sampling.counterpart,
-                        temporal_id=temporal_id,
-                        tau_tick=tau_tick,
-                        rate_hz=rate_hz,
-                        h_common_tick=h_common_tick,
-                        case_start_tick=case_start_tick,
-                        scene_focal_reference=focal_references[segment_id],
-                        counterpart_is_vehicle=scene.counterpart_is_vehicle,
-                        m3_context_alignment=W2.ALIGNMENT_PRIMARY,
-                    )
-                W2.m3_input_row_bytes_and_sha256(m3_row)
-                if not math.isfinite(float(candidate_ipv)):
-                    raise CandidateTerminalError(
-                        "INELIGIBLE_IPV_NUMERICAL",
-                        "F_IPV_NUMERICAL",
-                        "candidate IPV is nonfinite",
-                    )
-            except Exception as exc:  # classification is explicit and fail closed below
-                failure = _candidate_terminal_from_exception(exc)
-                if failure is None:
-                    raise G2ROrchestrationError("unexpected W2 candidate failure") from exc
-                if status_by_reason.get(failure.reason_code) != failure.status:
-                    raise G2ROrchestrationError("candidate failure namespace drift")
-                emitted[(available_domain_index, candidate_ordinal)] = _failure_anchor_row(
-                    base, failure
-                )
-                continue
-            pending.append(
-                (available_domain_index, base, m3_row, float(candidate_ipv))
-            )
+    tasks = _scene_prepass_tasks(
+        ordered_scenes, anchor_domain_rows, status_by_reason
+    )
+    pending, emitted = _collect_scene_prepass_results(
+        tasks,
+        feature_builder=feature_builder,
+        candidate_ipv_estimator=candidate_ipv_estimator,
+    )
 
     if pending:
         scores = _score_with_numerical_isolation(pending, score_rows)
@@ -1466,6 +1713,7 @@ __all__ = [
     "BlindOutputBuild",
     "CandidateTerminalError",
     "CellSpec",
+    "G2R_PREPASS_MAX_WORKERS",
     "G2ROrchestrationError",
     "SceneBlindInput",
     "build_anchor_score_rows",
