@@ -24,6 +24,7 @@ import math
 import multiprocessing as mp
 import os
 import re
+import sys
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -951,6 +952,10 @@ def _collect_scene_prepass_results(
                 )
         else:
             context = mp.get_context("spawn")
+            repo_root = Path(__file__).resolve().parents[2]
+            for entry in (str(repo_root), str(repo_root / "src")):
+                if entry not in sys.path:
+                    sys.path.insert(0, entry)
             with ProcessPoolExecutor(
                 max_workers=max_workers,
                 mp_context=context,
