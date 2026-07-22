@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-22.
+Last reviewed: 2026-07-23.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -300,18 +300,20 @@ question index in `STUDIES.md`.
   construction. This local authority wave performs no HPC action: operators must still
   publish/sync the reviewed commit, rebuild fresh upstream lineage against its contract,
   materialize an immutable G2R spec, pass validate-only, and use the explicit submit step.
-- **RQ014 G2R deterministic scene-budget handoff (2026-07-22; no commit or HPC
-  submit in this wave).** The rating-blind W2/IPV prepass keeps spawned workers capped at
+- **RQ014 G2R run-8 stale-pin repair handoff (2026-07-23; no commit or HPC
+  submit in this repair wave).** The rating-blind W2/IPV prepass keeps spawned workers capped at
   126 under the 128-CPU, 256G, 72:00:00 `rq014-g2r-cpu-v1` profile, while the parent
-  preserves canonical merge order and the single unchanged M3 batch. Run #7 exposed that
-  the first pathological candidate reached the parent harvest at about two hours and then
-  failed closed while the pool drained; its scene identity was not recoverable. Each scene
-  now has a deterministic 40,000,000-objective-evaluation budget across all exact-IPV calls.
+  preserves canonical merge order and the single unchanged M3 batch. Run #8 completed all
+  479 scene prepasses, proving the deterministic budget/terminalization fix, then failed
+  post-assembly because the output contract still embedded an obsolete execution-contract
+  SHA. A complete audit of its 39 file-backed SHA/size pairs plus the intrinsic grid hash
+  found no second stale binding; the live execution contract is `47bf9e48...92fcf` at
+  36,039 bytes. Each scene retains a deterministic 40,000,000-objective-evaluation budget.
   Exhaustion emits `INELIGIBLE_SOLVER_BUDGET_EXCEEDED` /
   `F_SOLVER_BUDGET_EXCEEDED`; enumerable numerical/source-gap candidate failures use the
   existing scene-terminal channel, while structural drift remains globally fail-closed.
   The reviewed output contract is SHA-256
-  `8f51993a590f195fe27c7b783ae45660fcefa92d1483253f4c258b5b2d13820b`;
+  `36f5bbd089627e4e1e9cd5e45599d890529fc6313b793e98a108d95c2f0328ca`;
   every future immutable G2R run spec must bind that value in `g2r_output_contract` before
   validate-only or submission. Rating access and production submission remain forbidden.
 - **RQ014 NC gate portability repair passed Linux preverification and entered its
