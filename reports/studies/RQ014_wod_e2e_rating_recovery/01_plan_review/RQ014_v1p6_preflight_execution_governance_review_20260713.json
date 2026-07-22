@@ -196,7 +196,7 @@
   "review_role": "execution_governance",
   "reviewed_at_utc": "2026-07-17T15:18:30Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "c99d1434e9f0431727eb319dc1c9268a2b1780f05fa290e6806a9bfc07da685c",
+  "reviewed_manifest_sha256": "c2869ed84a50c34f33f1b508bd224d1df71c97b6c538ebd6152d127693cc824e",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

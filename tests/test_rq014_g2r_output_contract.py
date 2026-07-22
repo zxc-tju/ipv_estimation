@@ -97,6 +97,30 @@ def _complete_object_contracts(node: Any, path: str = "$") -> Iterator[tuple[str
             yield from _complete_object_contracts(value, f"{path}/{index}")
 
 
+def _file_sha_size_bindings(
+    node: Any, path: str = "$"
+) -> Iterator[tuple[str, str, str, int]]:
+    if isinstance(node, dict):
+        if {"path", "sha256", "size_bytes"} <= set(node):
+            yield path, node["path"], node["sha256"], node["size_bytes"]
+        for prefix in ("source_fixture", "input", "expected"):
+            path_key = f"{prefix}_path"
+            sha_key = f"{prefix}_sha256"
+            size_key = f"{prefix}_size_bytes"
+            if {path_key, sha_key, size_key} <= set(node):
+                yield (
+                    f"{path}/{prefix}",
+                    node[path_key],
+                    node[sha_key],
+                    node[size_key],
+                )
+        for key, value in node.items():
+            yield from _file_sha_size_bindings(value, f"{path}/{key}")
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from _file_sha_size_bindings(value, f"{path}/{index}")
+
+
 def _path_category(absolute_heading_difference_degrees: float) -> str:
     if absolute_heading_difference_degrees < 25.0:
         return "F"
@@ -201,6 +225,16 @@ def test_all_fixture_and_contract_json_is_strict_and_canonical() -> None:
     for token in ("NaN", "Infinity", "-Infinity"):
         with pytest.raises(ValueError, match="nonfinite JSON token"):
             _strict_loads(f'{{"value":{token}}}')
+
+
+def test_all_output_contract_file_pins_match_live_repo_bytes() -> None:
+    bindings = list(_file_sha_size_bindings(_strict_load(CONTRACT_PATH)))
+    assert len(bindings) == 39
+    for field, relative_path, expected_sha, expected_size in bindings:
+        path = ROOT / relative_path
+        assert path.is_file(), field
+        assert path.stat().st_size == expected_size, field
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected_sha, field
 
 
 @pytest.mark.parametrize(
