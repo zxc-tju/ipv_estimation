@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-21.
+Last reviewed: 2026-07-22.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -300,15 +300,20 @@ question index in `STUDIES.md`.
   construction. This local authority wave performs no HPC action: operators must still
   publish/sync the reviewed commit, rebuild fresh upstream lineage against its contract,
   materialize an immutable G2R spec, pass validate-only, and use the explicit submit step.
-- **RQ014 G2R scene-parallel Phase 2 handoff (2026-07-21; commit 5e86d1d2, no HPC
-  submit).** The rating-blind W2/IPV scene prepass now uses spawned process workers
-  while the parent preserves canonical merge order and the single unchanged M3 batch.
-  The current `rq014-g2r-cpu-v1` candidate is 32 CPU, 64G, and 24:00:00; local real-kernel
-  mini-universe serial-versus-pool output is byte-identical across all six artifacts.
-  The 141-row review manifest and 145-row checksum bundle verify after the full governance
-  cascade, and the shadow-venv full suite reproducibly reports 404 passed, 1 skipped, and the 25 adjudicated
-  environment-only failures with no new IDs. Real-scene HPC identity remains pending;
-  use the rating-free `parallel_identity_probe.py` handoff before production submission.
+- **RQ014 G2R deterministic scene-budget handoff (2026-07-22; no commit or HPC
+  submit in this wave).** The rating-blind W2/IPV prepass keeps spawned workers capped at
+  126 under the 128-CPU, 256G, 72:00:00 `rq014-g2r-cpu-v1` profile, while the parent
+  preserves canonical merge order and the single unchanged M3 batch. Run #7 exposed that
+  the first pathological candidate reached the parent harvest at about two hours and then
+  failed closed while the pool drained; its scene identity was not recoverable. Each scene
+  now has a deterministic 40,000,000-objective-evaluation budget across all exact-IPV calls.
+  Exhaustion emits `INELIGIBLE_SOLVER_BUDGET_EXCEEDED` /
+  `F_SOLVER_BUDGET_EXCEEDED`; enumerable numerical/source-gap candidate failures use the
+  existing scene-terminal channel, while structural drift remains globally fail-closed.
+  The reviewed output contract is SHA-256
+  `8f51993a590f195fe27c7b783ae45660fcefa92d1483253f4c258b5b2d13820b`;
+  every future immutable G2R run spec must bind that value in `g2r_output_contract` before
+  validate-only or submission. Rating access and production submission remain forbidden.
 - **RQ014 NC gate portability repair passed Linux preverification and entered its
   Phase 2 governance freeze (2026-07-20).** The third
   rating-blind 320-cell attempt reached the NC gate after source registration, then

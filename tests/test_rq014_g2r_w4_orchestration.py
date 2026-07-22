@@ -597,6 +597,215 @@ def test_w4_parallel_prepass_is_byte_identical_to_serial(
         assert parallel.artifacts[name] == serial.artifacts[name]
 
 
+def _build_available_terminal_fixture(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    candidate_ipv_estimator,
+) -> W4.BlindOutputBuild:
+    def full_sampling(rate_hz: int) -> DOMAIN.SamplingTimelines:
+        ticks = range(-3 * rate_hz, 5 * rate_hz + 1)
+        candidate = {
+            tick: (
+                float(tick) / rate_hz,
+                0.02 * (float(tick) / rate_hz) ** 2,
+            )
+            for tick in ticks
+        }
+        counterpart = {
+            tick: (
+                0.8 * float(tick) / rate_hz + 1.0,
+                2.0 - 0.05 * float(tick) / rate_hz,
+            )
+            for tick in ticks
+        }
+        return DOMAIN.SamplingTimelines(
+            candidates={
+                candidate_id: candidate for _, candidate_id in W4.CANDIDATES
+            },
+            counterpart=counterpart,
+        )
+
+    scene = W4.SceneBlindInput(
+        domain=DOMAIN.SceneDomainInput(
+            "scene-terminal",
+            "CP",
+            {
+                "R04N": full_sampling(4),
+                "R10L": full_sampling(10),
+            },
+        ),
+        route_intent="straight",
+    )
+    scenes, domain_rows, lineage, refs = _fixture_inputs((scene,))
+    base_row = _strict_load(W1 / "m3_input_row_expected.json")
+
+    def feature_builder(*_args, **_kwargs):
+        return base_row
+
+    def score_rows(_rows):
+        raise AssertionError("a scene-terminal prepass must not reach M3 scoring")
+
+    monkeypatch.setattr(W4, "_source_contract_refs", _declared_source_refs)
+    return W4.build_blind_output_artifacts(
+        scenes,
+        domain_rows,
+        run_id="RQ014_G2R_W4_TERMINAL_FIXTURE",
+        git_commit="1" * 40,
+        created_at_utc="2026-07-17T00:00:00Z",
+        lineage=lineage,
+        prerequisite_artifacts=refs,
+        score_rows=score_rows,
+        feature_builder=feature_builder,
+        candidate_ipv_estimator=candidate_ipv_estimator,
+        fixture_mode=True,
+    )
+
+
+def _assert_scene_terminal_build(
+    build: W4.BlindOutputBuild, status: str, reason_code: str
+) -> None:
+    assert build.anchor_score_rows
+    assert build.feature_rows
+    assert build.mask_rows
+    assert build.common_support_ids == ()
+    assert {
+        (row["upstream_status"], row["reason_code"])
+        for row in build.anchor_score_rows
+    } == {(status, reason_code)}
+    available_group_keys = {
+        (row["feature_id"], row["horizon_id"])
+        for row in build.anchor_score_rows
+    }
+    selected_features = [
+        row
+        for row in build.feature_rows
+        if (row["feature_id"], row["horizon_id"]) in available_group_keys
+    ]
+    selected_cell_indexes = {row["cell_index"] for row in selected_features}
+    selected_masks = [
+        row
+        for row in build.mask_rows
+        if row["cell_index"] in selected_cell_indexes
+    ]
+    assert selected_features
+    assert selected_masks
+    assert {
+        (row["upstream_status"], row["reason_code"])
+        for row in selected_features
+    } == {(status, reason_code)}
+    assert {
+        (row["scene_cell_status"], row["reason_code"])
+        for row in selected_masks
+    } == {(status, reason_code)}
+    assert all(
+        row["candidate_ipv"] == {"kind": "NA", "reason_code": reason_code}
+        and row["m3_input_row_sha256_or_NA"] == "NA"
+        for row in build.anchor_score_rows
+    )
+
+
+def test_w4_scene_solver_budget_is_deterministic_terminal_end_to_end(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from sociality_estimation.core import agent as agent_module
+
+    monkeypatch.setattr(W4, "G2R_SCENE_SOLVER_EVAL_BUDGET", 1)
+
+    def fake_minimize(fun, *_args, **_kwargs):
+        fun(0)
+        fun(1)
+
+    monkeypatch.setattr(agent_module, "minimize", fake_minimize)
+
+    def budgeted_estimator(**_kwargs):
+        agent_module.minimize(lambda value: value, 0)
+        return 0.0
+
+    build = _build_available_terminal_fixture(
+        monkeypatch, candidate_ipv_estimator=budgeted_estimator
+    )
+    _assert_scene_terminal_build(
+        build, W4.SOLVER_BUDGET_STATUS, W4.SOLVER_BUDGET_REASON
+    )
+
+
+def test_w4_nonfinite_candidate_is_scene_terminal_not_run_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    build = _build_available_terminal_fixture(
+        monkeypatch, candidate_ipv_estimator=lambda **_kwargs: float("nan")
+    )
+    _assert_scene_terminal_build(
+        build, "INELIGIBLE_IPV_NUMERICAL", "F_IPV_NUMERICAL"
+    )
+
+
+def test_w4_solver_counter_gates_objective_evaluations(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from sociality_estimation.core import agent as agent_module
+
+    original = agent_module.minimize
+
+    def fake_minimize(fun, *_args, **_kwargs):
+        for value in range(3):
+            fun(value)
+        raise AssertionError("budget did not interrupt the objective")
+
+    monkeypatch.setattr(agent_module, "minimize", fake_minimize)
+    counter = W4._SceneSolverEvaluationCounter(2)
+    with pytest.raises(W4.SceneSolverBudgetExceeded, match="3>2"):
+        with counter:
+            agent_module.minimize(lambda value: value, 0)
+    assert counter.eval_count == 3
+    assert agent_module.minimize is fake_minimize
+    monkeypatch.setattr(agent_module, "minimize", original)
+
+
+@pytest.mark.parametrize(
+    ("error", "expected"),
+    [
+        (
+            ValueError("focal and counterpart states must use one exact common window"),
+            ("INELIGIBLE_TIMELINE_SUPPORT", "F_TIMELINE_SUPPORT"),
+        ),
+        (
+            ValueError("all-stationary window has undefined heading"),
+            ("INELIGIBLE_UNDEFINED_HEADING", "F_UNDEFINED_HEADING"),
+        ),
+        (
+            ValueError("Error on input data"),
+            ("INELIGIBLE_REFERENCE", "F_INELIGIBLE_REFERENCE"),
+        ),
+        (
+            FloatingPointError("array must not contain infs or NaNs"),
+            ("INELIGIBLE_IPV_NUMERICAL", "F_IPV_NUMERICAL"),
+        ),
+        (
+            OverflowError("objective overflow"),
+            ("INELIGIBLE_IPV_NUMERICAL", "F_IPV_NUMERICAL"),
+        ),
+    ],
+)
+def test_w4_enumerated_worker_pathologies_map_to_scene_terminals(
+    error: Exception, expected: tuple[str, str]
+) -> None:
+    failure = W4._candidate_terminal_from_exception(error)
+    assert failure is not None
+    assert (failure.status, failure.reason_code) == expected
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "ego/counterpart position histories must be aligned n-by-2 arrays",
+        "M3 row has an exact-key mismatch",
+    ],
+)
+def test_w4_contract_drift_worker_failure_stays_fail_closed(message: str) -> None:
+    assert W4._candidate_terminal_from_exception(W2.WodM3KernelError(message)) is None
+
+
 def test_w4_spawn_prepass_resolves_exact_path_modules_under_launcher_isolation(
     tmp_path: Path,
 ) -> None:
@@ -791,6 +1000,7 @@ result = W4._run_g2r_scene_prepass(task)
 assert not any(scorer_module(name) for name in sys.modules)
 assert result.segment_id == 'scene-worker'
 assert result.pending == ()
+assert result.solver_eval_count == 0
 assert [(index, ordinal) for index, ordinal, _ in result.emitted] == [
     (0, 1), (0, 2), (0, 3)
 ]

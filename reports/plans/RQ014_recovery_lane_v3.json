@@ -535,6 +535,7 @@
         {"upstream_status": "INELIGIBLE_STATE_NONFINITE", "stage": "F", "reason_priority": 44, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_STATE_NONFINITE"},
         {"upstream_status": "INELIGIBLE_UNDEFINED_HEADING", "stage": "F", "reason_priority": 45, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_UNDEFINED_HEADING"},
         {"upstream_status": "INELIGIBLE_IPV_NUMERICAL", "stage": "F", "reason_priority": 50, "ledger_status": "NUMERICAL_FAILURE", "reason_code": "F_IPV_NUMERICAL"},
+        {"upstream_status": "INELIGIBLE_SOLVER_BUDGET_EXCEEDED", "stage": "F", "reason_priority": 52, "ledger_status": "INELIGIBLE_BLIND", "reason_code": "F_SOLVER_BUDGET_EXCEEDED"},
         {"upstream_status": "M3_SCORING_NUMERICAL_FAILURE", "stage": "F", "reason_priority": 61, "ledger_status": "NUMERICAL_FAILURE", "reason_code": "F_M3_SCORING_NUMERICAL_FAILURE"},
         {"upstream_status": "RATING_JOIN_KEY_MISSING", "stage": "K", "reason_priority": 10, "ledger_status": "INELIGIBLE_RATING_COMPLETENESS", "reason_code": "K_RATING_JOIN_KEY_MISSING"},
         {"upstream_status": "RATING_JOIN_KEY_AMBIGUOUS", "stage": "K", "reason_priority": 20, "ledger_status": "INELIGIBLE_RATING_COMPLETENESS", "reason_code": "K_RATING_JOIN_KEY_AMBIGUOUS"},

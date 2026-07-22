@@ -594,13 +594,30 @@ def test_a10_candidate_scene_cell_and_global_status_propagation_is_exact() -> No
     contract = _strict_load(CONTRACT_PATH)
     statuses = contract["status_contract"]
     fixture = _strict_load(STATUS_FIXTURE_PATH)
-    assert fixture["candidate_status_rows"] == [
+    registered_rows = [
         {
             **row,
             "available": row["status"] == "AVAILABLE",
             "predictor_finite": row["status"] == "AVAILABLE",
         }
         for row in statuses["candidate_upstream_statuses"]
+    ]
+    budget_rows = [
+        row
+        for row in registered_rows
+        if row["reason_code"] == "F_SOLVER_BUDGET_EXCEEDED"
+    ]
+    assert budget_rows == [
+        {
+            "available": False,
+            "predictor_finite": False,
+            "reason_code": "F_SOLVER_BUDGET_EXCEEDED",
+            "reason_priority": 52,
+            "status": "INELIGIBLE_SOLVER_BUDGET_EXCEEDED",
+        }
+    ]
+    assert fixture["candidate_status_rows"] == [
+        row for row in registered_rows if row not in budget_rows
     ]
     priority_by_reason = {
         row["reason_code"]: row["reason_priority"]

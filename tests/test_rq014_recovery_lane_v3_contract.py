@@ -99,6 +99,25 @@ def test_m3_artifact_mismatch_is_a_global_pre_cell_abort() -> None:
     assert all(row["upstream_status"] != "M3_ARTIFACT_MISMATCH" for row in rows)
 
 
+def test_solver_budget_status_has_one_nonfatal_recovery_rollup() -> None:
+    lane = _load(LANE)
+    rows = lane["full_data_recovery_screen"]["upstream_terminal_rollup"]["rows"]
+    matching = [
+        row
+        for row in rows
+        if row["upstream_status"] == "INELIGIBLE_SOLVER_BUDGET_EXCEEDED"
+    ]
+    assert matching == [
+        {
+            "upstream_status": "INELIGIBLE_SOLVER_BUDGET_EXCEEDED",
+            "stage": "F",
+            "reason_priority": 52,
+            "ledger_status": "INELIGIBLE_BLIND",
+            "reason_code": "F_SOLVER_BUDGET_EXCEEDED",
+        }
+    ]
+
+
 def test_v3_replay_loads_m3_and_rewrites_everything_else() -> None:
     lane = _load(LANE)
     selected = lane["selected_recipe_freeze"]
