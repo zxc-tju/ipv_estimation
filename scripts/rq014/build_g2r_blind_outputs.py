@@ -40,7 +40,7 @@ from scripts.rq014.wod_ipv_preprocessing import state_sequence_from_window_xy
 
 G2R_OUTPUT_CONTRACT_PATH = Path("reports/plans/RQ014_g2r_output_contract_v1.json")
 G2R_OUTPUT_CONTRACT_SHA256 = (
-    "397585550d6a7f977cee0d5e8b82ba0c8756e5cc66b657bd03c93a1a49b4593d"
+    "8f51993a590f195fe27c7b783ae45660fcefa92d1483253f4c258b5b2d13820b"
 )
 OPERATION = "rq014_r2_blind_feature_build"
 EXPECTED_SCENE_COUNT = 479
@@ -49,7 +49,13 @@ EXPECTED_FEATURE_BANK_ROWS = 459_840
 EXPECTED_MASK_ROWS = 153_280
 EXPECTED_ANCHOR_GROUP_COUNT = 15_328
 G2R_PREPASS_MAX_WORKERS = 126
+# The real mini scene uses 3,396,527 evaluations in 317.59 s (~10.7k/s), so
+# this retains minute-scale scenes while cutting roughly one-hour-plus tails.
+G2R_SCENE_SOLVER_EVAL_BUDGET = 40_000_000
 CANDIDATES = ((1, "C1"), (2, "C2"), (3, "C3"))
+SOLVER_BUDGET_STATUS = "INELIGIBLE_SOLVER_BUDGET_EXCEEDED"
+SOLVER_BUDGET_REASON = "F_SOLVER_BUDGET_EXCEEDED"
+SOLVER_BUDGET_REASON_PRIORITY = 52
 DIRECT_ARTIFACT_NAMES = (
     "g2r_anchor_scores.jsonl",
     "g2r_blind_feature_bank.jsonl",
@@ -200,6 +206,19 @@ class CandidateTerminalError(ValueError):
         self.reason_code = reason_code
 
 
+class SceneSolverBudgetExceeded(CandidateTerminalError):
+    """Deterministic scene terminal raised after too many objective evaluations."""
+
+    def __init__(self, observed: int, budget: int) -> None:
+        super().__init__(
+            SOLVER_BUDGET_STATUS,
+            SOLVER_BUDGET_REASON,
+            f"scene solver evaluation budget exceeded: {observed}>{budget}",
+        )
+        self.observed = observed
+        self.budget = budget
+
+
 @dataclass(frozen=True)
 class CellSpec:
     """One frozen predictor cell in canonical lane-v3 order."""
@@ -282,12 +301,54 @@ class _ScenePrepassResult:
     segment_id: str
     pending: tuple[tuple[int, dict[str, Any], dict[str, Any], float], ...]
     emitted: tuple[tuple[int, int, dict[str, Any]], ...]
+    solver_eval_count: int
     elapsed_s: float
 
 
 FeatureBuilder = Callable[..., Mapping[str, Any]]
 CandidateIpvEstimator = Callable[..., float]
 ScoreRows = Callable[[Sequence[Mapping[str, Any]]], Sequence[W3.PreMaskM3Score]]
+
+
+class _SceneSolverEvaluationCounter:
+    """Count exact-solver objective calls and stop a scene deterministically."""
+
+    def __init__(self, budget: int) -> None:
+        if isinstance(budget, bool) or not isinstance(budget, int) or budget < 1:
+            raise G2ROrchestrationError("scene solver evaluation budget must be positive")
+        self.budget = budget
+        self.eval_count = 0
+        self._agent_module: Any = None
+        self._original_minimize: Callable[..., Any] | None = None
+
+    def record(self, count: int = 1) -> None:
+        if isinstance(count, bool) or not isinstance(count, int) or count < 1:
+            raise G2ROrchestrationError("solver evaluation increment must be positive")
+        self.eval_count += count
+        if self.eval_count > self.budget:
+            raise SceneSolverBudgetExceeded(self.eval_count, self.budget)
+
+    def __enter__(self) -> "_SceneSolverEvaluationCounter":
+        from sociality_estimation.core import agent as agent_module
+
+        original_minimize = agent_module.minimize
+
+        def counted_minimize(fun: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+            def counted_objective(*fun_args: Any, **fun_kwargs: Any) -> Any:
+                self.record()
+                return fun(*fun_args, **fun_kwargs)
+
+            return original_minimize(counted_objective, *args, **kwargs)
+
+        self._agent_module = agent_module
+        self._original_minimize = original_minimize
+        agent_module.minimize = counted_minimize
+        return self
+
+    def __exit__(self, _type: Any, _value: Any, _traceback: Any) -> None:
+        assert self._agent_module is not None
+        assert self._original_minimize is not None
+        self._agent_module.minimize = self._original_minimize
 _UTC_SECONDS = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$")
 _G2R_BLAS_THREAD_VARIABLES = (
     "OMP_NUM_THREADS",
@@ -454,6 +515,11 @@ def _status_tables(contract: Mapping[str, Any]) -> tuple[dict[str, str], dict[st
     priority = {row["reason_code"]: int(row["reason_priority"]) for row in rows}
     if len(status) != len(rows) or set(status) != set(priority):
         raise G2ROrchestrationError("candidate status namespace is malformed")
+    if (
+        status.get(SOLVER_BUDGET_REASON) != SOLVER_BUDGET_STATUS
+        or priority.get(SOLVER_BUDGET_REASON) != SOLVER_BUDGET_REASON_PRIORITY
+    ):
+        raise G2ROrchestrationError("solver-budget status namespace drift")
     return status, priority
 
 
@@ -550,12 +616,11 @@ def _default_candidate_ipv_estimator(
             counterpart_state,
             ego_reference=np.asarray(scene_focal_reference, dtype=float),
         )
-    except (ValueError, FloatingPointError) as exc:
-        raise CandidateTerminalError(
-            "INELIGIBLE_IPV_NUMERICAL",
-            "F_IPV_NUMERICAL",
-            "candidate exact IPV estimation failed",
-        ) from exc
+    except Exception as exc:
+        failure = _candidate_terminal_from_exception(exc)
+        if failure is None:
+            raise
+        raise failure from exc
     if not math.isfinite(value):
         raise CandidateTerminalError(
             "INELIGIBLE_IPV_NUMERICAL",
@@ -600,6 +665,67 @@ def _candidate_terminal_from_exception(exc: Exception) -> CandidateTerminalError
             return CandidateTerminalError(
                 "INELIGIBLE_STATE_NONFINITE", "F_STATE_NONFINITE", str(exc)
             )
+        return None
+
+    message = str(exc).lower()
+    exception_name = type(exc).__name__.lower()
+    if type(exc).__name__ == "SourceGapError" or "source gap" in message:
+        return CandidateTerminalError(
+            "INELIGIBLE_TIMELINE_SOURCE_GAP",
+            "F_TIMELINE_SOURCE_GAP",
+            str(exc),
+        )
+    if "grid phase" in message:
+        return CandidateTerminalError(
+            "INELIGIBLE_TIMELINE_GRID_PHASE", "F_TIMELINE_GRID_PHASE", str(exc)
+        )
+    if "timeline seam" in message or "duplicate timestamp" in message:
+        return CandidateTerminalError(
+            "INELIGIBLE_TIMELINE_SEAM", "F_TIMELINE_SEAM", str(exc)
+        )
+    if "all-stationary" in message or "undefined heading" in message:
+        return CandidateTerminalError(
+            "INELIGIBLE_UNDEFINED_HEADING", "F_UNDEFINED_HEADING", str(exc)
+        )
+    if (
+        "error on input data" in message
+        or "explicit scene-level ego route reference" in message
+        or "reference path must have shape" in message
+    ):
+        return CandidateTerminalError(
+            "INELIGIBLE_REFERENCE", "F_INELIGIBLE_REFERENCE", str(exc)
+        )
+    if any(
+        token in message
+        for token in (
+            "empty trajectories",
+            "must use one exact common window",
+            "must have shape",
+            "at least two points",
+            "share the same number of points",
+            "must match observed track length",
+        )
+    ):
+        return CandidateTerminalError(
+            "INELIGIBLE_TIMELINE_SUPPORT", "F_TIMELINE_SUPPORT", str(exc)
+        )
+    if (
+        isinstance(exc, (ArithmeticError, FloatingPointError, OverflowError))
+        or exception_name in {"linalgerror", "arpackerror"}
+        or any(
+            token in message
+            for token in (
+                "array must not contain infs or nans",
+                "nonfinite",
+                "not finite",
+                "overflow",
+                "slsqp",
+            )
+        )
+    ):
+        return CandidateTerminalError(
+            "INELIGIBLE_IPV_NUMERICAL", "F_IPV_NUMERICAL", str(exc)
+        )
     return None
 
 
@@ -620,6 +746,73 @@ def _failure_anchor_row(base: Mapping[str, Any], failure: CandidateTerminalError
         "upstream_status": failure.status,
         "reason_code": failure.reason_code,
     }
+
+
+def _candidate_anchor_base(
+    segment_id: str,
+    domain_row: Mapping[str, str],
+    candidate_ordinal: int,
+    candidate_id: str,
+) -> dict[str, Any]:
+    """Build the canonical identity fields shared by success and terminal rows."""
+
+    if domain_row.get("segment_id") != segment_id:
+        raise G2ROrchestrationError("scene prepass received a foreign domain row")
+    try:
+        feature_id = domain_row["feature_id"]
+        sampling_id, temporal_id = feature_id.split("-", 2)[1:]
+        feature_index = DOMAIN.FEATURE_FAMILIES.index(feature_id)
+        tau_tick = int(domain_row["tau_tick_or_NA"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise G2ROrchestrationError("malformed AVAILABLE anchor-domain row") from exc
+    return {
+        "schema_version": "rq014-g2r-anchor-score-row-v1",
+        "segment_id": segment_id,
+        "feature_index": feature_index,
+        "feature_id": feature_id,
+        "sampling_id": sampling_id,
+        "temporal_id": temporal_id,
+        "horizon_id": domain_row["horizon_id"],
+        "tau_tick": tau_tick,
+        "candidate_ordinal": candidate_ordinal,
+        "candidate_id": candidate_id,
+        "path_type": domain_row["path_type_or_NA"],
+    }
+
+
+def _scene_terminal_prepass_result(
+    task: _ScenePrepassTask,
+    failure: CandidateTerminalError,
+    *,
+    solver_eval_count: int,
+    started: float,
+) -> _ScenePrepassResult:
+    """Discard partial scene work and emit one legal terminal for every row."""
+
+    emitted = tuple(
+        (
+            domain_index,
+            candidate_ordinal,
+            _failure_anchor_row(
+                _candidate_anchor_base(
+                    task.scene.domain.segment_id,
+                    domain_row,
+                    candidate_ordinal,
+                    candidate_id,
+                ),
+                failure,
+            ),
+        )
+        for domain_index, domain_row in task.indexed_domain_rows
+        for candidate_ordinal, candidate_id in CANDIDATES
+    )
+    return _ScenePrepassResult(
+        segment_id=task.scene.domain.segment_id,
+        pending=(),
+        emitted=emitted,
+        solver_eval_count=solver_eval_count,
+        elapsed_s=time.monotonic() - started,
+    )
 
 
 def _score_with_numerical_isolation(
@@ -665,6 +858,26 @@ def _compute_g2r_scene_prepass(
 ) -> _ScenePrepassResult:
     """Compute one scene's W2/IPV inputs without loading or calling M3."""
 
+    with _SceneSolverEvaluationCounter(
+        G2R_SCENE_SOLVER_EVAL_BUDGET
+    ) as solver_counter:
+        return _compute_g2r_scene_prepass_accounted(
+            task,
+            feature_builder=feature_builder,
+            candidate_ipv_estimator=candidate_ipv_estimator,
+            solver_counter=solver_counter,
+        )
+
+
+def _compute_g2r_scene_prepass_accounted(
+    task: _ScenePrepassTask,
+    *,
+    feature_builder: FeatureBuilder,
+    candidate_ipv_estimator: CandidateIpvEstimator,
+    solver_counter: _SceneSolverEvaluationCounter,
+) -> _ScenePrepassResult:
+    """Execute one prepass while a process-local solver counter is active."""
+
     started = time.monotonic()
     scene = task.scene
     segment_id = scene.domain.segment_id
@@ -678,10 +891,6 @@ def _compute_g2r_scene_prepass(
         if task.indexed_domain_rows
         else None
     )
-    feature_order = {
-        feature_id: index
-        for index, feature_id in enumerate(DOMAIN.FEATURE_FAMILIES)
-    }
     rate_by_sampling = dict(DOMAIN.SAMPLING_AXIS)
     pending: list[tuple[int, dict[str, Any], dict[str, Any], float]] = []
     emitted: list[tuple[int, int, dict[str, Any]]] = []
@@ -699,7 +908,6 @@ def _compute_g2r_scene_prepass(
         feature_id = domain_row["feature_id"]
         try:
             sampling_id, temporal_id = feature_id.split("-", 2)[1:]
-            feature_index = feature_order[feature_id]
             rate_hz = rate_by_sampling[sampling_id]
             tau_tick = int(domain_row["tau_tick_or_NA"])
             sampling = scene.domain.sampling[sampling_id]
@@ -714,19 +922,9 @@ def _compute_g2r_scene_prepass(
         ):
             raise G2ROrchestrationError("TF h_common binding drift")
         for candidate_ordinal, candidate_id in CANDIDATES:
-            base = {
-                "schema_version": "rq014-g2r-anchor-score-row-v1",
-                "segment_id": segment_id,
-                "feature_index": feature_index,
-                "feature_id": feature_id,
-                "sampling_id": sampling_id,
-                "temporal_id": temporal_id,
-                "horizon_id": domain_row["horizon_id"],
-                "tau_tick": tau_tick,
-                "candidate_ordinal": candidate_ordinal,
-                "candidate_id": candidate_id,
-                "path_type": domain_row["path_type_or_NA"],
-            }
+            base = _candidate_anchor_base(
+                segment_id, domain_row, candidate_ordinal, candidate_id
+            )
             try:
                 candidate_positions = sampling.candidates[candidate_id]
                 track_key = (segment_id, sampling_id, candidate_id)
@@ -826,18 +1024,17 @@ def _compute_g2r_scene_prepass(
                 failure = _candidate_terminal_from_exception(exc)
                 if failure is None:
                     raise G2ROrchestrationError(
-                        "unexpected W2 candidate failure"
+                        "unexpected W2 candidate failure: "
+                        f"{type(exc).__name__}: {exc}"
                     ) from exc
                 if status_by_reason.get(failure.reason_code) != failure.status:
                     raise G2ROrchestrationError("candidate failure namespace drift")
-                emitted.append(
-                    (
-                        available_domain_index,
-                        candidate_ordinal,
-                        _failure_anchor_row(base, failure),
-                    )
+                return _scene_terminal_prepass_result(
+                    task,
+                    failure,
+                    solver_eval_count=solver_counter.eval_count,
+                    started=started,
                 )
-                continue
             pending.append(
                 (available_domain_index, base, m3_row, float(candidate_ipv))
             )
@@ -846,6 +1043,7 @@ def _compute_g2r_scene_prepass(
         segment_id=segment_id,
         pending=tuple(pending),
         emitted=tuple(emitted),
+        solver_eval_count=solver_counter.eval_count,
         elapsed_s=time.monotonic() - started,
     )
 

@@ -175,6 +175,21 @@ def test_w3_readouts_fail_closed_for_degenerate_time_axes(times: list[float]) ->
 
 def test_w3_a10_candidate_scene_cell_and_global_rows_reproduce_w1_golden_bytes() -> None:
     fixture = _strict_load(STATUS_FIXTURE)
+    registered_status_rows = W3.candidate_status_rows()
+    budget_rows = [
+        row
+        for row in registered_status_rows
+        if row["reason_code"] == "F_SOLVER_BUDGET_EXCEEDED"
+    ]
+    assert budget_rows == [
+        {
+            "available": False,
+            "predictor_finite": False,
+            "reason_code": "F_SOLVER_BUDGET_EXCEEDED",
+            "reason_priority": 52,
+            "status": "INELIGIBLE_SOLVER_BUDGET_EXCEEDED",
+        }
+    ]
     precedence_input = copy.deepcopy(fixture["candidate_precedence_case"]["candidate_rows"])
     precedence_status, precedence_reason = W3.select_scene_candidate_failure(precedence_input)
     propagation_input = copy.deepcopy(
@@ -186,7 +201,9 @@ def test_w3_a10_candidate_scene_cell_and_global_rows_reproduce_w1_golden_bytes()
             "expected_reason_code": precedence_reason,
             "expected_status": precedence_status,
         },
-        "candidate_status_rows": W3.candidate_status_rows(),
+        "candidate_status_rows": [
+            row for row in registered_status_rows if row not in budget_rows
+        ],
         "global_fatal_rows": W3.global_fatal_rows(),
         "m3_numerical_failure_propagation": {
             "candidate_rows": propagation_input,
