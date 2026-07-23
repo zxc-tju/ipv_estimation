@@ -15,6 +15,21 @@ from scripts.rq014 import run_managed_g3 as g3
 ROOT = Path(__file__).resolve().parents[1]
 RECOVERY = ROOT / "reports/plans/RQ014_recovery_lane_v3.json"
 FIXTURE = ROOT / "tests/fixtures/rq014_g3r_v1/statistics_and_attrition_goldens.json"
+REAL_RATING_COLUMNS = [
+    "segment_key",
+    "context_name",
+    "tstar_context_step",
+    "record_index",
+    "timestamp_micros",
+    "candidate_index",
+    "preference_score",
+    "n_pos",
+    "first_x",
+    "first_y",
+    "last_x",
+    "last_y",
+    "geom_hash",
+]
 
 
 def _sha(path: Path) -> str:
@@ -42,9 +57,15 @@ def _csv(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
-def _synthetic_case(tmp_path: Path, *, nonfinite: bool = False) -> argparse.Namespace:
-    segments = [f"synthetic-{index:02d}" for index in range(5)]
-    cells = ["RR3-SYN-00", "RR3-SYN-01"]
+def _synthetic_case(
+    tmp_path: Path,
+    *,
+    nonfinite: bool = False,
+    cell_count: int = 2,
+) -> argparse.Namespace:
+    # Fabricated 32-hex segment IDs and scores; no production data appears here.
+    segments = [f"{index + 1:032x}" for index in range(5)]
+    cells = [f"RR3-SYN-{index:03d}" for index in range(cell_count)]
     lineage = tmp_path / "lineage"
     scene_path = lineage / "blind_scene_manifest.csv"
     candidate_path = lineage / "candidate_states.csv"
@@ -185,7 +206,10 @@ def _synthetic_case(tmp_path: Path, *, nonfinite: bool = False) -> argparse.Name
             "operation": g3.PRIOR_OPERATION,
             "run_id": "synthetic-bank",
             "status": "COMPLETE",
-            "counts": {"registered_scene_count": 5, "registered_cell_count": 2},
+            "counts": {
+                "registered_scene_count": 5,
+                "registered_cell_count": cell_count,
+            },
             "lineage": {
                 "input_manifest": {
                     "path": str(input_manifest),
@@ -205,8 +229,8 @@ def _synthetic_case(tmp_path: Path, *, nonfinite: bool = False) -> argparse.Name
             "run_id": "synthetic-bank",
             "status": "PASS",
             "rating_value_read_count": 0,
-            "registered_cell_count": 2,
-            "terminal_cell_count": 2,
+            "registered_cell_count": cell_count,
+            "terminal_cell_count": cell_count,
             "leaderboard_row_count": 0,
             "recovery_ledger_written": False,
             "output_manifest": {"sha256": _sha(manifest)},
@@ -225,12 +249,34 @@ def _synthetic_case(tmp_path: Path, *, nonfinite: bool = False) -> argparse.Name
 
     ratings = tmp_path / "ratings.csv"
     rating_rows = []
-    for row in candidate_rows:
-        score = str(4 - int(row["candidate_ordinal"]))
+    synthetic_scores = (
+        "1.23456789012345",
+        "5.67890123456789",
+        "9.87654321098765",
+    )
+    for row_index, row in enumerate(candidate_rows):
+        ordinal = int(row["candidate_ordinal"])
+        score = synthetic_scores[ordinal - 1]
         if nonfinite:
             score = "nan"
-        rating_rows.append({**row, "preference_score": score})
-    _csv(ratings, g3.RATING_COLUMNS, rating_rows)
+        rating_rows.append(
+            {
+                "segment_key": row["segment_id"],
+                "context_name": f"synthetic-context-{row['segment_id']}",
+                "tstar_context_step": row["tstar_context_step"],
+                "record_index": str(row_index // 3),
+                "timestamp_micros": str(1_000_000 + row_index),
+                "candidate_index": row["candidate_ordinal"],
+                "preference_score": score,
+                "n_pos": "21",
+                "first_x": f"{ordinal}.125",
+                "first_y": f"{ordinal}.25",
+                "last_x": f"{ordinal}.75",
+                "last_y": f"{ordinal}.875",
+                "geom_hash": row["geometry_sha256"],
+            }
+        )
+    _csv(ratings, REAL_RATING_COLUMNS, rating_rows)
 
     environment = tmp_path / "environment.json"
     _json(
@@ -285,21 +331,47 @@ def _synthetic_case(tmp_path: Path, *, nonfinite: bool = False) -> argparse.Name
         kernel_fixture=FIXTURE,
         kernel_fixture_sha256=_sha(FIXTURE),
         output_root=tmp_path / "outputs",
+        synthetic_cell_count=cell_count,
+        synthetic_preference_values=synthetic_scores,
     )
 
 
-def _run_synthetic(args: argparse.Namespace):
+def _run_synthetic(
+    args: argparse.Namespace,
+    *,
+    bootstrap_replicates: int = 8,
+):
     return g3.run_g3r_managed(
         args,
         expected_scene_count=5,
-        expected_cell_count=2,
-        bootstrap_replicates=8,
+        expected_cell_count=args.synthetic_cell_count,
+        bootstrap_replicates=bootstrap_replicates,
         expected_bank_run_id=None,
         expected_bank_receipt_sha256_prefix="",
     )
 
 
-def test_g3r_synthetic_bank_single_join_and_atomic_terminal_publication(tmp_path: Path) -> None:
+def test_g3r_real_schema_parser_extracts_nonzero_join_keyset(tmp_path: Path) -> None:
+    args = _synthetic_case(tmp_path)
+    audit: dict[str, object] = {}
+    ratings, result = g3._read_ratings(
+        args.ratings_source,
+        args.ratings_source_sha256,
+        args.ratings_source_size_bytes,
+        audit=audit,
+    )
+    assert g3.RATING_COLUMNS == REAL_RATING_COLUMNS
+    assert result["rating_value_read_count"] == 15
+    assert result["rating_source_key_count"] == 15
+    assert result["rating_source_keyset_sha256"] != g3.EMPTY_SHA256
+    assert len(ratings) == 15
+    assert audit == result
+
+
+def test_g3r_synthetic_bank_single_join_and_atomic_terminal_publication(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     args = _synthetic_case(tmp_path)
     receipt, access = _run_synthetic(args)
     assert receipt["status"] == "PASS"
@@ -327,8 +399,36 @@ def test_g3r_synthetic_bank_single_join_and_atomic_terminal_publication(tmp_path
         "association_attrition_manifest",
     }
     receipt_text = json.dumps({"operation": receipt, "access": access})
-    assert "preference_score" not in receipt_text
-    assert "synthetic-00" not in receipt_text
+    result_bytes = b"".join(
+        path.read_bytes() for path in sorted(final.iterdir()) if path.is_file()
+    )
+    captured = capsys.readouterr()
+    log_text = captured.out + captured.err
+    disclosure_surfaces = receipt_text.encode() + result_bytes + log_text.encode()
+    assert b"preference_score" not in disclosure_surfaces
+    for score in args.synthetic_preference_values:
+        assert score.encode() not in disclosure_surfaces
+
+
+def test_g3r_synthetic_320_cell_bank_emits_960_terminal_rows(
+    tmp_path: Path,
+) -> None:
+    args = _synthetic_case(tmp_path, cell_count=320)
+    receipt, access = _run_synthetic(args, bootstrap_replicates=0)
+    assert receipt["status"] == "PASS"
+    assert receipt["registered_cell_count"] == 320
+    assert receipt["terminal_leaderboard_row_count"] == 960
+    assert access["rating_source_key_count"] == 15
+    rows = g3._read_canonical_jsonl(
+        args.output_root / "g3r/recovery_ledger.jsonl"
+    )
+    assert len(rows) == 960
+    assert [row["row_index"] for row in rows] == list(range(960))
+    assert all(
+        [row["association_id"] for row in rows[index : index + 3]]
+        == ["RWS", "PSP", "PPR"]
+        for index in range(0, 960, 3)
+    )
 
 
 def test_g3r_null_sha_first_contact_records_governed_source_digest(

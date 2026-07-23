@@ -4,16 +4,16 @@
   "no_hpc_submission_attested": true,
   "no_rating_access_attested": true,
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "9d475fc72be8b6bc75ff69effb72779c0f7cd95b9cc10f634134c5238222299a",
+  "reviewed_manifest_sha256": "85f677675e15998ef5971bc4a06f137043b650b7ef5ce689c98515475ac98002",
   "reviewer_artifacts": {
     "execution_governance": {
       "path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_execution_governance_review_20260713.json",
-      "sha256": "81ea9e02bd5287b115a117ef5f9329d17622c8923d17104d4c1252f025b6f00f",
+      "sha256": "8b08539850be6b5512ed46dd389fbaf0083cef788eb4e9484ddda4c3c7b48830",
       "verdict": "NO_BLOCKER"
     },
     "statistics": {
       "path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_statistics_review_20260713.json",
-      "sha256": "660efb317495a42fd244a48f81a89884f5d99dfa38c836bfc8fb2cf21c7cc86e",
+      "sha256": "021a4cc435eeb89f167faf075bb947ff94b2e304241e96b6f847e7172e444c73",
       "verdict": "NO_BLOCKER"
     }
   },
