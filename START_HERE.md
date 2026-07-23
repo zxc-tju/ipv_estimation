@@ -338,8 +338,17 @@ question index in `STUDIES.md`.
   execution contract `91f86e6d...084f` (39,508 bytes), and G2R output contract
   `d3736c16...6e87`. Future G2R specs must bind the latter; future G3R specs must
   additionally bind the final Wave-B G1/bundle and exact bank/rating references.
+  First managed R3 job `1969820` failed closed at `RATING_ACCESS` because the
+  local parser expected the synthetic Wave-A column names instead of the real
+  13-column ratings schema. The source opened and matched the bound size; its
+  controlled-contact SHA-256 is `2bbd7d721591b4756108285ae869c2fb4d6dc7bbe45077870787381929ec3e4d`.
+  Non-disclosure held (`rating_value_read_count=0`; empty keyset hash). The
+  uncommitted local parser repair maps `segment_key`, `tstar_context_step`,
+  one-based `candidate_index`, and `geom_hash` onto the frozen four-key bank
+  interface. A fresh merge commit and regenerated G3R spec are required before
+  any rerun; no bank re-anchor is required.
   <!-- G3R_WAVE_B_BINDING_STATUS:START -->
-  Bindings finalized: bank manifest `2b4da1df4a5328b80d88b815ac3cdb71546952bac4638b29f4fa263b527d4515`, bank receipt `b74bb0e2ab5966b9eaaab164130bd50791b5ceee5743030b0bb26719d79c37b9`, DONE `256750c71902e31e46335c331369c256b7b7d13a4fb08758f1b8234b6229efdb`, and ratings size `337416` with `sha256: null`; managed R3 will establish and record the governed source digest at first controlled contact. The ratings file was not opened or hashed by the build/finalizer.
+  Bindings finalized: bank manifest `2b4da1df4a5328b80d88b815ac3cdb71546952bac4638b29f4fa263b527d4515`, bank receipt `b74bb0e2ab5966b9eaaab164130bd50791b5ceee5743030b0bb26719d79c37b9`, DONE `256750c71902e31e46335c331369c256b7b7d13a4fb08758f1b8234b6229efdb`, and ratings size `337416`; first controlled contact established source SHA-256 `2bbd7d721591b4756108285ae869c2fb4d6dc7bbe45077870787381929ec3e4d` before the fail-closed parser rejection. The ratings file was not opened or hashed by the build/finalizer, and no rating value was consumed by failed job `1969820`.
   <!-- G3R_WAVE_B_BINDING_STATUS:END -->
 - **RQ014 NC gate portability repair passed Linux preverification and entered its
   Phase 2 governance freeze (2026-07-20).** The third

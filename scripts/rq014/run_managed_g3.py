@@ -18,12 +18,19 @@ from typing import Any, Iterable, Mapping, MutableMapping, Optional, Sequence
 OPERATION = "rq014_r3_full_rating_join_and_rank"
 PRIOR_OPERATION = "rq014_r2_blind_feature_build"
 RATING_COLUMNS = [
-    "segment_id",
+    "segment_key",
+    "context_name",
     "tstar_context_step",
-    "candidate_ordinal",
-    "candidate_id",
-    "geometry_sha256",
+    "record_index",
+    "timestamp_micros",
+    "candidate_index",
     "preference_score",
+    "n_pos",
+    "first_x",
+    "first_y",
+    "last_x",
+    "last_y",
+    "geom_hash",
 ]
 ASSOCIATIONS = ("RWS", "PSP", "PPR")
 BOOTSTRAP_REPLICATES = 2000
@@ -651,54 +658,64 @@ def _read_ratings(
         audit["source_ref"] = source_ref
     values: dict[tuple[str, int, int, str], list[float | None]] = defaultdict(list)
     row_count = 0
+    rating_value_read_count = 0
     nonfinite_count = 0
     missing_count = 0
     duplicate_count = 0
-    with path.open("r", encoding="utf-8", newline="") as handle:
-        reader = csv.DictReader(handle, strict=True)
-        if reader.fieldnames != RATING_COLUMNS:
-            raise G3RFailure("rating source columns differ from the frozen interface")
-        for row in reader:
-            row_count += 1
-            segment = row["segment_id"]
-            ordinal = int(row["candidate_ordinal"])
-            if ordinal not in (1, 2, 3) or row["candidate_id"] != f"C{ordinal}":
-                raise G3RFailure("rating source candidate identity drift")
-            geometry = row["geometry_sha256"]
-            if not _is_hex64(geometry):
-                raise G3RFailure("rating source geometry digest is malformed")
-            key = (segment, int(row["tstar_context_step"]), ordinal, geometry)
-            if key in values:
-                duplicate_count += 1
-            raw = row["preference_score"]
-            if raw == "":
-                missing_count += 1
-                value = None
-            else:
-                try:
-                    value = _normalize_float(raw)
-                except ValueError:
-                    nonfinite_count += 1
-                    value = float("nan")
-            values[key].append(value)
-    key_payload = b"".join(
-        (f"{segment}\t{step}\t{ordinal}\t{geometry}\n").encode("utf-8")
-        for segment, step, ordinal, geometry in sorted(
-            values, key=lambda item: (item[0].encode("utf-8"), item[1], item[2], item[3])
+    try:
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle, strict=True)
+            if reader.fieldnames != RATING_COLUMNS:
+                raise G3RFailure("rating source columns differ from the frozen interface")
+            for row in reader:
+                row_count += 1
+                segment = row["segment_key"]
+                ordinal = int(row["candidate_index"])
+                if ordinal not in (1, 2, 3):
+                    raise G3RFailure("rating source candidate identity drift")
+                geometry = row["geom_hash"]
+                if not _is_hex64(geometry):
+                    raise G3RFailure("rating source geometry digest is malformed")
+                key = (segment, int(row["tstar_context_step"]), ordinal, geometry)
+                if key in values:
+                    duplicate_count += 1
+                raw = row["preference_score"]
+                rating_value_read_count += 1
+                if raw == "":
+                    missing_count += 1
+                    value = None
+                else:
+                    try:
+                        value = _normalize_float(raw)
+                    except ValueError:
+                        nonfinite_count += 1
+                        value = float("nan")
+                values[key].append(value)
+    finally:
+        key_payload = b"".join(
+            (f"{segment}\t{step}\t{ordinal}\t{geometry}\n").encode("utf-8")
+            for segment, step, ordinal, geometry in sorted(
+                values,
+                key=lambda item: (
+                    item[0].encode("utf-8"),
+                    item[1],
+                    item[2],
+                    item[3],
+                ),
+            )
         )
-    )
-    result = {
-        "source_ref": source_ref,
-        "rating_value_read_count": row_count,
-        "rating_row_count": row_count,
-        "rating_source_key_count": len(values),
-        "rating_source_keyset_sha256": _sha256_bytes(key_payload),
-        "duplicate_key_count": duplicate_count,
-        "missing_value_count": missing_count,
-        "nonfinite_value_count": nonfinite_count,
-    }
-    if audit is not None:
-        audit.update(result)
+        result = {
+            "source_ref": source_ref,
+            "rating_value_read_count": rating_value_read_count,
+            "rating_row_count": row_count,
+            "rating_source_key_count": len(values),
+            "rating_source_keyset_sha256": _sha256_bytes(key_payload),
+            "duplicate_key_count": duplicate_count,
+            "missing_value_count": missing_count,
+            "nonfinite_value_count": nonfinite_count,
+        }
+        if audit is not None:
+            audit.update(result)
     return values, result
 
 
