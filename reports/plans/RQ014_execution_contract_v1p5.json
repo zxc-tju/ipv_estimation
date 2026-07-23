@@ -225,7 +225,7 @@
         ]
       },
       "rq014_r3_full_rating_join_and_rank": {
-        "status": "DENY_PENDING_FROZEN_RATING_BLIND_FEATURE_BANK_AND_SEPARATE_RATING_AUTHORIZATION",
+        "status": "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_SCOPED_D4_DECISION",
         "scientific_contract": "reports/plans/RQ014_recovery_lane_v3.json",
         "run_spec_schema_version": 2,
         "resource_profile_id": "rq014-g3r-cpu-v1",
@@ -262,7 +262,7 @@
         "environment_binding": "managed_python_environment_v5",
         "allowed_effects_after_separate_authorization": [
           "verify the immutable G2R umbrella receipt DONE chain and every bank artifact",
-          "open one exact path size SHA-256 bound canonical ratings source inside the managed process",
+          "open one exact path and size bound canonical ratings source inside the managed process establish SHA-256 at first controlled contact and record it in the rating-access receipt",
           "perform one geometry-keyed join and the contracted RWS PSP PPR terminal screen",
           "atomically publish exactly 960 terminal rows receipts and PASS-only DONE"
         ],
@@ -448,12 +448,12 @@
           "frozen_g2r_done",
           "canonical_rated479_ratings_source"
         ],
-        "ratings_binding": "exact path size_bytes and sha256; opened and validated only inside managed R3 runtime",
-        "rating_access_receipt": "counts and hashes only; rating values forbidden",
+        "ratings_binding": "exact path and size_bytes with pre-runtime sha256 null; managed R3 establishes SHA-256 at first controlled contact and records it as the governed digest of record",
+        "rating_access_receipt": "counts and hashes only including first-contact source SHA-256; rating values forbidden",
         "rating_join_count": 1,
         "terminal_leaderboard_row_count": 960,
         "publication": "ATOMIC_PASS_ONLY_NO_PARTIAL_DISCLOSURE",
-        "availability": "IMPLEMENTED_BUT_DENY_PENDING_WAVE_B"
+        "availability": "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_SCOPED_D4_DECISION"
       },
       "G4R": "clean independent replay of the one frozen top recipe",
       "G5_NEW_DATA": "optional true confirmation on unseen ratings"
@@ -596,9 +596,9 @@
     "wrapper_capability_contract": "local machine provenance gate: the clean operator bootstrap opens and locks fd8 at /share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock, opens fd9 at the exact managed submit_research_run.sh, hashes and executes that retained fd9; the wrapper must inherit both descriptors and may not create them; before any RQ014 registry-materializer or preflight preload, the launcher requires exact /proc/self/fd targets, regular non-symlink fixed paths, and fstat st_dev/st_ino/st_mode equality; this is not a cryptographic secret against deliberate same-account descriptor emulation",
     "production_spec_root": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs",
     "production_spec_contract": "direct-child regular non-symlink read-only canonical JSON; one O_NOFOLLOW descriptor read with retained exact bytes passed through validation, sealing and submission; no path reopen",
-    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 2db9140b0277c3876d172b1ff89b6310161f3d2ed23d2afc9f015b028f49eb2d /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
+    "operator_entrypoint": "/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L \"$wrapper\" && test -f \"$wrapper\" && test ! -L \"$lock\" && exec 8>\"$lock\" && /usr/bin/flock -s 8 && exec 9<\"$wrapper\" && test \"$(/usr/bin/readlink /proc/$$/fd/8)\" = \"$lock\" && test \"$(/usr/bin/readlink /proc/$$/fd/9)\" = \"$wrapper\" && /usr/bin/printf \"%s  %s\\n\" 902186a770051a3d2192884c2c4510a395864fce290148d76d548d281f326e57 /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 \"$@\"' rq014-bootstrap",
     "operator_wrapper_size_bytes": 8108,
-    "operator_wrapper_sha256": "2db9140b0277c3876d172b1ff89b6310161f3d2ed23d2afc9f015b028f49eb2d",
+    "operator_wrapper_sha256": "902186a770051a3d2192884c2c4510a395864fce290148d76d548d281f326e57",
     "operator_environment_boundary": "BASH_ENV ENV LD_PRELOAD PYTHONHOME PYTHONPATH HPC_SOCIALITY_ROOT and every SBATCH_* variable are rejected; launcher then re-execs in an empty environment",
     "slurm_environment_export": "NIL_ON_DIRECTIVE_AND_SBATCH_COMMAND; NONE_IS_FORBIDDEN_BECAUSE_IT_CAN_RECONSTRUCT_THE_LOGIN_ENVIRONMENT",
     "code_execution_surface": "read only final-contract-bundle registered regular-file blobs from the exact declared published Git commit tree into a closed run-root snapshot; verify each blob against the registered digest and hash the snapshot receipt and bundle manifest before execution; the sole external scientific byte is the separately spec-bound M3 scorer, which is retained-descriptor verified and never deserialized by contract preflight; dirty or untracked worktree bytes, Git worktree checkout, hooks, filters and unregistered files are forbidden",

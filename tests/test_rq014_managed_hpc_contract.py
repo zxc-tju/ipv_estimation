@@ -833,6 +833,7 @@ def test_preflight_and_resource_pilot_are_conditionally_registered_for_review() 
         "rq014_g2_contract_preflight",
         "rq014_g2_resource_pilot",
         "rq014_r2_blind_feature_build",
+        "rq014_r3_full_rating_join_and_rank",
     ]
     assert authorization["authorizations"]["RQ014"]["preflight_decision_path"] == (
         "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
@@ -1005,11 +1006,11 @@ def _materialized_g3r_spec() -> dict[str, object]:
     for key in ("formal_g1", "contract_bundle", "g2r_bank_manifest", "g2r_bank_done"):
         payload[key]["sha256"] = "3" * 64
     payload["g2r_bank_receipt"]["sha256"] = "b74bb0e2" + "3" * 56
-    payload["ratings_source"]["sha256"] = "4" * 64
+    payload["ratings_source"]["sha256"] = None
     return payload
 
 
-def test_g3r_surface_is_exact_but_remains_machine_denied_in_wave_a() -> None:
+def test_g3r_surface_is_exact_and_conditionally_authorized_in_wave_b() -> None:
     execution = json.loads(
         (ROOT / "reports/plans/RQ014_execution_contract_v1p5.json").read_text(
             encoding="utf-8"
@@ -1023,14 +1024,16 @@ def test_g3r_surface_is_exact_but_remains_machine_denied_in_wave_a() -> None:
         operation_name=launcher.RQ014_G3R_OPERATION,
         resource_profile_id=launcher.RQ014_G3R_PROFILE,
     )
-    with pytest.raises(ValueError, match="remains machine-denied pending Wave B"):
-        launcher._require_rq014_operation_executable(
-            operation, operation_name=launcher.RQ014_G3R_OPERATION
-        )
+    assert operation["status"] == (
+        "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_SCOPED_D4_DECISION"
+    )
+    launcher._require_rq014_operation_executable(
+        operation, operation_name=launcher.RQ014_G3R_OPERATION
+    )
     authorization = json.loads(
         (ROOT / "configs/research_authorization.json").read_text(encoding="utf-8")
     )["authorizations"]["RQ014"]
-    assert launcher.RQ014_G3R_OPERATION not in authorization["allowed_operations"]
+    assert launcher.RQ014_G3R_OPERATION in authorization["allowed_operations"]
     assert authorization["g3r_decision_path"].endswith(
         "RQ014_PI_decision_D4_G3R_authorize_20260723.md"
     )
@@ -1041,6 +1044,34 @@ def test_g3r_surface_is_exact_but_remains_machine_denied_in_wave_a() -> None:
     parsed = launcher.load_spec_from_value(_materialized_g3r_spec())
     assert parsed["g3r_scope"] == launcher.RQ014_G3R_SCOPE
     assert parsed["resource_profile_id"] == launcher.RQ014_G3R_PROFILE
+    schema = json.loads(
+        (ROOT / "configs/run_specs/research_run_spec_v2.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert schema["properties"]["ratings_source"] == {
+        "$ref": "#/$defs/ratingSourceRef"
+    }
+    assert schema["$defs"]["ratingSourceRef"]["properties"]["sha256"]["type"] == [
+        "string",
+        "null",
+    ]
+    missing_decision = json.loads(json.dumps(authorization))
+    del missing_decision["g3r_decision_path"]
+    with pytest.raises(ValueError, match="central authorization is malformed"):
+        launcher._validate_rq014_central_authorization_shape(
+            missing_decision, operation_name=launcher.RQ014_G3R_OPERATION
+        )
+    missing_gate = json.loads(json.dumps(operation))
+    del missing_gate["required_gates"]["scoped_d4_decision"]
+    with pytest.raises(
+        ValueError, match="G3R conditional integration-surface contract drift"
+    ):
+        launcher._validate_rq014_operation_contract(
+            missing_gate,
+            operation_name=launcher.RQ014_G3R_OPERATION,
+            resource_profile_id=launcher.RQ014_G3R_PROFILE,
+        )
 
 
 @pytest.mark.parametrize(
@@ -1068,9 +1099,45 @@ def test_g3r_spec_rating_binding_and_bank_pin_fail_closed() -> None:
     with pytest.raises(ValueError, match="ratings_source binding"):
         launcher.load_spec_from_value(payload)
     payload = _materialized_g3r_spec()
+    payload["ratings_source"]["sha256"] = "not-a-digest"
+    with pytest.raises(ValueError, match="ratings_source binding"):
+        launcher.load_spec_from_value(payload)
+    payload = _materialized_g3r_spec()
+    payload["ratings_source"]["sha256"] = "4" * 64
+    assert launcher.load_spec_from_value(payload)["ratings_source"]["sha256"] == (
+        "4" * 64
+    )
+    payload = _materialized_g3r_spec()
     payload["g2r_bank_receipt"]["sha256"] = "5" * 64
     with pytest.raises(ValueError, match="frozen G2R bank receipt"):
         launcher.load_spec_from_value(payload)
+
+
+def test_g3r_missing_scoped_decision_file_fails_before_runtime_access(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _write_json(repo / "fixture.json", {"purpose": "missing-decision regression"})
+    commit = _init_fixture_git_repo(repo)
+    spec = _materialized_g3r_spec()
+    spec["git_commit"] = commit
+    authorization = json.loads(
+        (ROOT / "configs/research_authorization.json").read_text(encoding="utf-8")
+    )
+    authorization["authorizations"]["RQ014"]["g3r_decision_path"] = (
+        "reports/plans/absent_scoped_d4_decision.md"
+    )
+    with pytest.raises(ValueError, match="RQ014 scoped decision is missing"):
+        launcher._validate_rq014_spec(
+            spec,
+            base=tmp_path / "managed",
+            repo=repo,
+            authorization_path=repo / "configs/research_authorization.json",
+            authorization=authorization,
+            spec_path=None,
+            spec_bytes=None,
+        )
 
 
 def test_g3r_isolated_command_and_sbatch_dispatch_are_closed_and_rating_private(
@@ -1099,7 +1166,7 @@ def test_g3r_isolated_command_and_sbatch_dispatch_are_closed_and_rating_private(
             "phase3_preference_test/ratings_extracted.csv"
         ),
         "ratings_source_size_bytes": 123,
-        "ratings_source_sha256": "5" * 64,
+        "ratings_source_sha256": None,
         "recovery_contract_path": str(code / launcher.RQ014_RECOVERY_LANE_V3),
         "recovery_contract_sha256": "6" * 64,
         "environment_manifest_path": "/managed/environment.json",
@@ -1135,7 +1202,7 @@ def test_g3r_isolated_command_and_sbatch_dispatch_are_closed_and_rating_private(
     assert "#SBATCH --cpus-per-task=16" in script
     assert "#SBATCH --mem=32G" in script and "#SBATCH --time=02:00:00" in script
     assert str(code / launcher.RQ014_G3R_ENTRYPOINT) in script
-    assert "--ratings-source-sha256" in script
+    assert "--ratings-source-sha256" not in script
     assert "--kernel-fixture-sha256" in script
     assert "ratings-source:sha256" not in script
     assert "RQ014_CLOSURE_GATE_FAIL g3r:output-root:absent" in script

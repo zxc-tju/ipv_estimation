@@ -12,7 +12,8 @@
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
         "rq014_g2_resource_pilot",
-        "rq014_r2_blind_feature_build"
+        "rq014_r2_blind_feature_build",
+        "rq014_r3_full_rating_join_and_rank"
       ],
       "decision_path": "reports/plans/RQ014_PI_decision_G2_start_v1p5_20260712.md",
       "preflight_decision_path": "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",

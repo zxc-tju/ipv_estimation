@@ -1,1 +1,24 @@
-{"adjudicated_at_utc":"2026-07-17T15:19:00Z","g0_closure_status":"CLOSED_WITH_INACCESSIBLE_SURFACES","no_hpc_submission_attested":true,"no_rating_access_attested":true,"reviewed_manifest_path":"reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256","reviewed_manifest_sha256":"97313a8640f057bb9b20f97a5db9e0d56b5696e84ccd64fe5f6319014c820f67","reviewer_artifacts":{"execution_governance":{"path":"reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_execution_governance_review_20260713.json","sha256":"563ff772d1ec90e16e29b6e80d5cbfd7f1607df720a2cbe8b79422cbcc6d8aeb","verdict":"NO_BLOCKER"},"statistics":{"path":"reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_statistics_review_20260713.json","sha256":"067a385358a5b10d7e2f1cc828a4fa91307724bc59beff9b738e7fea70586d1f","verdict":"NO_BLOCKER"}},"schema_version":"rq014-formal-g1-v1p5","status":"FORMAL_G1_PASS","unresolved_blockers":0,"unresolved_majors":0}
+{
+  "adjudicated_at_utc": "2026-07-23T06:35:00Z",
+  "g0_closure_status": "CLOSED_WITH_INACCESSIBLE_SURFACES",
+  "no_hpc_submission_attested": true,
+  "no_rating_access_attested": true,
+  "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
+  "reviewed_manifest_sha256": "9d475fc72be8b6bc75ff69effb72779c0f7cd95b9cc10f634134c5238222299a",
+  "reviewer_artifacts": {
+    "execution_governance": {
+      "path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_execution_governance_review_20260713.json",
+      "sha256": "81ea9e02bd5287b115a117ef5f9329d17622c8923d17104d4c1252f025b6f00f",
+      "verdict": "NO_BLOCKER"
+    },
+    "statistics": {
+      "path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_statistics_review_20260713.json",
+      "sha256": "660efb317495a42fd244a48f81a89884f5d99dfa38c836bfc8fb2cf21c7cc86e",
+      "verdict": "NO_BLOCKER"
+    }
+  },
+  "schema_version": "rq014-formal-g1-v1p5",
+  "status": "FORMAL_G1_PASS",
+  "unresolved_blockers": 0,
+  "unresolved_majors": 0
+}

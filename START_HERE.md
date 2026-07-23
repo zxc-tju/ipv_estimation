@@ -295,9 +295,10 @@ question index in `STUDIES.md`.
   rating-blind output publication, immutable receipt, and PASS-only DONE. D1 preflight,
   D2 pilot PASS (`1930942`; receipt `0f192b4e…cc184`), and D3 budget approval are satisfied;
   `RQ014_PI_decision_D3_G2R_authorize_20260717.md` therefore adds only
-  `rq014_r2_blind_feature_build` to the central allowlist. Rating access/join/statistics
-  remain forbidden, r3/D4 remains denied, and G2R ends before leaderboard/recovery-ledger
-  construction. This local authority wave performs no HPC action: operators must still
+  `rq014_r2_blind_feature_build` to the central allowlist. At that W5b checkpoint,
+  rating access/join/statistics remained forbidden, R3/D4 remained denied, and
+  G2R ended before leaderboard/recovery-ledger construction; the D4 Wave-B entry
+  below supersedes only that R3/D4 status. This local authority wave performs no HPC action: operators must still
   publish/sync the reviewed commit, rebuild fresh upstream lineage against its contract,
   materialize an immutable G2R spec, pass validate-only, and use the explicit submit step.
 - **RQ014 G2R run-8 stale-pin repair handoff (2026-07-23; no commit or HPC
@@ -315,7 +316,7 @@ question index in `STUDIES.md`.
   The output contract at that checkpoint was SHA-256
   `36f5bbd089627e4e1e9cd5e45599d890529fc6313b793e98a108d95c2f0328ca`;
   it is superseded by the D4 Wave-A source-contract re-anchor below.
-- **RQ014 D4/R3 Wave A implemented while machine DENY remains active
+- **RQ014 D4/R3 Wave B conditionally authorizes the single managed R3 operation
   (2026-07-23; no rating read, HPC action, or commit).** The immutable blind bank
   `RQ014_2_blind_feature_build_20260722T210000Z_e41c8792` is complete with
   `BANK_VERIFY=PASS` and receipt prefix `b74bb0e2`. The new fixed operation
@@ -327,13 +328,19 @@ question index in `STUDIES.md`.
   operation receipts, and PASS-only DONE through a mode-0700 private staging
   directory and atomic publication. The governed rating source is
   `/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase3_preference_test/ratings_extracted.csv`;
-  its bytes were not opened in Wave A, and Wave B must freeze its size/SHA and
-  confirm the exact six-column interface before authorization. R3 remains absent
-  from `allowed_operations`; its contract status remains DENY. Current anchors:
-  launcher `a1ff518b...e2500` (213,384 bytes), wrapper `2db9140b...eb2d`,
-  execution contract `a73c1e49...7ec3` (39,295 bytes), and G2R output contract
-  `ecf49c1c...2a88`. Future G2R specs must bind the latter; future G3R specs must
+  its bytes were not opened or hashed in Wave A or Wave B. The immutable spec
+  binds the stat-only size `337416` with `sha256: null`; managed R3 establishes
+  and records the governed source digest at first controlled contact. R3 is now
+  in `allowed_operations`; its
+  contract status is
+  `CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_SCOPED_D4_DECISION`. Current anchors:
+  launcher `22a9c41c...b3e0` (213,848 bytes), wrapper `902186a7...6e57`,
+  execution contract `91f86e6d...084f` (39,508 bytes), and G2R output contract
+  `d3736c16...6e87`. Future G2R specs must bind the latter; future G3R specs must
   additionally bind the final Wave-B G1/bundle and exact bank/rating references.
+  <!-- G3R_WAVE_B_BINDING_STATUS:START -->
+  Bindings finalized: bank manifest `2b4da1df4a5328b80d88b815ac3cdb71546952bac4638b29f4fa263b527d4515`, bank receipt `b74bb0e2ab5966b9eaaab164130bd50791b5ceee5743030b0bb26719d79c37b9`, DONE `256750c71902e31e46335c331369c256b7b7d13a4fb08758f1b8234b6229efdb`, and ratings size `337416` with `sha256: null`; managed R3 will establish and record the governed source digest at first controlled contact. The ratings file was not opened or hashed by the build/finalizer.
+  <!-- G3R_WAVE_B_BINDING_STATUS:END -->
 - **RQ014 NC gate portability repair passed Linux preverification and entered its
   Phase 2 governance freeze (2026-07-20).** The third
   rating-blind 320-cell attempt reached the NC gate after source registration, then
