@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/rq014-g3r-result-row-v1.json",
+  "title": "RQ014 G3R terminal recovery-ledger row",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "row_index", "leaderboard_id", "cell_id", "association_id",
+    "ledger_status", "reason_code", "upstream_status", "first_failure_stage",
+    "reason_priority", "raw_denominators", "metrics", "recovery_compatible",
+    "rank_sort_tuple", "prev_record_sha256", "record_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "rq014-recovery-ledger-row-v2"},
+    "row_index": {"type": "integer", "minimum": 0, "maximum": 959},
+    "leaderboard_id": {"type": "string", "pattern": "^RR3-.+-(RWS|PSP|PPR)$"},
+    "cell_id": {"type": "string", "pattern": "^RR3-"},
+    "association_id": {"enum": ["RWS", "PSP", "PPR"]},
+    "ledger_status": {"enum": ["OBSERVED", "INELIGIBLE_BLIND", "INELIGIBLE_REFERENCE", "INELIGIBLE_RATING_COMPLETENESS", "INELIGIBLE_ASSOCIATION_CONSTANT", "NUMERICAL_FAILURE"]},
+    "reason_code": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+    "upstream_status": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+    "first_failure_stage": {"enum": ["K", "F", "R", "D", "I"]},
+    "reason_priority": {"type": "integer", "minimum": 0},
+    "raw_denominators": {"$ref": "#/$defs/rawDenominators"},
+    "metrics": {"$ref": "#/$defs/metrics"},
+    "recovery_compatible": {"type": "boolean"},
+    "rank_sort_tuple": {
+      "type": "array", "minItems": 11, "maxItems": 11,
+      "prefixItems": [
+        {"type": "integer"}, {"type": "integer"}, {"type": "integer"},
+        {"type": "number"}, {"type": "integer"}, {"type": "number"},
+        {"type": "integer"}, {"type": "number"}, {"type": "integer"},
+        {"type": "number"}, {"type": "string"}
+      ],
+      "items": false
+    },
+    "prev_record_sha256": {"$ref": "#/$defs/sha256"},
+    "record_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "typedMetric": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["kind", "value"], "properties": {"kind": {"const": "FINITE_FLOAT"}, "value": {"type": "number"}}},
+        {"type": "object", "additionalProperties": false, "required": ["kind", "value"], "properties": {"kind": {"const": "FINITE_INT"}, "value": {"type": "integer"}}},
+        {"type": "object", "additionalProperties": false, "required": ["kind", "reason_code"], "properties": {"kind": {"const": "NA"}, "reason_code": {"enum": ["ROW_NOT_OBSERVED", "INSUFFICIENT_FOLD_SUPPORT", "NONFINITE_FOLD_RECOMPUTATION", "INSUFFICIENT_LOO_SUPPORT", "NONFINITE_LOO_RECOMPUTATION", "INSUFFICIENT_CLUSTER_SUPPORT", "NONFINITE_CLUSTER_RECOMPUTATION", "INSUFFICIENT_SHARD_SUPPORT", "NONFINITE_SHARD_RECOMPUTATION", "UNCERTAINTY_UNAVAILABLE"]}}}
+      ]
+    },
+    "foldMetric": {
+      "oneOf": [
+        {"type": "array", "minItems": 5, "maxItems": 5, "items": {"type": "object", "additionalProperties": false, "required": ["kind", "value"], "properties": {"kind": {"const": "FINITE_FLOAT"}, "value": {"type": "number"}}}},
+        {"$ref": "#/$defs/typedMetric"}
+      ]
+    },
+    "rawDenominators": {
+      "type": "object", "additionalProperties": false,
+      "required": ["N_B", "N_K", "N_F", "N_R", "N_D", "N_I", "X_K", "X_F", "X_R", "X_D", "X_I", "n_scene_universe", "n_blind_available_scenes", "n_rating_key_complete_scenes", "n_excluded_nonfinite_scenes", "n_excluded_constant_rating_scenes", "n_excluded_constant_deviation_scenes", "n_informative_scenes", "n_informative_candidates", "rating_distinct_count_pooled", "deviation_distinct_count_pooled", "scene_weight_sum", "candidate_weight_sum", "support_id"],
+      "properties": {
+        "N_B": {"type": "integer", "minimum": 0}, "N_K": {"type": "integer", "minimum": 0}, "N_F": {"type": "integer", "minimum": 0}, "N_R": {"type": "integer", "minimum": 0}, "N_D": {"type": "integer", "minimum": 0}, "N_I": {"type": "integer", "minimum": 0},
+        "X_K": {"type": "integer", "minimum": 0}, "X_F": {"type": "integer", "minimum": 0}, "X_R": {"type": "integer", "minimum": 0}, "X_D": {"type": "integer", "minimum": 0}, "X_I": {"type": "integer", "minimum": 0},
+        "n_scene_universe": {"type": "integer", "minimum": 0}, "n_blind_available_scenes": {"type": "integer", "minimum": 0}, "n_rating_key_complete_scenes": {"type": "integer", "minimum": 0}, "n_excluded_nonfinite_scenes": {"type": "integer", "minimum": 0}, "n_excluded_constant_rating_scenes": {"type": "integer", "minimum": 0}, "n_excluded_constant_deviation_scenes": {"type": "integer", "minimum": 0}, "n_informative_scenes": {"type": "integer", "minimum": 0}, "n_informative_candidates": {"type": "integer", "minimum": 0}, "rating_distinct_count_pooled": {"type": "integer", "minimum": 0}, "deviation_distinct_count_pooled": {"type": "integer", "minimum": 0},
+        "scene_weight_sum": {"type": "number"}, "candidate_weight_sum": {"type": "number"}, "support_id": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["association_value", "n_informative_scenes_metric", "fold_associations", "fold_negative_count", "median_fold_association", "leave_one_scene_out_max", "scenario_cluster_na_scene_count_metric", "eligible_cluster_count_metric", "negative_cluster_count_metric", "leave_one_cluster_out_negative_fraction", "eligible_shard_count_metric", "negative_shard_count_metric", "leave_one_shard_out_negative_fraction", "association_ci_lower", "association_ci_upper"],
+      "properties": {
+        "association_value": {"$ref": "#/$defs/typedMetric"}, "n_informative_scenes_metric": {"$ref": "#/$defs/typedMetric"}, "fold_associations": {"$ref": "#/$defs/foldMetric"}, "fold_negative_count": {"$ref": "#/$defs/typedMetric"}, "median_fold_association": {"$ref": "#/$defs/typedMetric"}, "leave_one_scene_out_max": {"$ref": "#/$defs/typedMetric"}, "scenario_cluster_na_scene_count_metric": {"$ref": "#/$defs/typedMetric"}, "eligible_cluster_count_metric": {"$ref": "#/$defs/typedMetric"}, "negative_cluster_count_metric": {"$ref": "#/$defs/typedMetric"}, "leave_one_cluster_out_negative_fraction": {"$ref": "#/$defs/typedMetric"}, "eligible_shard_count_metric": {"$ref": "#/$defs/typedMetric"}, "negative_shard_count_metric": {"$ref": "#/$defs/typedMetric"}, "leave_one_shard_out_negative_fraction": {"$ref": "#/$defs/typedMetric"}, "association_ci_lower": {"$ref": "#/$defs/typedMetric"}, "association_ci_upper": {"$ref": "#/$defs/typedMetric"}
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": "rq014-g3r-kernel-fixtures-v1",
+  "statistics": {
+    "STAT_MIDRANK_TIES": {
+      "values": [3.0, 1.0, 1.0],
+      "expected": [3.0, 1.5, 1.5]
+    },
+    "STAT_PEARSON_SIGNED_ZERO": {
+      "x": [1.0, 2.0, 3.0],
+      "y": [3.0, 2.0, 1.0],
+      "weights": [0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
+      "expected_status": "ASSOCIATION_AVAILABLE",
+      "expected_value": -1.0
+    },
+    "STAT_RWS_REDUCTION": {"expected_status": "ASSOCIATION_AVAILABLE", "expected_value": -1.0},
+    "STAT_PSP_REDUCTION": {"expected_status": "ASSOCIATION_AVAILABLE", "expected_value": -0.4848484848484849},
+    "STAT_PPR_REDUCTION": {"expected_status": "ASSOCIATION_AVAILABLE", "expected_value": -0.4545454545454546},
+    "STAT_SUBSET_RECOMPUTE": {"expected_status": "ASSOCIATION_AVAILABLE", "expected_value": -1.0}
+  },
+  "attrition": {
+    "ATTRITION_ALL_PASS": {"statuses": ["ASSOCIATION_AVAILABLE"], "expected": "ASSOCIATION_AVAILABLE"},
+    "ATTRITION_ONE_FAILURE_EACH_STAGE": {"statuses": ["RATING_JOIN_KEY_MISSING", "INELIGIBLE_STATE_NONFINITE", "RATING_VALUE_MISSING", "RATING_VECTOR_CONSTANT", "ASSOCIATION_NUMERICAL_FAILURE"], "expected": "RATING_JOIN_KEY_MISSING"},
+    "ATTRITION_MULTIPLE_REASON_PRECEDENCE": {"statuses": ["RATING_JOIN_KEY_AMBIGUOUS", "RATING_JOIN_KEY_MISSING"], "expected": "RATING_JOIN_KEY_MISSING"},
+    "ATTRITION_MISSING_GEOMETRY_RETAINED_AT_B": {"statuses": ["RATING_JOIN_KEY_MISSING"], "expected": "RATING_JOIN_KEY_MISSING"}
+  }
+}

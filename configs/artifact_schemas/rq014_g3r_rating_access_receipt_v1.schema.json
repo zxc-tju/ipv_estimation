@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sociality-estimation.local/schemas/rq014-g3r-rating-access-receipt-v1.json",
+  "title": "RQ014 G3R rating-access receipt (counts and hashes only)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "operation", "run_id", "status", "source_size_bytes", "source_sha256", "rating_value_read_count", "rating_row_count", "rating_source_key_count", "rating_source_keyset_sha256", "joined_key_count", "duplicate_key_count", "missing_value_count", "nonfinite_value_count", "created_at_utc"],
+  "properties": {
+    "schema_version": {"const": "rq014-g3r-rating-access-receipt-v1"},
+    "operation": {"const": "rq014_r3_full_rating_join_and_rank"},
+    "run_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "source_size_bytes": {"type": "integer", "minimum": 0},
+    "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rating_value_read_count": {"type": "integer", "minimum": 0},
+    "rating_row_count": {"type": "integer", "minimum": 0},
+    "rating_source_key_count": {"type": "integer", "minimum": 0},
+    "rating_source_keyset_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "joined_key_count": {"type": "integer", "minimum": 0},
+    "duplicate_key_count": {"type": "integer", "minimum": 0},
+    "missing_value_count": {"type": "integer", "minimum": 0},
+    "nonfinite_value_count": {"type": "integer", "minimum": 0},
+    "created_at_utc": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"}
+  }
+}

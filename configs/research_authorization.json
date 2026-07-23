@@ -18,6 +18,7 @@
       "preflight_decision_path": "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md",
       "pilot_decision_path": "reports/plans/RQ014_PI_decision_D2_resource_pilot_20260714.md",
       "g2r_decision_path": "reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md",
+      "g3r_decision_path": "reports/plans/RQ014_PI_decision_D4_G3R_authorize_20260723.md",
       "formal_g1_path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
       "execution_contract_path": "reports/plans/RQ014_execution_contract_v1p5.json"
     }

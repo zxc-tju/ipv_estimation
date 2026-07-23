@@ -321,6 +321,12 @@ def _build_fixture(tmp_path: Path) -> tuple[Path, Path, str]:
             "size_bytes": launcher.RQ014_ENVIRONMENT_V4_SIZE_BYTES,
             "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
         },
+        launcher.RQ014_G3R_OPERATION: {
+            "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+            "path": str(base / "manifests" / "RQ014" / "managed_python_environment_v4.json"),
+            "size_bytes": launcher.RQ014_ENVIRONMENT_V4_SIZE_BYTES,
+            "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+        },
     }
     execution_contract["managed_hpc_contract"]["future_g2r_environment_binding"] = {
         "status": "ACTIVE_FOR_AUTHORIZED_RQ014_R2_BLIND_FEATURE_BUILD",
@@ -697,6 +703,11 @@ def test_reviewed_runtime_references_use_operation_bound_environment_locks() -> 
             "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
             "size_bytes": 6148, "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
         },
+        launcher.RQ014_G3R_OPERATION: {
+            "schema": "configs/run_specs/rq014_managed_python_environment_v4.schema.json",
+            "path": launcher.RQ014_ENVIRONMENT_V4_PATH,
+            "size_bytes": 6148, "sha256": launcher.RQ014_ENVIRONMENT_V4_SHA256,
+        },
     }
     assert contract["future_g2r_environment_binding"] == {
         "status": "ACTIVE_FOR_AUTHORIZED_RQ014_R2_BLIND_FEATURE_BUILD",
@@ -900,6 +911,15 @@ def test_preflight_and_resource_pilot_are_conditionally_registered_for_review() 
     assert g2r_branch["properties"]["g2r_output_contract"]["const"]["path"].endswith(
         launcher.RQ014_G2R_OUTPUT_CONTRACT
     )
+    output_contract_sha256 = sha256_file(ROOT / launcher.RQ014_G2R_OUTPUT_CONTRACT)
+    assert g2r_branch["properties"]["g2r_output_contract"]["const"]["sha256"] == (
+        output_contract_sha256
+    )
+    assert json.loads(
+        (ROOT / "configs/run_specs/RQ014_g2r.template.json").read_text(
+            encoding="utf-8"
+        )
+    )["g2r_output_contract"]["sha256"] == output_contract_sha256
     assert set(g2r_branch["required"]) >= {
         "resource_pilot_receipt",
         "resource_pilot_done",
@@ -973,6 +993,152 @@ def test_g2r_managed_surface_is_exact_and_conditionally_authorized() -> None:
         launcher._validate_rq014_central_authorization_shape(
             injected, operation_name=launcher.RQ014_G2R_OPERATION
         )
+
+
+def _materialized_g3r_spec() -> dict[str, object]:
+    payload = json.loads(
+        (ROOT / "configs/run_specs/RQ014_g3r.template.json").read_text(encoding="utf-8")
+    )
+    payload["run_id"] = "RQ014_3_full_rating_join_and_rank_fixture_deadbeef"
+    payload["git_commit"] = "1" * 40
+    payload["created_at_utc"] = "2026-07-23T00:00:00Z"
+    for key in ("formal_g1", "contract_bundle", "g2r_bank_manifest", "g2r_bank_done"):
+        payload[key]["sha256"] = "3" * 64
+    payload["g2r_bank_receipt"]["sha256"] = "b74bb0e2" + "3" * 56
+    payload["ratings_source"]["sha256"] = "4" * 64
+    return payload
+
+
+def test_g3r_surface_is_exact_but_remains_machine_denied_in_wave_a() -> None:
+    execution = json.loads(
+        (ROOT / "reports/plans/RQ014_execution_contract_v1p5.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    operation = execution["authorization"]["registered_operations"][
+        launcher.RQ014_G3R_OPERATION
+    ]
+    launcher._validate_rq014_operation_contract(
+        operation,
+        operation_name=launcher.RQ014_G3R_OPERATION,
+        resource_profile_id=launcher.RQ014_G3R_PROFILE,
+    )
+    with pytest.raises(ValueError, match="remains machine-denied pending Wave B"):
+        launcher._require_rq014_operation_executable(
+            operation, operation_name=launcher.RQ014_G3R_OPERATION
+        )
+    authorization = json.loads(
+        (ROOT / "configs/research_authorization.json").read_text(encoding="utf-8")
+    )["authorizations"]["RQ014"]
+    assert launcher.RQ014_G3R_OPERATION not in authorization["allowed_operations"]
+    assert authorization["g3r_decision_path"].endswith(
+        "RQ014_PI_decision_D4_G3R_authorize_20260723.md"
+    )
+    assert (ROOT / authorization["g3r_decision_path"]).is_file()
+    launcher._validate_rq014_central_authorization_shape(
+        authorization, operation_name=launcher.RQ014_G3R_OPERATION
+    )
+    parsed = launcher.load_spec_from_value(_materialized_g3r_spec())
+    assert parsed["g3r_scope"] == launcher.RQ014_G3R_SCOPE
+    assert parsed["resource_profile_id"] == launcher.RQ014_G3R_PROFILE
+
+
+@pytest.mark.parametrize(
+    "missing",
+    [
+        "g2r_bank_manifest",
+        "g2r_bank_receipt",
+        "g2r_bank_done",
+        "ratings_source",
+        "recovery_contract",
+        "g3r_scope",
+        "created_at_utc",
+    ],
+)
+def test_g3r_spec_requires_every_exact_key(missing: str) -> None:
+    payload = _materialized_g3r_spec()
+    del payload[missing]
+    with pytest.raises(ValueError, match="Run spec v2 keys differ"):
+        launcher.load_spec_from_value(payload)
+
+
+def test_g3r_spec_rating_binding_and_bank_pin_fail_closed() -> None:
+    payload = _materialized_g3r_spec()
+    payload["ratings_source"]["unexpected"] = "rating-value"
+    with pytest.raises(ValueError, match="ratings_source binding"):
+        launcher.load_spec_from_value(payload)
+    payload = _materialized_g3r_spec()
+    payload["g2r_bank_receipt"]["sha256"] = "5" * 64
+    with pytest.raises(ValueError, match="frozen G2R bank receipt"):
+        launcher.load_spec_from_value(payload)
+
+
+def test_g3r_isolated_command_and_sbatch_dispatch_are_closed_and_rating_private(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    code = Path("/managed/code")
+    run_root = Path("/managed/work_dirs/RQ014/g3r-run")
+    fixture_sha = sha256_file(ROOT / launcher.RQ014_G3R_KERNEL_FIXTURE)
+    validated = {
+        "python_executable_path": "/managed/python",
+        "python_executable_sha256": "e" * 64,
+        "entrypoint": launcher.RQ014_G3R_ENTRYPOINT,
+        "fixed_subcommand": "full-rating-join-and-rank",
+        "run_id": "g3r-run",
+        "commit": "1" * 40,
+        "created_at_utc": "2026-07-23T00:00:00Z",
+        "g2r_bank_root": "/managed/bank/g2r",
+        "g2r_bank_manifest_path": "/managed/bank/g2r/g2r_output_manifest.json",
+        "g2r_bank_manifest_sha256": "2" * 64,
+        "g2r_bank_receipt_path": "/managed/bank/rq014_r2_blind_feature_build_receipt.json",
+        "g2r_bank_receipt_sha256": "b74bb0e2" + "3" * 56,
+        "g2r_bank_done_path": "/managed/bank/DONE.json",
+        "g2r_bank_done_sha256": "4" * 64,
+        "ratings_source_path": (
+            "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/"
+            "phase3_preference_test/ratings_extracted.csv"
+        ),
+        "ratings_source_size_bytes": 123,
+        "ratings_source_sha256": "5" * 64,
+        "recovery_contract_path": str(code / launcher.RQ014_RECOVERY_LANE_V3),
+        "recovery_contract_sha256": "6" * 64,
+        "environment_manifest_path": "/managed/environment.json",
+        "environment_manifest_sha256": "7" * 64,
+        "code_snapshot_receipt_sha256": "8" * 64,
+        "g3r_bindings": {launcher.RQ014_G3R_KERNEL_FIXTURE: fixture_sha},
+        "isolated_sys_path": ["/stdlib"],
+        "site_packages_root": "/site-packages",
+        "slurm_profile": {
+            "partition": "amd", "nodes": 1, "ntasks": 1,
+            "cpus_per_task": 16, "memory": "32G", "time": "02:00:00",
+        },
+        "job_name": "zxc-rq014-g3r-fixture",
+        "run_spec_sha256": "9" * 64,
+        "authorization_sha256": "a" * 64,
+        "execution_contract_sha256": "b" * 64,
+        "formal_g1_relative_path": launcher.RQ014_FORMAL_G1,
+        "formal_g1_sha256": "c" * 64,
+        "contract_bundle_relative_path": launcher.RQ014_FINAL_BUNDLE,
+        "contract_bundle_sha256": "d" * 64,
+    }
+    monkeypatch.setattr(launcher, "_stdlib_shell_checks", lambda _validated: "")
+    monkeypatch.setattr(launcher, "_site_packages_shell_checks", lambda _validated: "")
+    monkeypatch.setattr(launcher, "_native_library_shell_checks", lambda _validated: "")
+    script = launcher.render_rq014_sbatch(
+        validated=validated,
+        base=Path("/managed"),
+        repo=ROOT,
+        run_root=run_root,
+        code=code,
+        sealed_spec_path=run_root / "manifests/run_spec.json",
+    )
+    assert "#SBATCH --cpus-per-task=16" in script
+    assert "#SBATCH --mem=32G" in script and "#SBATCH --time=02:00:00" in script
+    assert str(code / launcher.RQ014_G3R_ENTRYPOINT) in script
+    assert "--ratings-source-sha256" in script
+    assert "--kernel-fixture-sha256" in script
+    assert "ratings-source:sha256" not in script
+    assert "RQ014_CLOSURE_GATE_FAIL g3r:output-root:absent" in script
 
 
 @pytest.mark.parametrize(

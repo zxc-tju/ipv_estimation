@@ -188,15 +188,27 @@
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "Execution governance remains NO_BLOCKER after the honest-cost correction because authorization and runtime ceilings remain exact and fail closed."
+    },
+    {
+      "evidence": [
+        "R3 remains absent from the exact central allowed_operations list and its conditional execution-contract status remains DENY; the new g3r_decision_path records scope but cannot authorize or submit the operation in Wave A.",
+        "The launcher adds an exact-key G3R spec branch, env-v5 and rq014-g3r-cpu-v1 profile, reviewed closed-snapshot preload, immutable Run #8 bank umbrella/PASS-receipt/DONE validation, and a lexical-only validate-stage rating path check. Rating bytes are size/SHA verified and parsed only by the managed R3 process.",
+        "The managed entrypoint uses a mode-0700 private staging directory, redacted stage/class failure receipts, one in-memory join, canonical terminal serialization, removal of partial private bytes, an atomic PASS-only publication rename, and DONE only after receipt completion. Preexisting publication namespaces are never overwritten.",
+        "Launcher, wrapper, execution-contract and G2R output-contract source pins were fully re-anchored. The cumulative 149-row candidate manifest SHA-256 is 97313a8640f057bb9b20f97a5db9e0d56b5696e84ccd64fe5f6319014c820f67; no real rating read, HPC submission, or authorization flip occurred."
+      ],
+      "finding_id": "G3R-WAVE-A-E-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Execution governance returns NO_BLOCKER on the fail-closed R3 build surface while the machine DENY remains authoritative."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "execution_governance",
-  "reviewed_at_utc": "2026-07-17T15:18:30Z",
+  "reviewed_at_utc": "2026-07-23T00:00:30Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "c2869ed84a50c34f33f1b508bd224d1df71c97b6c538ebd6152d127693cc824e",
+  "reviewed_manifest_sha256": "97313a8640f057bb9b20f97a5db9e0d56b5696e84ccd64fe5f6319014c820f67",
   "reviewer_agent": "codex/w4-exec-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

@@ -24,7 +24,8 @@
         "rq014_g2_declassification_export",
         "rq014_g2_contract_preflight",
         "rq014_g2_resource_pilot",
-        "rq014_r2_blind_feature_build"
+        "rq014_r2_blind_feature_build",
+        "rq014_r3_full_rating_join_and_rank"
       ]
     },
     "git_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
@@ -60,7 +61,13 @@
     "resource_pilot_receipt": {"$ref": "#/$defs/fileRef"},
     "resource_pilot_done": {"$ref": "#/$defs/fileRef"},
     "g2r_output_contract": {"$ref": "#/$defs/fileRef"},
-    "g2r_scope": {"$ref": "#/$defs/g2rScope"}
+    "g2r_scope": {"$ref": "#/$defs/g2rScope"},
+    "g2r_bank_manifest": {"$ref": "#/$defs/fileRef"},
+    "g2r_bank_receipt": {"$ref": "#/$defs/fileRef"},
+    "g2r_bank_done": {"$ref": "#/$defs/fileRef"},
+    "ratings_source": {"$ref": "#/$defs/sizedFileRef"},
+    "recovery_contract": {"$ref": "#/$defs/fileRef"},
+    "g3r_scope": {"$ref": "#/$defs/g3rScope"}
   },
   "oneOf": [
     {
@@ -89,7 +96,13 @@
           {"required": ["resource_pilot_receipt"]},
           {"required": ["resource_pilot_done"]},
           {"required": ["g2r_output_contract"]},
-          {"required": ["g2r_scope"]}
+          {"required": ["g2r_scope"]},
+          {"required": ["g2r_bank_manifest"]},
+          {"required": ["g2r_bank_receipt"]},
+          {"required": ["g2r_bank_done"]},
+          {"required": ["ratings_source"]},
+          {"required": ["recovery_contract"]},
+          {"required": ["g3r_scope"]}
         ]
       }
     },
@@ -122,7 +135,13 @@
           {"required": ["resource_pilot_receipt"]},
           {"required": ["resource_pilot_done"]},
           {"required": ["g2r_output_contract"]},
-          {"required": ["g2r_scope"]}
+          {"required": ["g2r_scope"]},
+          {"required": ["g2r_bank_manifest"]},
+          {"required": ["g2r_bank_receipt"]},
+          {"required": ["g2r_bank_done"]},
+          {"required": ["ratings_source"]},
+          {"required": ["recovery_contract"]},
+          {"required": ["g3r_scope"]}
         ]
       }
     },
@@ -155,7 +174,13 @@
           {"required": ["resource_pilot_receipt"]},
           {"required": ["resource_pilot_done"]},
           {"required": ["g2r_output_contract"]},
-          {"required": ["g2r_scope"]}
+          {"required": ["g2r_scope"]},
+          {"required": ["g2r_bank_manifest"]},
+          {"required": ["g2r_bank_receipt"]},
+          {"required": ["g2r_bank_done"]},
+          {"required": ["ratings_source"]},
+          {"required": ["recovery_contract"]},
+          {"required": ["g3r_scope"]}
         ]
       }
     },
@@ -164,7 +189,7 @@
         "operation": {"const": "rq014_r2_blind_feature_build"},
         "resource_profile_id": {"const": "rq014-g2r-cpu-v1"},
         "environment_manifest": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v5.json", "sha256": "75b01f9406d3c44b4eb9b6c70be77ae17bcda8851796348f39cf5a9ddb775781"}},
-        "g2r_output_contract": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_g2r_output_contract_v1.json", "sha256": "3be8da8e49fddee75ce387b502c0d1d6e16da232d34e208da4c66e2a4d2f36dc"}}
+        "g2r_output_contract": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_g2r_output_contract_v1.json", "sha256": "ecf49c1c9cbbf0c85f251aed0ebeb72f34945d4e2a3914e18293fa1de2a92a88"}}
       },
       "required": [
         "declassification_export_commit",
@@ -189,7 +214,53 @@
           {"required": ["readiness_table"]},
           {"required": ["counterpart_tracks"]},
           {"required": ["m3_parity_fixture"]},
-          {"required": ["pilot_scope"]}
+          {"required": ["pilot_scope"]},
+          {"required": ["g2r_bank_manifest"]},
+          {"required": ["g2r_bank_receipt"]},
+          {"required": ["g2r_bank_done"]},
+          {"required": ["ratings_source"]},
+          {"required": ["recovery_contract"]},
+          {"required": ["g3r_scope"]}
+        ]
+      }
+    },
+    {
+      "properties": {
+        "operation": {"const": "rq014_r3_full_rating_join_and_rank"},
+        "resource_profile_id": {"const": "rq014-g3r-cpu-v1"},
+        "environment_manifest": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v5.json", "sha256": "75b01f9406d3c44b4eb9b6c70be77ae17bcda8851796348f39cf5a9ddb775781"}},
+        "recovery_contract": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_recovery_lane_v3.json", "sha256": "f75a60aa99568d3e5e2c05d2460bc86e1082526253f6905a5e8569fb31dddeef"}}
+      },
+      "required": [
+        "g2r_bank_manifest",
+        "g2r_bank_receipt",
+        "g2r_bank_done",
+        "ratings_source",
+        "recovery_contract",
+        "g3r_scope",
+        "created_at_utc"
+      ],
+      "not": {
+        "anyOf": [
+          {"required": ["declassification_export_commit"]},
+          {"required": ["scene_bundles"]},
+          {"required": ["readiness_table"]},
+          {"required": ["counterpart_tracks"]},
+          {"required": ["m3_artifact"]},
+          {"required": ["m3_parity_fixture"]},
+          {"required": ["input_manifest"]},
+          {"required": ["sanitization_receipt"]},
+          {"required": ["materialization_ledger"]},
+          {"required": ["wod_path_type_mapping_manifest"]},
+          {"required": ["declassification_export_receipt"]},
+          {"required": ["declassification_export_done"]},
+          {"required": ["contract_preflight_receipt"]},
+          {"required": ["contract_preflight_done"]},
+          {"required": ["pilot_scope"]},
+          {"required": ["resource_pilot_receipt"]},
+          {"required": ["resource_pilot_done"]},
+          {"required": ["g2r_output_contract"]},
+          {"required": ["g2r_scope"]}
         ]
       }
     }
@@ -201,6 +272,16 @@
       "required": ["path", "sha256"],
       "properties": {
         "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "sizedFileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "size_bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "size_bytes": {"type": "integer", "minimum": 1},
         "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
       }
     },
@@ -259,6 +340,32 @@
         "rating_access": {"const": "NONE"},
         "rating_join": {"const": "FORBIDDEN"},
         "observed_rating_statistics": {"const": "FORBIDDEN"},
+        "publication_rule": {"const": "ATOMIC_PASS_ONLY"}
+      }
+    },
+    "g3rScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bank_run_id",
+        "registered_scene_count",
+        "registered_cell_count",
+        "association_ids",
+        "terminal_leaderboard_row_count",
+        "rating_access",
+        "rating_join",
+        "partial_disclosure",
+        "publication_rule"
+      ],
+      "properties": {
+        "bank_run_id": {"const": "RQ014_2_blind_feature_build_20260722T210000Z_e41c8792"},
+        "registered_scene_count": {"const": 479},
+        "registered_cell_count": {"const": 320},
+        "association_ids": {"const": ["RWS", "PSP", "PPR"]},
+        "terminal_leaderboard_row_count": {"const": 960},
+        "rating_access": {"const": "CONTROLLED_SINGLE_SOURCE"},
+        "rating_join": {"const": "EXACTLY_ONCE"},
+        "partial_disclosure": {"const": "FORBIDDEN"},
         "publication_rule": {"const": "ATOMIC_PASS_ONLY"}
       }
     }
