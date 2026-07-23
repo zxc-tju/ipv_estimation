@@ -65,7 +65,7 @@
     "g2r_bank_manifest": {"$ref": "#/$defs/fileRef"},
     "g2r_bank_receipt": {"$ref": "#/$defs/fileRef"},
     "g2r_bank_done": {"$ref": "#/$defs/fileRef"},
-    "ratings_source": {"$ref": "#/$defs/sizedFileRef"},
+    "ratings_source": {"$ref": "#/$defs/ratingSourceRef"},
     "recovery_contract": {"$ref": "#/$defs/fileRef"},
     "g3r_scope": {"$ref": "#/$defs/g3rScope"}
   },
@@ -189,7 +189,7 @@
         "operation": {"const": "rq014_r2_blind_feature_build"},
         "resource_profile_id": {"const": "rq014-g2r-cpu-v1"},
         "environment_manifest": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v5.json", "sha256": "75b01f9406d3c44b4eb9b6c70be77ae17bcda8851796348f39cf5a9ddb775781"}},
-        "g2r_output_contract": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_g2r_output_contract_v1.json", "sha256": "ecf49c1c9cbbf0c85f251aed0ebeb72f34945d4e2a3914e18293fa1de2a92a88"}}
+        "g2r_output_contract": {"const": {"path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_g2r_output_contract_v1.json", "sha256": "d3736c16c4c1f891cb69b1077e26e7238ff889c85e618e0cabe0c6cd2a366e87"}}
       },
       "required": [
         "declassification_export_commit",
@@ -283,6 +283,19 @@
         "path": {"type": "string", "minLength": 1},
         "size_bytes": {"type": "integer", "minimum": 1},
         "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "ratingSourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "size_bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$"
+        }
       }
     },
     "m3ArtifactRef": {

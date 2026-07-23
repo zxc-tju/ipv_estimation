@@ -12,7 +12,7 @@ import shutil
 import platform
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Optional, Sequence
+from typing import Any, Iterable, Mapping, MutableMapping, Optional, Sequence
 
 
 OPERATION = "rq014_r3_full_rating_join_and_rank"
@@ -627,15 +627,28 @@ def _load_rating_free_keys(
 
 def _read_ratings(
     path: Path,
-    expected_sha256: str,
+    expected_sha256: str | None,
     expected_size_bytes: int,
+    *,
+    audit: MutableMapping[str, Any] | None = None,
 ) -> tuple[dict[tuple[str, int, int, str], list[float | None]], dict[str, Any]]:
-    source_ref = _verified_file(
-        path,
-        expected_sha256,
-        expected_size_bytes=expected_size_bytes,
-        label="rating source",
-    )
+    if path.is_symlink() or not path.is_file():
+        raise G3RFailure("rating source is not a regular non-symlink file")
+    stat = path.stat()
+    if stat.st_size != expected_size_bytes:
+        raise G3RFailure("rating source size binding mismatch")
+    observed_sha256 = _sha256_file(path)
+    if expected_sha256 is not None and (
+        not _is_hex64(expected_sha256) or observed_sha256 != expected_sha256
+    ):
+        raise G3RFailure("rating source SHA-256 binding mismatch")
+    source_ref = {
+        "path": str(path.resolve()),
+        "size_bytes": stat.st_size,
+        "sha256": observed_sha256,
+    }
+    if audit is not None:
+        audit["source_ref"] = source_ref
     values: dict[tuple[str, int, int, str], list[float | None]] = defaultdict(list)
     row_count = 0
     nonfinite_count = 0
@@ -674,7 +687,7 @@ def _read_ratings(
             values, key=lambda item: (item[0].encode("utf-8"), item[1], item[2], item[3])
         )
     )
-    return values, {
+    result = {
         "source_ref": source_ref,
         "rating_value_read_count": row_count,
         "rating_row_count": row_count,
@@ -684,6 +697,9 @@ def _read_ratings(
         "missing_value_count": missing_count,
         "nonfinite_value_count": nonfinite_count,
     }
+    if audit is not None:
+        audit.update(result)
+    return values, result
 
 
 def _rollup_contract(lane: Mapping[str, Any]) -> tuple[dict[str, dict[str, Any]], dict[str, int]]:
@@ -1507,10 +1523,11 @@ def run_g3r_managed(
 
         stage = "RATING_ACCESS"
         failure_class = "RATING_ACCESS_FAILURE"
-        ratings, rating_audit = _read_ratings(
+        ratings, _ = _read_ratings(
             args.ratings_source,
             args.ratings_source_sha256,
             args.ratings_source_size_bytes,
+            audit=rating_audit,
         )
         rating_audit["recovery_contract"] = lane_ref
 
@@ -1659,7 +1676,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--bank-done-sha256", required=True)
     parser.add_argument("--ratings-source", type=Path, required=True)
     parser.add_argument("--ratings-source-size-bytes", type=int, required=True)
-    parser.add_argument("--ratings-source-sha256", required=True)
+    parser.add_argument("--ratings-source-sha256")
     parser.add_argument("--recovery-contract", type=Path, required=True)
     parser.add_argument("--recovery-contract-sha256", required=True)
     parser.add_argument("--environment-manifest", type=Path, required=True)

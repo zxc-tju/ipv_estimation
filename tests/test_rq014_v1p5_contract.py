@@ -141,6 +141,7 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
         "rq014_g2_contract_preflight",
         "rq014_g2_resource_pilot",
         "rq014_r2_blind_feature_build",
+        "rq014_r3_full_rating_join_and_rank",
     ]
     assert authorization["authorizations"]["RQ014"]["preflight_decision_path"] == (
         "reports/plans/RQ014_PI_decision_D1_preflight_v1p6_20260713.md"
@@ -178,6 +179,7 @@ def test_v1p5_has_fail_closed_operation_authority() -> None:
         "rq014_g2_contract_preflight",
         "rq014_g2_resource_pilot",
         "rq014_r2_blind_feature_build",
+        "rq014_r3_full_rating_join_and_rank",
     ]
 
 
@@ -274,7 +276,12 @@ def test_recovery_lane_searches_true_history_future_and_combined_windows_without
     assert central["authorizations"]["RQ014"]["g2r_decision_path"] == (
         "reports/plans/RQ014_PI_decision_D3_G2R_authorize_20260717.md"
     )
-    assert operations["rq014_r3_full_rating_join_and_rank"]["status"].startswith("DENY_")
+    assert operations["rq014_r3_full_rating_join_and_rank"]["status"] == (
+        "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_SCOPED_D4_DECISION"
+    )
+    assert central["authorizations"]["RQ014"]["g3r_decision_path"] == (
+        "reports/plans/RQ014_PI_decision_D4_G3R_authorize_20260723.md"
+    )
     assert operations["rq014_r4_clean_replay"]["status"].startswith("DENY_")
     assert operations["rq014_r2_blind_feature_build"]["scientific_contracts"] == [
         recovery_path,

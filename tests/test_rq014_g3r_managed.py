@@ -307,6 +307,7 @@ def test_g3r_synthetic_bank_single_join_and_atomic_terminal_publication(tmp_path
     assert receipt["terminal_leaderboard_row_count"] == 6
     assert access["rating_value_read_count"] == 15
     assert access["joined_key_count"] == 15
+    assert access["source_sha256"] == _sha(args.ratings_source)
     final = args.output_root / "g3r"
     assert final.is_dir()
     assert stat.S_IMODE(final.stat().st_mode) == 0o700
@@ -328,6 +329,24 @@ def test_g3r_synthetic_bank_single_join_and_atomic_terminal_publication(tmp_path
     receipt_text = json.dumps({"operation": receipt, "access": access})
     assert "preference_score" not in receipt_text
     assert "synthetic-00" not in receipt_text
+
+
+def test_g3r_null_sha_first_contact_records_governed_source_digest(
+    tmp_path: Path,
+) -> None:
+    args = _synthetic_case(tmp_path)
+    expected_sha256 = _sha(args.ratings_source)
+    args.ratings_source_sha256 = None
+    receipt, access = _run_synthetic(args)
+    assert receipt["status"] == "PASS"
+    assert access["source_size_bytes"] == args.ratings_source_size_bytes
+    assert access["source_sha256"] == expected_sha256
+    persisted = json.loads(
+        (args.output_root / "g3r/rating_access_receipt.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert persisted["source_sha256"] == expected_sha256
 
 
 def test_g3r_nonfinite_ratings_terminalize_without_run_failure(tmp_path: Path) -> None:

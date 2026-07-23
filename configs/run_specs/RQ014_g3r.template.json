@@ -1,53 +1,57 @@
 {
-  "schema_version": 2,
-  "rq_id": "RQ014",
-  "run_id": "RQ014_3_full_rating_join_and_rank_REPLACE_UTC_REPLACE_BUNDLE_SHA8",
-  "operation": "rq014_r3_full_rating_join_and_rank",
-  "git_commit": "0000000000000000000000000000000000000000",
-  "formal_g1": {
-    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
-    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
-  },
   "contract_bundle": {
     "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_plan_v1p6_checksums_20260713.sha256",
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
   },
+  "created_at_utc": "REPLACE_UTC_SECONDS",
   "environment_manifest": {
     "path": "/share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/managed_python_environment_v5.json",
     "sha256": "75b01f9406d3c44b4eb9b6c70be77ae17bcda8851796348f39cf5a9ddb775781"
   },
-  "g2r_bank_manifest": {
-    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_2_blind_feature_build_20260722T210000Z_e41c8792/outputs/g2r/g2r_output_manifest.json",
+  "formal_g1": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
     "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
-  },
-  "g2r_bank_receipt": {
-    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_2_blind_feature_build_20260722T210000Z_e41c8792/outputs/rq014_r2_blind_feature_build_receipt.json",
-    "sha256": "b74bb0e200000000000000000000000000000000000000000000000000000000"
   },
   "g2r_bank_done": {
     "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_2_blind_feature_build_20260722T210000Z_e41c8792/outputs/DONE.json",
-    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    "sha256": "256750c71902e31e46335c331369c256b7b7d13a4fb08758f1b8234b6229efdb"
   },
+  "g2r_bank_manifest": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_2_blind_feature_build_20260722T210000Z_e41c8792/outputs/g2r/g2r_output_manifest.json",
+    "sha256": "2b4da1df4a5328b80d88b815ac3cdb71546952bac4638b29f4fa263b527d4515"
+  },
+  "g2r_bank_receipt": {
+    "path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/RQ014_2_blind_feature_build_20260722T210000Z_e41c8792/outputs/rq014_r2_blind_feature_build_receipt.json",
+    "sha256": "b74bb0e2ab5966b9eaaab164130bd50791b5ceee5743030b0bb26719d79c37b9"
+  },
+  "g3r_scope": {
+    "association_ids": [
+      "RWS",
+      "PSP",
+      "PPR"
+    ],
+    "bank_run_id": "RQ014_2_blind_feature_build_20260722T210000Z_e41c8792",
+    "partial_disclosure": "FORBIDDEN",
+    "publication_rule": "ATOMIC_PASS_ONLY",
+    "rating_access": "CONTROLLED_SINGLE_SOURCE",
+    "rating_join": "EXACTLY_ONCE",
+    "registered_cell_count": 320,
+    "registered_scene_count": 479,
+    "terminal_leaderboard_row_count": 960
+  },
+  "git_commit": "0000000000000000000000000000000000000000",
+  "operation": "rq014_r3_full_rating_join_and_rank",
   "ratings_source": {
     "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase3_preference_test/ratings_extracted.csv",
-    "size_bytes": 1,
-    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    "sha256": null,
+    "size_bytes": 337416
   },
   "recovery_contract": {
     "path": "/share/home/u25310231/ZXC/sociality_estimation/code/repo/reports/plans/RQ014_recovery_lane_v3.json",
     "sha256": "f75a60aa99568d3e5e2c05d2460bc86e1082526253f6905a5e8569fb31dddeef"
   },
-  "g3r_scope": {
-    "bank_run_id": "RQ014_2_blind_feature_build_20260722T210000Z_e41c8792",
-    "registered_scene_count": 479,
-    "registered_cell_count": 320,
-    "association_ids": ["RWS", "PSP", "PPR"],
-    "terminal_leaderboard_row_count": 960,
-    "rating_access": "CONTROLLED_SINGLE_SOURCE",
-    "rating_join": "EXACTLY_ONCE",
-    "partial_disclosure": "FORBIDDEN",
-    "publication_rule": "ATOMIC_PASS_ONLY"
-  },
-  "created_at_utc": "REPLACE_UTC_SECONDS",
-  "resource_profile_id": "rq014-g3r-cpu-v1"
+  "resource_profile_id": "rq014-g3r-cpu-v1",
+  "rq_id": "RQ014",
+  "run_id": "RQ014_3_full_rating_join_and_rank_REPLACE_UTC_REPLACE_BUNDLE_SHA8",
+  "schema_version": 2
 }

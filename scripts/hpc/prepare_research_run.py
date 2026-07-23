@@ -831,9 +831,14 @@ def _validate_loaded_spec(spec: dict[str, Any]) -> dict[str, Any]:
                     or set(ratings_ref) != {"path", "size_bytes", "sha256"}
                     or not isinstance(ratings_ref.get("size_bytes"), int)
                     or ratings_ref["size_bytes"] < 1
-                    or not isinstance(ratings_ref.get("sha256"), str)
-                    or HEX64.fullmatch(ratings_ref["sha256"]) is None
-                    or ratings_ref["sha256"] == "0" * 64
+                    or (
+                        ratings_ref.get("sha256") is not None
+                        and (
+                            not isinstance(ratings_ref["sha256"], str)
+                            or HEX64.fullmatch(ratings_ref["sha256"]) is None
+                            or ratings_ref["sha256"] == "0" * 64
+                        )
+                    )
                 ):
                     raise ValueError(
                         "Run spec v2 ratings_source binding is malformed or placeholder"
@@ -2162,7 +2167,7 @@ def _validate_rq014_operation_contract(
 ) -> None:
     if operation_name == RQ014_G3R_OPERATION:
         expected = {
-            "status": "DENY_PENDING_FROZEN_RATING_BLIND_FEATURE_BANK_AND_SEPARATE_RATING_AUTHORIZATION",
+            "status": "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_SCOPED_D4_DECISION",
             "scientific_contract": RQ014_RECOVERY_LANE_V3,
             "run_spec_schema_version": 2,
             "resource_profile_id": RQ014_G3R_PROFILE,
@@ -2199,7 +2204,7 @@ def _validate_rq014_operation_contract(
             "environment_binding": "managed_python_environment_v5",
             "allowed_effects_after_separate_authorization": [
                 "verify the immutable G2R umbrella receipt DONE chain and every bank artifact",
-                "open one exact path size SHA-256 bound canonical ratings source inside the managed process",
+                "open one exact path and size bound canonical ratings source inside the managed process establish SHA-256 at first controlled contact and record it in the rating-access receipt",
                 "perform one geometry-keyed join and the contracted RWS PSP PPR terminal screen",
                 "atomically publish exactly 960 terminal rows receipts and PASS-only DONE",
             ],
@@ -2355,7 +2360,7 @@ def _require_rq014_operation_executable(operation: Any, *, operation_name: str) 
         or operation.get("status")
         != "CONDITIONALLY_AUTHORIZED_AFTER_FORMAL_G1_AND_SCOPED_D4_DECISION"
     ):
-        raise ValueError("RQ014 G3R operation remains machine-denied pending Wave B")
+        raise ValueError("RQ014 G3R operation is not conditionally authorized by scoped D4")
     if operation_name == RQ014_G2R_OPERATION and (
         not isinstance(operation, dict)
         or operation.get("status")
@@ -4358,8 +4363,6 @@ def render_rq014_sbatch(
             validated["ratings_source_path"],
             "--ratings-source-size-bytes",
             str(validated["ratings_source_size_bytes"]),
-            "--ratings-source-sha256",
-            validated["ratings_source_sha256"],
             "--recovery-contract",
             validated["recovery_contract_path"],
             "--recovery-contract-sha256",
@@ -4379,6 +4382,12 @@ def render_rq014_sbatch(
             "--output-root",
             str(run_root / "outputs"),
         ]
+        if validated["ratings_source_sha256"] is not None:
+            recovery_index = arguments.index("--recovery-contract")
+            arguments[recovery_index:recovery_index] = [
+                "--ratings-source-sha256",
+                validated["ratings_source_sha256"],
+            ]
         source_checks = ""
         for path_key, sha_key in (
             ("g2r_bank_manifest_path", "g2r_bank_manifest_sha256"),
