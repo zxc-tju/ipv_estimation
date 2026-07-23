@@ -189,15 +189,27 @@
       "severity": "MAJOR",
       "status": "RESOLVED",
       "summary": "S1 is closed by disclosing the synthetic pilot substrate and unmeasured exact-IPV cost, with explicit PI acceptance of the bounded residual budget risk."
+    },
+    {
+      "evidence": [
+        "Wave A implements only the machine-denied rq014_r3_full_rating_join_and_rank surface: the central allowlist still omits R3 and the execution-contract status remains DENY_PENDING_FROZEN_RATING_BLIND_FEATURE_BANK_AND_SEPARATE_RATING_AUTHORIZATION.",
+        "The R3 kernel follows recovery-lane v3 exactly: frozen 479-scene support; one geometry-keyed rating join; ordered B-K-F-R-D-I attrition; RWS, PSP and PPR in registered order; 2,000 scene-cluster bootstrap draws; typed stability fields; and one canonical 960-row append-only ledger plus rank index and common-support sensitivity.",
+        "Synthetic fixtures cover ties, signed zero, all three association reductions, subset recomputation, attrition precedence, nonfinite rating terminalization, exact output determinism, and one-join accounting. No real rating path or value was opened during build or review.",
+        "The cumulative candidate manifest has 149 rows at SHA-256 97313a8640f057bb9b20f97a5db9e0d56b5696e84ccd64fe5f6319014c820f67, preserving all 141 prior paths and adding exactly eight governed R3 decision/schema/template/entrypoint/fixture/test files."
+      ],
+      "finding_id": "G3R-WAVE-A-S-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Statistics returns NO_BLOCKER on the exact recovery-lane-v3 R3 kernel while rating access and execution remain denied."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-17T15:18:00Z",
+  "reviewed_at_utc": "2026-07-23T00:00:00Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
-  "reviewed_manifest_sha256": "c2869ed84a50c34f33f1b508bd224d1df71c97b6c538ebd6152d127693cc824e",
+  "reviewed_manifest_sha256": "97313a8640f057bb9b20f97a5db9e0d56b5696e84ccd64fe5f6319014c820f67",
   "reviewer_agent": "codex/w4-stat-reviewer",
   "schema_version": "rq014-formal-review-v1p5",
   "unresolved_blockers": 0,

@@ -307,15 +307,33 @@ question index in `STUDIES.md`.
   479 scene prepasses, proving the deterministic budget/terminalization fix, then failed
   post-assembly because the output contract still embedded an obsolete execution-contract
   SHA. A complete audit of its 39 file-backed SHA/size pairs plus the intrinsic grid hash
-  found no second stale binding; the live execution contract is `47bf9e48...92fcf` at
+  found no second stale binding; the execution contract at that repair checkpoint was `47bf9e48...92fcf` at
   36,039 bytes. Each scene retains a deterministic 40,000,000-objective-evaluation budget.
   Exhaustion emits `INELIGIBLE_SOLVER_BUDGET_EXCEEDED` /
   `F_SOLVER_BUDGET_EXCEEDED`; enumerable numerical/source-gap candidate failures use the
   existing scene-terminal channel, while structural drift remains globally fail-closed.
-  The reviewed output contract is SHA-256
+  The output contract at that checkpoint was SHA-256
   `36f5bbd089627e4e1e9cd5e45599d890529fc6313b793e98a108d95c2f0328ca`;
-  every future immutable G2R run spec must bind that value in `g2r_output_contract` before
-  validate-only or submission. Rating access and production submission remain forbidden.
+  it is superseded by the D4 Wave-A source-contract re-anchor below.
+- **RQ014 D4/R3 Wave A implemented while machine DENY remains active
+  (2026-07-23; no rating read, HPC action, or commit).** The immutable blind bank
+  `RQ014_2_blind_feature_build_20260722T210000Z_e41c8792` is complete with
+  `BANK_VERIFY=PASS` and receipt prefix `b74bb0e2`. The new fixed operation
+  `rq014_r3_full_rating_join_and_rank` verifies that umbrella/PASS-receipt/DONE
+  chain and all eight bank artifacts, then under env-v5 and profile
+  `rq014-g3r-cpu-v1` (`amd`, 1/1/16 CPU, 32G, 02:00:00) performs one exact
+  geometry-keyed rating join and the recovery-lane-v3 RWS/PSP/PPR screen. It
+  produces exactly 960 terminal rows, counts-and-hashes-only rating-access and
+  operation receipts, and PASS-only DONE through a mode-0700 private staging
+  directory and atomic publication. The governed rating source is
+  `/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase3_preference_test/ratings_extracted.csv`;
+  its bytes were not opened in Wave A, and Wave B must freeze its size/SHA and
+  confirm the exact six-column interface before authorization. R3 remains absent
+  from `allowed_operations`; its contract status remains DENY. Current anchors:
+  launcher `a1ff518b...e2500` (213,384 bytes), wrapper `2db9140b...eb2d`,
+  execution contract `a73c1e49...7ec3` (39,295 bytes), and G2R output contract
+  `ecf49c1c...2a88`. Future G2R specs must bind the latter; future G3R specs must
+  additionally bind the final Wave-B G1/bundle and exact bank/rating references.
 - **RQ014 NC gate portability repair passed Linux preverification and entered its
   Phase 2 governance freeze (2026-07-20).** The third
   rating-blind 320-cell attempt reached the NC gate after source registration, then

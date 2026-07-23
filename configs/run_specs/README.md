@@ -10,7 +10,7 @@ logs, manifests, and outputs live under one immutable
 For RQ014, the only supported operator invocation is:
 
 ```sh
-/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" e28a8a73f083727a69fa6a06f0957349ca10cecf2f6cf55a6ba92b5fc706d27d /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C /bin/sh -c 'wrapper=/share/home/u25310231/ZXC/sociality_estimation/code/repo/scripts/hpc/submit_research_run.sh; lock=/share/home/u25310231/ZXC/sociality_estimation/manifests/runtime_maintenance.lock; test ! -L "$wrapper" && test -f "$wrapper" && test ! -L "$lock" && exec 8>"$lock" && /usr/bin/flock -s 8 && exec 9<"$wrapper" && test "$(/usr/bin/readlink /proc/$$/fd/8)" = "$lock" && test "$(/usr/bin/readlink /proc/$$/fd/9)" = "$wrapper" && /usr/bin/printf "%s  %s\n" 2db9140b0277c3876d172b1ff89b6310161f3d2ed23d2afc9f015b028f49eb2d /proc/$$/fd/9 | (cd / && /usr/bin/sha256sum --check --strict -) && exec /bin/sh /proc/$$/fd/9 "$@"' rq014-bootstrap --spec /share/home/u25310231/ZXC/sociality_estimation/manifests/RQ014/run_specs/REPLACE_RUN_ID.json --submit
 ```
 
 This single clean-environment command is the authorization boundary rather
@@ -167,6 +167,20 @@ output remain forbidden; r3/D4 remains denied. Authorization does not reuse stal
 lineage or itself submit work: a published reviewed commit, fresh contract-bound
 upstream lineage, immutable production spec, successful validate-only, and the
 explicit operator submit step remain required.
+
+Wave A now implements the separate D4/R3 surface without authorizing it.
+`RQ014_g3r.template.json` and `rq014-g3r-cpu-v1` bind the immutable Run #8 G2R
+umbrella/PASS-receipt/DONE chain, recovery-lane v3, env-v5, and the governed
+`phase3_preference_test/ratings_extracted.csv` path with runtime-only size/SHA
+verification. The fixed `run_managed_g3.py` entrypoint performs one
+geometry-keyed rating join, emits the contracted RWS/PSP/PPR statistics and 960
+terminal rows, and publishes only an atomic PASS result, counts-and-hashes
+rating-access receipt, operation receipt, and DONE. Its private work directory
+is mode 0700 and failures disclose only stage/class/count/hash evidence. R3 is
+still absent from `allowed_operations` and its execution-contract record remains
+DENY; Wave B must freeze the rating-source bytes, complete fresh governance, flip
+only R3, materialize an immutable spec, and pass validate-only before the single
+explicit submit.
 
 Schema v2 is fixed by `research_run_spec_v2.schema.json`, while the managed
 standard-library interpreter receipt is fixed by
