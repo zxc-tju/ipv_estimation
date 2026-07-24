@@ -1,5 +1,5 @@
 {
-  "adjudicated_at_utc": "2026-07-23T06:35:00Z",
+  "adjudicated_at_utc": "2026-07-23T22:20:00Z",
   "g0_closure_status": "CLOSED_WITH_INACCESSIBLE_SURFACES",
   "no_hpc_submission_attested": true,
   "no_rating_access_attested": true,
@@ -8,12 +8,12 @@
   "reviewer_artifacts": {
     "execution_governance": {
       "path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_execution_governance_review_20260713.json",
-      "sha256": "8b08539850be6b5512ed46dd389fbaf0083cef788eb4e9484ddda4c3c7b48830",
+      "sha256": "7a484ea6a6d4c81c6f5698e3b24acf4a94ff5aea241082acdbf149168f2f826e",
       "verdict": "NO_BLOCKER"
     },
     "statistics": {
       "path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_v1p6_preflight_statistics_review_20260713.json",
-      "sha256": "021a4cc435eeb89f167faf075bb947ff94b2e304241e96b6f847e7172e444c73",
+      "sha256": "7d795c6b32f30cbab4903cfbf6ae5824ac4a40f754f099cecb308b9ac08f8d1c",
       "verdict": "NO_BLOCKER"
     }
   },

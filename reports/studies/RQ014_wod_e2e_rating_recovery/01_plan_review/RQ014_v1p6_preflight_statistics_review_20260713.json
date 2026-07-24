@@ -205,21 +205,33 @@
     {
       "evidence": [
         "The frozen G2R bank manifest, PASS receipt and DONE are bound at 2b4da1df4a5328b80d88b815ac3cdb71546952bac4638b29f4fa263b527d4515, b74bb0e2ab5966b9eaaab164130bd50791b5ceee5743030b0bb26719d79c37b9, and 256750c71902e31e46335c331369c256b7b7d13a4fb08758f1b8234b6229efdb; all eight umbrella artifact roles were supplied and remain runtime-reverified before rating access.",
-        "The rating source is bound by exact path and size 337416 without this build opening or hashing it; sha256 is null until managed R3 establishes and records the governed digest at first controlled contact.",
+        "The rating source is bound by exact path and size 337416 without the build or finalizer opening or hashing it; managed R3 established and recorded governed source SHA-256 2bbd7d721591b4756108285ae869c2fb4d6dc7bbe45077870787381929ec3e4d at first controlled contact.",
         "Central authority permits only rq014_r3_full_rating_join_and_rank under the scoped D4 decision, Formal G1, immutable bank, env-v5, one join, 960 rows, atomic PASS-only publication, and no partial disclosure.",
-        "The reviewed manifest SHA-256 is 9d475fc72be8b6bc75ff69effb72779c0f7cd95b9cc10f634134c5238222299a; this review performed no rating access, HPC submission, or partial publication."
+        "The reviewed manifest SHA-256 is 85f677675e15998ef5971bc4a06f137043b650b7ef5ce689c98515475ac98002; this review performed no rating access, HPC submission, or partial publication."
       ],
       "finding_id": "G3R-WAVE-B-S-N01",
       "severity": "NOTE",
       "status": "NO_FINDING",
       "summary": "Fresh Wave-B review re-affirms the scoped R3 conditional authorization after immutable runtime bindings were supplied."
+    },
+    {
+      "evidence": [
+        "The current 149-row reviewed manifest is SHA-256 85f677675e15998ef5971bc4a06f137043b650b7ef5ce689c98515475ac98002 and binds the merged R3 parser adapter for the real exact 13-column ratings schema.",
+        "The adapter forms the registered join from segment_key, one-based candidate_index, geom_hash, and tstar_context_step to segment_id, candidate_ordinal, geometry_sha256, and tstar_context_step before preference_score can enter the analysis.",
+        "preference_score contributes only to the pre-registered aggregate RWS, PSP, and PPR statistics; rating values remain excluded from terminal rows, rank output, receipts, and logs, so the statistical contract and non-disclosure boundary are unchanged.",
+        "The parser repair and this fresh review made no production rating-source contact and submitted no HPC job; the prior first controlled contact established the source digest but failed closed with zero rating values and zero join keys consumed and no partial publication."
+      ],
+      "finding_id": "R3-PARSER-STAT-N01",
+      "severity": "NOTE",
+      "status": "NO_FINDING",
+      "summary": "Statistics returns NO_BLOCKER on the merged R3 13-column parser adapter because it changes only schema-to-key adaptation and preserves the registered aggregate analysis and disclosure boundary."
     }
   ],
   "fresh_reviewer_attested": true,
   "hpc_jobs_submitted": false,
   "rating_values_accessed": false,
   "review_role": "statistics",
-  "reviewed_at_utc": "2026-07-23T06:30:00Z",
+  "reviewed_at_utc": "2026-07-23T22:16:00Z",
   "reviewed_manifest_path": "reports/plans/RQ014_plan_v1p6_preflight_review_manifest_20260713.sha256",
   "reviewed_manifest_sha256": "85f677675e15998ef5971bc4a06f137043b650b7ef5ce689c98515475ac98002",
   "reviewer_agent": "codex/w4-stat-reviewer",
