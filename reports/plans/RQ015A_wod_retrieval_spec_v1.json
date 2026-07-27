@@ -1,0 +1,109 @@
+{
+  "spec_id": "rq015a-wod-retrieval-v1",
+  "operation_id": "rq015a_wod_readonly_retrieval",
+  "status": "CANDIDATE_PENDING_PI_SIGNATURE",
+  "created": "2026-07-26",
+  "execution_authorized": false,
+  "authority": {
+    "basis": "PI 裁定 2026-07-26：修订 RQ015A plan §9，允许对三个 WOD/RQ014 产物做只读取回。",
+    "scope_limit": "仅取回，不在 HPC 上做任何计算、不提交任何作业、不写入 HPC 任何路径。",
+    "separate_from": "RQ015A 主执行授权（rq015a_concentration_audit）——两者各自独立授权。"
+  },
+
+  "blinding_hazard": {
+    "severity": "HIGH",
+    "statement": "候选源文件中多个文件名或列含 rating / preference。RQ014 存在明确的致盲机制（score-stripped export + sanitization receipt）。把带评分的 WOD 数据取回并纳入 RQ015A，可能破坏 RQ014 的致盲，并直接触犯 RQ015A run spec 的中止条件『读取任何 rating / preference_score 字段』。",
+    "mandatory_control": "HPC 侧先做列投影（column allowlist）再传输；本地永远不得出现 rating / preference 列。投影须产出 sanitization_receipt.json 并随数据一同取回。",
+    "forbidden_files": [
+      "**/ratings_extracted.csv",
+      "**/ratings_extraction_segments.csv",
+      "**/phase3_preference_test/**",
+      "**/*_planned_vs_driven.csv"
+    ]
+  },
+
+  "phases": [
+    {
+      "phase": "probe",
+      "purpose": "先确认数据是否还在 HPC，以及列结构；不传输任何数据。",
+      "writes_anything": false,
+      "produces": ["probe_report.json（人工粘回本地）"],
+      "note": "RQ014 的原始研究数据早已确认缺失；本次取回的是 2026-06/07 的执行产物，是否仍在 HPC 未经确认。probe 失败即退回缩减范围。"
+    },
+    {
+      "phase": "sanitize_and_stage",
+      "purpose": "HPC 侧按列白名单投影到临时目录，产出 sanitization receipt 与 SHA256。",
+      "writes_anything": "仅写入本操作自己的 staging 目录，不触碰任何既有产物",
+      "produces": ["staged/*.csv", "sanitization_receipt.json", "staged.sha256"]
+    },
+    {
+      "phase": "transfer",
+      "purpose": "把 staging 目录取回本地隔离区。",
+      "destination": "data/derived/wod_e2e/RQ015A_retrieved_<UTC>/",
+      "no_overwrite": true,
+      "post_checks": ["逐文件 SHA256 与 staged.sha256 一致",
+                      "列名集合 ⊆ allowlist",
+                      "无任何列名匹配 (?i)rating|preference|score_human"]
+    }
+  ],
+
+  "targets": [
+    {
+      "artifact_id": "wod_rq010b_full479_audited",
+      "hpc_candidates": [
+        "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_full479_scored_audited_20260630T063600/rq010b_wod_e2e_multiframe_tracking_ipv_full479_audited_candidate_ipv_rating.csv"
+      ],
+      "column_allowlist_intent": ["segment/segment_key", "candidate_index/candidate_ordinal",
+                                  "candidate_ipv", "candidate_ipv_error 或同义列", "path_type"],
+      "column_denylist_regex": "(?i)rating|preference|human|score",
+      "expected_unverified": {"rows": 906, "segments": 302, "candidates_per_segment": 3},
+      "risk": "文件名含 rating；必须投影后才可传输。"
+    },
+    {
+      "artifact_id": "wod_phase1_phase1b_10hz_schemeb",
+      "hpc_candidates": [
+        "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/candidate_ipv.csv",
+        "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1_ipv_build/candidate_estimability_audit.csv",
+        "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1b_ipv_build_subwindow/candidate_ipv_subwindow.csv",
+        "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase1b_ipv_build_subwindow/candidate_estimability_subwindow_audit.csv",
+        "/share/home/u25310231/ZXC/RQ010B_wod_e2e/reframed_pref_analysis/phase_schemeB_effectiveN/schemeB_candidate_ipv.csv"
+      ],
+      "preferred": "两个 *_estimability_*audit.csv —— 名称即提示它们可能已带逐候选 error，且不含评分。probe 阶段先看这两个的列。",
+      "v1_claim_to_recheck": "schema v1 记 ipv_error_source=absent（『error 被丢弃』）。若 audit 文件确含 error，该定性需推翻，recoverability 从 RECOVERABLE_BY_REPLAY_OUT_OF_SCOPE 升级为 L1_DIRECT。",
+      "column_denylist_regex": "(?i)rating|preference|human"
+    },
+    {
+      "artifact_id": "rq014_g2r_anchor_scores",
+      "hpc_root": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ014/",
+      "run_id_candidates": [
+        "RQ014_1_wod_rating_recovery_20260721T070000Z_d28156d6",
+        "RQ014_1_wod_rating_recovery_20260719T040000Z_4a8161ee",
+        "RQ014_1_wod_rating_recovery_20260718T020000Z_b94adf2a",
+        "RQ014_1_wod_rating_recovery_20260715T080000Z_6efe3f5b"
+      ],
+      "row_schema": "configs/artifact_schemas/rq014_g2r_anchor_score_row_v1.schema.json",
+      "row_key_fields": ["segment_id", "feature_id", "sampling_id", "temporal_id",
+                         "horizon_id", "tau_tick", "candidate_ordinal"],
+      "known_limitation": "该行 schema 的 23 个字段中**没有任何 error 字段**（只有 candidate_ipv 与 m3_* 分位/门控）。因此即使取回，本产物对集中度审计仍是零信息，只能确认 attempt_status 的上界。",
+      "recommendation": "probe 后若确认无 error 字段，**不要取回**——取回不会改变 UNKNOWN 定性，只增加致盲风险面。",
+      "risk": "run_id 含 'rating'；且这是 RQ014 致盲体系的核心产物。"
+    }
+  ],
+
+  "abort_conditions": [
+    "probe 显示目标路径不存在或已清理",
+    "sanitization receipt 缺失或列白名单校验失败",
+    "取回文件出现任何匹配 (?i)rating|preference|human 的列名",
+    "本地目标目录已存在",
+    "SHA256 与 staged 不一致",
+    "任何写入 HPC 既有产物的迹象"
+  ],
+
+  "on_abort": {
+    "action": "退回缩减范围（InterHub + OnSite），在报告标题级披露 WOD 零覆盖",
+    "no_penalty": "退回不视为失败；覆盖缺口是可披露的事实结论。"
+  },
+
+  "pi_signature_required": true,
+  "signature_block": {"signed_by": null, "date": null, "verdict": null}
+}
