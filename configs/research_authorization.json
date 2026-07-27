@@ -22,6 +22,14 @@
       "g3r_decision_path": "reports/plans/RQ014_PI_decision_D4_G3R_authorize_20260723.md",
       "formal_g1_path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
       "execution_contract_path": "reports/plans/RQ014_execution_contract_v1p5.json"
+    },
+    "rq015a_concentration_audit": {
+      "allowed_operations": [],
+      "execution_authorized": false,
+      "authorization_state": "BUILD_WHILE_DENY",
+      "run_spec_path": "reports/plans/RQ015A_run_spec_v2_20260727.json",
+      "execution_contract_path": "reports/plans/RQ015A_run_spec_v2_20260727.json",
+      "decision_path": "reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md"
     }
   }
 }

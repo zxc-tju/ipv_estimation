@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-23.
+Last reviewed: 2026-07-26.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -8,6 +8,135 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
+- **RQ015A 实现已完成 T1–T8，处于 `BUILD_WHILE_DENY`（2026-07-27，分支 `rq015a-implementation`）。**
+  v3 复审的核心 blocker 是"完整 ledger builder / factor / bootstrap / validator / receipt 不存在"，
+  现已全部交付。**`execution_authorized` 仍为 `false`，从未运行审计，从未解析 held_out
+  的 measurement 列，从未读取任何评分字段。**
+  - 交付：`scripts/rq015a/{rq015a_types,build_ledger,validate_only,receipt,factor_analysis,run_rq015a}.py`
+    + `configs/research_authorization.json#authorizations.rq015a_concentration_audit`
+    + `reports/plans/RQ015A_run_spec_v2_20260727.json`
+    + `reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md`（v3 未被改动，SHA 仍 `75912bc1…`）。
+  - **验证命令（当前 81 passed）**：
+    `/Users/xiaocong/.rq009_codex_fleet/venv/bin/python -m pytest tests/test_rq015a_contracts.py
+    tests/test_rq015a_build_ledger.py tests/test_rq015a_validate_receipt.py
+    tests/test_rq015a_factor_analysis.py tests/test_rq015a_run_entrypoint.py -q`
+  - `--execute` 实测拒绝：`RQ015A_EXECUTE_DENIED: execution_authorized is not true`，exit 1，
+    且全程未构造 `MeasurementReader`。授权是**双键**的（`allowed_operations` 空列表 +
+    `execution_authorized=false`）——**翻转时两个键都要审**，只改一个会产生语义矛盾。
+  - **零回归已用干净检出证实**：全量 21 failed / 549 passed；在 Wave 1 之前的
+    `19b28024` 干净检出上同一批文件是 **23 failed**。全部失败均为既有的
+    RQ014/launcher/shortcut 状态，与 RQ015A 无关，**不要去修它们**。
+  - 独立盲算（对实现与冻结数字皆盲，走 `pyarrow` 而非 pandas）**与冻结事实零分歧**，
+    另得两项净增益：feature matrix 的 `anchor_frame_index` 最小值 **7** 由"抽样实测"
+    升级为全量 6,397,266 行验证；OnSite `local_position < 4` = **1,068**（=267×4，v3 中不存在），
+    对照错误的全局 `frame_index < 4` 仅 **53** 行，两口径差 1,015 行。
+  - **HPC 只读探测（2026-07-27，未取回任何数据）**：六个 WOD 目标在 HPC 上全部存在。
+    **`wod_rq010b_full479_audited` 不是 L4** —— 其 906 行（与 schema v2 记的
+    `expected_unverified.rows` 吻合）含 `ego_ipv_error` / `ego_ipv_driven_error`，
+    取回后可为 `L1_DIRECT`；但同文件带 `rating` 列，**必须 HPC 侧先列投影 + sanitization
+    receipt**，且取回需单独授权。另三个（phase1 / phase1b / schemeB）确实全无 error 列，
+    `ipv_error_source: absent` 定性确认无误。**PI 裁定：分两步——先出取回规格与授权对象送审，
+    取回本身再单独批。**
+  - **已知未闭合**：(a) schema v2 的 `rq014_g2r_anchor_scores` 条目缺
+    `rq007_split_applicable`/`rq007_split_value`/`expansion_factor`/`collapse_factor`，
+    且 `recoverability` 写作 `L4_UNRECOVERABLE` 而非同类条目的
+    `ARTIFACT_NOT_PRESENT_LOCALLY` —— identity_3 按 recoverability 求和，此处有歧义；
+    当前实现强制取后者，**处置随 WOD 取回决定一并进 schema v3**；
+    (b) T10 checksum manifest 尚未重生成；(c) 最后一轮 ≥2 路独立复审尚未进行。
+
+- **RQ015 已按 PI 决策 2026-07-26 拆分为 RQ015A / RQ015B；合并版 v1/v1.1/v1.2 仅作历史记录，不再是执行依据。**
+  拆分依据：合并计划三轮独立复审均 BLOCKED，规格面积扩张快于闭合（见
+  `reports/plans/RQ015_plan_v1p2_amendment_20260726.md` §A6）。历史复审记录保留于
+  `reports/knowledge/RQ015_ipv_estimability_contract/reviews/`。
+  - **RQ015A v3 三路独立复审完成（2026-07-26）— `BLOCKED / REQUEST_CHANGES`**：
+    计划 `reports/plans/RQ015A_plan_v3_concentration_audit_20260726.md`（SHA-256
+    `75912bc1433a5efb5b0520af492e27579e9a1f6652074d3f37eb3a77befff264`），基线 manifest
+    `RQ015A_plan_v3_checksums_20260726.sha256` **6/6 OK**。三路为 R1 4B/3M/1m、
+    R2 2B/3M/2m、R3 2B/3M/0m；综合在
+    `reports/knowledge/RQ015A_ipv_estimability_labelling/reviews/rq015a_three_reviewer_synthesis_v3_20260726.md`。
+    **已接受并须保留**：continuous `q_eff` primary、bins 不进入 episode/C0、三恒等式骨架、
+    OnSite local-position、`sorted + math.fsum` 和 L3 `ZERO_SUPPORT` 不填 0。
+    **仍阻断 Formal G1**：PI rederivation condition 未被 append-only supersede；run spec 无 exact
+    command/entrypoint、授权 fragment 不存在、split 未绑定；逐产物 path/hash/key/role 与真实数据
+    不一致（含 RQ014 wrong key、OnSite `case_key`、M3 collapse/role 混淆）；invalid
+    `ipv_error` 可产生有效 q；L2/L3 可跨 artifact pooling；C0 无 q 可返回 NO_TRIGGER；完整
+    ledger builder/factor/bootstrap/validator/receipt 不存在。显式外部 venv 下合并测试 **52 passed**，
+    但 declared stdlib environment 不含 tests 所需 `pytest`，故该通过不等于 validate-only 可复现。
+  - **PI 裁定 2026-07-26 — 按路径 A 推进（把实现写完再送最后一轮复审）**，执行中可调用 codex
+    做边界明确的任务。另两项裁定：(a) 修订 plan §9，**授权对三个 WOD/RQ014 产物做只读取回**；
+    (b) feature matrix 的 **M4_ONLY_ego_self_anchor 通道排除**，`expansion_factor` 固定为 2。
+  - **预执行合同核验完成（2026-07-26，对真实文件；只读结构，未解析任何 `ipv_*` 数值）**：
+    `reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md`，
+    可复现脚本 `scripts/rq015a/preflight_structural_scan.py`。得 **C1–C14 共 14 项修正**，
+    已吸收进 `reports/plans/RQ015A_ledger_schema_v2.json`（不覆写 v1）。三条要害：
+    **C6（安全）** RQ009 的 fold `{train,guard_tune,calibration,test}` 与 RQ007 的 split 正交，
+    每个 fold 都含约 29% held_out；按 fold 过滤会解析 **1,899,898 行 held_out**——必须先按
+    `case_id` 白名单过滤再读 measurement。
+    **C3/C4/C5（产物指认错）** `rq009_m3_predictions` 的 15 列**无任何 `ipv_error`**；三角色实为
+    feature matrix 的列；3× alpha 折叠只属于 predictions，feature matrix 为 `E=2 / C=1`；
+    v1 的 `anchors_dev_guard=1778594` 无法复现已删除，实测 dev+guard **4,497,368** 行。
+    **C1（恒等式）** sigma01 的 2,490,992 是**已排除 D0** 的数，用作 identity_1 基数会使
+    identity_2 的 `NOT_ATTEMPTED` 恒为 0；改为 physical **2,598,536** / measurement **5,197,072** /
+    NOT_ATTEMPTED **215,088**。
+    另：**C14** WOD 三产物（RQ010B full479、phase1b schemeB、RQ014 anchor scores）本地全部缺失，
+    可审计范围实为 3/6。fixtures 已修至 **20/20**。
+  - **交接手册（新线程从这里开始）**：`reports/plans/RQ015A_execution_handoff_20260727.md`。
+    含 12 条铁律、已冻结常量与逐产物实测事实、T1–T11 待办与验收标准、立即停止条件。
+  - **编排合同（PI 裁定 2026-07-27）**：接手方**只做指挥者**——分解工作流、写 prompt、
+    判定可信度、最终综合；**任何边界明确的执行任务一律交给 codex CLI**
+    （`gpt-5.5` + `xhigh`，并行后台，写代码的 agent 用 `--worktree`）。
+    **fleet 目录已移出 OneDrive** → `~/.codex-fleet-local/rq015a-implementation/board/`
+    （原 `.codex-fleet/rq015a-implementation/` 已不存在）。移动原因：worktree 建在
+    OneDrive 同步目录内会使路径超长（实测 333 字符，OneDrive 拒绝同步），
+    **后续所有 `--worktree` agent 的 fleet-dir 都必须用该本地路径**。
+    同理 `.codex-fleet/rq014-execution-v1p6/agents/` 也已移至
+    `~/.codex-fleet-local/rq014-execution-v1p6/`；该 fleet 的 `board/`（含 `w4g_evidence/`）
+    **仍留在仓库内**，本文件其它位置对它的引用依然有效。
+    board 内容：`plan.md`、`module_interface_v1.md` 与指挥者裁定
+    `module_interface_v1_commander_addendum.md`（6 条强制修正）、
+    `prompts/`（W0–W7 共 9 份）、`reports/`（各 agent 的有界结项报告）。
+    交叉验证已执行：`W7-replicate-conservation` 盲算守恒数字**与冻结事实零分歧**；
+    `W6-red-team`（专找 fail-open / 过滤顺序 / pooling / 非确定性）进行中。
+  - **HPC 工作已移交接手方**（PI 裁定 2026-07-27，接手方有权限）：T11 只读探测
+    `bash scripts/rq015a/hpc_probe_wod_targets.sh > rq015a_wod_probe.json`，
+    规格 `reports/plans/RQ015A_wod_retrieval_spec_v1.json`。**致盲危险 HIGH**：
+    传输前须在 HPC 侧做列投影 + sanitization receipt；**探测≠取回，取回需单独授权**。
+  - **T9 已由 PI 裁定解除（2026-07-27）**：`sealed_exposure_disclosure_20260726.md`
+    新增 **§8**（append-only supersede，§6 原文一字未改），正式解除 §6「附加条件」
+    的三条——即"两阈值须从 dev+guard 重导出 / 导出规则须先冻结登记 SHA / 重导出前
+    不得产出结论画像"，并撤销 `PROVISIONAL_PENDING_DEVGUARD_REDERIVATION` 标记。
+    解除理由：`4/7`（⇔`ipv_error=0.5`）与 `0.93`（⇔`ipv_error=0.608069099165`）
+    已由科学阈值降为**报告用 policy bins**，而 R6 + `test_c0_routing_never_consumes_report_bins`
+    已在代码层强制 bins 不进入任何判定，该条件已丧失保护对象。
+    **不在解除范围**：§6 判读 A 与记录豁免、§7 措辞精确化（扫描程序确实解析并聚合过
+    held_out 逐行字段）、§7 三条治理动作、R1/R2/R3、以及 `execution_authorized` 仍为 `false`
+    ——本次解除**不构成任何执行授权**。
+    文件 SHA-256 由 `aabbd0d6…4ab24` 变为 `6c904b806e28bb4d940db145bd365287fa23287ddd22881caa41bc8c44439f54`；
+    v1/v2/v3 manifest 为各自复审时点的历史快照，v4 包须由 T10 重新登记。
+    签署状态 **`RECORDED_ON_PI_RULING`（已生效，无待签事项）**——PI 于 2026-07-27 明确选择
+    以「会话裁定 + 指挥者记录」形式生效，不留签署栏，避免空置签署栏成为后续复审的未闭合项。
+  - **RQ015B — 估计器修复与 verifier 弃权闸**：
+    `reports/plans/RQ015B_plan_v0_estimator_repair_and_abstain_gate_20260726.md`。
+    B1 log 域改写（`w=softmax(−MSEᵢ/2σ²)`，平价门 ≤1e-12）；B2 正交结果契约 +
+    **生产兼容层三项（未交付，不得接线）**；D1–D4 可执行分类器（D1 定义为
+    "legacy 结果是否被改变"，D2 更名 `D2_FLAT_UNDER_CURRENT_GRID_AND_MODEL`、
+    禁用"固有不可辨识"）；`min_mse_misfit := Q_0.99(min_mse)` 在 dev+guard 上冻结
+    （sealed 禁止参与）；B3 σ 仅在证据支持时执行；**部署前必须通过 gate-pass 条件
+    覆盖审计**（RQ009 test fold 独用、4 分层、case-cluster bootstrap B=2000
+    seed 20260726、点估计 ±3pp 且 CI 下界 ≥ nominal−5pp）。
+    实现现状 `BUILD_WHILE_DENY`：`src/sociality_estimation/core/reliability_logdomain.py`
+    + `tests/test_rq015_reliability_logdomain.py` **36/36 通过**；legacy 未改、未接线生产。
+  - RQ009 hw4 的含-sealed 立项基线：有效 agent-value（7,086,138）近零 **41.2794%**、
+    `err≥0.61` **52.5810%**、`err≤0.50` **24.1688%**；不得泛化为所有估计器配置或
+    最终画像。该 InterHub 产物的 D0 warm-up 占位为 305,824 个 agent-value
+    （=38,228×4×2，原"K≥9 网格混入"结论已证伪）；下溢临界 RMS
+    n=5 为 1.6915/1.7336 m、n=11 为 1.1470/1.1752 m；复现脚本
+    `reports/plans/prompts/RQ015_portrait_scan_v1.sh`。
+  - **措辞订正**：并非"每个测不出的帧都判合规"——冻结 M3 test fold 90% nominal 支持域内，
+    `|y|<1e-6` 近零行有 **520,826/522,219 = 99.7333%** 的区间包含 0（约 0.27% 不含）。
+  - 两个 RQ 均 `execution_authorized=false`；RQ015A v3 已三路独立复审并 BLOCKED，
+    `formal_g1_eligible=false`；RQ015B 仍待其自己的独立复审。RQ015A v3 复审包为
+    `reports/knowledge/RQ015A_ipv_estimability_labelling/reviews/rq015a_review_manifest_v3_20260726.sha256`。
 - **RQ010B COMPLETE (2026-07-03; 10Hz sensitivity closed 2026-07-04) = bounded NULL.** Reframed WOD-E2E human-preference
   validity: candidate IPV does NOT predict human preference and is not comparable to
   physics (Scheme 1 future-only n=75 rho=0.148 p=0.10; Scheme 2 history+future >=1s
@@ -316,6 +445,20 @@ question index in `STUDIES.md`.
   The output contract at that checkpoint was SHA-256
   `36f5bbd089627e4e1e9cd5e45599d890529fc6313b793e98a108d95c2f0328ca`;
   it is superseded by the D4 Wave-A source-contract re-anchor below.
+- **RQ014 R3 result review complete (2026-07-25; this supersedes the execution-state
+  wording in the D4/R3 bullet below for scientific status).** Managed R3 run
+  `RQ014_3_full_rating_join_and_rank_20260724T053954Z_49dcd5c0` produced 960
+  terminal association rows and one compatible secondary
+  `RR3-R04N-CH-W25-H20-NMD_MEAN-RWS` row (`r=-0.384`, `n=42`); primary NEX has
+  zero compatible rows. R10L is `DEFECT`, not a scientific null, because a
+  whole-branch source-gap terminalization cleared the arm before the frozen
+  per-window semantics could apply. Its rating-free support ceiling is
+  `UNCERTAIN` until the full probe receipt is tracked. The current R3 artifact
+  set has no `selected_recovery_recipe.json`, and no G4R clean replay PASS is
+  present. Current status is therefore `PENDING_REPLAY / NOT ACCEPTED`; do not
+  create an accepting `decision.md` or route a confirmed-transfer claim to the
+  paper repository. Independent review:
+  `reports/knowledge/RQ014_wod_e2e_rating_recovery/reviews/codex_review.md`.
 - **RQ014 D4/R3 Wave B conditionally authorizes the single managed R3 operation
   (2026-07-23; no rating read, HPC action, or commit).** The immutable blind bank
   `RQ014_2_blind_feature_build_20260722T210000Z_e41c8792` is complete with

@@ -35,11 +35,13 @@ from rq015a_contracts import (
 
 BOOTSTRAP_ITERATIONS = 2000
 BOOTSTRAP_SEED = 20260726
+BOOTSTRAP_DEFINED_SUPPORT_FLOOR = 0.90
 CI_LOW_QUANTILE = 0.025
 CI_HIGH_QUANTILE = 0.975
 
 STATUS_OK = "OK"
 STATUS_INSUFFICIENT_SUPPORT = "INSUFFICIENT_SUPPORT"
+STATUS_INSUFFICIENT_SUPPORT_BOOTSTRAP_DEGENERATE = "INSUFFICIENT_SUPPORT_BOOTSTRAP_DEGENERATE"
 STATUS_UNDEFINED_CONSTANT_INPUT = "UNDEFINED_CONSTANT_INPUT"
 
 _FORBIDDEN_FACTOR_FRAGMENTS = ("rating", "preference", "human", "score", "label")
@@ -411,6 +413,11 @@ def analyze_factor(rows: Iterable[L1FactorRow], factor_name: str) -> FactorAssoc
     ci_low, ci_high, n_defined, n_undefined = _bootstrap_ci(
         prepared.observations, BOOTSTRAP_ITERATIONS, BOOTSTRAP_SEED,
     )
+    if n_defined < BOOTSTRAP_DEFINED_SUPPORT_FLOOR * BOOTSTRAP_ITERATIONS:
+        return _result(
+            artifact_id, factor_name, STATUS_INSUFFICIENT_SUPPORT_BOOTSTRAP_DEGENERATE,
+            prepared, len(clusters), None, None, None, n_defined, n_undefined,
+        )
     if ci_low is None or ci_high is None:
         return _result(
             artifact_id, factor_name, STATUS_INSUFFICIENT_SUPPORT, prepared,

@@ -21,7 +21,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts" / "rq015a"))
 
 from factor_analysis import (  # noqa: E402
+    BOOTSTRAP_DEFINED_SUPPORT_FLOOR,
     STATUS_INSUFFICIENT_SUPPORT,
+    STATUS_INSUFFICIENT_SUPPORT_BOOTSTRAP_DEGENERATE,
     STATUS_OK,
     STATUS_UNDEFINED_CONSTANT_INPUT,
     analyze_factor,
@@ -91,6 +93,22 @@ def test_bootstrap_repeats_exactly_with_frozen_seed():
     assert first.ci95_low == second.ci95_low
     assert first.ci95_high == second.ci95_high
     assert first.n_bootstrap_defined == second.n_bootstrap_defined
+
+
+def test_degenerate_bootstrap_rate_fails_closed_without_ci_numbers():
+    rows = [
+        _row("flat_%d" % i, ATTEMPTED, 0.50, 1.0) for i in range(4)
+    ] + [
+        _row("signal", ATTEMPTED, 0.90, 9.0),
+    ]
+
+    out = analyze_factor(rows, "factor")
+
+    assert out.status == STATUS_INSUFFICIENT_SUPPORT_BOOTSTRAP_DEGENERATE
+    assert out.spearman_rho is None
+    assert out.ci95_low is None and out.ci95_high is None
+    assert out.n_bootstrap_defined < BOOTSTRAP_DEFINED_SUPPORT_FLOOR * out.bootstrap_iterations
+    assert out.n_bootstrap_undefined > 0
 
 
 def test_case_cluster_bootstrap_honors_cluster_row_multiplicity():
