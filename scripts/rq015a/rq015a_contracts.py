@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import math
+import numbers
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
@@ -26,6 +27,15 @@ NON_LEDGER_STATUSES = {"PROVENANCE_ONLY_NOT_IN_LEDGER", "ARTIFACT_NOT_PRESENT_LO
 ATTEMPTED = "ATTEMPTED"
 NOT_ATTEMPTED = "NOT_ATTEMPTED"
 UNKNOWN = "UNKNOWN"
+LEDGER_STATUSES = {ATTEMPTED, NOT_ATTEMPTED, UNKNOWN}
+RECOVERABILITY_LABELS = {
+    "L1_DIRECT",
+    "L2_PROVENANCE",
+    "L3_PENDING_RQ015B",
+    "L4_UNRECOVERABLE",
+    "RECOVERABLE_BY_REPLAY_OUT_OF_SCOPE",
+    "ARTIFACT_NOT_PRESENT_LOCALLY",
+}
 
 # C0 路由的 triage 阈值：**operational triage**，不是科学边界，不由数据导出。
 ROUTING_PRIMARY = {"unavailable_share": 0.05, "mean_q_eff": 0.80, "unknown_share": 0.20}
@@ -60,34 +70,74 @@ class ContractViolation(RuntimeError):
     """守恒或合同断言失败（fail closed）。"""
 
 
-# ---------------------------------------------------------------- 基础派生量
+def _require_integral(value: object, name: str, artifact_id: str,
+                      minimum: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, numbers.Integral):
+        raise ContractViolation(f"{artifact_id}: {name} must be an integer")
+    value = int(value)
+    if value < minimum:
+        raise ContractViolation(f"{artifact_id}: {name} must be >= {minimum}")
+    return value
 
-def k_eff_from_error(ipv_error: Optional[float]) -> Optional[float]:
-    if ipv_error is None or not math.isfinite(ipv_error):
-        return None
-    denom = (1.0 - ipv_error) ** 2
-    if denom <= 0.0:
-        return None                      # ipv_error >= 1（含 warm-up 占位）
-    return 1.0 / denom
+
+def _validate_count_mapping(artifact_id: str, name: str, counts: Dict[str, int],
+                            allowed_keys: set) -> Dict[str, int]:
+    if not isinstance(counts, dict):
+        raise ContractViolation(f"{artifact_id}: {name} must be a dict")
+    extra = set(counts) - allowed_keys
+    if extra:
+        raise ContractViolation(
+            f"{artifact_id}: unknown {name} labels {sorted(extra)}")
+    return {
+        key: _require_integral(value, f"{name}[{key!r}]", artifact_id, 0)
+        for key, value in counts.items()
+    }
 
 
-def q_eff(ipv_error: Optional[float], K: Optional[int]) -> Optional[float]:
-    """主量。**fail-closed**：非法 ipv_error 或 K 一律抛错，绝不静默截断。
-
-    v3 的 `min(val, 1.0)` 是 fail-open：`ipv_error=1.1` 会返回看似合法的 1.0。
-    合法域：`ipv_error ∈ [0, 1)` 且 `K ≥ 1`；`k_eff` 必须 `≤ K`（否则数据自相矛盾）。
-    退化（error≥1，含 warm-up 占位）返回 None，调用方须置 `attempt_status=UNKNOWN`。
-    """
-    if ipv_error is None or K is None:
-        return None
-    if isinstance(ipv_error, bool) or isinstance(K, bool):
-        raise ContractViolation("bool is not a valid ipv_error/K")
+def _validate_ipv_error(ipv_error: object) -> float:
+    if isinstance(ipv_error, bool) or not isinstance(ipv_error, numbers.Real):
+        raise ContractViolation(f"invalid ipv_error {ipv_error!r}")
+    ipv_error = float(ipv_error)
     if not math.isfinite(ipv_error):
         raise ContractViolation(f"non-finite ipv_error {ipv_error!r}")
     if ipv_error < 0.0 or ipv_error > 1.0:
         raise ContractViolation(f"ipv_error {ipv_error!r} outside [0, 1]")
-    if K < 1:
-        raise ContractViolation(f"K {K!r} must be >= 1")
+    return ipv_error
+
+
+def _nullable_string_sort_key(value: object) -> Tuple[bool, str]:
+    if value is None:
+        return (False, "")
+    if isinstance(value, str):
+        return (True, value)
+    raise ContractViolation(f"expected string or None sort key, got {value!r}")
+
+
+def _group_key_sort_key(key: Tuple[object, object, object]) -> Tuple[Tuple[bool, str],
+                                                                    Tuple[bool, str],
+                                                                    Tuple[bool, str]]:
+    return tuple(_nullable_string_sort_key(part) for part in key)
+
+
+# ---------------------------------------------------------------- 基础派生量
+
+def k_eff_from_error(ipv_error: float) -> Optional[float]:
+    ipv_error = _validate_ipv_error(ipv_error)
+    denom = (1.0 - ipv_error) ** 2
+    if denom <= 0.0:
+        return None                      # ipv_error == 1（warm-up 占位）
+    return 1.0 / denom
+
+
+def q_eff(ipv_error: float, K: int) -> Optional[float]:
+    """主量。**fail-closed**：非法 ipv_error 或 K 一律抛错，绝不静默截断。
+
+    v3 的 `min(val, 1.0)` 是 fail-open：`ipv_error=1.1` 会返回看似合法的 1.0。
+    合法域：`ipv_error ∈ [0, 1]` 且 `K ≥ 1`；`k_eff` 必须 `≤ K`（否则数据自相矛盾）。
+    退化（error=1，含 warm-up 占位）返回 None，调用方须置 `attempt_status=UNKNOWN`。
+    """
+    ipv_error = _validate_ipv_error(ipv_error)
+    K = _require_integral(K, "K", "q_eff", 1)
     ke = k_eff_from_error(ipv_error)
     if ke is None:                       # error == 1 -> 退化
         return None
@@ -114,29 +164,36 @@ class ConservationReport:
     recoverability_counts: Dict[str, int]
 
     def assert_ok(self) -> None:
+        status_counts = _validate_count_mapping(
+            self.artifact_id, "status_counts", self.status_counts, LEDGER_STATUSES)
+        recoverability_counts = _validate_count_mapping(
+            self.artifact_id, "recoverability_counts", self.recoverability_counts,
+            RECOVERABILITY_LABELS)
         if self.measurement_rows_observed != self.measurement_rows_expected:
             raise ContractViolation(
                 f"{self.artifact_id}: identity_1 failed "
                 f"{self.physical_rows}*{self.expansion_factor}/{self.collapse_factor}"
                 f"={self.measurement_rows_expected} != {self.measurement_rows_observed}")
-        s = sum(self.status_counts.values())
+        s = sum(status_counts.values())
         if s != self.measurement_rows_observed:
             raise ContractViolation(
                 f"{self.artifact_id}: identity_2 failed {s} != {self.measurement_rows_observed}")
-        r = sum(self.recoverability_counts.values())
+        r = sum(recoverability_counts.values())
         if r != self.measurement_rows_observed:
             raise ContractViolation(
                 f"{self.artifact_id}: identity_3 failed {r} != {self.measurement_rows_observed}")
-        extra = set(self.status_counts) - {ATTEMPTED, NOT_ATTEMPTED, UNKNOWN}
-        if extra:
-            raise ContractViolation(f"{self.artifact_id}: unknown status labels {sorted(extra)}")
 
 
 def check_conservation(artifact_id: str, physical_rows: int, expansion_factor: int,
                        collapse_factor: int, status_counts: Dict[str, int],
                        recoverability_counts: Dict[str, int]) -> ConservationReport:
-    if physical_rows < 0 or expansion_factor < 1 or collapse_factor < 1:
-        raise ContractViolation(f"{artifact_id}: invalid factors")
+    physical_rows = _require_integral(physical_rows, "physical_rows", artifact_id, 0)
+    expansion_factor = _require_integral(expansion_factor, "expansion_factor", artifact_id, 1)
+    collapse_factor = _require_integral(collapse_factor, "collapse_factor", artifact_id, 1)
+    status_counts = _validate_count_mapping(
+        artifact_id, "status_counts", status_counts, LEDGER_STATUSES)
+    recoverability_counts = _validate_count_mapping(
+        artifact_id, "recoverability_counts", recoverability_counts, RECOVERABILITY_LABELS)
     num = physical_rows * expansion_factor
     if num % collapse_factor != 0:
         raise ContractViolation(
@@ -146,8 +203,8 @@ def check_conservation(artifact_id: str, physical_rows: int, expansion_factor: i
         expansion_factor=expansion_factor, collapse_factor=collapse_factor,
         measurement_rows_expected=num // collapse_factor,
         measurement_rows_observed=sum(status_counts.values()),
-        status_counts=dict(status_counts),
-        recoverability_counts=dict(recoverability_counts))
+        status_counts=status_counts,
+        recoverability_counts=recoverability_counts)
     rep.assert_ok()
     return rep
 
@@ -201,14 +258,15 @@ def _require_l2_value(unit, key: str) -> object:
 
 @dataclass(frozen=True)
 class L2Unit:
-    case_id: str
-    perspective: str
-    configuration: str
+    case_id: Optional[str]
+    perspective: Optional[str]
+    configuration: Optional[str]
     n_l1: int
     n_attempted: int
     n_unknown: int
     mean_q_eff: Optional[float]
     status: str          # OK | INSUFFICIENT_SUPPORT
+    artifact_id: Optional[str] = None
 
 
 def aggregate_l2(l1_rows: Iterable[dict]) -> List[L2Unit]:
@@ -218,17 +276,17 @@ def aggregate_l2(l1_rows: Iterable[dict]) -> List[L2Unit]:
     分组内排序不影响结果（均值与计数皆置换不变）。
     """
     l1_rows = list(l1_rows)
-    assert_single_artifact(l1_rows)               # fail-closed：禁止跨产物
-    groups: Dict[Tuple[str, str, str], List[dict]] = {}
+    artifact_id = assert_single_artifact(l1_rows)  # fail-closed：禁止跨产物
+    groups: Dict[Tuple[Optional[str], Optional[str], Optional[str]], List[dict]] = {}
     for r in l1_rows:
-        artifact_id = str(r.get("artifact_id", "<missing artifact_id>"))
+        row_artifact_id = str(r.get("artifact_id", "<missing artifact_id>"))
         groups.setdefault((
-            _require_l1_key(r, "case_id", artifact_id),
-            _require_l1_key(r, "perspective", artifact_id),
-            _require_l1_key(r, "configuration", artifact_id),
+            _require_l1_key(r, "case_id", row_artifact_id),
+            _require_l1_key(r, "perspective", row_artifact_id),
+            _require_l1_key(r, "configuration", row_artifact_id),
         ), []).append(r)
     out: List[L2Unit] = []
-    for key in sorted(groups):                       # 确定性输出顺序
+    for key in sorted(groups, key=_group_key_sort_key):  # 确定性输出顺序，None 在字符串前
         rows = groups[key]
         qs = []
         statuses = []
@@ -246,7 +304,8 @@ def aggregate_l2(l1_rows: Iterable[dict]) -> List[L2Unit]:
             n_attempted=sum(1 for status in statuses if status == ATTEMPTED),
             n_unknown=sum(1 for status in statuses if status == UNKNOWN),
             mean_q_eff=_det_mean(qs),
-            status="OK" if len(rows) >= MIN_SUPPORT_L1_PER_L2 else "INSUFFICIENT_SUPPORT"))
+            status="OK" if len(rows) >= MIN_SUPPORT_L1_PER_L2 else "INSUFFICIENT_SUPPORT",
+            artifact_id=artifact_id))
     return out
 
 
@@ -264,11 +323,20 @@ def aggregate_l3(l2_units: Sequence[L2Unit]) -> List[L3Unit]:
 
     某 case 若无任何合格 L2 -> ZERO_SUPPORT，`mean_q_eff=None`，**不以 0 参与任何平均**。
     """
-    groups: Dict[str, List[L2Unit]] = {}
+    l2_units = list(l2_units)
+    groups: Dict[Optional[str], List[L2Unit]] = {}
+    artifact_ids = set()
     for u in l2_units:
         groups.setdefault(_require_l2_value(u, "case_id"), []).append(u)
+        artifact_id = _require_l2_value(u, "artifact_id")
+        if artifact_id is None:
+            raise ContractViolation("every L2 unit must carry artifact_id")
+        artifact_ids.add(artifact_id)
+    if len(artifact_ids) > 1:
+        raise ContractViolation(
+            f"cross-artifact pooling forbidden; got {sorted(map(str, artifact_ids))}")
     out: List[L3Unit] = []
-    for case_id in sorted(groups):
+    for case_id in sorted(groups, key=_nullable_string_sort_key):
         units = groups[case_id]
         ok = [u for u in units
               if _require_l2_value(u, "status") == "OK"
@@ -414,6 +482,11 @@ def load_schema(path: str | Path) -> dict:
             value = a[factor]
             if isinstance(value, bool) or not isinstance(value, int) or value < 1:
                 raise ContractViolation(f"{artifact_id}: bad {factor}")
+        k_source = a.get("K_source")
+        if isinstance(k_source, dict) and k_source.get("kind") == "constant":
+            if "value" not in k_source:
+                raise ContractViolation(f"{artifact_id}: missing K_source.value")
+            _require_integral(k_source["value"], "K_source.value", artifact_id, 1)
     d["ledger_bearing_artifact_ids"] = ledger_bearing_artifact_ids
     d["non_ledger_artifacts"] = non_ledger_artifacts
     return d

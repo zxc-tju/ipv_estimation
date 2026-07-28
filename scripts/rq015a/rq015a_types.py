@@ -171,6 +171,15 @@ class CaseAllowlist:
         _require(len(self.source_sha256) == 64, "source_sha256 must be sha256 hex")
 
 
+def validate_case_allowlist_token(allowlist: object) -> "CaseAllowlist":
+    _require(
+        type(allowlist) is CaseAllowlist,
+        "allowlist token must be exact CaseAllowlist",
+    )
+    allowlist._validate()
+    return allowlist
+
+
 @dataclass(frozen=True)
 class RequiresRQ007Allowlist:
     join_column: str
@@ -230,7 +239,7 @@ class AllowlistedArtifactScope:
 
     def _validate(self) -> None:
         _require_in("join_column", self.join_column, _JOIN_COLUMNS)
-        _require(isinstance(self.allowlist, CaseAllowlist), "allowlist token required")
+        validate_case_allowlist_token(self.allowlist)
         _require(self.held_out_parsed_rows == 0, "held_out_parsed_rows must be 0")
         _require(self.unmapped_rows == 0, "unmapped_rows must be 0")
 

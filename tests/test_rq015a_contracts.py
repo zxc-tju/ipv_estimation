@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / "scripts" / "rq015a"))
 
 from rq015a_contracts import (  # noqa: E402
     ATTEMPTED, NOT_ATTEMPTED, UNKNOWN, ContractViolation, REPORT_BINS_PRIMARY,
-    aggregate_l2, aggregate_l3, band_shares, bins_stability, c0_route,
+    L2Unit, aggregate_l2, aggregate_l3, band_shares, bins_stability, c0_route,
     c0_route_with_sensitivity, check_conservation, episode_summaries,
     k_eff_from_error, load_schema, local_positions, q_eff,
 )
@@ -28,9 +28,12 @@ def test_q_eff_and_warmup_degeneracy():
     assert q_eff(0.0, 7) == pytest.approx(1 / 7)              # one-hot -> K_eff=1
     assert q_eff(1 - 1 / math.sqrt(7), 7) == pytest.approx(1.0, abs=1e-9)  # 均匀 -> q=1
     assert q_eff(1.0, 7) is None                              # warm-up 占位 error=1
-    assert q_eff(0.5, None) is None and q_eff(None, 7) is None
     assert k_eff_from_error(1.0) is None                      # 不得除零
     assert q_eff(0.61, 7) == pytest.approx(1 / (1 - 0.61) ** 2 / 7)
+    with pytest.raises(ContractViolation):
+        q_eff(0.5, None)
+    with pytest.raises(ContractViolation):
+        q_eff(None, 7)
 
 
 # ---------------- 行守恒（blocker 3）----------------
@@ -96,6 +99,27 @@ def test_conservation_failures_are_fail_closed():
         check_conservation("x", 10, 1, 3, {ATTEMPTED: 3}, {"L1_DIRECT": 3})
 
 
+def test_check_conservation_rejects_malformed_counts_and_labels():
+    with pytest.raises(ContractViolation):
+        check_conservation("x", 10.5, 2, 1, {ATTEMPTED: 21}, {"L1_DIRECT": 21})
+    with pytest.raises(ContractViolation):
+        check_conservation("x", -10, 2, 1, {ATTEMPTED: 20}, {"L1_DIRECT": 20})
+    with pytest.raises(ContractViolation):
+        check_conservation("x", True, 2, 1, {ATTEMPTED: 2}, {"L1_DIRECT": 2})
+    with pytest.raises(ContractViolation):
+        check_conservation("x", 10, 2.0, 1, {ATTEMPTED: 20}, {"L1_DIRECT": 20})
+    with pytest.raises(ContractViolation):
+        check_conservation("x", 10, 2, False, {ATTEMPTED: 20}, {"L1_DIRECT": 20})
+    with pytest.raises(ContractViolation):
+        check_conservation("x", 10, 2, 1, {ATTEMPTED: -1, UNKNOWN: 21}, {"L1_DIRECT": 20})
+    with pytest.raises(ContractViolation):
+        check_conservation("x", 10, 2, 1, {ATTEMPTED: True, UNKNOWN: 19}, {"L1_DIRECT": 20})
+    with pytest.raises(ContractViolation):
+        check_conservation("x", 10, 2, 1, {ATTEMPTED: 20}, {"L1_DIRECT": False})
+    with pytest.raises(ContractViolation):
+        check_conservation("x", 10, 2, 1, {ATTEMPTED: 20}, {"BOGUS": 20})
+
+
 # ---------------- OnSite 局部序号 ----------------
 
 def test_local_positions_not_frame_index_minus_min():
@@ -135,6 +159,28 @@ def test_l2_minimum_support_and_l3_zero_support():
     assert l3["c1"].mean_q_eff == pytest.approx(0.4)     # 不足支持的 L2 被排除
     assert l3["c1"].n_l2_ok == 1 and l3["c1"].n_l2_total == 2
     assert l3["c2"].status == "ZERO_SUPPORT" and l3["c2"].mean_q_eff is None
+    assert {u.artifact_id for u in l2} == {"interhub_sigma01_hw4_timeseries"}
+
+
+def test_aggregate_l2_nullable_keys_sort_none_before_strings():
+    rows = ([_row(None, None, "hw4", ATTEMPTED, 0.2, artifact_id="onsite") for _ in range(5)]
+            + [_row("s", "p1", None, ATTEMPTED, 0.4, artifact_id="onsite") for _ in range(5)])
+    l2 = aggregate_l2(rows)
+    assert [(u.case_id, u.perspective, u.configuration, u.mean_q_eff) for u in l2] == [
+        (None, None, "hw4", 0.2),
+        ("s", "p1", None, 0.4),
+    ]
+    l3 = aggregate_l3(l2)
+    assert [u.case_id for u in l3] == [None, "s"]
+
+
+def test_aggregate_l3_rejects_cross_artifact_l2_units():
+    units = [
+        L2Unit("c1", "p1", "hw4", 5, 5, 0, 0.4, "OK", artifact_id="A"),
+        L2Unit("c1", "p2", "hw4", 5, 5, 0, 0.6, "OK", artifact_id="B"),
+    ]
+    with pytest.raises(ContractViolation):
+        aggregate_l3(units)
 
 
 def test_aggregation_is_permutation_invariant_and_deterministic():
@@ -293,6 +339,20 @@ def test_load_schema_rejects_ledger_zero_expansion_factor(tmp_path):
         load_schema(p)
 
 
+def test_load_schema_rejects_non_integral_constant_k_source(tmp_path):
+    d = json.loads(SCHEMA.read_text())
+    d["artifacts"][0]["K_source"]["value"] = 7.9
+    p = tmp_path / "float_k_source.json"; p.write_text(json.dumps(d))
+    with pytest.raises(ContractViolation, match="K_source.value"):
+        load_schema(p)
+
+    d = json.loads(SCHEMA.read_text())
+    d["artifacts"][0]["K_source"]["value"] = True
+    p = tmp_path / "bool_k_source.json"; p.write_text(json.dumps(d))
+    with pytest.raises(ContractViolation, match="K_source.value"):
+        load_schema(p)
+
+
 def test_load_schema_rejects_v1_schema_id(tmp_path):
     d = json.loads(SCHEMA.read_text())
     d["schema_id"] = "rq015a-concentration-ledger-v1"
@@ -365,7 +425,64 @@ def test_q_eff_is_fail_closed_not_truncating():
     with pytest.raises(ContractViolation):
         qe(True, 7)                      # bool 不是合法输入
     assert qe(1.0, 7) is None            # 退化仍走 UNKNOWN 而非报错
-    assert qe(None, 7) is None and qe(0.5, None) is None
+    with pytest.raises(ContractViolation):
+        qe(None, 7)
+    with pytest.raises(ContractViolation):
+        qe(0.5, None)
+
+
+def test_k_eff_and_q_eff_domains_are_fail_closed():
+    with pytest.raises(ContractViolation):
+        k_eff_from_error(1.1)
+    with pytest.raises(ContractViolation):
+        k_eff_from_error(-0.1)
+    with pytest.raises(ContractViolation):
+        k_eff_from_error(float("inf"))
+    with pytest.raises(ContractViolation):
+        k_eff_from_error(float("nan"))
+    with pytest.raises(ContractViolation):
+        k_eff_from_error(True)
+    with pytest.raises(ContractViolation):
+        q_eff(0.5, 7.0)
+    with pytest.raises(ContractViolation):
+        q_eff(0.5, True)
+
+
+def test_legal_numeric_outputs_match_pre_fix_baseline():
+    rows = ([_row("c2", "p1", "hw4", ATTEMPTED, 0.1 * i, artifact_id="A")
+             for i in range(1, 6)]
+            + [_row("c2", "p2", "hw4", ATTEMPTED, 0.2, artifact_id="A")
+               for _ in range(5)]
+            + [_row("c3", "p1", "hw4", UNKNOWN, None, artifact_id="A")
+               for _ in range(5)])
+    l2 = aggregate_l2(rows)
+    l3 = aggregate_l3(l2)
+    episode = episode_summaries(
+        [0.11, -0.27, 0.53, 0.02, -0.41],
+        [0.2, 0.5, 0.3, 0.9, 0.44])
+    route = c0_route(True, 100, 1, 0, [0.2] * 99, True)
+
+    assert k_eff_from_error(0.61).hex() == "0x1.a4c69b2e9f38bp+2"
+    assert q_eff(0.61, 7).hex() == "0x1.e0e2fa7e6cd31p-1"
+    assert [None if u.mean_q_eff is None else u.mean_q_eff.hex() for u in l2] == [
+        "0x1.3333333333333p-2",
+        "0x1.999999999999ap-3",
+        None,
+    ]
+    assert [None if u.mean_q_eff is None else u.mean_q_eff.hex() for u in l3] == [
+        "0x1.0000000000000p-2",
+        None,
+    ]
+    assert episode["unweighted"].hex() == "-0x1.0624dd2f1a9f4p-8"
+    assert episode["concentration_wtd"].hex() == "0x1.28e20cc7df5afp-5"
+    assert band_shares([0.2, 0.3, 0.6, 0.95, 0.99, None], *REPORT_BINS_PRIMARY) == {
+        "CONCENTRATED": 40.0,
+        "INTERMEDIATE": 20.0,
+        "NEAR_UNIFORM": 40.0,
+        "n": 5,
+    }
+    assert route["terminal"] == "NO_AUDIT_TRIGGER_DETECTED"
+    assert route["metrics"]["mean_q_eff_attempted"].hex() == "0x1.999999999999ap-3"
 
 
 def test_cross_artifact_pooling_is_code_enforced():

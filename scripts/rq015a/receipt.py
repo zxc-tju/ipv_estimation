@@ -158,8 +158,15 @@ def detect_parquet_engine() -> Mapping[str, str]:
 
 
 def build_receipt_checks_from_schema(schema: Mapping[str, Any], **fields_: Any) -> ReceiptChecks:
+    derived_absent = artifacts_absent_locally_from_schema(schema)
     fields_.setdefault("schema_version", schema.get("schema_id"))
-    fields_.setdefault("artifacts_absent_locally", artifacts_absent_locally_from_schema(schema))
+    if "artifacts_absent_locally" in fields_:
+        supplied_absent = tuple(fields_["artifacts_absent_locally"])
+        if supplied_absent != derived_absent:
+            raise ContractViolation(
+                "artifacts_absent_locally must be schema-derived"
+            )
+    fields_["artifacts_absent_locally"] = derived_absent
     fields_.setdefault("parquet_engine", detect_parquet_engine())
     return ReceiptChecks(**fields_)
 
@@ -173,6 +180,8 @@ def compute_machine_verdict(checks: ReceiptChecks) -> str:
         reasons.append("schema_version_mismatch")
     if checks.m4_only_channel_excluded is not True:
         reasons.append("m4_only_channel_not_excluded")
+    if checks.reads_measurement_fields is not False:
+        reasons.append("validate_reads_measurement_fields")
     reasons.extend(_conservation_failure_reasons(checks.per_artifact_conservation))
     return "FAIL" if reasons else "PASS"
 

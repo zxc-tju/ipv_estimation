@@ -158,6 +158,37 @@ def test_schema_version_mismatch_makes_machine_verdict_fail():
     assert receipt.compute_machine_verdict(checks) == "FAIL"
 
 
+def test_directory_file_manifest_detects_equal_size_content_change(tmp_path):
+    root = tmp_path / "inputs"
+    root.mkdir()
+    target = root / "same_size.txt"
+    target.write_text("AAAA", encoding="utf-8")
+    before = validate_only.structural_path_record(root)
+    target.write_text("BBBB", encoding="utf-8")
+    after = validate_only.structural_path_record(root)
+
+    assert before["manifest_sha256"] != after["manifest_sha256"]
+    assert before["digest_policy"]["small_file_policy"] == "sha256_full_file"
+    assert before["files"][0]["hash_policy"] == "sha256_full_file"
+    assert before["files"][0]["bytes"] == after["files"][0]["bytes"] == 4
+
+
+def test_reads_measurement_fields_true_makes_validate_verdict_fail():
+    checks = _checks(reads_measurement_fields=True)
+    out = receipt.build_validate_receipt(checks)
+    assert out.machine_verdict == "FAIL"
+
+
+def test_artifacts_absent_locally_override_must_match_schema():
+    schema = load_schema(SCHEMA)
+    with pytest.raises(ContractViolation, match="schema-derived"):
+        receipt.build_receipt_checks_from_schema(
+            schema,
+            **_base_fields(schema),
+            artifacts_absent_locally=(),
+        )
+
+
 def test_literal_backed_runtime_invariants_are_checked(monkeypatch):
     with pytest.raises(ContractViolation):
         validate_only.StructuralScanPlan(

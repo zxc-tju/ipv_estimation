@@ -35,6 +35,8 @@ FORBIDDEN_COLUMN_PREFIXES = ("ipv_", "target_ipv", "counterpart_ipv", "M4_ONLY_"
 FORBIDDEN_COLUMN_SUBSTRINGS = ("rating", "preference", "human", "score", "label")
 RQ009_FOLD_NAMES = ("train", "guard_tune", "calibration", "test")
 RQ007_VALIDATE_SPLITS = ("development", "guard")
+FULL_FILE_SHA256_MAX_BYTES = 1024 * 1024
+WINDOWED_HASH_BYTES = 64 * 1024
 
 
 @dataclass(frozen=True)
@@ -180,18 +182,73 @@ def record_input_roots(repo_root: Path, input_roots: Sequence[str]) -> Tuple[Map
 
 def structural_path_record(path: Path) -> Mapping[str, Any]:
     if path.is_file():
-        return {"kind": "file", "bytes": path.stat().st_size, "sha256": sha256_file(path)}
+        return file_manifest_entry(path)
     if path.is_dir():
-        children = []
-        for child in sorted(path.iterdir(), key=lambda p: p.name):
-            st = child.stat()
-            children.append({"name": child.name,
-                             "kind": "dir" if child.is_dir() else "file",
-                             "bytes": st.st_size})
-        digest = hashlib.sha256(json.dumps(children, sort_keys=True).encode("utf-8")).hexdigest()
-        return {"kind": "directory_nonrecursive", "entries": len(children),
-                "structural_sha256": digest}
+        files = []
+        directories = []
+        for child in sorted(path.rglob("*"), key=lambda p: p.relative_to(path).as_posix()):
+            rel = child.relative_to(path).as_posix()
+            if child.is_dir():
+                directories.append(rel)
+            elif child.is_file():
+                entry = dict(file_manifest_entry(child))
+                entry["path"] = rel
+                files.append(entry)
+        payload = {
+            "manifest_version": "rq015a-input-file-manifest-v1",
+            "digest_policy": input_digest_policy(),
+            "directories": directories,
+            "files": files,
+        }
+        digest = hashlib.sha256(
+            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        return {
+            "kind": "directory_file_manifest",
+            "manifest_version": payload["manifest_version"],
+            "digest_policy": payload["digest_policy"],
+            "entries": len(files),
+            "directories": len(directories),
+            "manifest_sha256": digest,
+            "files": files,
+        }
     raise ContractViolation("unsupported input path kind: %s" % path)
+
+
+def input_digest_policy() -> Mapping[str, Any]:
+    return {
+        "small_file_policy": "sha256_full_file",
+        "large_file_policy": "size_mtime_head_tail_sha256",
+        "full_file_sha256_max_bytes": FULL_FILE_SHA256_MAX_BYTES,
+        "windowed_hash_bytes": WINDOWED_HASH_BYTES,
+    }
+
+
+def file_manifest_entry(path: Path) -> Mapping[str, Any]:
+    st = path.stat()
+    out = {
+        "kind": "file",
+        "bytes": st.st_size,
+        "mtime_ns": st.st_mtime_ns,
+    }
+    if st.st_size <= FULL_FILE_SHA256_MAX_BYTES:
+        out["hash_policy"] = "sha256_full_file"
+        out["sha256"] = sha256_file(path)
+        return out
+    head, tail = sha256_head_tail(path, st.st_size)
+    out["hash_policy"] = "size_mtime_head_tail_sha256"
+    out["head_sha256"] = head
+    out["tail_sha256"] = tail
+    out["windowed_hash_bytes"] = WINDOWED_HASH_BYTES
+    return out
+
+
+def sha256_head_tail(path: Path, size: int) -> Tuple[str, str]:
+    with path.open("rb") as handle:
+        head = handle.read(WINDOWED_HASH_BYTES)
+        handle.seek(max(0, size - WINDOWED_HASH_BYTES))
+        tail = handle.read(WINDOWED_HASH_BYTES)
+    return hashlib.sha256(head).hexdigest(), hashlib.sha256(tail).hexdigest()
 
 
 def sha256_file(path: Path) -> str:

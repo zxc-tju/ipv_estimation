@@ -5,7 +5,9 @@ All tests use synthetic rows only; no production audit data is scanned.
 
 from __future__ import annotations
 
+import dataclasses
 import inspect
+import json
 import sys
 from pathlib import Path
 from typing import Iterator, Mapping
@@ -31,6 +33,8 @@ from build_ledger import (  # noqa: E402
 from rq015a_contracts import ATTEMPTED, NOT_ATTEMPTED, UNKNOWN, ContractViolation  # noqa: E402
 from rq015a_types import (  # noqa: E402
     ARTIFACT_NOT_PRESENT_LOCALLY,
+    AllowlistedArtifactScope,
+    CaseAllowlist,
     L1LedgerRow,
     RQ007_SPLIT_NOT_APPLICABLE,
     SortedL1LedgerRows,
@@ -66,6 +70,11 @@ def _allowlist(tmp_path: Path, event_log=None):
 
 def _permit():
     return _make_test_permit_UNSAFE()
+
+
+def _write_json(path: Path, payload) -> Path:
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
 
 
 class SpyRow(Mapping[str, object]):
@@ -368,3 +377,135 @@ def test_execute_false_cannot_construct_measurement_reader_and_prod_loader_not_u
     with pytest.raises(ContractViolation, match="execution_authorized"):
         load_execute_permit(RUN_SPEC, AUTH)
     assert "_make_test_permit_UNSAFE" not in inspect.getsource(load_execute_permit)
+
+
+def test_execute_permit_rejects_false_target_authorization_entry(tmp_path):
+    run_spec = _write_json(
+        tmp_path / "run_spec.json",
+        {
+            "operation_id": "rq015a_concentration_audit",
+            "execution_authorized": True,
+        },
+    )
+    auth = _write_json(
+        tmp_path / "auth.json",
+        {
+            "authorizations": {
+                "rq015a_concentration_audit": {
+                    "execution_authorized": False,
+                    "allowed_operations": ["rq015a_concentration_audit"],
+                }
+            }
+        },
+    )
+
+    with pytest.raises(ContractViolation, match="authorization entry execution_authorized"):
+        load_execute_permit(run_spec, auth)
+
+
+def test_execute_permit_rejects_irrelevant_flattened_allowed_operation(tmp_path):
+    run_spec = _write_json(
+        tmp_path / "run_spec.json",
+        {
+            "operation_id": "rq015a_concentration_audit",
+            "execution_authorized": True,
+        },
+    )
+    auth = _write_json(
+        tmp_path / "auth.json",
+        {
+            "authorizations": {
+                "rq015a_concentration_audit": {
+                    "execution_authorized": True,
+                    "allowed_operations": [],
+                },
+                "unrelated_operation": {
+                    "execution_authorized": True,
+                    "allowed_operations": ["rq015a_concentration_audit"],
+                },
+            }
+        },
+    )
+
+    with pytest.raises(ContractViolation, match="does not allow"):
+        load_execute_permit(run_spec, auth)
+
+
+def test_real_parquet_path_projects_measurements_after_allowlist(tmp_path):
+    pa = pytest.importorskip("pyarrow")
+    pq = pytest.importorskip("pyarrow.parquet")
+
+    schema = _schema()
+    event_log = []
+    allowlist = _allowlist(tmp_path, event_log)
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    parquet_path = tmp_path / "feature_part.parquet"
+    pq.write_table(
+        pa.Table.from_pylist([
+            _feature_row("case_dev", "0.5"),
+            _feature_row("case_hold", "0.5"),
+        ]),
+        parquet_path,
+    )
+    spec = dataclasses.replace(spec, path_glob=str(parquet_path))
+    scope = resolve_artifact_scope(spec, allowlist, event_log)
+
+    reader = open_measurement_reader(
+        spec,
+        scope,
+        _permit(),
+        event_log=event_log,
+        parquet_part_limit=1,
+    )
+    out = build_l1_for_artifact(spec, scope, reader)
+
+    assert {row.case_id for row in out.rows} == {"case_dev"}
+    structural_idx = next(
+        i for i, item in enumerate(event_log)
+        if item.startswith("reader.real_path.structural_columns:")
+    )
+    applied_idx = next(
+        i for i, item in enumerate(event_log)
+        if item.startswith("reader.real_path.allowlist_applied:")
+    )
+    measurement_idx = next(
+        i for i, item in enumerate(event_log)
+        if item.startswith("reader.real_path.measurement_columns:")
+    )
+    assert structural_idx < applied_idx < measurement_idx
+    assert "counterpart_ipv_error_current" not in event_log[structural_idx]
+    assert "target_ipv_error_future" not in event_log[structural_idx]
+    assert "counterpart_ipv_error_current" in event_log[measurement_idx]
+
+
+def test_evil_allowlist_subclass_is_rejected_before_reader_load(tmp_path, monkeypatch):
+    class EvilAllowlist(CaseAllowlist):
+        pass
+
+    evil = object.__new__(EvilAllowlist)
+    object.__setattr__(evil, "source_path", tmp_path / "evil.csv")
+    object.__setattr__(evil, "included_splits", ("development", "guard", "held_out"))
+    object.__setattr__(evil, "allowed_case_ids", frozenset(("case_hold",)))
+    object.__setattr__(evil, "split_counts", {"held_out": 1})
+    object.__setattr__(evil, "source_sha256", "0" * 64)
+    object.__setattr__(evil, "case_to_split", {"case_hold": "held_out"})
+
+    schema = _schema()
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    bad_scope = object.__new__(AllowlistedArtifactScope)
+    object.__setattr__(bad_scope, "artifact_id", spec.artifact_id)
+    object.__setattr__(bad_scope, "join_column", "case_key")
+    object.__setattr__(bad_scope, "allowlist", evil)
+    object.__setattr__(bad_scope, "held_out_parsed_rows", 0)
+    object.__setattr__(bad_scope, "unmapped_rows", 0)
+    loaded = []
+
+    def fail_if_loaded(*args, **kwargs):
+        loaded.append((args, kwargs))
+        raise AssertionError("real/source rows must not be loaded")
+
+    monkeypatch.setattr("build_ledger._load_limited_rows", fail_if_loaded)
+
+    with pytest.raises(ContractViolation, match="exact CaseAllowlist"):
+        open_measurement_reader(spec, bad_scope, _permit(), source_rows=None)
+    assert loaded == []

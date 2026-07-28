@@ -54,6 +54,7 @@ try:  # pragma: no cover - import style depends on caller path setup
         SplitNotApplicableArtifactScope,
         is_forbidden_human_field,
         l1_sort_key,
+        validate_case_allowlist_token,
     )
 except ImportError:  # pragma: no cover
     from .rq015a_contracts import (
@@ -92,6 +93,7 @@ except ImportError:  # pragma: no cover
         SplitNotApplicableArtifactScope,
         is_forbidden_human_field,
         l1_sort_key,
+        validate_case_allowlist_token,
     )
 
 
@@ -112,6 +114,21 @@ AGGREGATION_KEY_DERIVATION = {
         ),
     },
 }
+CSV_REQUIRED_ROW_LIMIT_MESSAGE = "BUILD_WHILE_DENY requires explicit csv_row_limit"
+
+
+def _dedupe_columns(columns: Iterable[Optional[str]]) -> Tuple[str, ...]:
+    out = []
+    seen = set()
+    for column in columns:
+        if column is None:
+            continue
+        name = str(column)
+        if not name or name in seen:
+            continue
+        seen.add(name)
+        out.append(name)
+    return tuple(out)
 
 
 def _sha256(path: Path) -> str:
@@ -321,6 +338,7 @@ def resolve_artifact_scope(
     if spec.rq007_split_applicable is True:
         if allowlist is None:
             raise ContractViolation("%s requires CaseAllowlist" % spec.artifact_id)
+        validate_case_allowlist_token(allowlist)
         if not isinstance(spec.split_policy, RequiresRQ007Allowlist):
             raise ContractViolation("%s split policy mismatch" % spec.artifact_id)
         scope = AllowlistedArtifactScope._from_schema(
@@ -337,20 +355,28 @@ def resolve_artifact_scope(
 
 
 def load_execute_permit(run_spec_path: Path, authorization_path: Path) -> ExecutePermit:
+    operation_id = "rq015a_concentration_audit"
     run_spec = json.loads(Path(run_spec_path).read_text())
-    if run_spec.get("operation_id") != "rq015a_concentration_audit":
+    if run_spec.get("operation_id") != operation_id:
         raise ContractViolation("run spec operation_id mismatch")
     if run_spec.get("execution_authorized") is not True:
         raise ContractViolation("execution_authorized is not true")
     auth = json.loads(Path(authorization_path).read_text())
-    allowed = []
-    for value in (auth.get("authorizations") or {}).values():
-        if isinstance(value, Mapping):
-            allowed.extend(value.get("allowed_operations") or [])
-    if "rq015a_concentration_audit" not in allowed:
+    authorizations = auth.get("authorizations")
+    if not isinstance(authorizations, Mapping):
+        raise ContractViolation("authorization file missing authorizations object")
+    entry = authorizations.get(operation_id)
+    if not isinstance(entry, Mapping):
+        raise ContractViolation("authorization entry missing for %s" % operation_id)
+    if entry.get("execution_authorized") is not True:
+        raise ContractViolation("authorization entry execution_authorized is not true")
+    allowed = entry.get("allowed_operations")
+    if not isinstance(allowed, list):
+        raise ContractViolation("authorization entry allowed_operations must be a list")
+    if operation_id not in [str(value) for value in allowed]:
         raise ContractViolation("authorization object does not allow rq015a_concentration_audit")
     return ExecutePermit._from_authorization(
-        "rq015a_concentration_audit",
+        operation_id,
         True,
         Path(authorization_path),
         _sha256(Path(authorization_path)),
@@ -372,10 +398,14 @@ def _scope_matches_schema(spec: ArtifactSpec, scope: FilteredArtifactScope) -> N
         raise ContractViolation("scope/spec artifact mismatch")
     if spec.rq007_split_applicable is True and not isinstance(scope, AllowlistedArtifactScope):
         raise ContractViolation("%s requires allowlisted scope" % spec.artifact_id)
+    if spec.rq007_split_applicable is True:
+        scope._validate()
     if spec.rq007_split_applicable is False and not isinstance(
         scope, SplitNotApplicableArtifactScope
     ):
         raise ContractViolation("%s requires split-not-applicable scope" % spec.artifact_id)
+    if spec.rq007_split_applicable is False:
+        scope._validate()
     if spec.rq007_split_applicable not in (True, False):
         raise ContractViolation("%s missing rq007_split_applicable" % spec.artifact_id)
 
@@ -439,8 +469,10 @@ class _InMemoryMeasurementReader:
 
 def _load_limited_rows(
     spec: ArtifactSpec,
+    scope: FilteredArtifactScope,
     parquet_part_limit: Optional[int],
     csv_row_limit: Optional[int],
+    event_log: Optional[List[str]] = None,
 ) -> Sequence[Mapping[str, object]]:
     if spec.format == "parquet":
         if parquet_part_limit != 1:
@@ -448,23 +480,227 @@ def _load_limited_rows(
         matches = sorted(glob.glob(str(spec.path_glob)))
         if not matches:
             raise ContractViolation("no parquet parts matched")
-        import pandas as pd  # local optional dependency; not used by tests
-
-        return pd.read_parquet(matches[0], engine="pyarrow").to_dict("records")
+        return _load_parquet_projected_rows(spec, scope, Path(matches[0]), event_log)
     if spec.format == "csv":
-        if csv_row_limit is None or csv_row_limit < 1:
-            raise ContractViolation("BUILD_WHILE_DENY requires explicit csv_row_limit")
         if spec.path is None:
             raise ContractViolation("csv artifact missing path")
-        out = []
-        with spec.path.open(newline="") as f:
-            reader = csv.DictReader(f)
-            for idx, row in enumerate(reader):
-                if idx >= csv_row_limit:
-                    break
-                out.append(row)
-        return out
+        return _load_csv_projected_rows(spec, scope, csv_row_limit, event_log)
     raise ContractViolation("cannot open absent artifact")
+
+
+def _structural_columns_for_spec(
+    spec: ArtifactSpec,
+    scope: FilteredArtifactScope,
+) -> Tuple[str, ...]:
+    columns = list(spec.row_key_fields)
+    if isinstance(scope, AllowlistedArtifactScope):
+        columns.append(scope.join_column)
+    if spec.split_filter_column:
+        columns.append(spec.split_filter_column)
+    kind = spec.not_attempted_rule.get("kind")
+    if kind == "global_frame_index":
+        columns.append("frame_index")
+    elif kind == "local_position":
+        columns.extend(("case_key", "timestamp_ms", "frame_index"))
+    return _dedupe_columns(columns)
+
+
+def _measurement_columns_for_spec(spec: ArtifactSpec) -> Tuple[str, ...]:
+    columns = []
+    for role in spec.roles:
+        if role.excluded:
+            continue
+        columns.append(role.ipv_error_column)
+    return _dedupe_columns(columns)
+
+
+def _projected_columns_for_spec(
+    spec: ArtifactSpec,
+    scope: FilteredArtifactScope,
+) -> Tuple[Tuple[str, ...], Tuple[str, ...], Tuple[str, ...]]:
+    structural = _structural_columns_for_spec(spec, scope)
+    measurement = _measurement_columns_for_spec(spec)
+    return structural, measurement, _dedupe_columns(tuple(structural) + tuple(measurement))
+
+
+def _log_real_path_event(
+    event_log: Optional[List[str]],
+    label: str,
+    columns: Sequence[str],
+) -> None:
+    if event_log is not None:
+        event_log.append("%s:%s" % (label, ",".join(columns)))
+
+
+def _allowed_case_ids_from_structural_rows(
+    spec: ArtifactSpec,
+    scope: AllowlistedArtifactScope,
+    rows: Sequence[Mapping[str, object]],
+) -> Tuple[str, ...]:
+    validate_case_allowlist_token(scope.allowlist)
+    allowed = set()
+    unmapped = 0
+    for row in rows:
+        if scope.join_column not in row:
+            raise ContractViolation("%s missing join column" % spec.artifact_id)
+        case_id = str(row[scope.join_column])
+        split = scope.allowlist.case_to_split.get(case_id)
+        if split is None:
+            unmapped += 1
+        elif case_id in scope.allowlist.allowed_case_ids:
+            allowed.add(case_id)
+    if unmapped:
+        raise ContractViolation("%s unmapped case rows: %d" % (spec.artifact_id, unmapped))
+    return tuple(sorted(allowed))
+
+
+def _load_parquet_projected_rows(
+    spec: ArtifactSpec,
+    scope: FilteredArtifactScope,
+    path: Path,
+    event_log: Optional[List[str]],
+) -> Sequence[Mapping[str, object]]:
+    import pyarrow.dataset as ds
+    import pyarrow.parquet as pq
+
+    structural, measurement, projected = _projected_columns_for_spec(spec, scope)
+    if isinstance(scope, AllowlistedArtifactScope):
+        _log_real_path_event(event_log, "reader.real_path.structural_columns", structural)
+        structural_table = pq.ParquetFile(path).read(columns=list(structural))
+        allowed_ids = _allowed_case_ids_from_structural_rows(
+            spec, scope, structural_table.to_pylist()
+        )
+        if event_log is not None:
+            event_log.append("reader.real_path.allowlist_applied:%d" % len(allowed_ids))
+        if not allowed_ids:
+            return tuple()
+        _log_real_path_event(event_log, "reader.real_path.measurement_columns", measurement)
+        table = ds.dataset(str(path), format="parquet").to_table(
+            columns=list(projected),
+            filter=ds.field(scope.join_column).isin(list(allowed_ids)),
+        )
+        return table.to_pylist()
+
+    _log_real_path_event(event_log, "reader.real_path.columns", projected)
+    return pq.ParquetFile(path).read(columns=list(projected)).to_pylist()
+
+
+def _load_csv_projected_rows(
+    spec: ArtifactSpec,
+    scope: FilteredArtifactScope,
+    csv_row_limit: Optional[int],
+    event_log: Optional[List[str]],
+) -> Sequence[Mapping[str, object]]:
+    if csv_row_limit is None or csv_row_limit < 1:
+        raise ContractViolation(CSV_REQUIRED_ROW_LIMIT_MESSAGE)
+    structural, measurement, projected = _projected_columns_for_spec(spec, scope)
+    header, header_index = _read_csv_header(spec.path)
+    _require_csv_columns(spec, header_index, projected)
+
+    if isinstance(scope, AllowlistedArtifactScope):
+        _log_real_path_event(event_log, "reader.real_path.structural_columns", structural)
+        allowed_rows = _csv_allowed_row_numbers(spec, scope, csv_row_limit, header_index)
+        if event_log is not None:
+            event_log.append("reader.real_path.allowlist_applied:%d" % len(allowed_rows))
+        if not allowed_rows:
+            return tuple()
+        _log_real_path_event(event_log, "reader.real_path.measurement_columns", measurement)
+        return _csv_project_allowed_rows(
+            spec.path, header, header_index, projected, csv_row_limit, allowed_rows
+        )
+
+    _log_real_path_event(event_log, "reader.real_path.columns", projected)
+    return _csv_project_allowed_rows(
+        spec.path,
+        header,
+        header_index,
+        projected,
+        csv_row_limit,
+        None,
+    )
+
+
+def _read_csv_header(path: Optional[Path]) -> Tuple[Tuple[str, ...], Mapping[str, int]]:
+    if path is None:
+        raise ContractViolation("csv artifact missing path")
+    with path.open(newline="") as f:
+        reader = csv.reader(f)
+        try:
+            header = tuple(next(reader))
+        except StopIteration:
+            raise ContractViolation("csv artifact is empty")
+    return header, {name: idx for idx, name in enumerate(header)}
+
+
+def _require_csv_columns(
+    spec: ArtifactSpec,
+    header_index: Mapping[str, int],
+    columns: Sequence[str],
+) -> None:
+    missing = [column for column in columns if column not in header_index]
+    if missing:
+        raise ContractViolation(
+            "%s missing csv columns: %s" % (spec.artifact_id, ",".join(missing))
+        )
+
+
+def _csv_allowed_row_numbers(
+    spec: ArtifactSpec,
+    scope: AllowlistedArtifactScope,
+    csv_row_limit: int,
+    header_index: Mapping[str, int],
+) -> Tuple[int, ...]:
+    validate_case_allowlist_token(scope.allowlist)
+    allowed = []
+    unmapped = 0
+    join_idx = header_index[scope.join_column]
+    with spec.path.open(newline="") as f:
+        reader = csv.reader(f)
+        next(reader, None)
+        for row_number, row in enumerate(reader):
+            if row_number >= csv_row_limit:
+                break
+            if join_idx >= len(row):
+                raise ContractViolation("%s missing join column" % spec.artifact_id)
+            case_id = str(row[join_idx])
+            split = scope.allowlist.case_to_split.get(case_id)
+            if split is None:
+                unmapped += 1
+            elif case_id in scope.allowlist.allowed_case_ids:
+                allowed.append(row_number)
+    if unmapped:
+        raise ContractViolation("%s unmapped case rows: %d" % (spec.artifact_id, unmapped))
+    return tuple(allowed)
+
+
+def _csv_project_allowed_rows(
+    path: Optional[Path],
+    header: Sequence[str],
+    header_index: Mapping[str, int],
+    columns: Sequence[str],
+    csv_row_limit: int,
+    allowed_rows: Optional[Sequence[int]],
+) -> Sequence[Mapping[str, object]]:
+    if path is None:
+        raise ContractViolation("csv artifact missing path")
+    allowed_set = None if allowed_rows is None else set(allowed_rows)
+    out = []
+    column_indices = [(column, header_index[column]) for column in columns]
+    with path.open(newline="") as f:
+        reader = csv.reader(f)
+        next(reader, None)
+        for row_number, row in enumerate(reader):
+            if row_number >= csv_row_limit:
+                break
+            if allowed_set is not None and row_number not in allowed_set:
+                continue
+            projected = {}
+            for column, idx in column_indices:
+                if idx >= len(row):
+                    raise ContractViolation("csv row missing column %s" % column)
+                projected[column] = row[idx]
+            out.append(projected)
+    return tuple(out)
 
 
 def open_measurement_reader(
@@ -486,7 +722,7 @@ def open_measurement_reader(
     _validate_measurement_columns(spec)
     rows = source_rows
     if rows is None:
-        rows = _load_limited_rows(spec, parquet_part_limit, csv_row_limit)
+        rows = _load_limited_rows(spec, scope, parquet_part_limit, csv_row_limit, event_log)
     return _InMemoryMeasurementReader(spec, scope, rows, event_log)
 
 
