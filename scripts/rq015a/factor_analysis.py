@@ -30,6 +30,7 @@ from rq015a_contracts import (
     NOT_ATTEMPTED,
     UNKNOWN,
     ContractViolation,
+    _validate_optional_q_eff,
     assert_single_artifact,
 )
 
@@ -167,12 +168,12 @@ def _prepare_rows(rows: Sequence[object], factor_name: str) -> _PreparedRows:
             continue
         n_attempted_rows += 1
 
-        q_value = _finite_float(_get_value(row, "q_eff"))
+        q_value = _validate_optional_q_eff(
+            _get_value(row, "q_eff"), "factor_analysis"
+        )
         if q_value is None:
             n_excluded_nonfinite_q_eff += 1
             continue
-        if q_value <= 0.0 or q_value > 1.0:
-            raise ContractViolation("q_eff outside (0, 1]")
 
         factor_value = _finite_float(_get_value(row, factor_name))
         if factor_value is None:

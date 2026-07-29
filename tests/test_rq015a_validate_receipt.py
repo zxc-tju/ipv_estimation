@@ -24,6 +24,7 @@ from rq015a_contracts import (  # noqa: E402
 )
 
 SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v2.json"
+VALID_SHA256 = "0" * 64
 
 
 def _base_fields(schema):
@@ -43,7 +44,7 @@ def _base_fields(schema):
         k_unknown_rows=7,
         bins_stability_verdict="BINS_REPORTABLE",
         c0_routing_stability={"RQ014": True},
-        input_sha256={"fixture.csv": "sha256:abc"},
+        input_sha256={"fixture.csv": VALID_SHA256},
         parquet_engine={"name": "pyarrow", "version": "21.0.0"},
         m4_only_channel_excluded=True,
         aggregation_key_derivation="v1: perspective/configuration derive from W1 adapter fields.",
@@ -95,7 +96,7 @@ def _run_checks(**updates):
     schema = load_schema(SCHEMA)
     fields = _base_fields(schema)
     fields["per_artifact_conservation"] = _passing_conservation_for_schema(schema)
-    fields["input_sha256"] = {"fixture.csv": "sha256:abc"}
+    fields["input_sha256"] = {"fixture.csv": VALID_SHA256}
     fields.update(updates)
     return receipt.build_receipt_checks_from_schema(schema, **fields)
 
@@ -230,6 +231,24 @@ def test_directory_file_manifest_detects_equal_size_content_change(tmp_path):
     assert before["files"][0]["bytes"] == after["files"][0]["bytes"] == 4
 
 
+def test_directory_file_manifest_digest_ignores_mtime_metadata(tmp_path):
+    root = tmp_path / "inputs"
+    root.mkdir()
+    target = root / "same_content.txt"
+    target.write_text("AAAA", encoding="utf-8")
+    before = validate_only.structural_path_record(root)
+    st = target.stat()
+
+    os.utime(target, ns=(st.st_atime_ns, st.st_mtime_ns + 1_000_000_000))
+    after = validate_only.structural_path_record(root)
+
+    assert before["manifest_sha256"] == after["manifest_sha256"]
+    assert before["files"][0]["mtime_ns"] != after["files"][0]["mtime_ns"]
+    assert before["digest_policy"]["directory_manifest_sha256_includes"] == [
+        "path", "bytes", "sha256",
+    ]
+
+
 def test_directory_file_manifest_rejects_directory_symlink(tmp_path):
     root = tmp_path / "inputs"
     root.mkdir()
@@ -288,8 +307,7 @@ def test_record_input_roots_accepts_repo_internal_path(tmp_path):
     records, failures = validate_only.record_input_roots(repo, ["data"])
 
     assert failures == ()
-    assert records["data"]["kind"] == "directory_file_manifest"
-    assert records["data"]["entries"] == 1
+    assert records["data"] == validate_only.structural_path_record(data)["manifest_sha256"]
 
 
 def test_file_manifest_detects_middle_byte_change_after_mtime_restore(tmp_path):
@@ -378,6 +396,31 @@ def test_run_receipt_partial_zero_measurement_rows_fail():
 def test_run_receipt_empty_input_sha256_fails():
     out = receipt.build_run_receipt(_run_checks(input_sha256={}))
     assert out.machine_verdict == "FAIL"
+
+
+@pytest.mark.parametrize("digest", ["", "   ", "sha256:abc", "0" * 63, "g" * 64, 123, True])
+def test_receipt_input_sha256_rejects_malformed_digest_values(digest):
+    with pytest.raises(ContractViolation, match="input_sha256"):
+        _run_checks(input_sha256={"fixture.csv": digest})
+
+
+@pytest.mark.parametrize("path_key", ["", "   ", 123, True])
+def test_receipt_input_sha256_rejects_empty_or_non_string_path_keys(path_key):
+    with pytest.raises(ContractViolation, match="input_sha256 key"):
+        _run_checks(input_sha256={path_key: VALID_SHA256})
+
+
+@pytest.mark.parametrize("updates", [
+    {"parquet_engine": {"name": "   ", "version": "21.0.0"}},
+    {"parquet_engine": {"name": "pyarrow", "version": ""}},
+    {"schema_version": "   "},
+    {"c0_routing_stability": {"": True}},
+    {"c0_routing_stability": {"RQ014": "true"}},
+    {"failure_reasons": ("",)},
+])
+def test_receipt_rejects_present_but_meaningless_scalar_values(updates):
+    with pytest.raises(ContractViolation):
+        _checks(**updates)
 
 
 def test_run_receipt_failed_conservation_report_fails():

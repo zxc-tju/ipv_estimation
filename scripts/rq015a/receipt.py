@@ -6,6 +6,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import numbers
+import re
 from dataclasses import dataclass, fields
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
@@ -38,6 +39,7 @@ ZERO_REQUIRED_COUNTERS = (
     "duplicate_primary_keys",
     "unmapped_measurement_roles",
 )
+SHA256_HEX_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 
 
 @dataclass(frozen=True)
@@ -102,20 +104,32 @@ class ReceiptChecks:
             raise ContractViolation("input_sha256 must be a mapping")
         if not isinstance(normalized["parquet_engine"], Mapping):
             raise ContractViolation("parquet_engine must record name/version")
-        if not normalized["parquet_engine"].get("name"):
-            raise ContractViolation("parquet_engine.name is required")
-        if not normalized["parquet_engine"].get("version"):
-            raise ContractViolation("parquet_engine.version is required")
+        _validate_input_sha256(normalized["input_sha256"])
+        _validate_c0_routing_stability(normalized["c0_routing_stability"])
+        _require_nonempty_string(
+            "parquet_engine.name", normalized["parquet_engine"].get("name")
+        )
+        _require_nonempty_string(
+            "parquet_engine.version", normalized["parquet_engine"].get("version")
+        )
         if normalized["m4_only_channel_excluded"] is not True:
             raise ContractViolation("m4_only_channel_excluded must be true")
         if not isinstance(normalized["aggregation_key_derivation"], str):
             raise ContractViolation("aggregation_key_derivation must be a string")
         if not normalized["aggregation_key_derivation"].strip():
             raise ContractViolation("aggregation_key_derivation must be non-empty")
-        if not isinstance(normalized["schema_version"], str):
-            raise ContractViolation("schema_version must be a string")
+        _require_nonempty_string("schema_version", normalized["schema_version"])
         if not isinstance(normalized["reads_measurement_fields"], bool):
             raise ContractViolation("reads_measurement_fields must be boolean")
+        _validate_nonempty_string_sequence(
+            "artifacts_absent_locally", normalized["artifacts_absent_locally"]
+        )
+        _validate_nonempty_string_sequence(
+            "ledger_bearing_artifacts", normalized["ledger_bearing_artifacts"]
+        )
+        _validate_nonempty_string_sequence(
+            "failure_reasons", normalized["failure_reasons"]
+        )
 
         for name in REQUIRED_RECEIPT_FIELDS:
             object.__setattr__(self, name, normalized[name])
@@ -138,6 +152,37 @@ class RunReceipt:
 def _require_nonnegative_int(name: str, value: Any) -> None:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise ContractViolation("%s must be a non-negative integer" % name)
+
+
+def _require_nonempty_string(name: str, value: Any) -> str:
+    if not isinstance(value, str):
+        raise ContractViolation("%s must be a string" % name)
+    if not value.strip():
+        raise ContractViolation("%s must be non-empty" % name)
+    return value
+
+
+def _validate_nonempty_string_sequence(name: str, values: Any) -> None:
+    if not isinstance(values, tuple):
+        raise ContractViolation("%s must be a tuple" % name)
+    for index, value in enumerate(values):
+        _require_nonempty_string("%s[%d]" % (name, index), value)
+
+
+def _validate_c0_routing_stability(value: Mapping[str, Any]) -> None:
+    for key, is_stable in value.items():
+        _require_nonempty_string("c0_routing_stability key", key)
+        if not isinstance(is_stable, bool):
+            raise ContractViolation("c0_routing_stability values must be boolean")
+
+
+def _validate_input_sha256(value: Mapping[str, Any]) -> None:
+    for key, digest in value.items():
+        _require_nonempty_string("input_sha256 key", key)
+        if not isinstance(digest, str) or not SHA256_HEX_RE.fullmatch(digest):
+            raise ContractViolation(
+                "input_sha256[%r] must be a 64-character SHA-256 hex digest" % key
+            )
 
 
 def artifacts_absent_locally_from_schema(schema: Mapping[str, Any]) -> Tuple[str, ...]:

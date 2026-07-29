@@ -177,7 +177,7 @@ def record_input_roots(repo_root: Path, input_roots: Sequence[str]) -> Tuple[Map
         if not path.exists():
             failures.append("missing_input_root:%s" % raw)
             continue
-        records[raw] = structural_path_record(path)
+        records[raw] = _input_record_digest(structural_path_record(path))
     return records, tuple(failures)
 
 
@@ -215,8 +215,9 @@ def structural_path_record(path: Path) -> Mapping[str, Any]:
             "directories": directories,
             "files": files,
         }
+        hash_payload = _directory_manifest_hash_payload(files)
         digest = hashlib.sha256(
-            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            json.dumps(hash_payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ).hexdigest()
         return {
             "kind": "directory_file_manifest",
@@ -235,11 +236,42 @@ def input_digest_policy() -> Mapping[str, Any]:
         "file_policy": "sha256_full_file",
         "small_file_policy": "sha256_full_file",
         "large_file_policy": "sha256_full_file",
+        "directory_manifest_sha256_policy": "content_only_file_path_size_sha256",
+        "directory_manifest_sha256_includes": ["path", "bytes", "sha256"],
+        "directory_manifest_entry_metadata_excluded": ["kind", "hash_policy", "mtime_ns"],
+        "directory_manifest_non_file_metadata_excluded": [
+            "manifest_version", "directories", "digest_policy",
+        ],
         "symlink_policy": "reject_all_symlinks",
         "directory_symlink_policy": "reject",
         "file_symlink_policy": "reject",
         "chunk_bytes": MANIFEST_HASH_CHUNK_BYTES,
     }
+
+
+def _directory_manifest_hash_payload(files: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]:
+    return {
+        "files": [
+            {
+                "path": entry["path"],
+                "bytes": entry["bytes"],
+                "sha256": entry["sha256"],
+            }
+            for entry in files
+        ],
+    }
+
+
+def _input_record_digest(record: Mapping[str, Any]) -> str:
+    if record.get("kind") == "directory_file_manifest":
+        digest = record.get("manifest_sha256")
+    elif record.get("kind") == "file":
+        digest = record.get("sha256")
+    else:
+        raise ContractViolation("unsupported input record kind: %r" % record.get("kind"))
+    if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", digest):
+        raise ContractViolation("input record missing SHA-256 digest")
+    return digest
 
 
 def file_manifest_entry(path: Path) -> Mapping[str, Any]:

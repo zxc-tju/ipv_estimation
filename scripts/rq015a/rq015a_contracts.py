@@ -250,7 +250,7 @@ def local_positions(rows: Sequence[Tuple[int, int]]) -> List[int]:
     return pos
 
 
-def _validate_artifact_id(value: object) -> str:
+def validate_artifact_id(value: object) -> str:
     if not isinstance(value, str):
         raise ContractViolation("every row must carry string artifact_id")
     if not value.strip():
@@ -266,7 +266,7 @@ def assert_single_artifact(rows: Iterable[dict]) -> str:
 
     M3 与 RQ009 current/target 均为 sigma01 派生；合并会重复加权同一原始 observation。
     """
-    ids = {_validate_artifact_id(r.get("artifact_id")) for r in rows}
+    ids = {validate_artifact_id(r.get("artifact_id")) for r in rows}
     if len(ids) > 1:
         raise ContractViolation(
             f"cross-artifact pooling forbidden; got {sorted(map(str, ids))}")
@@ -372,9 +372,7 @@ def aggregate_l3(l2_units: Sequence[L2Unit]) -> List[L3Unit]:
     for u in l2_units:
         groups.setdefault(_require_l2_value(u, "case_id"), []).append(u)
         artifact_id = _require_l2_value(u, "artifact_id")
-        if artifact_id is None:
-            raise ContractViolation("every L2 unit must carry artifact_id")
-        artifact_ids.add(artifact_id)
+        artifact_ids.add(validate_artifact_id(artifact_id))
         mean_q_eff = _require_l2_value(u, "mean_q_eff")
         if mean_q_eff is not None:
             _validate_optional_q_eff(mean_q_eff, "aggregate_l3")

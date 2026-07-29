@@ -29,6 +29,7 @@ try:  # pragma: no cover - import style depends on caller path setup
         load_schema as _load_schema_contract,
         local_positions,
         q_eff as _q_eff,
+        validate_artifact_id,
     )
     from rq015a_types import (
         ARTIFACT_NOT_PRESENT_LOCALLY,
@@ -69,6 +70,7 @@ except ImportError:  # pragma: no cover
         load_schema as _load_schema_contract,
         local_positions,
         q_eff as _q_eff,
+        validate_artifact_id,
     )
     from .rq015a_types import (
         ARTIFACT_NOT_PRESENT_LOCALLY,
@@ -1217,22 +1219,20 @@ def _l2_unit_artifact_id(unit: object) -> object:
 
 
 def _assert_l2_units_match_container(units: SortedL2Units) -> None:
+    container_artifact_id = validate_artifact_id(units.artifact_id)
     artifact_ids = []
     for unit in units.units:
-        artifact_id = _l2_unit_artifact_id(unit)
-        if artifact_id is None:
-            raise ContractViolation("every L2 unit must carry artifact_id")
-        artifact_ids.append(artifact_id)
+        artifact_ids.append(validate_artifact_id(_l2_unit_artifact_id(unit)))
     distinct = set(artifact_ids)
     if len(distinct) > 1:
         raise ContractViolation(
             "cross-artifact pooling forbidden; got %s"
             % sorted(map(str, distinct))
         )
-    if distinct and next(iter(distinct)) != units.artifact_id:
+    if distinct and next(iter(distinct)) != container_artifact_id:
         raise ContractViolation(
             "SortedL2Units artifact_id mismatch: container=%s units=%s"
-            % (units.artifact_id, next(iter(distinct)))
+            % (container_artifact_id, next(iter(distinct)))
         )
 
 

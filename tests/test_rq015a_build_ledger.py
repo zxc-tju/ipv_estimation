@@ -427,6 +427,30 @@ def test_aggregate_l2_to_l3_rejects_empty_container():
         aggregate_l2_to_l3(units)
 
 
+@pytest.mark.parametrize("artifact_id", ["", "   ", 123, True, " A "])
+def test_aggregate_l2_to_l3_rejects_invalid_l2_unit_artifact_id(artifact_id):
+    units = SortedL2Units(
+        "rq009_feature_matrix",
+        (
+            L2Unit(
+                case_id="case_dev",
+                perspective="agent_1",
+                configuration="cfg",
+                n_l1=5,
+                n_attempted=5,
+                n_unknown=0,
+                mean_q_eff=0.5,
+                status="OK",
+                artifact_id=artifact_id,
+            ),
+        ),
+        "artifact_id,case_id,perspective,configuration",
+    )
+
+    with pytest.raises(ContractViolation):
+        aggregate_l2_to_l3(units)
+
+
 def _l1(artifact_id, case_id, key, role="agent_1"):
     return L1LedgerRow(
         artifact_id=artifact_id,

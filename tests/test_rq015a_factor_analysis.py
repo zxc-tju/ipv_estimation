@@ -11,6 +11,7 @@ import math
 import random
 import sys
 from dataclasses import asdict
+from decimal import Decimal
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -173,7 +174,6 @@ def test_only_attempted_rows_with_finite_q_eff_participate():
         _row("c9", NOT_ATTEMPTED, 0.01, 1000.0),
         _row("c10", UNKNOWN, 0.99, -1000.0),
         _row("c11", ATTEMPTED, None, 5.0),
-        _row("c12", ATTEMPTED, math.nan, 5.0),
     ]
     base = analyze_factor(attempted, "factor")
     out = analyze_factor(noisy, "factor")
@@ -181,7 +181,43 @@ def test_only_attempted_rows_with_finite_q_eff_participate():
     assert out.ci95_low == base.ci95_low
     assert out.ci95_high == base.ci95_high
     assert out.n_excluded_status == 2
-    assert out.n_excluded_nonfinite_q_eff == 2
+    assert out.n_excluded_nonfinite_q_eff == 1
+
+
+@pytest.mark.parametrize("bad_q", [
+    "0.5",
+    Decimal("0.5"),
+    True,
+    0.0,
+    -0.1,
+    1.01,
+    math.inf,
+    math.nan,
+    object(),
+])
+def test_factor_analysis_rejects_invalid_q_eff_by_shared_contract(bad_q):
+    rows = _base_rows()
+    rows[0] = _row("bad_q", ATTEMPTED, bad_q, 5.0)
+
+    with pytest.raises(ContractViolation):
+        analyze_factor(rows, "factor")
+
+
+def test_factor_analysis_accepts_valid_q_eff_boundaries():
+    tiny = 5e-324
+    rows = [
+        _row("c1", ATTEMPTED, 1.0, 1.0),
+        _row("c2", ATTEMPTED, tiny, 2.0),
+        _row("c3", ATTEMPTED, 0.25, 3.0),
+        _row("c4", ATTEMPTED, 0.50, 4.0),
+        _row("c5", ATTEMPTED, 0.75, 5.0),
+        _row("c6", ATTEMPTED, 0.90, 6.0),
+    ]
+
+    out = analyze_factor(rows, "factor")
+
+    assert out.n_used == 6
+    assert out.n_excluded_nonfinite_q_eff == 0
 
 
 def test_unknown_attempt_status_fails_closed():

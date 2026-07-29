@@ -231,7 +231,7 @@ def test_aggregate_l2_rejects_invalid_q_eff_values():
             aggregate_l2(rows)
 
 
-@pytest.mark.parametrize("artifact_id", ["", "   ", None, 123, " A "])
+@pytest.mark.parametrize("artifact_id", ["", "   ", None, 123, True, " A "])
 def test_aggregate_l2_rejects_invalid_artifact_id_minimal_counterexamples(artifact_id):
     from rq015a_contracts import assert_single_artifact
 
@@ -241,6 +241,14 @@ def test_aggregate_l2_rejects_invalid_artifact_id_minimal_counterexamples(artifa
         assert_single_artifact(rows)
     with pytest.raises(ContractViolation):
         aggregate_l2(rows)
+
+
+@pytest.mark.parametrize("artifact_id", ["", "   ", 123, True, " A "])
+def test_aggregate_l3_rejects_invalid_l2_artifact_id_minimal_counterexamples(artifact_id):
+    units = [L2Unit("c", "p", "cfg", 5, 5, 0, 0.5, "OK", artifact_id=artifact_id)]
+
+    with pytest.raises(ContractViolation):
+        aggregate_l3(units)
 
 
 # ---------------- episode 摘要（不使用 bins）----------------
