@@ -30,9 +30,19 @@ from typing import (
 )
 
 try:  # pragma: no cover - import style depends on caller path setup
-    from rq015a_contracts import ContractViolation, SCHEMA_VERSION
+    from rq015a_contracts import (
+        ContractViolation,
+        L3Unit,
+        SCHEMA_VERSION,
+        validate_artifact_id,
+    )
 except ImportError:  # pragma: no cover
-    from .rq015a_contracts import ContractViolation, SCHEMA_VERSION
+    from .rq015a_contracts import (
+        ContractViolation,
+        L3Unit,
+        SCHEMA_VERSION,
+        validate_artifact_id,
+    )
 
 
 SchemaVersion = Literal["rq015a-concentration-ledger-v2"]
@@ -120,12 +130,21 @@ def _require_in(name: str, value: object, allowed: FrozenSet[str]) -> None:
         raise ContractViolation("%s %r not in %s" % (name, value, sorted(allowed)))
 
 
+def _drop_unicode_format_and_control(value: object) -> str:
+    return "".join(
+        ch for ch in str(value)
+        if unicodedata.category(ch) not in ("Cf", "Cc")
+    )
+
+
 def normalize_structural_column_name(column: object) -> str:
-    return unicodedata.normalize("NFKC", str(column)).strip().lower()
+    stripped = _drop_unicode_format_and_control(column)
+    return unicodedata.normalize("NFKC", stripped).strip().lower()
 
 
 def _normalized_column_tokens(column: object) -> FrozenSet[str]:
-    normalized = unicodedata.normalize("NFKC", str(column)).strip()
+    stripped = _drop_unicode_format_and_control(column)
+    normalized = unicodedata.normalize("NFKC", stripped).strip()
     token_source = _CAMEL_BOUNDARY_RE.sub("_", normalized)
     tokens = [token for token in _TOKEN_SPLIT_RE.split(token_source.lower()) if token]
     return frozenset(tokens)
@@ -521,11 +540,39 @@ class SortedL2Units:
         )
 
 
+def _l3_sort_key(unit: L3Unit) -> Tuple[object, ...]:
+    return (
+        unit.artifact_id,
+        unit.case_id is not None,
+        unit.case_id or "",
+    )
+
+
 @dataclass(frozen=True)
 class SortedL3Units:
     artifact_id: str
     units: Tuple[object, ...]
     sort_key: str
+
+    def __post_init__(self) -> None:
+        _require(self.sort_key == "artifact_id,case_id", "bad L3 sort key")
+        artifact_id = validate_artifact_id(self.artifact_id)
+        for unit in self.units:
+            _require(isinstance(unit, L3Unit), "SortedL3Units must contain L3Unit")
+            unit_artifact_id = validate_artifact_id(unit.artifact_id)
+            _require(
+                unit_artifact_id == artifact_id,
+                "SortedL3Units artifact_id mismatch: container=%s units=%s"
+                % (artifact_id, unit_artifact_id),
+            )
+            _require(
+                unit.case_id is None or isinstance(unit.case_id, str),
+                "L3 case_id must be str or None",
+            )
+        _require(
+            tuple(sorted(self.units, key=_l3_sort_key)) == self.units,
+            "L3 units are not sorted",
+        )
 
 
 @dataclass(frozen=True)

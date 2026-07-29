@@ -301,6 +301,13 @@ def test_aggregate_l3_rejects_invalid_l2_artifact_id_minimal_counterexamples(art
         aggregate_l3(units)
 
 
+def test_aggregate_l3_rejects_unknown_l2_status_minimal_counterexample():
+    units = [L2Unit("c", "p", "cfg", 5, 5, 0, 0.2, "BOGUS", artifact_id="A")]
+
+    with pytest.raises(ContractViolation, match="unknown L2 status"):
+        aggregate_l3(units)
+
+
 # ---------------- episode 摘要（不使用 bins）----------------
 
 def test_episode_definition_sensitivity():
@@ -318,6 +325,11 @@ def test_episode_definition_sensitivity():
 def test_episode_summaries_rejects_invalid_q_eff_minimal_counterexample():
     with pytest.raises(ContractViolation):
         episode_summaries([10.0], [1.2])
+
+
+def test_episode_summaries_rejects_non_numeric_ipv_as_contract_violation():
+    with pytest.raises(ContractViolation, match="invalid ipv"):
+        episode_summaries(["1.0"], [0.5])
 
 
 def test_episode_summaries_cross_artifact_guard_is_call_site_assertion():
@@ -428,6 +440,15 @@ def test_c0_route_with_sensitivity_rejects_shared_bad_counts():
         c0_route_with_sensitivity(uses_ipv=True, n_rows=100,
                                   n_not_attempted=-1, n_unknown=0,
                                   q_effs_attempted=[0.2] * 101,
+                                  mapping_is_1to1=True)
+
+
+def test_c0_route_rejects_partial_q_evidence_minimal_counterexample():
+    with pytest.raises(ContractViolation, match="q_effs_attempted length"):
+        c0_route(True, 100, 0, 0, [0.1], True)
+    with pytest.raises(ContractViolation, match="q_effs_attempted length"):
+        c0_route_with_sensitivity(uses_ipv=True, n_rows=100, n_not_attempted=0,
+                                  n_unknown=0, q_effs_attempted=[0.1],
                                   mapping_is_1to1=True)
 
 
@@ -711,11 +732,11 @@ def test_cross_artifact_pooling_is_code_enforced():
 
 def test_c0_without_q_evidence_is_indeterminate():
     """有 ATTEMPTED 行却拿不到任何 q 值时，不得判 NO_AUDIT_TRIGGER_DETECTED。"""
-    r = c0_route(True, 100, 0, 0, [], True)
-    assert r["terminal"] == "INDETERMINATE_UNKNOWN_PROVENANCE"
-    assert r["reason_code"] == "attempted_rows_without_q_evidence"
+    with pytest.raises(ContractViolation, match="q_effs_attempted length"):
+        c0_route(True, 100, 0, 0, [], True)
     r2 = c0_route(True, 100, 0, 0, [None] * 100, True)   # 全是 None 也算无证据
     assert r2["terminal"] == "INDETERMINATE_UNKNOWN_PROVENANCE"
+    assert r2["reason_code"] == "attempted_rows_without_q_evidence"
     # 全部 NOT_ATTEMPTED（n_attempted=0）不受此规则影响，仍按占比路由
     r3 = c0_route(True, 100, 100, 0, [], True)
     assert r3["terminal"] == "OWNER_REANALYSIS_REQUIRED"

@@ -13,6 +13,7 @@ import glob
 import hashlib
 import json
 import math
+import numbers
 import weakref
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -966,6 +967,37 @@ def _parse_optional_float(value: object) -> Optional[float]:
     return parsed
 
 
+def _parse_integral_field(
+    value: object,
+    field_name: str,
+    artifact_id: str,
+    minimum: int,
+) -> int:
+    if isinstance(value, bool):
+        raise ContractViolation(
+            "%s %s must be an integer, got %r" % (artifact_id, field_name, value)
+        )
+    if isinstance(value, numbers.Integral):
+        parsed = int(value)
+    elif isinstance(value, str):
+        stripped = value.strip()
+        try:
+            parsed = int(stripped)
+        except (TypeError, ValueError) as exc:
+            raise ContractViolation(
+                "%s %s parse failed: %s" % (artifact_id, field_name, exc)
+            )
+    else:
+        raise ContractViolation(
+            "%s %s must be an integer, got %r" % (artifact_id, field_name, value)
+        )
+    if parsed < minimum:
+        raise ContractViolation(
+            "%s %s must be >= %s" % (artifact_id, field_name, minimum)
+        )
+    return parsed
+
+
 def _is_not_attempted(
     spec: ArtifactSpec,
     row: Mapping[str, object],
@@ -975,7 +1007,16 @@ def _is_not_attempted(
     if kind == "global_frame_index":
         if "frame_index" not in row:
             raise ContractViolation("%s missing frame_index" % spec.artifact_id)
-        return int(row["frame_index"]) < int(spec.not_attempted_rule.get("min_observation", 4))
+        frame_index = _parse_integral_field(
+            row["frame_index"], "frame_index", spec.artifact_id, 0
+        )
+        min_observation = _parse_integral_field(
+            spec.not_attempted_rule.get("min_observation", 4),
+            "min_observation",
+            spec.artifact_id,
+            0,
+        )
+        return frame_index < min_observation
     if kind == "local_position":
         if local_position is None:
             raise ContractViolation("%s missing local_position" % spec.artifact_id)

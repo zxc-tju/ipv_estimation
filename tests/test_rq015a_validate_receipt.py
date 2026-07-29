@@ -158,6 +158,33 @@ def test_structural_denylist_normalizes_columns_in_both_entrypoints(column):
         LedgerStructuralColumnSet((column,), True)
 
 
+@pytest.mark.parametrize("column", [
+    "ra\u200bting",
+    "ipv_\u200cerror",
+    "sco\ufeffre",
+])
+def test_structural_denylist_strips_unicode_format_characters(column):
+    assert is_measurement_like_field(column) is True
+    with pytest.raises(ContractViolation):
+        validate_only.StructuralColumnSet((column,))
+    with pytest.raises(ContractViolation):
+        LedgerStructuralColumnSet((column,), True)
+
+
+def test_structural_denylist_allows_legal_structural_columns_after_unicode_fix():
+    columns = (
+        "case_key",
+        "frame_index",
+        "timestamp_ms",
+        "anchor_frame_index",
+        "source_dataset",
+        "underscore_count",
+    )
+    assert all(is_measurement_like_field(column) is False for column in columns)
+    assert validate_only.StructuralColumnSet(columns).columns == columns
+    assert LedgerStructuralColumnSet(columns, True).columns == columns
+
+
 def test_structural_denylist_allows_score_inside_unrelated_token():
     column = "underscore_count"
     assert "score" in column

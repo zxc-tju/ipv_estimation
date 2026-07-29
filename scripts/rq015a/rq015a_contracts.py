@@ -52,6 +52,7 @@ REPORT_BINS_SENSITIVITY = tuple(
 BINS_INSTABILITY_PP = 10.0   # 三档占比极差 > 10pp -> BINS_WITHHELD_UNSTABLE
 
 MIN_SUPPORT_L1_PER_L2 = 5
+L2_STATUSES = {"OK", "INSUFFICIENT_SUPPORT"}
 
 
 def _det_mean(values) -> Optional[float]:
@@ -366,11 +367,12 @@ def aggregate_l2(l1_rows: Iterable[dict]) -> List[L2Unit]:
 
 @dataclass(frozen=True)
 class L3Unit:
-    case_id: str
+    case_id: Optional[str]
     n_l2_total: int
     n_l2_ok: int
     mean_q_eff: Optional[float]
     status: str          # OK | ZERO_SUPPORT
+    artifact_id: Optional[str] = None
 
 
 def aggregate_l3(l2_units: Sequence[L2Unit]) -> List[L3Unit]:
@@ -387,12 +389,16 @@ def aggregate_l3(l2_units: Sequence[L2Unit]) -> List[L3Unit]:
         groups.setdefault(_require_l2_value(u, "case_id"), []).append(u)
         artifact_id = _require_l2_value(u, "artifact_id")
         artifact_ids.add(validate_artifact_id(artifact_id))
+        status = _require_l2_value(u, "status")
+        if status not in L2_STATUSES:
+            raise ContractViolation(f"aggregate_l3: unknown L2 status {status!r}")
         mean_q_eff = _require_l2_value(u, "mean_q_eff")
         if mean_q_eff is not None:
             _validate_optional_q_eff(mean_q_eff, "aggregate_l3")
     if len(artifact_ids) > 1:
         raise ContractViolation(
             f"cross-artifact pooling forbidden; got {sorted(map(str, artifact_ids))}")
+    l3_artifact_id = next(iter(artifact_ids))
     out: List[L3Unit] = []
     for case_id in sorted(groups, key=_nullable_string_sort_key):
         units = groups[case_id]
@@ -402,7 +408,8 @@ def aggregate_l3(l2_units: Sequence[L2Unit]) -> List[L3Unit]:
         out.append(L3Unit(
             case_id=case_id, n_l2_total=len(units), n_l2_ok=len(ok),
             mean_q_eff=_det_mean([_require_l2_value(u, "mean_q_eff") for u in ok]),
-            status="OK" if ok else "ZERO_SUPPORT"))
+            status="OK" if ok else "ZERO_SUPPORT",
+            artifact_id=l3_artifact_id))
     return out
 
 
@@ -420,9 +427,14 @@ def episode_summaries(ipvs: Sequence[float], q_effs: Sequence[Optional[float]]) 
         raise ContractViolation("ipvs/q_effs length mismatch")
     pairs = []
     for v, q in zip(ipvs, q_effs):
+        if isinstance(v, bool) or not isinstance(v, numbers.Real):
+            raise ContractViolation(f"episode_summaries: invalid ipv {v!r}")
+        v_value = float(v)
+        if not math.isfinite(v_value):
+            raise ContractViolation(f"episode_summaries: non-finite ipv {v!r}")
         q_value = _validate_optional_q_eff(q, "episode_summaries")
-        if q_value is not None and math.isfinite(v):
-            pairs.append((v, q_value))
+        if q_value is not None:
+            pairs.append((v_value, q_value))
     if not pairs:
         return {"unweighted": None, "concentration_wtd": None, "n_used": 0}
     pairs = sorted(pairs)                      # 逐位确定：先排序再 fsum
@@ -488,6 +500,16 @@ def c0_route(uses_ipv: bool, n_rows: int, n_not_attempted: int, n_unknown: int,
     if n_not_attempted + n_unknown > n_rows:
         raise ContractViolation(
             "c0_route: n_not_attempted + n_unknown exceeds n_rows")
+    n_attempted = n_rows - n_not_attempted - n_unknown
+    try:
+        n_q_inputs = len(q_effs_attempted)
+    except TypeError:
+        raise ContractViolation("c0_route: q_effs_attempted must be a sized sequence")
+    if n_q_inputs != n_attempted:
+        raise ContractViolation(
+            "c0_route: q_effs_attempted length %s != attempted rows %s"
+            % (n_q_inputs, n_attempted)
+        )
     qs = []
     for q in q_effs_attempted:
         q_value = _validate_optional_q_eff(q, "c0_route")
@@ -500,7 +522,6 @@ def c0_route(uses_ipv: bool, n_rows: int, n_not_attempted: int, n_unknown: int,
     unknown_share = n_unknown / n_rows
     unavailable_share = (n_not_attempted + n_unknown) / n_rows
     mean_q = _det_mean(qs)
-    n_attempted = n_rows - n_not_attempted - n_unknown
     metrics = {"unknown_share": unknown_share, "unavailable_share": unavailable_share,
                "mean_q_eff_attempted": mean_q, "n_rows": n_rows,
                "n_attempted": n_attempted, "n_q_evidence": len(qs)}

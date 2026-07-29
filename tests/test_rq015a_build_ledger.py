@@ -34,7 +34,14 @@ from build_ledger import (  # noqa: E402
     sort_l1_rows,
     _make_test_permit_UNSAFE,
 )
-from rq015a_contracts import ATTEMPTED, NOT_ATTEMPTED, UNKNOWN, ContractViolation, L2Unit  # noqa: E402
+from rq015a_contracts import (  # noqa: E402
+    ATTEMPTED,
+    NOT_ATTEMPTED,
+    UNKNOWN,
+    ContractViolation,
+    L2Unit,
+    L3Unit,
+)
 from rq015a_types import (  # noqa: E402
     ARTIFACT_NOT_PRESENT_LOCALLY,
     AllowlistedArtifactScope,
@@ -43,6 +50,7 @@ from rq015a_types import (  # noqa: E402
     RQ007_SPLIT_NOT_APPLICABLE,
     SortedL1LedgerRows,
     SortedL2Units,
+    SortedL3Units,
     SplitNotApplicableArtifactScope,
     StructuralColumnSet,
 )
@@ -183,6 +191,24 @@ def test_sigma01_d0_global_frame_index_and_warmup_priority(tmp_path):
     assert [row.attempt_status for row in out.rows] == [NOT_ATTEMPTED, NOT_ATTEMPTED]
     assert {row.reason_code for row in out.rows} == {"D0_WARMUP"}
     assert all(row.q_eff is None for row in out.rows)
+
+
+def test_sigma01_global_frame_index_parse_errors_are_contract_violations(tmp_path):
+    schema = _schema()
+    allowlist = _allowlist(tmp_path)
+    spec = schema.artifacts_by_id["interhub_sigma01_hw4_timeseries"]
+    scope = resolve_artifact_scope(spec, allowlist)
+    rows = [{
+        "scene_unique_id": "case_dev",
+        "frame_index": "3.1",
+        "ipv_key_agent_1": "0.0",
+        "ipv_key_agent_1_error": "1.0",
+        "ipv_key_agent_2": "0.0",
+        "ipv_key_agent_2_error": "1.0",
+    }]
+
+    with pytest.raises(ContractViolation, match="frame_index parse failed"):
+        _build(spec, scope, rows)
 
 
 def test_feature_matrix_has_no_d0_and_excludes_m4_only(tmp_path):
@@ -480,6 +506,26 @@ def test_aggregate_l2_to_l3_rejects_invalid_l2_unit_artifact_id(artifact_id):
 
     with pytest.raises(ContractViolation):
         aggregate_l2_to_l3(units)
+
+
+def test_sorted_l3_units_constructor_enforces_container_invariants():
+    a = L3Unit("a", 1, 1, 0.2, "OK", artifact_id="A")
+    b = L3Unit("b", 1, 1, 0.3, "OK", artifact_id="A")
+    good = SortedL3Units("A", (a, b), "artifact_id,case_id")
+    assert good.units == (a, b)
+
+    with pytest.raises(ContractViolation, match="bad L3 sort key"):
+        SortedL3Units("A", (a, b), "bad_key")
+    with pytest.raises(ContractViolation, match="must contain L3Unit"):
+        SortedL3Units("A", (object(), a), "artifact_id,case_id")
+    with pytest.raises(ContractViolation, match="not sorted"):
+        SortedL3Units("A", (b, a), "artifact_id,case_id")
+    with pytest.raises(ContractViolation, match="artifact_id mismatch"):
+        SortedL3Units(
+            "A",
+            (L3Unit("a", 1, 1, 0.2, "OK", artifact_id="B"),),
+            "artifact_id,case_id",
+        )
 
 
 def _l1(artifact_id, case_id, key, role="agent_1"):
