@@ -125,6 +125,13 @@ def test_validate_receipt_json_records_no_measurement_reads(tmp_path):
     assert data["machine_verdict"] == "PASS"
 
 
+def test_validate_receipt_does_not_require_run_conservation_coverage():
+    checks = _checks(per_artifact_conservation={})
+    out = receipt.build_validate_receipt(checks)
+
+    assert out.machine_verdict == "PASS"
+
+
 def test_machine_verdict_cannot_be_supplied_by_caller():
     schema = load_schema(SCHEMA)
     fields = _base_fields(schema)
@@ -192,8 +199,38 @@ def test_directory_file_manifest_detects_equal_size_content_change(tmp_path):
     assert before["manifest_sha256"] != after["manifest_sha256"]
     assert before["digest_policy"]["small_file_policy"] == "sha256_full_file"
     assert before["digest_policy"]["large_file_policy"] == "sha256_full_file"
+    assert before["digest_policy"]["symlink_policy"] == "reject_all_symlinks"
     assert before["files"][0]["hash_policy"] == "sha256_full_file"
     assert before["files"][0]["bytes"] == after["files"][0]["bytes"] == 4
+
+
+def test_directory_file_manifest_rejects_directory_symlink(tmp_path):
+    root = tmp_path / "inputs"
+    root.mkdir()
+    target = tmp_path / "target_dir"
+    target.mkdir()
+    (target / "data.txt").write_text("AAAA", encoding="utf-8")
+    link = root / "linkdir"
+    try:
+        link.symlink_to(target, target_is_directory=True)
+    except (OSError, NotImplementedError) as exc:
+        pytest.skip("symlink unavailable: %s" % exc)
+
+    with pytest.raises(ContractViolation, match="linkdir"):
+        validate_only.structural_path_record(root)
+
+
+def test_file_manifest_rejects_file_symlink(tmp_path):
+    target = tmp_path / "target.txt"
+    target.write_text("AAAA", encoding="utf-8")
+    link = tmp_path / "link.txt"
+    try:
+        link.symlink_to(target)
+    except (OSError, NotImplementedError) as exc:
+        pytest.skip("symlink unavailable: %s" % exc)
+
+    with pytest.raises(ContractViolation, match="link.txt"):
+        validate_only.file_manifest_entry(link)
 
 
 def test_file_manifest_detects_middle_byte_change_after_mtime_restore(tmp_path):
@@ -233,6 +270,31 @@ def test_run_receipt_missing_audited_artifact_fails():
     partial.pop(schema["ledger_bearing_artifact_ids"][0])
 
     out = receipt.build_run_receipt(_run_checks(per_artifact_conservation=partial))
+
+    assert out.machine_verdict == "FAIL"
+
+
+def test_run_receipt_all_zero_measurement_rows_fail():
+    schema = load_schema(SCHEMA)
+    conservation = _passing_conservation_for_schema(schema)
+    for report in conservation.values():
+        report["measurement_rows"] = 0
+
+    out = receipt.build_run_receipt(
+        _run_checks(per_artifact_conservation=conservation)
+    )
+
+    assert out.machine_verdict == "FAIL"
+
+
+def test_run_receipt_partial_zero_measurement_rows_fail():
+    schema = load_schema(SCHEMA)
+    conservation = _passing_conservation_for_schema(schema)
+    conservation[schema["ledger_bearing_artifact_ids"][0]]["measurement_rows"] = 0
+
+    out = receipt.build_run_receipt(
+        _run_checks(per_artifact_conservation=conservation)
+    )
 
     assert out.machine_verdict == "FAIL"
 

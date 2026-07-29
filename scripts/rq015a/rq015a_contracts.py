@@ -243,16 +243,27 @@ def local_positions(rows: Sequence[Tuple[int, int]]) -> List[int]:
     return pos
 
 
+def _validate_artifact_id(value: object) -> str:
+    if not isinstance(value, str):
+        raise ContractViolation("every row must carry string artifact_id")
+    if not value.strip():
+        raise ContractViolation("artifact_id must be non-empty")
+    if value != value.strip():
+        raise ContractViolation(
+            "artifact_id must not contain leading or trailing whitespace")
+    return value
+
+
 def assert_single_artifact(rows: Iterable[dict]) -> str:
     """跨产物 pooling 守卫（schema 声明 FORBIDDEN，此处**代码强制**）。
 
     M3 与 RQ009 current/target 均为 sigma01 派生；合并会重复加权同一原始 observation。
     """
-    ids = {r.get("artifact_id") for r in rows}
+    ids = {_validate_artifact_id(r.get("artifact_id")) for r in rows}
     if len(ids) > 1:
         raise ContractViolation(
             f"cross-artifact pooling forbidden; got {sorted(map(str, ids))}")
-    if not ids or None in ids:
+    if not ids:
         raise ContractViolation("every row must carry artifact_id")
     return ids.pop()
 

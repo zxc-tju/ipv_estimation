@@ -195,7 +195,6 @@ def _base_machine_verdict_reasons(checks: ReceiptChecks) -> Sequence[str]:
         reasons.append("m4_only_channel_not_excluded")
     if checks.reads_measurement_fields is not False:
         reasons.append("validate_reads_measurement_fields")
-    reasons.extend(_conservation_failure_reasons(checks.per_artifact_conservation))
     return tuple(reasons)
 
 
@@ -207,6 +206,7 @@ def compute_machine_verdict(checks: ReceiptChecks) -> str:
 def compute_run_machine_verdict(checks: ReceiptChecks) -> str:
     reasons = list(_base_machine_verdict_reasons(checks))
     reasons.extend(_run_completeness_failure_reasons(checks))
+    reasons.extend(_conservation_failure_reasons(checks.per_artifact_conservation))
     return "FAIL" if reasons else "PASS"
 
 
@@ -219,6 +219,18 @@ def _run_completeness_failure_reasons(checks: ReceiptChecks) -> Tuple[str, ...]:
     missing = sorted(expected - provided)
     if missing:
         reasons.append("per_artifact_conservation_missing:%s" % ",".join(missing))
+    for artifact_id in sorted(expected & provided):
+        measurement_rows = _measurement_rows_for_report(
+            checks.per_artifact_conservation[artifact_id]
+        )
+        if measurement_rows is None:
+            reasons.append("%s_measurement_rows_missing" % artifact_id)
+        elif (
+            isinstance(measurement_rows, bool)
+            or not isinstance(measurement_rows, int)
+            or measurement_rows <= 0
+        ):
+            reasons.append("%s_measurement_rows_not_positive" % artifact_id)
     if not checks.input_sha256:
         reasons.append("input_sha256_empty")
     return tuple(reasons)
@@ -284,6 +296,20 @@ def _conservation_failure_reasons(per_artifact: Mapping[str, Any]) -> Tuple[str,
         else:
             reasons.append("%s_conservation_unreadable" % artifact_id)
     return tuple(reasons)
+
+
+def _measurement_rows_for_report(report: Any) -> Optional[Any]:
+    if isinstance(report, Mapping):
+        if "measurement_rows" in report:
+            return report.get("measurement_rows")
+        if "measurement_rows_observed" in report:
+            return report.get("measurement_rows_observed")
+        return None
+    if hasattr(report, "measurement_rows"):
+        return getattr(report, "measurement_rows")
+    if hasattr(report, "measurement_rows_observed"):
+        return getattr(report, "measurement_rows_observed")
+    return None
 
 
 def _receipt_to_dict(receipt: Any) -> Dict[str, Any]:

@@ -8,6 +8,7 @@ from __future__ import annotations
 import dataclasses
 import inspect
 import json
+import pickle
 import sys
 from pathlib import Path
 from typing import Iterator, Mapping
@@ -404,6 +405,28 @@ def test_l2_wrapper_artifact_label_cannot_hide_units_from_another_artifact():
         aggregate_l2_to_l3(forged)
 
 
+def test_aggregate_l1_to_l2_rejects_empty_container():
+    rows = SortedL1LedgerRows(
+        "rq009_feature_matrix",
+        (),
+        "artifact_id,case_id,product_row_key,measurement_role",
+    )
+
+    with pytest.raises(ContractViolation, match="empty"):
+        aggregate_l1_to_l2(rows)
+
+
+def test_aggregate_l2_to_l3_rejects_empty_container():
+    units = SortedL2Units(
+        "rq009_feature_matrix",
+        (),
+        "artifact_id,case_id,perspective,configuration",
+    )
+
+    with pytest.raises(ContractViolation, match="empty"):
+        aggregate_l2_to_l3(units)
+
+
 def _l1(artifact_id, case_id, key, role="agent_1"):
     return L1LedgerRow(
         artifact_id=artifact_id,
@@ -635,3 +658,47 @@ def test_evil_allowlist_subclass_is_rejected_before_reader_load(tmp_path, monkey
     with pytest.raises(ContractViolation, match="exact CaseAllowlist"):
         open_measurement_reader(spec, bad_scope, _permit(), source_rows=None)
     assert loaded == []
+
+
+def test_pickled_forged_allowlist_mapping_is_rejected_at_reader_open(tmp_path):
+    schema = _schema()
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    good = _allowlist(tmp_path)
+    forged = object.__new__(CaseAllowlist)
+    case_to_split = dict(good.case_to_split)
+    case_to_split["case_hold"] = "development"
+    object.__setattr__(forged, "source_path", good.source_path)
+    object.__setattr__(forged, "included_splits", good.included_splits)
+    object.__setattr__(
+        forged,
+        "allowed_case_ids",
+        frozenset(
+            case_id
+            for case_id, split in case_to_split.items()
+            if split in good.included_splits
+        ),
+    )
+    object.__setattr__(forged, "split_counts", dict(good.split_counts))
+    object.__setattr__(forged, "source_sha256", good.source_sha256)
+    object.__setattr__(forged, "case_to_split", case_to_split)
+    forged = pickle.loads(pickle.dumps(forged))
+    scope = AllowlistedArtifactScope._from_schema(spec, forged, "case_key")
+
+    with pytest.raises(ContractViolation, match="allowed_case_ids"):
+        open_measurement_reader(spec, scope, _permit(), source_rows=[_feature_row()])
+
+
+def test_allowlist_source_recheck_accepts_legitimate_token(tmp_path):
+    schema = _schema()
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    allowlist = _allowlist(tmp_path)
+    scope = resolve_artifact_scope(spec, allowlist)
+
+    reader = open_measurement_reader(
+        spec,
+        scope,
+        _permit(),
+        source_rows=[_feature_row("case_dev"), _feature_row("case_hold")],
+    )
+
+    assert [row["case_key"] for row in reader.iter_measurement_rows()] == ["case_dev"]

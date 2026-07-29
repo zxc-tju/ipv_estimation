@@ -54,6 +54,7 @@ try:  # pragma: no cover - import style depends on caller path setup
         SplitNotApplicableArtifactScope,
         is_forbidden_human_field,
         l1_sort_key,
+        validate_case_allowlist_source,
         validate_case_allowlist_token,
     )
 except ImportError:  # pragma: no cover
@@ -93,6 +94,7 @@ except ImportError:  # pragma: no cover
         SplitNotApplicableArtifactScope,
         is_forbidden_human_field,
         l1_sort_key,
+        validate_case_allowlist_source,
         validate_case_allowlist_token,
     )
 
@@ -408,6 +410,13 @@ def _scope_matches_schema(spec: ArtifactSpec, scope: FilteredArtifactScope) -> N
         raise ContractViolation("%s requires allowlisted scope" % spec.artifact_id)
     if spec.rq007_split_applicable is True:
         scope._validate()
+        if isinstance(spec.split_policy, RequiresRQ007Allowlist):
+            if tuple(scope.allowlist.included_splits) != tuple(
+                spec.split_policy.allowed_splits
+            ):
+                raise ContractViolation(
+                    "%s allowlist included_splits mismatch" % spec.artifact_id
+                )
     if spec.rq007_split_applicable is False and not isinstance(
         scope, SplitNotApplicableArtifactScope
     ):
@@ -762,6 +771,8 @@ def open_measurement_reader(
     if not spec.present_locally:
         raise ContractViolation("absent artifact cannot open MeasurementReader")
     _scope_matches_schema(spec, scope)
+    if isinstance(scope, AllowlistedArtifactScope):
+        validate_case_allowlist_source(scope.allowlist)
     _validate_measurement_columns(spec)
     rows = source_rows
     if rows is None:
@@ -1134,6 +1145,8 @@ def build_absent_artifact_coverage(spec: ArtifactSpec) -> AbsentArtifactCoverage
 
 
 def aggregate_l1_to_l2(rows: SortedL1LedgerRows) -> SortedL2Units:
+    if not rows.rows:
+        raise ContractViolation("SortedL1LedgerRows cannot be empty")
     dicts = [row.to_contract_dict() for row in rows.rows]
     actual_artifact_id = assert_single_artifact(dicts)
     if actual_artifact_id != rows.artifact_id:
@@ -1187,6 +1200,8 @@ def _assert_l2_units_match_container(units: SortedL2Units) -> None:
 
 
 def aggregate_l2_to_l3(units: SortedL2Units) -> SortedL3Units:
+    if not units.units:
+        raise ContractViolation("SortedL2Units cannot be empty")
     _assert_l2_units_match_container(units)
     out = tuple(sorted(aggregate_l3(units.units), key=lambda u: getattr(u, "case_id") or ""))
     return SortedL3Units(units.artifact_id, out, "artifact_id,case_id")

@@ -8,6 +8,9 @@ checks for the invariants that matter at runtime.
 
 from __future__ import annotations
 
+import csv
+import hashlib
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import (
@@ -178,6 +181,77 @@ def validate_case_allowlist_token(allowlist: object) -> "CaseAllowlist":
     )
     allowlist._validate()
     return allowlist
+
+
+def validate_case_allowlist_source(allowlist: object) -> "CaseAllowlist":
+    token = validate_case_allowlist_token(allowlist)
+    source_path = Path(token.source_path)
+    actual_sha256 = _sha256_file(source_path)
+    if actual_sha256 != token.source_sha256:
+        raise ContractViolation(
+            "CaseAllowlist source_sha256 mismatch: %s" % source_path
+        )
+    allowed, split_counts, case_to_split = _derive_allowlist_from_split_source(
+        source_path,
+        token.included_splits,
+    )
+    if frozenset(token.allowed_case_ids) != allowed:
+        raise ContractViolation(
+            "CaseAllowlist allowed_case_ids mismatch with source: %s" % source_path
+        )
+    if dict(token.split_counts) != split_counts:
+        raise ContractViolation(
+            "CaseAllowlist split_counts mismatch with source: %s" % source_path
+        )
+    if dict(token.case_to_split) != case_to_split:
+        raise ContractViolation(
+            "CaseAllowlist case_to_split mismatch with source: %s" % source_path
+        )
+    return token
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    try:
+        with Path(path).open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                h.update(chunk)
+    except OSError:
+        raise ContractViolation("CaseAllowlist source unreadable: %s" % path)
+    return h.hexdigest()
+
+
+def _derive_allowlist_from_split_source(
+    source_path: Path,
+    included_splits: Sequence[str],
+) -> Tuple[FrozenSet[str], Dict[str, int], Dict[str, str]]:
+    include_tuple = tuple(included_splits)
+    split_counts = Counter()
+    case_to_split = {}
+    allowed = set()
+    try:
+        with Path(source_path).open(newline="") as handle:
+            reader = csv.DictReader(handle)
+            if "case_id" not in (reader.fieldnames or ()) or "split" not in (
+                reader.fieldnames or ()
+            ):
+                raise ContractViolation("split CSV must contain case_id,split")
+            for row in reader:
+                case_id = str(row.get("case_id") or "")
+                split = str(row.get("split") or "")
+                if not case_id or not split:
+                    raise ContractViolation("empty case_id/split in allowlist source")
+                if case_id in case_to_split:
+                    raise ContractViolation(
+                        "duplicate case_id in split source: %s" % case_id
+                    )
+                case_to_split[case_id] = split
+                split_counts[split] += 1
+                if split in include_tuple:
+                    allowed.add(case_id)
+    except OSError:
+        raise ContractViolation("CaseAllowlist source unreadable: %s" % source_path)
+    return frozenset(allowed), dict(split_counts), dict(case_to_split)
 
 
 @dataclass(frozen=True)

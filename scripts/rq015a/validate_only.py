@@ -180,12 +180,14 @@ def record_input_roots(repo_root: Path, input_roots: Sequence[str]) -> Tuple[Map
 
 
 def structural_path_record(path: Path) -> Mapping[str, Any]:
+    _reject_symlink(path)
     if path.is_file():
         return file_manifest_entry(path)
     if path.is_dir():
         files = []
         directories = []
         for child in sorted(path.rglob("*"), key=lambda p: p.relative_to(path).as_posix()):
+            _reject_symlink(child)
             rel = child.relative_to(path).as_posix()
             if child.is_dir():
                 directories.append(rel)
@@ -219,11 +221,15 @@ def input_digest_policy() -> Mapping[str, Any]:
         "file_policy": "sha256_full_file",
         "small_file_policy": "sha256_full_file",
         "large_file_policy": "sha256_full_file",
+        "symlink_policy": "reject_all_symlinks",
+        "directory_symlink_policy": "reject",
+        "file_symlink_policy": "reject",
         "chunk_bytes": MANIFEST_HASH_CHUNK_BYTES,
     }
 
 
 def file_manifest_entry(path: Path) -> Mapping[str, Any]:
+    _reject_symlink(path)
     st = path.stat()
     out = {
         "kind": "file",
@@ -235,7 +241,13 @@ def file_manifest_entry(path: Path) -> Mapping[str, Any]:
     return out
 
 
+def _reject_symlink(path: Path) -> None:
+    if Path(path).is_symlink():
+        raise ContractViolation("input symlink is forbidden: %s" % path)
+
+
 def sha256_file(path: Path) -> str:
+    _reject_symlink(path)
     h = hashlib.sha256()
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(MANIFEST_HASH_CHUNK_BYTES), b""):

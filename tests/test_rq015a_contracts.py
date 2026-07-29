@@ -225,6 +225,18 @@ def test_aggregate_l2_rejects_invalid_q_eff_values():
             aggregate_l2(rows)
 
 
+@pytest.mark.parametrize("artifact_id", ["", "   ", None, 123, " A "])
+def test_aggregate_l2_rejects_invalid_artifact_id_minimal_counterexamples(artifact_id):
+    from rq015a_contracts import assert_single_artifact
+
+    rows = [_row("c", "p", "cfg", ATTEMPTED, 0.5, artifact_id=artifact_id)
+            for _ in range(5)]
+    with pytest.raises(ContractViolation):
+        assert_single_artifact(rows)
+    with pytest.raises(ContractViolation):
+        aggregate_l2(rows)
+
+
 # ---------------- episode 摘要（不使用 bins）----------------
 
 def test_episode_definition_sensitivity():
