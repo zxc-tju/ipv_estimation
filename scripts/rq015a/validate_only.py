@@ -27,12 +27,11 @@ from receipt import (
     write_receipt,
 )
 from rq015a_contracts import ContractViolation, SCHEMA_VERSION, load_schema
+from rq015a_types import assert_structural_columns_are_safe
 
 READS_MEASUREMENT_FIELDS: Literal[False] = False
 MUST_PRECEDE_EXECUTE: Literal[True] = True
 
-FORBIDDEN_COLUMN_PREFIXES = ("ipv_", "target_ipv", "counterpart_ipv", "M4_ONLY_")
-FORBIDDEN_COLUMN_SUBSTRINGS = ("rating", "preference", "human", "score", "label")
 RQ009_FOLD_NAMES = ("train", "guard_tune", "calibration", "test")
 RQ007_VALIDATE_SPLITS = ("development", "guard")
 MANIFEST_HASH_CHUNK_BYTES = 1024 * 1024
@@ -346,18 +345,7 @@ def _structural_columns_for_artifact(artifact: Mapping[str, Any]) -> Tuple[str, 
 
 
 def _assert_structural_columns(columns: Sequence[str]) -> None:
-    bad = []
-    for col in columns:
-        name = str(col)
-        lower = name.lower()
-        if any(name.startswith(prefix) for prefix in FORBIDDEN_COLUMN_PREFIXES):
-            bad.append(name)
-            continue
-        if any(marker in lower for marker in FORBIDDEN_COLUMN_SUBSTRINGS):
-            bad.append(name)
-    if bad:
-        raise ContractViolation("structural plan requested forbidden columns: " +
-                                ", ".join(sorted(bad)))
+    assert_structural_columns_are_safe(columns)
 
 
 def _assert_validate_splits(artifact_id: str, splits: Sequence[str]) -> None:

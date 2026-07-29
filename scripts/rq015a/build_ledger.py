@@ -13,6 +13,7 @@ import glob
 import hashlib
 import json
 import math
+import weakref
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Iterable, Iterator, List, Mapping, MutableMapping, Optional, Sequence, Tuple
@@ -127,6 +128,7 @@ PRODUCT_ROW_KEY_ESCAPED_CHARS = (
     PRODUCT_ROW_KEY_SEPARATOR,
     PRODUCT_ROW_KEY_ASSIGN,
 )
+_OPENED_MEASUREMENT_READERS = weakref.WeakSet()
 
 
 def _dedupe_columns(columns: Iterable[Optional[str]]) -> Tuple[str, ...]:
@@ -815,7 +817,9 @@ def open_measurement_reader(
     rows = source_rows
     if rows is None:
         rows = _load_limited_rows(spec, reader_scope, parquet_part_limit, csv_row_limit, event_log)
-    return _InMemoryMeasurementReader(spec, reader_scope, rows, event_log)
+    reader = _InMemoryMeasurementReader(spec, reader_scope, rows, event_log)
+    _OPENED_MEASUREMENT_READERS.add(reader)
+    return reader
 
 
 def _stringify_key_value(value: object) -> str:
@@ -987,12 +991,14 @@ def _local_position_map(
 ) -> Mapping[int, int]:
     if spec.not_attempted_rule.get("kind") != "local_position":
         return {}
+    if not rows:
+        raise ContractViolation("%s local_position requires non-empty rows" % spec.artifact_id)
     by_case = defaultdict(list)
     for idx, row in enumerate(rows):
         if "case_key" not in row or "timestamp_ms" not in row or "frame_index" not in row:
             raise ContractViolation("OnSite local_position requires case_key,timestamp_ms,frame_index")
         by_case[str(row["case_key"])].append(
-            (idx, (int(row["timestamp_ms"]), int(row["frame_index"])))
+            (idx, (row["timestamp_ms"], row["frame_index"]))
         )
     positions = {}
     for _, items in by_case.items():
@@ -1000,6 +1006,12 @@ def _local_position_map(
         for (idx, _), local_pos in zip(items, pos):
             positions[idx] = local_pos
     return positions
+
+
+def _require_internal_measurement_reader(reader: object) -> _InMemoryMeasurementReader:
+    if type(reader) is not _InMemoryMeasurementReader or reader not in _OPENED_MEASUREMENT_READERS:
+        raise ContractViolation("internal MeasurementReader from open_measurement_reader required")
+    return reader
 
 
 def _row_case_and_split(
@@ -1121,6 +1133,7 @@ def build_l1_for_artifact(
     scope: FilteredArtifactScope,
     reader: _InMemoryMeasurementReader,
 ) -> SortedL1LedgerRows:
+    reader = _require_internal_measurement_reader(reader)
     if reader.artifact_id != spec.artifact_id:
         raise ContractViolation("reader/spec artifact mismatch")
     _scope_matches_schema(spec, scope)

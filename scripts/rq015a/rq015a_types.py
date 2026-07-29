@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import re
+import unicodedata
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -102,6 +104,10 @@ _INCLUDED_SPLITS = frozenset(("development", "guard"))
 _SPLIT_NOT_APPLICABLE_REASONS = frozenset(
     ("non_rq007_artifact", "artifact_absent_locally")
 )
+_MEASUREMENT_FIELD_PREFIXES = ("ipv_", "target_ipv", "counterpart_ipv", "m4_only_")
+_HUMAN_FIELD_TOKENS = frozenset(("rating", "preference", "human", "score", "label"))
+_TOKEN_SPLIT_RE = re.compile(r"[^0-9A-Za-z]+")
+_CAMEL_BOUNDARY_RE = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
 
 
 def _require(condition: bool, message: str) -> None:
@@ -114,22 +120,39 @@ def _require_in(name: str, value: object, allowed: FrozenSet[str]) -> None:
         raise ContractViolation("%s %r not in %s" % (name, value, sorted(allowed)))
 
 
+def normalize_structural_column_name(column: object) -> str:
+    return unicodedata.normalize("NFKC", str(column)).strip().lower()
+
+
+def _normalized_column_tokens(column: object) -> FrozenSet[str]:
+    normalized = unicodedata.normalize("NFKC", str(column)).strip()
+    token_source = _CAMEL_BOUNDARY_RE.sub("_", normalized)
+    tokens = [token for token in _TOKEN_SPLIT_RE.split(token_source.lower()) if token]
+    return frozenset(tokens)
+
+
 def is_forbidden_human_field(column: str) -> bool:
-    name = str(column).lower()
-    return any(token in name for token in ("rating", "preference", "human", "score"))
+    return bool(_normalized_column_tokens(column) & _HUMAN_FIELD_TOKENS)
 
 
 def is_measurement_like_field(column: str) -> bool:
-    name = str(column)
-    low = name.lower()
+    name = normalize_structural_column_name(column)
     return (
-        name.startswith("ipv_")
-        or name.startswith("target_ipv")
-        or name.startswith("counterpart_ipv")
-        or name.startswith("M4_ONLY_")
-        or "label" in low
-        or is_forbidden_human_field(name)
+        name == "ipv"
+        or any(name.startswith(prefix) for prefix in _MEASUREMENT_FIELD_PREFIXES)
+        or is_forbidden_human_field(column)
     )
+
+
+def assert_structural_columns_are_safe(columns: Sequence[str]) -> None:
+    bad = []
+    for column in columns:
+        if is_measurement_like_field(column):
+            bad.append(str(column))
+    if bad:
+        raise ContractViolation(
+            "structural scan requested measurement field %s" % ", ".join(sorted(bad))
+        )
 
 
 @dataclass(frozen=True, init=False)
@@ -568,9 +591,7 @@ class StructuralColumnSet:
             self.forbids_measurement_fields is True,
             "forbids_measurement_fields must be True",
         )
-        for column in self.columns:
-            if is_measurement_like_field(column):
-                raise ContractViolation("structural scan requested measurement field %s" % column)
+        assert_structural_columns_are_safe(self.columns)
 
 
 class StructuralReader(Protocol):

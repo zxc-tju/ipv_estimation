@@ -207,8 +207,8 @@ def test_onsite_d0_uses_local_position_with_nonzero_discontinuous_frames():
     for timestamp, frame in [(1000, 101), (1040, 103), (1020, 102), (1100, 120), (1300, 140)]:
         rows.append({
             "case_key": "onsite_case",
-            "frame_index": str(frame),
-            "timestamp_ms": str(timestamp),
+            "frame_index": frame,
+            "timestamp_ms": timestamp,
             "ipv_ego_hw4_error": "" if timestamp < 1300 else "0.5",
             "ipv_ego_hw10_error": "" if timestamp < 1300 else "0.5",
             "ipv_counterpart_hw4_error": "" if timestamp < 1300 else "0.5",
@@ -221,6 +221,37 @@ def test_onsite_d0_uses_local_position_with_nonzero_discontinuous_frames():
     assert sum(1 for row in out.rows if row.attempt_status == ATTEMPTED) == 4
     assert all(int(row.product_row_key.split("frame_index=", 1)[1].split("|", 1)[0]) >= 101
                for row in out.rows)
+
+
+@pytest.mark.parametrize("field,bad_value", [
+    ("frame_index", -1),
+    ("frame_index", True),
+    ("frame_index", 101.0),
+    ("frame_index", "101.9"),
+    ("frame_index", None),
+    ("timestamp_ms", -1),
+    ("timestamp_ms", False),
+    ("timestamp_ms", 1000.0),
+    ("timestamp_ms", "1000"),
+    ("timestamp_ms", None),
+])
+def test_onsite_local_position_fields_fail_closed_at_ledger_entry(field, bad_value):
+    schema = _schema()
+    spec = schema.artifacts_by_id["onsite_dense_timeseries"]
+    scope = resolve_artifact_scope(spec)
+    row = {
+        "case_key": "onsite_case",
+        "frame_index": 101,
+        "timestamp_ms": 1000,
+        "ipv_ego_hw4_error": "0.5",
+        "ipv_ego_hw10_error": "0.5",
+        "ipv_counterpart_hw4_error": "0.5",
+        "ipv_counterpart_hw10_error": "0.5",
+    }
+    row[field] = bad_value
+
+    with pytest.raises(ContractViolation, match=field):
+        _build(spec, scope, [row])
 
 
 def test_conservation_identity_failures_are_independent():
@@ -307,8 +338,8 @@ def test_onsite_empty_string_is_unknown_not_zero_after_d0():
     for i in range(5):
         rows.append({
             "case_key": "onsite_empty",
-            "frame_index": str(101 + i * 2),
-            "timestamp_ms": str(1000 + i * 20),
+            "frame_index": 101 + i * 2,
+            "timestamp_ms": 1000 + i * 20,
             "ipv_ego_hw4_error": "",
             "ipv_ego_hw10_error": "",
             "ipv_counterpart_hw4_error": "",
@@ -726,6 +757,33 @@ def test_allowlist_source_recheck_accepts_legitimate_token(tmp_path):
     )
 
     assert [row["case_key"] for row in reader.iter_measurement_rows()] == ["case_dev"]
+
+
+def test_build_l1_rejects_duck_typed_reader_injection(tmp_path):
+    class DuckReader:
+        def __init__(self, artifact_id, scope, rows):
+            self.artifact_id = artifact_id
+            self.scope = scope
+            self._rows = tuple(rows)
+
+        def iter_measurement_rows(self):
+            return iter(self._rows)
+
+    schema = _schema()
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    allowlist = _allowlist(tmp_path)
+    scope = resolve_artifact_scope(spec, allowlist)
+    reader = DuckReader(spec.artifact_id, scope, [_feature_row("case_dev")])
+    allowlist.source_path.write_text(
+        "case_id,split\n"
+        "case_dev,held_out\n"
+        "case_guard,guard\n"
+        "case_hold,held_out\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ContractViolation, match="internal MeasurementReader"):
+        build_l1_for_artifact(spec, scope, reader)
 
 
 def test_allowlist_source_replacement_after_reader_open_fails_closed(tmp_path):

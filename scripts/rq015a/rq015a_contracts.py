@@ -243,8 +243,22 @@ def local_positions(rows: Sequence[Tuple[int, int]]) -> List[int]:
     禁止 `frame_index - min(frame_index)`（254/267 cases 首帧非 0，36 cases 不连续）。
     `rows` 为单个 case 的 (timestamp_ms, frame_index) 序列。
     """
-    order = sorted(range(len(rows)), key=lambda i: (rows[i][0], rows[i][1]))
-    pos = [0] * len(rows)
+    if not rows:
+        raise ContractViolation("local_positions requires at least one row")
+    validated: List[Tuple[int, int]] = []
+    for idx, row in enumerate(rows):
+        try:
+            timestamp_ms, frame_index = row
+        except (TypeError, ValueError):
+            raise ContractViolation(
+                f"local_positions row {idx} must be (timestamp_ms, frame_index)"
+            )
+        validated.append((
+            _require_integral(timestamp_ms, "timestamp_ms", "local_positions", 0),
+            _require_integral(frame_index, "frame_index", "local_positions", 0),
+        ))
+    order = sorted(range(len(validated)), key=lambda i: (validated[i][0], validated[i][1]))
+    pos = [0] * len(validated)
     for rank, idx in enumerate(order):
         pos[idx] = rank
     return pos

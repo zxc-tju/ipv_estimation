@@ -139,6 +139,56 @@ def test_local_position_d0_counts_differ_from_global_rule():
     assert sum(1 for _, fi in rows if fi < 4) == 0           # 全局规则命中 0 行
 
 
+@pytest.mark.parametrize("rows", [
+    [],
+    [(-1, 101)],
+    [(1000, -1)],
+    [(True, 101)],
+    [(1000, True)],
+    [(1000.0, 101)],
+    [(1000, 101.0)],
+    [("1000", 101)],
+    [(1000, "101.9")],
+    [(None, 101)],
+    [(1000, None)],
+])
+def test_local_positions_rejects_empty_or_non_integral_inputs(rows):
+    with pytest.raises(ContractViolation):
+        local_positions(rows)
+
+
+def test_local_positions_permutation_stable_zero_based_by_row_identity():
+    canonical = [(1000, 101), (1020, 103), (1040, 107), (1060, 108), (1080, 120)]
+    expected = [0, 1, 2, 3, 4]
+    permutations = [
+        canonical,
+        [canonical[2], canonical[0], canonical[4], canonical[1], canonical[3]],
+        [canonical[4], canonical[3], canonical[2], canonical[1], canonical[0]],
+    ]
+
+    for rows in permutations:
+        by_row = dict(zip(rows, local_positions(rows)))
+        assert [by_row[row] for row in canonical] == expected
+
+
+def test_onsite_frozen_shape_nonzero_discontinuous_four_d0_per_case():
+    d0_count = 0
+    for case_idx in range(267):
+        base = 10_000 * case_idx
+        rows = [
+            (base + 40, 103),
+            (base + 0, 101),
+            (base + 80, 107),
+            (base + 120, 120),
+            (base + 160, 140),
+        ]
+        assert rows[0][1] != 0
+        assert [frame for _, frame in sorted(rows)] != list(range(101, 106))
+        d0_count += sum(1 for pos in local_positions(rows) if pos < 4)
+
+    assert d0_count == 1_068
+
+
 # ---------------- L1→L2→L3 ----------------
 
 def _row(case, persp, cfg, status, q, artifact_id="interhub_sigma01_hw4_timeseries"):

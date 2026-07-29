@@ -22,6 +22,10 @@ from rq015a_contracts import (  # noqa: E402
     check_conservation,
     load_schema,
 )
+from rq015a_types import (  # noqa: E402
+    StructuralColumnSet as LedgerStructuralColumnSet,
+    is_measurement_like_field,
+)
 
 SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v2.json"
 VALID_SHA256 = "0" * 64
@@ -132,6 +136,34 @@ def test_structural_scan_plan_rejects_ipv_measurement_column():
 def test_structural_scan_plan_rejects_score_bearing_columns(column):
     with pytest.raises(ContractViolation):
         validate_only.StructuralColumnSet((column,))
+
+
+@pytest.mark.parametrize("column", [
+    "IPV_error",
+    " target_ipv_error",
+    "Counterpart_IPV_error",
+    " M4_ONLY_channel ",
+    "ｉｐｖ",
+    "driver_RATING",
+    "preferenceScore",
+    "human-score",
+    "quality_LABEL",
+    "risk_score",
+])
+def test_structural_denylist_normalizes_columns_in_both_entrypoints(column):
+    assert is_measurement_like_field(column) is True
+    with pytest.raises(ContractViolation):
+        validate_only.StructuralColumnSet((column,))
+    with pytest.raises(ContractViolation):
+        LedgerStructuralColumnSet((column,), True)
+
+
+def test_structural_denylist_allows_score_inside_unrelated_token():
+    column = "underscore_count"
+    assert "score" in column
+    assert is_measurement_like_field(column) is False
+    assert validate_only.StructuralColumnSet((column,)).columns == (column,)
+    assert LedgerStructuralColumnSet((column,), True).columns == (column,)
 
 
 def test_fold_name_cannot_be_used_as_split_filter():
