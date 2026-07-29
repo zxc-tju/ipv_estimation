@@ -201,6 +201,30 @@ def test_aggregation_is_permutation_invariant_and_deterministic():
         assert shuffled == base, "episode 摘要对输入顺序必须逐位确定"
 
 
+def test_aggregate_l2_rejects_invalid_attempt_status_minimal_counterexample():
+    rows = [_row("c1", "p1", "hw4", "BOGUS", 0.2, artifact_id="A")
+            for _ in range(5)]
+    with pytest.raises(ContractViolation, match="invalid attempt_status"):
+        aggregate_l2(rows)
+
+
+def test_aggregate_l2_rejects_invalid_q_eff_values():
+    bad_cases = [
+        (ATTEMPTED, 2.0),
+        (ATTEMPTED, 0.0),
+        (ATTEMPTED, float("inf")),
+        (ATTEMPTED, float("nan")),
+        (ATTEMPTED, True),
+        (ATTEMPTED, "0.5"),
+        (UNKNOWN, 2.0),
+    ]
+    for status, bad_q in bad_cases:
+        rows = [_row("c1", "p1", "hw4", status, bad_q, artifact_id="A")
+                for _ in range(5)]
+        with pytest.raises(ContractViolation):
+            aggregate_l2(rows)
+
+
 # ---------------- episode 摘要（不使用 bins）----------------
 
 def test_episode_definition_sensitivity():
@@ -269,6 +293,42 @@ def test_c0_sensitivity_reports_stability():
                                      n_unknown=0, q_effs_attempted=[0.1] * 93,
                                      mapping_is_1to1=True)
     assert not out2["stable"]          # 7% 落在 2%/5%/10% 之间 -> 不稳定，必须披露
+
+
+def test_c0_route_rejects_negative_count_minimal_counterexample():
+    with pytest.raises(ContractViolation):
+        c0_route(True, 100, -1, 0, [0.2] * 101, True)
+
+
+def test_c0_route_rejects_non_integral_and_bool_counts():
+    bad_calls = [
+        dict(uses_ipv=True, n_rows=100.0, n_not_attempted=0, n_unknown=0,
+             q_effs_attempted=[0.2] * 100, mapping_is_1to1=True),
+        dict(uses_ipv=True, n_rows=True, n_not_attempted=0, n_unknown=0,
+             q_effs_attempted=[0.2] * 100, mapping_is_1to1=True),
+        dict(uses_ipv=True, n_rows=100, n_not_attempted=1.0, n_unknown=0,
+             q_effs_attempted=[0.2] * 99, mapping_is_1to1=True),
+        dict(uses_ipv=True, n_rows=100, n_not_attempted=False, n_unknown=0,
+             q_effs_attempted=[0.2] * 100, mapping_is_1to1=True),
+        dict(uses_ipv=True, n_rows=100, n_not_attempted=0, n_unknown=None,
+             q_effs_attempted=[0.2] * 100, mapping_is_1to1=True),
+    ]
+    for kw in bad_calls:
+        with pytest.raises(ContractViolation):
+            c0_route(**kw)
+
+
+def test_c0_route_rejects_count_parts_exceeding_total():
+    with pytest.raises(ContractViolation, match="exceeds n_rows"):
+        c0_route(True, 5, 4, 2, [0.2], True)
+
+
+def test_c0_route_with_sensitivity_rejects_shared_bad_counts():
+    with pytest.raises(ContractViolation):
+        c0_route_with_sensitivity(uses_ipv=True, n_rows=100,
+                                  n_not_attempted=-1, n_unknown=0,
+                                  q_effs_attempted=[0.2] * 101,
+                                  mapping_is_1to1=True)
 
 
 # ---------------- schema 自检 ----------------

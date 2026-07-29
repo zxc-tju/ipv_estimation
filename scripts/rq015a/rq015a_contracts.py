@@ -105,6 +105,25 @@ def _validate_ipv_error(ipv_error: object) -> float:
     return ipv_error
 
 
+def _validate_attempt_status(status: object, artifact_id: str) -> str:
+    if not isinstance(status, str) or status not in LEDGER_STATUSES:
+        raise ContractViolation(f"{artifact_id}: invalid attempt_status {status!r}")
+    return status
+
+
+def _validate_optional_q_eff(value: object, artifact_id: str) -> Optional[float]:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, numbers.Real):
+        raise ContractViolation(f"{artifact_id}: invalid q_eff {value!r}")
+    q = float(value)
+    if not math.isfinite(q):
+        raise ContractViolation(f"{artifact_id}: non-finite q_eff {value!r}")
+    if q <= 0.0 or q > 1.0:
+        raise ContractViolation(f"{artifact_id}: q_eff {value!r} outside (0, 1]")
+    return q
+
+
 def _nullable_string_sort_key(value: object) -> Tuple[bool, str]:
     if value is None:
         return (False, "")
@@ -292,12 +311,16 @@ def aggregate_l2(l1_rows: Iterable[dict]) -> List[L2Unit]:
         statuses = []
         for r in rows:
             artifact_id = str(r.get("artifact_id", "<missing artifact_id>"))
-            status = _require_l1_key(r, "attempt_status", artifact_id)
+            status = _validate_attempt_status(
+                _require_l1_key(r, "attempt_status", artifact_id), artifact_id)
             statuses.append(status)
             if status == ATTEMPTED:
                 q = _require_l1_key(r, "q_eff", artifact_id)
-                if q is not None:
-                    qs.append(q)
+                q_value = _validate_optional_q_eff(q, artifact_id)
+                if q_value is not None:
+                    qs.append(q_value)
+            elif "q_eff" in r:
+                _validate_optional_q_eff(r["q_eff"], artifact_id)
         out.append(L2Unit(
             case_id=key[0], perspective=key[1], configuration=key[2],
             n_l1=len(rows),
@@ -415,6 +438,13 @@ def c0_route(uses_ipv: bool, n_rows: int, n_not_attempted: int, n_unknown: int,
 
     优先级：INDETERMINATE > OWNER_REANALYSIS_REQUIRED > NO_AUDIT_TRIGGER_DETECTED > NOT_APPLICABLE
     """
+    n_rows = _require_integral(n_rows, "n_rows", "c0_route", 0)
+    n_not_attempted = _require_integral(
+        n_not_attempted, "n_not_attempted", "c0_route", 0)
+    n_unknown = _require_integral(n_unknown, "n_unknown", "c0_route", 0)
+    if n_not_attempted + n_unknown > n_rows:
+        raise ContractViolation(
+            "c0_route: n_not_attempted + n_unknown exceeds n_rows")
     if not uses_ipv:
         return {"terminal": "NOT_APPLICABLE", "reason_code": "no_ipv_derived_quantity"}
     if n_rows <= 0:

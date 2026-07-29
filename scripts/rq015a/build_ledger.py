@@ -100,14 +100,14 @@ except ImportError:  # pragma: no cover
 L1_SORT_KEY = "artifact_id,case_id,product_row_key,measurement_role"
 L2_SORT_KEY = "artifact_id,case_id,perspective,configuration"
 AGGREGATION_KEY_DERIVATION = {
-    "version": "rq015a-aggregation-key-v1",
+    "version": "rq015a-aggregation-key-v2",
     "rules": {
         "interhub_sigma01_hw4_timeseries": (
             "perspective=measurement_role; configuration=sigma01_hw4"
         ),
         "rq009_feature_matrix": (
             "perspective=product_row_key.perspective; "
-            "configuration=measurement_role|source_dataset"
+            "configuration=measurement_role|source_dataset with product-row-key escaping"
         ),
         "onsite_dense_timeseries": (
             "perspective=measurement_role; configuration=product_row_key.case_key"
@@ -115,6 +115,14 @@ AGGREGATION_KEY_DERIVATION = {
     },
 }
 CSV_REQUIRED_ROW_LIMIT_MESSAGE = "BUILD_WHILE_DENY requires explicit csv_row_limit"
+PRODUCT_ROW_KEY_ESCAPE = "\\"
+PRODUCT_ROW_KEY_SEPARATOR = "|"
+PRODUCT_ROW_KEY_ASSIGN = "="
+PRODUCT_ROW_KEY_ESCAPED_CHARS = (
+    PRODUCT_ROW_KEY_ESCAPE,
+    PRODUCT_ROW_KEY_SEPARATOR,
+    PRODUCT_ROW_KEY_ASSIGN,
+)
 
 
 def _dedupe_columns(columns: Iterable[Optional[str]]) -> Tuple[str, ...]:
@@ -446,7 +454,9 @@ class _InMemoryMeasurementReader:
             for row in rows:
                 if self.scope.join_column not in row:
                     raise ContractViolation("%s missing join column" % self.artifact_id)
-                case_id = str(row[self.scope.join_column])
+                case_id = _require_allowlist_case_id(
+                    self._spec, self.scope.join_column, row[self.scope.join_column]
+                )
                 split = self.scope.allowlist.case_to_split.get(case_id)
                 if split is None:
                     unmapped += 1
@@ -532,26 +542,55 @@ def _log_real_path_event(
         event_log.append("%s:%s" % (label, ",".join(columns)))
 
 
-def _allowed_case_ids_from_structural_rows(
+def _require_allowlist_case_id(
+    spec: ArtifactSpec,
+    join_column: str,
+    value: object,
+) -> str:
+    if value is None:
+        raise ContractViolation("%s null join key in %s" % (spec.artifact_id, join_column))
+    if not isinstance(value, str):
+        raise ContractViolation(
+            "%s non-string join key in %s: %s"
+            % (spec.artifact_id, join_column, type(value).__name__)
+        )
+    return value
+
+
+def _allowed_case_ids_and_row_count_from_structural_rows(
     spec: ArtifactSpec,
     scope: AllowlistedArtifactScope,
     rows: Sequence[Mapping[str, object]],
-) -> Tuple[str, ...]:
+) -> Tuple[Tuple[str, ...], int]:
     validate_case_allowlist_token(scope.allowlist)
     allowed = set()
+    allowed_rows = 0
     unmapped = 0
     for row in rows:
         if scope.join_column not in row:
             raise ContractViolation("%s missing join column" % spec.artifact_id)
-        case_id = str(row[scope.join_column])
+        case_id = _require_allowlist_case_id(spec, scope.join_column, row[scope.join_column])
         split = scope.allowlist.case_to_split.get(case_id)
         if split is None:
             unmapped += 1
         elif case_id in scope.allowlist.allowed_case_ids:
             allowed.add(case_id)
+            allowed_rows += 1
     if unmapped:
         raise ContractViolation("%s unmapped case rows: %d" % (spec.artifact_id, unmapped))
-    return tuple(sorted(allowed))
+    return tuple(sorted(allowed)), allowed_rows
+
+
+def _assert_two_stage_allowed_row_count(
+    spec: ArtifactSpec,
+    expected_rows: int,
+    actual_rows: int,
+) -> None:
+    if expected_rows != actual_rows:
+        raise ContractViolation(
+            "%s allowlist row count mismatch: structural=%d measurement=%d"
+            % (spec.artifact_id, expected_rows, actual_rows)
+        )
 
 
 def _load_parquet_projected_rows(
@@ -567,19 +606,21 @@ def _load_parquet_projected_rows(
     if isinstance(scope, AllowlistedArtifactScope):
         _log_real_path_event(event_log, "reader.real_path.structural_columns", structural)
         structural_table = pq.ParquetFile(path).read(columns=list(structural))
-        allowed_ids = _allowed_case_ids_from_structural_rows(
+        allowed_ids, allowed_row_count = _allowed_case_ids_and_row_count_from_structural_rows(
             spec, scope, structural_table.to_pylist()
         )
         if event_log is not None:
-            event_log.append("reader.real_path.allowlist_applied:%d" % len(allowed_ids))
-        if not allowed_ids:
+            event_log.append("reader.real_path.allowlist_applied:%d" % allowed_row_count)
+        if allowed_row_count == 0:
             return tuple()
         _log_real_path_event(event_log, "reader.real_path.measurement_columns", measurement)
         table = ds.dataset(str(path), format="parquet").to_table(
             columns=list(projected),
             filter=ds.field(scope.join_column).isin(list(allowed_ids)),
         )
-        return table.to_pylist()
+        out = table.to_pylist()
+        _assert_two_stage_allowed_row_count(spec, allowed_row_count, len(out))
+        return out
 
     _log_real_path_event(event_log, "reader.real_path.columns", projected)
     return pq.ParquetFile(path).read(columns=list(projected)).to_pylist()
@@ -605,9 +646,11 @@ def _load_csv_projected_rows(
         if not allowed_rows:
             return tuple()
         _log_real_path_event(event_log, "reader.real_path.measurement_columns", measurement)
-        return _csv_project_allowed_rows(
+        out = _csv_project_allowed_rows(
             spec.path, header, header_index, projected, csv_row_limit, allowed_rows
         )
+        _assert_two_stage_allowed_row_count(spec, len(allowed_rows), len(out))
+        return out
 
     _log_real_path_event(event_log, "reader.real_path.columns", projected)
     return _csv_project_allowed_rows(
@@ -732,21 +775,100 @@ def _stringify_key_value(value: object) -> str:
     return str(value)
 
 
+def _escape_product_row_key_component(value: object) -> str:
+    text = _stringify_key_value(value)
+    out = []
+    for ch in text:
+        if ch in PRODUCT_ROW_KEY_ESCAPED_CHARS:
+            out.append(PRODUCT_ROW_KEY_ESCAPE)
+        out.append(ch)
+    return "".join(out)
+
+
+def _unescape_product_row_key_component(value: str) -> str:
+    out = []
+    escaped = False
+    for ch in value:
+        if escaped:
+            if ch not in PRODUCT_ROW_KEY_ESCAPED_CHARS:
+                raise ContractViolation("bad product_row_key escape: \\%s" % ch)
+            out.append(ch)
+            escaped = False
+            continue
+        if ch == PRODUCT_ROW_KEY_ESCAPE:
+            escaped = True
+            continue
+        out.append(ch)
+    if escaped:
+        raise ContractViolation("dangling product_row_key escape")
+    return "".join(out)
+
+
+def _split_product_row_key_escaped(value: str, separator: str) -> Tuple[str, ...]:
+    parts = []
+    start = 0
+    escaped = False
+    for idx, ch in enumerate(value):
+        if escaped:
+            escaped = False
+            continue
+        if ch == PRODUCT_ROW_KEY_ESCAPE:
+            escaped = True
+            continue
+        if ch == separator:
+            parts.append(value[start:idx])
+            start = idx + 1
+    if escaped:
+        raise ContractViolation("dangling product_row_key escape")
+    parts.append(value[start:])
+    return tuple(parts)
+
+
+def _split_product_row_key_assignment(part: str) -> Tuple[str, str]:
+    escaped = False
+    for idx, ch in enumerate(part):
+        if escaped:
+            escaped = False
+            continue
+        if ch == PRODUCT_ROW_KEY_ESCAPE:
+            escaped = True
+            continue
+        if ch == PRODUCT_ROW_KEY_ASSIGN:
+            return part[:idx], part[idx + 1:]
+    if escaped:
+        raise ContractViolation("dangling product_row_key escape")
+    raise ContractViolation("bad product_row_key part: %s" % part)
+
+
+def _join_escaped_components(values: Sequence[object]) -> str:
+    return PRODUCT_ROW_KEY_SEPARATOR.join(
+        _escape_product_row_key_component(value) for value in values
+    )
+
+
 def product_row_key(row: Mapping[str, object], fields: Sequence[str]) -> str:
     parts = []
     for field in fields:
         if field not in row:
             raise ContractViolation("row missing key field %s" % field)
-        parts.append("%s=%s" % (field, _stringify_key_value(row[field])))
-    return "|".join(parts)
+        parts.append(
+            "%s=%s"
+            % (
+                _escape_product_row_key_component(field),
+                _escape_product_row_key_component(row[field]),
+            )
+        )
+    return PRODUCT_ROW_KEY_SEPARATOR.join(parts)
 
 
 def _parse_product_row_key(key: str) -> MutableMapping[str, str]:
     out = {}
-    for part in key.split("|"):
-        if "=" not in part:
-            raise ContractViolation("bad product_row_key part: %s" % part)
-        k, v = part.split("=", 1)
+    for part in _split_product_row_key_escaped(key, PRODUCT_ROW_KEY_SEPARATOR):
+        raw_k, raw_v = _split_product_row_key_assignment(part)
+        k = _unescape_product_row_key_component(raw_k)
+        v = _unescape_product_row_key_component(raw_v)
+        if k in out:
+            raise ContractViolation("duplicate product_row_key field: %s" % k)
         out[k] = v
     return out
 
@@ -762,7 +884,9 @@ def derive_aggregation_key(
     if artifact_id == "rq009_feature_matrix":
         if "perspective" not in parsed or "source_dataset" not in parsed:
             raise ContractViolation("feature matrix row key missing perspective/source_dataset")
-        return parsed["perspective"], "%s|%s" % (measurement_role, parsed["source_dataset"])
+        return parsed["perspective"], _join_escaped_components(
+            (measurement_role, parsed["source_dataset"])
+        )
     if artifact_id == "onsite_dense_timeseries":
         if "case_key" not in parsed:
             raise ContractViolation("OnSite row key missing case_key")
@@ -837,7 +961,7 @@ def _row_case_and_split(
     if isinstance(scope, AllowlistedArtifactScope):
         if scope.join_column not in row:
             raise ContractViolation("%s missing join column" % spec.artifact_id)
-        case_id = str(row[scope.join_column])
+        case_id = _require_allowlist_case_id(spec, scope.join_column, row[scope.join_column])
         if case_id not in scope.allowlist.allowed_case_ids:
             raise ContractViolation("%s row escaped allowlist" % spec.artifact_id)
         split = scope.allowlist.case_to_split.get(case_id)
@@ -1011,7 +1135,12 @@ def build_absent_artifact_coverage(spec: ArtifactSpec) -> AbsentArtifactCoverage
 
 def aggregate_l1_to_l2(rows: SortedL1LedgerRows) -> SortedL2Units:
     dicts = [row.to_contract_dict() for row in rows.rows]
-    assert_single_artifact(dicts)
+    actual_artifact_id = assert_single_artifact(dicts)
+    if actual_artifact_id != rows.artifact_id:
+        raise ContractViolation(
+            "SortedL1LedgerRows artifact_id mismatch: container=%s units=%s"
+            % (rows.artifact_id, actual_artifact_id)
+        )
     units = tuple(
         sorted(
             aggregate_l2(dicts),
@@ -1026,7 +1155,39 @@ def aggregate_l1_to_l2(rows: SortedL1LedgerRows) -> SortedL2Units:
     return SortedL2Units(rows.artifact_id, units, L2_SORT_KEY)
 
 
+def _l2_unit_artifact_id(unit: object) -> object:
+    if isinstance(unit, Mapping):
+        if "artifact_id" not in unit:
+            raise ContractViolation("L2 unit missing artifact_id")
+        return unit["artifact_id"]
+    try:
+        return getattr(unit, "artifact_id")
+    except AttributeError:
+        raise ContractViolation("L2 unit missing artifact_id")
+
+
+def _assert_l2_units_match_container(units: SortedL2Units) -> None:
+    artifact_ids = []
+    for unit in units.units:
+        artifact_id = _l2_unit_artifact_id(unit)
+        if artifact_id is None:
+            raise ContractViolation("every L2 unit must carry artifact_id")
+        artifact_ids.append(artifact_id)
+    distinct = set(artifact_ids)
+    if len(distinct) > 1:
+        raise ContractViolation(
+            "cross-artifact pooling forbidden; got %s"
+            % sorted(map(str, distinct))
+        )
+    if distinct and next(iter(distinct)) != units.artifact_id:
+        raise ContractViolation(
+            "SortedL2Units artifact_id mismatch: container=%s units=%s"
+            % (units.artifact_id, next(iter(distinct)))
+        )
+
+
 def aggregate_l2_to_l3(units: SortedL2Units) -> SortedL3Units:
+    _assert_l2_units_match_container(units)
     out = tuple(sorted(aggregate_l3(units.units), key=lambda u: getattr(u, "case_id") or ""))
     return SortedL3Units(units.artifact_id, out, "artifact_id,case_id")
 

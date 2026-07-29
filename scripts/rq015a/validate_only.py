@@ -35,8 +35,7 @@ FORBIDDEN_COLUMN_PREFIXES = ("ipv_", "target_ipv", "counterpart_ipv", "M4_ONLY_"
 FORBIDDEN_COLUMN_SUBSTRINGS = ("rating", "preference", "human", "score", "label")
 RQ009_FOLD_NAMES = ("train", "guard_tune", "calibration", "test")
 RQ007_VALIDATE_SPLITS = ("development", "guard")
-FULL_FILE_SHA256_MAX_BYTES = 1024 * 1024
-WINDOWED_HASH_BYTES = 64 * 1024
+MANIFEST_HASH_CHUNK_BYTES = 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -217,10 +216,10 @@ def structural_path_record(path: Path) -> Mapping[str, Any]:
 
 def input_digest_policy() -> Mapping[str, Any]:
     return {
+        "file_policy": "sha256_full_file",
         "small_file_policy": "sha256_full_file",
-        "large_file_policy": "size_mtime_head_tail_sha256",
-        "full_file_sha256_max_bytes": FULL_FILE_SHA256_MAX_BYTES,
-        "windowed_hash_bytes": WINDOWED_HASH_BYTES,
+        "large_file_policy": "sha256_full_file",
+        "chunk_bytes": MANIFEST_HASH_CHUNK_BYTES,
     }
 
 
@@ -230,31 +229,16 @@ def file_manifest_entry(path: Path) -> Mapping[str, Any]:
         "kind": "file",
         "bytes": st.st_size,
         "mtime_ns": st.st_mtime_ns,
+        "hash_policy": "sha256_full_file",
+        "sha256": sha256_file(path),
     }
-    if st.st_size <= FULL_FILE_SHA256_MAX_BYTES:
-        out["hash_policy"] = "sha256_full_file"
-        out["sha256"] = sha256_file(path)
-        return out
-    head, tail = sha256_head_tail(path, st.st_size)
-    out["hash_policy"] = "size_mtime_head_tail_sha256"
-    out["head_sha256"] = head
-    out["tail_sha256"] = tail
-    out["windowed_hash_bytes"] = WINDOWED_HASH_BYTES
     return out
-
-
-def sha256_head_tail(path: Path, size: int) -> Tuple[str, str]:
-    with path.open("rb") as handle:
-        head = handle.read(WINDOWED_HASH_BYTES)
-        handle.seek(max(0, size - WINDOWED_HASH_BYTES))
-        tail = handle.read(WINDOWED_HASH_BYTES)
-    return hashlib.sha256(head).hexdigest(), hashlib.sha256(tail).hexdigest()
 
 
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+        for chunk in iter(lambda: handle.read(MANIFEST_HASH_CHUNK_BYTES), b""):
             h.update(chunk)
     return h.hexdigest()
 

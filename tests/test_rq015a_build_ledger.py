@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts" / "rq015a"))
 
 from build_ledger import (  # noqa: E402
+    aggregate_l1_to_l2,
+    aggregate_l2_to_l3,
     build_absent_artifact_coverage,
     build_l1_for_artifact,
     check_l1_conservation_counts,
@@ -26,11 +28,12 @@ from build_ledger import (  # noqa: E402
     load_execute_permit,
     load_ledger_schema_v2,
     open_measurement_reader,
+    product_row_key,
     resolve_artifact_scope,
     sort_l1_rows,
     _make_test_permit_UNSAFE,
 )
-from rq015a_contracts import ATTEMPTED, NOT_ATTEMPTED, UNKNOWN, ContractViolation  # noqa: E402
+from rq015a_contracts import ATTEMPTED, NOT_ATTEMPTED, UNKNOWN, ContractViolation, L2Unit  # noqa: E402
 from rq015a_types import (  # noqa: E402
     ARTIFACT_NOT_PRESENT_LOCALLY,
     AllowlistedArtifactScope,
@@ -38,6 +41,7 @@ from rq015a_types import (  # noqa: E402
     L1LedgerRow,
     RQ007_SPLIT_NOT_APPLICABLE,
     SortedL1LedgerRows,
+    SortedL2Units,
     SplitNotApplicableArtifactScope,
     StructuralColumnSet,
 )
@@ -236,6 +240,64 @@ def test_unmapped_case_fails_closed_before_measurement(tmp_path):
         open_measurement_reader(spec, scope, _permit(), source_rows=[_feature_row("missing_case")])
 
 
+@pytest.mark.parametrize("bad_case_id", [123, 1.25, True])
+def test_non_string_allowlisted_join_key_fails_closed(tmp_path, bad_case_id):
+    schema = _schema()
+    allowlist = _allowlist(tmp_path)
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    scope = resolve_artifact_scope(spec, allowlist)
+
+    with pytest.raises(ContractViolation, match="non-string join key"):
+        open_measurement_reader(spec, scope, _permit(), source_rows=[_feature_row(bad_case_id)])
+
+
+def test_real_parquet_null_join_key_fails_closed_before_measurement(tmp_path):
+    pa = pytest.importorskip("pyarrow")
+    pq = pytest.importorskip("pyarrow.parquet")
+
+    schema = _schema()
+    event_log = []
+    allowlist = _allowlist(tmp_path, event_log)
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    parquet_path = tmp_path / "feature_null_case.parquet"
+    pq.write_table(pa.Table.from_pylist([_feature_row(None, "0.5")]), parquet_path)
+    spec = dataclasses.replace(spec, path_glob=str(parquet_path))
+    scope = resolve_artifact_scope(spec, allowlist, event_log)
+
+    with pytest.raises(ContractViolation, match="null join key"):
+        open_measurement_reader(
+            spec,
+            scope,
+            _permit(),
+            event_log=event_log,
+            parquet_part_limit=1,
+        )
+    assert not any(item.startswith("reader.real_path.measurement_columns") for item in event_log)
+
+
+def test_real_parquet_two_stage_allowed_row_count_mismatch_fails(tmp_path, monkeypatch):
+    pa = pytest.importorskip("pyarrow")
+    pq = pytest.importorskip("pyarrow.parquet")
+    ds = pytest.importorskip("pyarrow.dataset")
+
+    schema = _schema()
+    allowlist = _allowlist(tmp_path)
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    parquet_path = tmp_path / "feature_part.parquet"
+    pq.write_table(pa.Table.from_pylist([_feature_row("case_dev", "0.5")]), parquet_path)
+    spec = dataclasses.replace(spec, path_glob=str(parquet_path))
+    scope = resolve_artifact_scope(spec, allowlist)
+
+    class EmptyDataset:
+        def to_table(self, columns, filter):
+            return pa.Table.from_pydict({column: [] for column in columns})
+
+    monkeypatch.setattr(ds, "dataset", lambda *args, **kwargs: EmptyDataset())
+
+    with pytest.raises(ContractViolation, match="allowlist row count mismatch"):
+        open_measurement_reader(spec, scope, _permit(), parquet_part_limit=1)
+
+
 def test_onsite_empty_string_is_unknown_not_zero_after_d0():
     schema = _schema()
     spec = schema.artifacts_by_id["onsite_dense_timeseries"]
@@ -308,6 +370,40 @@ def test_l1_rows_require_artifact_and_cross_artifact_aggregation_fails():
         SortedL1LedgerRows("interhub_sigma01_hw4_timeseries", rows, "artifact_id,case_id,product_row_key,measurement_role")
 
 
+def test_l1_wrapper_artifact_label_cannot_hide_rows_from_another_artifact():
+    rows = (_l1("rq009_feature_matrix", "case_dev", "k=1"),)
+    forged = object.__new__(SortedL1LedgerRows)
+    object.__setattr__(forged, "artifact_id", "interhub_sigma01_hw4_timeseries")
+    object.__setattr__(forged, "rows", rows)
+    object.__setattr__(forged, "sort_key", "artifact_id,case_id,product_row_key,measurement_role")
+
+    with pytest.raises(ContractViolation, match="artifact_id mismatch"):
+        aggregate_l1_to_l2(forged)
+
+
+def test_l2_wrapper_artifact_label_cannot_hide_units_from_another_artifact():
+    forged = SortedL2Units(
+        "interhub_sigma01_hw4_timeseries",
+        (
+            L2Unit(
+                case_id="case_dev",
+                perspective="agent_1",
+                configuration="cfg",
+                n_l1=5,
+                n_attempted=5,
+                n_unknown=0,
+                mean_q_eff=0.5,
+                status="OK",
+                artifact_id="rq009_feature_matrix",
+            ),
+        ),
+        "artifact_id,case_id,perspective,configuration",
+    )
+
+    with pytest.raises(ContractViolation, match="artifact_id mismatch"):
+        aggregate_l2_to_l3(forged)
+
+
 def _l1(artifact_id, case_id, key, role="agent_1"):
     return L1LedgerRow(
         artifact_id=artifact_id,
@@ -357,6 +453,36 @@ def test_m6_aggregation_key_derivation_is_fixed_for_three_artifacts():
         "case_key=onsite_case|frame_index=101|timestamp_ms=1000",
         "ego_hw10",
     ) == ("ego_hw10", "onsite_case")
+
+
+def test_product_row_key_escapes_separator_escape_and_prevents_collisions():
+    fields = ("case_key", "anchor_frame_index", "perspective", "source_dataset")
+    left = _feature_row("case_dev")
+    left["perspective"] = "p"
+    left["source_dataset"] = "a|source_dataset=b"
+    right = _feature_row("case_dev")
+    right["perspective"] = "p"
+    right["source_dataset"] = "b"
+    escaped = _feature_row("case_dev")
+    escaped["perspective"] = "p"
+    escaped["source_dataset"] = r"a\b|c"
+
+    left_key = product_row_key(left, fields)
+    right_key = product_row_key(right, fields)
+    escaped_key = product_row_key(escaped, fields)
+
+    assert r"\|" in left_key and r"\=" in left_key
+    assert r"\\" in escaped_key and r"\|" in escaped_key
+    assert left_key != right_key
+    assert derive_aggregation_key("rq009_feature_matrix", left_key, "target_future") != (
+        derive_aggregation_key("rq009_feature_matrix", right_key, "target_future")
+    )
+    with pytest.raises(ContractViolation, match="duplicate product_row_key field"):
+        derive_aggregation_key(
+            "rq009_feature_matrix",
+            "case_key=case_dev|anchor_frame_index=7|perspective=p|source_dataset=a|source_dataset=b",
+            "target_future",
+        )
 
 
 def test_literal_runtime_invariants_are_enforced(tmp_path):

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -48,6 +49,27 @@ def _base_fields(schema):
 def _checks(schema=None, **updates):
     schema = schema or load_schema(SCHEMA)
     fields = _base_fields(schema)
+    fields.update(updates)
+    return receipt.build_receipt_checks_from_schema(schema, **fields)
+
+
+def _passing_conservation_for_schema(schema):
+    return {
+        artifact_id: {
+            "identity_1": True,
+            "identity_2": True,
+            "identity_3": True,
+            "measurement_rows": 1,
+        }
+        for artifact_id in schema["ledger_bearing_artifact_ids"]
+    }
+
+
+def _run_checks(**updates):
+    schema = load_schema(SCHEMA)
+    fields = _base_fields(schema)
+    fields["per_artifact_conservation"] = _passing_conservation_for_schema(schema)
+    fields["input_sha256"] = {"fixture.csv": "sha256:abc"}
     fields.update(updates)
     return receipt.build_receipt_checks_from_schema(schema, **fields)
 
@@ -169,14 +191,74 @@ def test_directory_file_manifest_detects_equal_size_content_change(tmp_path):
 
     assert before["manifest_sha256"] != after["manifest_sha256"]
     assert before["digest_policy"]["small_file_policy"] == "sha256_full_file"
+    assert before["digest_policy"]["large_file_policy"] == "sha256_full_file"
     assert before["files"][0]["hash_policy"] == "sha256_full_file"
     assert before["files"][0]["bytes"] == after["files"][0]["bytes"] == 4
+
+
+def test_file_manifest_detects_middle_byte_change_after_mtime_restore(tmp_path):
+    target = tmp_path / "large_input.bin"
+    payload = bytearray(b"A" * (1024 * 1024 + 3))
+    payload[len(payload) // 2] = ord("B")
+    target.write_bytes(payload)
+    before = validate_only.file_manifest_entry(target)
+    st = target.stat()
+
+    with target.open("r+b") as handle:
+        handle.seek(len(payload) // 2)
+        handle.write(b"C")
+    os.utime(target, ns=(st.st_atime_ns, st.st_mtime_ns))
+    after = validate_only.file_manifest_entry(target)
+
+    assert before["bytes"] == after["bytes"]
+    assert before["mtime_ns"] == after["mtime_ns"]
+    assert before["hash_policy"] == after["hash_policy"] == "sha256_full_file"
+    assert before["sha256"] != after["sha256"]
 
 
 def test_reads_measurement_fields_true_makes_validate_verdict_fail():
     checks = _checks(reads_measurement_fields=True)
     out = receipt.build_validate_receipt(checks)
     assert out.machine_verdict == "FAIL"
+
+
+def test_run_receipt_empty_conservation_fails():
+    out = receipt.build_run_receipt(_run_checks(per_artifact_conservation={}))
+    assert out.machine_verdict == "FAIL"
+
+
+def test_run_receipt_missing_audited_artifact_fails():
+    schema = load_schema(SCHEMA)
+    partial = _passing_conservation_for_schema(schema)
+    partial.pop(schema["ledger_bearing_artifact_ids"][0])
+
+    out = receipt.build_run_receipt(_run_checks(per_artifact_conservation=partial))
+
+    assert out.machine_verdict == "FAIL"
+
+
+def test_run_receipt_empty_input_sha256_fails():
+    out = receipt.build_run_receipt(_run_checks(input_sha256={}))
+    assert out.machine_verdict == "FAIL"
+
+
+def test_run_receipt_failed_conservation_report_fails():
+    schema = load_schema(SCHEMA)
+    conservation = _passing_conservation_for_schema(schema)
+    conservation[schema["ledger_bearing_artifact_ids"][0]] = {
+        "identity_1": False,
+        "identity_2": True,
+        "identity_3": True,
+    }
+
+    out = receipt.build_run_receipt(_run_checks(per_artifact_conservation=conservation))
+
+    assert out.machine_verdict == "FAIL"
+
+
+def test_run_receipt_c0_routing_false_is_recorded_not_machine_failure():
+    out = receipt.build_run_receipt(_run_checks(c0_routing_stability={"RQ014": False}))
+    assert out.machine_verdict == "PASS"
 
 
 def test_artifacts_absent_locally_override_must_match_schema():

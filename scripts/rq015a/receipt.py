@@ -26,6 +26,7 @@ REQUIRED_RECEIPT_FIELDS = (
     "schema_version",
     "m4_only_channel_excluded",
     "artifacts_absent_locally",
+    "ledger_bearing_artifacts",
     "aggregation_key_derivation",
     "reads_measurement_fields",
     "failure_reasons",
@@ -67,6 +68,7 @@ class ReceiptChecks:
     schema_version: str
     m4_only_channel_excluded: bool
     artifacts_absent_locally: Tuple[str, ...]
+    ledger_bearing_artifacts: Tuple[str, ...]
     aggregation_key_derivation: str
     reads_measurement_fields: bool
     failure_reasons: Tuple[str, ...]
@@ -83,6 +85,7 @@ class ReceiptChecks:
 
         normalized = dict(kwargs)
         normalized["artifacts_absent_locally"] = tuple(normalized["artifacts_absent_locally"])
+        normalized["ledger_bearing_artifacts"] = tuple(normalized["ledger_bearing_artifacts"])
         normalized["failure_reasons"] = tuple(normalized["failure_reasons"])
 
         for name in ZERO_REQUIRED_COUNTERS + ("k_unknown_rows",):
@@ -159,6 +162,9 @@ def detect_parquet_engine() -> Mapping[str, str]:
 
 def build_receipt_checks_from_schema(schema: Mapping[str, Any], **fields_: Any) -> ReceiptChecks:
     derived_absent = artifacts_absent_locally_from_schema(schema)
+    derived_ledger_bearing = tuple(
+        str(artifact_id) for artifact_id in schema.get("ledger_bearing_artifact_ids", ())
+    )
     fields_.setdefault("schema_version", schema.get("schema_id"))
     if "artifacts_absent_locally" in fields_:
         supplied_absent = tuple(fields_["artifacts_absent_locally"])
@@ -167,11 +173,18 @@ def build_receipt_checks_from_schema(schema: Mapping[str, Any], **fields_: Any) 
                 "artifacts_absent_locally must be schema-derived"
             )
     fields_["artifacts_absent_locally"] = derived_absent
+    if "ledger_bearing_artifacts" in fields_:
+        supplied_ledger_bearing = tuple(fields_["ledger_bearing_artifacts"])
+        if supplied_ledger_bearing != derived_ledger_bearing:
+            raise ContractViolation(
+                "ledger_bearing_artifacts must be schema-derived"
+            )
+    fields_["ledger_bearing_artifacts"] = derived_ledger_bearing
     fields_.setdefault("parquet_engine", detect_parquet_engine())
     return ReceiptChecks(**fields_)
 
 
-def compute_machine_verdict(checks: ReceiptChecks) -> str:
+def _base_machine_verdict_reasons(checks: ReceiptChecks) -> Sequence[str]:
     reasons = list(checks.failure_reasons)
     for name in ZERO_REQUIRED_COUNTERS:
         if getattr(checks, name) != 0:
@@ -183,7 +196,32 @@ def compute_machine_verdict(checks: ReceiptChecks) -> str:
     if checks.reads_measurement_fields is not False:
         reasons.append("validate_reads_measurement_fields")
     reasons.extend(_conservation_failure_reasons(checks.per_artifact_conservation))
+    return tuple(reasons)
+
+
+def compute_machine_verdict(checks: ReceiptChecks) -> str:
+    reasons = _base_machine_verdict_reasons(checks)
     return "FAIL" if reasons else "PASS"
+
+
+def compute_run_machine_verdict(checks: ReceiptChecks) -> str:
+    reasons = list(_base_machine_verdict_reasons(checks))
+    reasons.extend(_run_completeness_failure_reasons(checks))
+    return "FAIL" if reasons else "PASS"
+
+
+def _run_completeness_failure_reasons(checks: ReceiptChecks) -> Tuple[str, ...]:
+    reasons = []
+    expected = set(checks.ledger_bearing_artifacts)
+    provided = set(str(k) for k in checks.per_artifact_conservation.keys())
+    if not checks.per_artifact_conservation:
+        reasons.append("per_artifact_conservation_empty")
+    missing = sorted(expected - provided)
+    if missing:
+        reasons.append("per_artifact_conservation_missing:%s" % ",".join(missing))
+    if not checks.input_sha256:
+        reasons.append("input_sha256_empty")
+    return tuple(reasons)
 
 
 def build_validate_receipt(checks: ReceiptChecks,
@@ -205,7 +243,7 @@ def build_run_receipt(checks: Optional[ReceiptChecks] = None,
     if checks is None:
         checks = ReceiptChecks(**fields_)
     return RunReceipt(
-        machine_verdict=compute_machine_verdict(checks),
+        machine_verdict=compute_run_machine_verdict(checks),
         checks=checks,
         metadata=dict(metadata or {}),
     )
