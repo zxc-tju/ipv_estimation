@@ -702,3 +702,26 @@ def test_allowlist_source_recheck_accepts_legitimate_token(tmp_path):
     )
 
     assert [row["case_key"] for row in reader.iter_measurement_rows()] == ["case_dev"]
+
+
+def test_allowlist_source_replacement_after_reader_open_fails_closed(tmp_path):
+    schema = _schema()
+    spec = schema.artifacts_by_id["rq009_feature_matrix"]
+    allowlist = _allowlist(tmp_path)
+    scope = resolve_artifact_scope(spec, allowlist)
+    reader = open_measurement_reader(
+        spec,
+        scope,
+        _permit(),
+        source_rows=[_feature_row("case_dev")],
+    )
+    allowlist.source_path.write_text(
+        "case_id,split\n"
+        "case_dev,held_out\n"
+        "case_guard,guard\n"
+        "case_hold,held_out\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ContractViolation, match="source_sha256 mismatch"):
+        build_l1_for_artifact(spec, scope, reader)

@@ -436,6 +436,32 @@ def _validate_measurement_columns(spec: ArtifactSpec) -> None:
             raise ContractViolation("M4_ONLY channel is not excluded")
 
 
+def _copy_allowlist_token(allowlist: CaseAllowlist) -> CaseAllowlist:
+    token = validate_case_allowlist_token(allowlist)
+    return CaseAllowlist._from_loaded_split(
+        Path(token.source_path),
+        tuple(token.included_splits),
+        frozenset(token.allowed_case_ids),
+        dict(token.split_counts),
+        str(token.source_sha256),
+        dict(token.case_to_split),
+    )
+
+
+def _snapshot_allowlisted_scope(
+    spec: ArtifactSpec,
+    scope: AllowlistedArtifactScope,
+) -> AllowlistedArtifactScope:
+    token = validate_case_allowlist_source(scope.allowlist)
+    return AllowlistedArtifactScope._from_schema(
+        spec,
+        _copy_allowlist_token(token),
+        scope.join_column,
+        scope.held_out_parsed_rows,
+        scope.unmapped_rows,
+    )
+
+
 class _InMemoryMeasurementReader:
     def __init__(
         self,
@@ -453,6 +479,11 @@ class _InMemoryMeasurementReader:
     def _log(self, message: str) -> None:
         if self._event_log is not None:
             self._event_log.append(message)
+
+    def _verify_allowlist_source_unchanged(self, stage: str) -> None:
+        if isinstance(self.scope, AllowlistedArtifactScope):
+            validate_case_allowlist_source(self.scope.allowlist)
+            self._log("reader.allowlist_source_verified:%s" % stage)
 
     def _filter_rows(self, rows: Sequence[Mapping[str, object]]) -> Tuple[Mapping[str, object], ...]:
         self._log("reader.open:%s" % self.artifact_id)
@@ -482,8 +513,12 @@ class _InMemoryMeasurementReader:
 
     def iter_measurement_rows(self) -> Iterator[Mapping[str, object]]:
         self._log("reader.measurement_iter_started:%s" % self.artifact_id)
-        for row in self._rows:
-            yield row
+        self._verify_allowlist_source_unchanged("before")
+        try:
+            for row in self._rows:
+                yield row
+        finally:
+            self._verify_allowlist_source_unchanged("after")
 
 
 def _load_limited_rows(
@@ -771,13 +806,14 @@ def open_measurement_reader(
     if not spec.present_locally:
         raise ContractViolation("absent artifact cannot open MeasurementReader")
     _scope_matches_schema(spec, scope)
+    reader_scope = scope
     if isinstance(scope, AllowlistedArtifactScope):
-        validate_case_allowlist_source(scope.allowlist)
+        reader_scope = _snapshot_allowlisted_scope(spec, scope)
     _validate_measurement_columns(spec)
     rows = source_rows
     if rows is None:
-        rows = _load_limited_rows(spec, scope, parquet_part_limit, csv_row_limit, event_log)
-    return _InMemoryMeasurementReader(spec, scope, rows, event_log)
+        rows = _load_limited_rows(spec, reader_scope, parquet_part_limit, csv_row_limit, event_log)
+    return _InMemoryMeasurementReader(spec, reader_scope, rows, event_log)
 
 
 def _stringify_key_value(value: object) -> str:
@@ -1086,11 +1122,12 @@ def build_l1_for_artifact(
     if reader.artifact_id != spec.artifact_id:
         raise ContractViolation("reader/spec artifact mismatch")
     _scope_matches_schema(spec, scope)
+    _scope_matches_schema(spec, reader.scope)
     physical_rows = list(reader.iter_measurement_rows())
     local_pos = _local_position_map(spec, physical_rows)
     rows = []
     for idx, physical_row in enumerate(physical_rows):
-        case_id, split = _row_case_and_split(spec, scope, physical_row)
+        case_id, split = _row_case_and_split(spec, reader.scope, physical_row)
         row_key = product_row_key(physical_row, spec.row_key_fields)
         is_d0 = _is_not_attempted(spec, physical_row, local_pos.get(idx))
         for role in spec.roles:

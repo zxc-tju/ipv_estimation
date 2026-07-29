@@ -15,7 +15,13 @@ sys.path.insert(0, str(ROOT / "scripts" / "rq015a"))
 
 import receipt  # noqa: E402
 import validate_only  # noqa: E402
-from rq015a_contracts import ContractViolation, load_schema  # noqa: E402
+from rq015a_contracts import (  # noqa: E402
+    ATTEMPTED,
+    ConservationReport,
+    ContractViolation,
+    check_conservation,
+    load_schema,
+)
 
 SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v2.json"
 
@@ -53,7 +59,27 @@ def _checks(schema=None, **updates):
     return receipt.build_receipt_checks_from_schema(schema, **fields)
 
 
+def _conservation_report(artifact_id, measurement_rows=1):
+    status_counts = {ATTEMPTED: measurement_rows} if measurement_rows else {}
+    recoverability_counts = {"L1_DIRECT": measurement_rows} if measurement_rows else {}
+    return check_conservation(
+        str(artifact_id),
+        measurement_rows,
+        1,
+        1,
+        status_counts,
+        recoverability_counts,
+    )
+
+
 def _passing_conservation_for_schema(schema):
+    return {
+        artifact_id: _conservation_report(artifact_id)
+        for artifact_id in schema["ledger_bearing_artifact_ids"]
+    }
+
+
+def _boolean_conservation_for_schema(schema):
     return {
         artifact_id: {
             "identity_1": True,
@@ -233,6 +259,39 @@ def test_file_manifest_rejects_file_symlink(tmp_path):
         validate_only.file_manifest_entry(link)
 
 
+def test_record_input_roots_rejects_parent_traversal(tmp_path):
+    repo = tmp_path / "repo"
+    outside = tmp_path / "outside"
+    repo.mkdir()
+    outside.mkdir()
+
+    with pytest.raises(ContractViolation, match="escapes repository root"):
+        validate_only.record_input_roots(repo, ["../outside"])
+
+
+def test_record_input_roots_rejects_absolute_outside_path(tmp_path):
+    repo = tmp_path / "repo"
+    outside = tmp_path / "outside"
+    repo.mkdir()
+    outside.mkdir()
+
+    with pytest.raises(ContractViolation, match="escapes repository root"):
+        validate_only.record_input_roots(repo, [str(outside)])
+
+
+def test_record_input_roots_accepts_repo_internal_path(tmp_path):
+    repo = tmp_path / "repo"
+    data = repo / "data"
+    data.mkdir(parents=True)
+    (data / "fixture.txt").write_text("AAAA", encoding="utf-8")
+
+    records, failures = validate_only.record_input_roots(repo, ["data"])
+
+    assert failures == ()
+    assert records["data"]["kind"] == "directory_file_manifest"
+    assert records["data"]["entries"] == 1
+
+
 def test_file_manifest_detects_middle_byte_change_after_mtime_restore(tmp_path):
     target = tmp_path / "large_input.bin"
     payload = bytearray(b"A" * (1024 * 1024 + 3))
@@ -274,11 +333,27 @@ def test_run_receipt_missing_audited_artifact_fails():
     assert out.machine_verdict == "FAIL"
 
 
+def test_run_receipt_manual_boolean_conservation_payload_fails():
+    schema = load_schema(SCHEMA)
+    out = receipt.build_run_receipt(
+        _run_checks(per_artifact_conservation=_boolean_conservation_for_schema(schema))
+    )
+
+    assert out.machine_verdict == "FAIL"
+
+
+def test_run_receipt_real_conservation_reports_pass():
+    out = receipt.build_run_receipt(_run_checks())
+
+    assert out.machine_verdict == "PASS"
+
+
 def test_run_receipt_all_zero_measurement_rows_fail():
     schema = load_schema(SCHEMA)
-    conservation = _passing_conservation_for_schema(schema)
-    for report in conservation.values():
-        report["measurement_rows"] = 0
+    conservation = {
+        artifact_id: _conservation_report(artifact_id, 0)
+        for artifact_id in schema["ledger_bearing_artifact_ids"]
+    }
 
     out = receipt.build_run_receipt(
         _run_checks(per_artifact_conservation=conservation)
@@ -290,7 +365,8 @@ def test_run_receipt_all_zero_measurement_rows_fail():
 def test_run_receipt_partial_zero_measurement_rows_fail():
     schema = load_schema(SCHEMA)
     conservation = _passing_conservation_for_schema(schema)
-    conservation[schema["ledger_bearing_artifact_ids"][0]]["measurement_rows"] = 0
+    artifact_id = schema["ledger_bearing_artifact_ids"][0]
+    conservation[artifact_id] = _conservation_report(artifact_id, 0)
 
     out = receipt.build_run_receipt(
         _run_checks(per_artifact_conservation=conservation)
@@ -307,11 +383,17 @@ def test_run_receipt_empty_input_sha256_fails():
 def test_run_receipt_failed_conservation_report_fails():
     schema = load_schema(SCHEMA)
     conservation = _passing_conservation_for_schema(schema)
-    conservation[schema["ledger_bearing_artifact_ids"][0]] = {
-        "identity_1": False,
-        "identity_2": True,
-        "identity_3": True,
-    }
+    artifact_id = schema["ledger_bearing_artifact_ids"][0]
+    conservation[artifact_id] = ConservationReport(
+        artifact_id=str(artifact_id),
+        physical_rows=1,
+        expansion_factor=1,
+        collapse_factor=1,
+        measurement_rows_expected=1,
+        measurement_rows_observed=1,
+        status_counts={ATTEMPTED: 1},
+        recoverability_counts={"L1_DIRECT": 0},
+    )
 
     out = receipt.build_run_receipt(_run_checks(per_artifact_conservation=conservation))
 

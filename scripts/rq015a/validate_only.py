@@ -170,13 +170,27 @@ def run_validate_only(repo_root: Path, schema_path: Path, run_spec_path: Path,
 def record_input_roots(repo_root: Path, input_roots: Sequence[str]) -> Tuple[Mapping[str, Any], Tuple[str, ...]]:
     records = {}
     failures = []
+    repo = Path(repo_root).resolve()
     for rel in input_roots:
-        path = repo_root / rel
+        raw = str(rel)
+        path = _resolve_repo_input_root(repo, raw)
         if not path.exists():
-            failures.append("missing_input_root:%s" % rel)
+            failures.append("missing_input_root:%s" % raw)
             continue
-        records[rel] = structural_path_record(path)
+        records[raw] = structural_path_record(path)
     return records, tuple(failures)
+
+
+def _resolve_repo_input_root(repo_root: Path, raw: str) -> Path:
+    candidate = Path(raw)
+    if not candidate.is_absolute():
+        candidate = repo_root / candidate
+    resolved = candidate.resolve()
+    try:
+        resolved.relative_to(repo_root)
+    except ValueError:
+        raise ContractViolation("input_root escapes repository root: %s" % raw)
+    return resolved
 
 
 def structural_path_record(path: Path) -> Mapping[str, Any]:

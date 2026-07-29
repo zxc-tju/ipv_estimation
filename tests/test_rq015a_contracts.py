@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -183,6 +184,11 @@ def test_aggregate_l3_rejects_cross_artifact_l2_units():
         aggregate_l3(units)
 
 
+def test_aggregate_l3_rejects_empty_container_minimal_counterexample():
+    with pytest.raises(ContractViolation):
+        aggregate_l3([])
+
+
 def test_aggregation_is_permutation_invariant_and_deterministic():
     rows = [_row("c1", "p1", "hw4", ATTEMPTED, 0.1 * i) for i in range(1, 6)]
     a = aggregate_l2(rows)
@@ -251,6 +257,23 @@ def test_episode_definition_sensitivity():
     assert episode_summaries([], [])["unweighted"] is None
 
 
+def test_episode_summaries_rejects_invalid_q_eff_minimal_counterexample():
+    with pytest.raises(ContractViolation):
+        episode_summaries([10.0], [1.2])
+
+
+def test_episode_summaries_cross_artifact_guard_is_call_site_assertion():
+    from rq015a_contracts import assert_single_artifact
+
+    rows_a = [_row("c1", "p1", "hw4", ATTEMPTED, 0.3, artifact_id="A")]
+    rows_b = [_row("c2", "p1", "hw4", ATTEMPTED, 0.4, artifact_id="B")]
+    rows = rows_a + rows_b
+    with pytest.raises(ContractViolation):
+        assert_single_artifact(rows)
+    assert assert_single_artifact(rows_a) == "A"
+    assert episode_summaries([10.0], [rows_a[0]["q_eff"]])["n_used"] == 1
+
+
 # ---------------- bins 仅描述 + 稳定性 ----------------
 
 def test_band_shares_and_instability_verdict():
@@ -263,6 +286,13 @@ def test_band_shares_and_instability_verdict():
     st = bins_stability([0.5, 0.55, 0.6, 0.62, 0.66])  # 全部挤在 lo 附近 -> 不稳定
     assert st["verdict"] == "BINS_WITHHELD_UNSTABLE"
     assert bins_stability([0.05] * 50)["verdict"] == "BINS_REPORTABLE"
+
+
+def test_band_shares_and_bins_stability_reject_invalid_q_eff_minimal_counterexamples():
+    with pytest.raises(ContractViolation):
+        band_shares([-0.1], 0.5, 0.9)
+    with pytest.raises(ContractViolation):
+        bins_stability([float("nan")])
 
 
 # ---------------- C0 路由（连续量，不依赖 bins）----------------
@@ -341,6 +371,55 @@ def test_c0_route_with_sensitivity_rejects_shared_bad_counts():
                                   n_not_attempted=-1, n_unknown=0,
                                   q_effs_attempted=[0.2] * 101,
                                   mapping_is_1to1=True)
+
+
+def test_c0_route_rejects_invalid_q_eff_minimal_counterexamples():
+    with pytest.raises(ContractViolation):
+        c0_route(True, 1, 0, 0, [-0.1], True)
+    with pytest.raises(ContractViolation):
+        c0_route_with_sensitivity(uses_ipv=True, n_rows=1,
+                                  n_not_attempted=0, n_unknown=0,
+                                  q_effs_attempted=[1.2],
+                                  mapping_is_1to1=True)
+
+
+@pytest.mark.parametrize("bad_q", [0.0, float("inf"), True, "0.5"])
+def test_q_consumers_reject_shared_invalid_q_surface(bad_q):
+    with pytest.raises(ContractViolation):
+        c0_route(True, 1, 0, 0, [bad_q], True)
+    with pytest.raises(ContractViolation):
+        episode_summaries([10.0], [bad_q])
+    with pytest.raises(ContractViolation):
+        band_shares([bad_q], 0.5, 0.9)
+
+
+def test_decimal_inputs_are_intentionally_rejected():
+    with pytest.raises(ContractViolation):
+        q_eff(Decimal("0.5"), 7)
+    with pytest.raises(ContractViolation):
+        episode_summaries([10.0], [Decimal("0.5")])
+    with pytest.raises(ContractViolation):
+        c0_route(True, 1, 0, 0, [Decimal("0.5")], True)
+    with pytest.raises(ContractViolation):
+        band_shares([Decimal("0.5")], 0.5, 0.9)
+
+
+def test_valid_q_boundaries_are_accepted_by_all_consumers():
+    tiny = 5e-324
+    episode = episode_summaries([10.0, 20.0], [1.0, tiny])
+    shares = band_shares([1.0, tiny], *REPORT_BINS_PRIMARY)
+    stability = bins_stability([1.0, tiny])
+    route = c0_route(True, 2, 0, 0, [1.0, tiny], True)
+    l3 = aggregate_l3([
+        L2Unit("c1", "p1", "hw4", 5, 5, 0, 1.0, "OK", artifact_id="A"),
+        L2Unit("c2", "p1", "hw4", 5, 5, 0, tiny, "OK", artifact_id="A"),
+    ])
+
+    assert episode["n_used"] == 2
+    assert shares["n"] == 2
+    assert stability["primary"]["n"] == 2
+    assert route["metrics"]["n_q_evidence"] == 2
+    assert [u.status for u in l3] == ["OK", "OK"]
 
 
 # ---------------- schema 自检 ----------------

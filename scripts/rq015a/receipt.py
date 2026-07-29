@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import numbers
 from dataclasses import dataclass, fields
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
-from rq015a_contracts import ContractViolation, SCHEMA_VERSION
+from rq015a_contracts import ConservationReport, ContractViolation, SCHEMA_VERSION
 
 BINS_VERDICTS = ("BINS_REPORTABLE", "BINS_WITHHELD_UNSTABLE")
 REQUIRED_RECEIPT_FIELDS = (
@@ -275,27 +276,79 @@ def write_receipt(path: Any, receipt: Any) -> Path:
 def _conservation_failure_reasons(per_artifact: Mapping[str, Any]) -> Tuple[str, ...]:
     reasons = []
     for artifact_id, report in sorted(per_artifact.items()):
-        assert_ok = getattr(report, "assert_ok", None)
-        if callable(assert_ok):
-            try:
-                assert_ok()
-            except ContractViolation as exc:
-                reasons.append("%s_conservation_failed:%s" % (artifact_id, exc))
-            continue
-        if isinstance(report, Mapping):
-            if report.get("passed") is False:
-                reasons.append("%s_conservation_failed" % artifact_id)
-                continue
-            identities = (report.get("identity_1"), report.get("identity_2"), report.get("identity_3"))
-            if any(value is False for value in identities):
-                reasons.append("%s_conservation_failed" % artifact_id)
-                continue
-            if any(value is None for value in identities):
-                reasons.append("%s_conservation_incomplete" % artifact_id)
-                continue
-        else:
-            reasons.append("%s_conservation_unreadable" % artifact_id)
+        try:
+            _verify_conservation_report(str(artifact_id), report)
+        except ContractViolation as exc:
+            reasons.append("%s_conservation_failed:%s" % (artifact_id, exc))
     return tuple(reasons)
+
+
+def _require_report_int(artifact_id: str, name: str, value: Any, minimum: int) -> int:
+    if isinstance(value, bool) or not isinstance(value, numbers.Integral):
+        raise ContractViolation("%s: %s must be an integer" % (artifact_id, name))
+    value = int(value)
+    if value < minimum:
+        raise ContractViolation("%s: %s must be >= %d" % (artifact_id, name, minimum))
+    return value
+
+
+def _sum_report_counts(artifact_id: str, name: str, counts: Any) -> int:
+    if not isinstance(counts, Mapping):
+        raise ContractViolation("%s: %s must be a mapping" % (artifact_id, name))
+    total = 0
+    for label, value in counts.items():
+        total += _require_report_int(
+            artifact_id, "%s[%r]" % (name, label), value, 0
+        )
+    return total
+
+
+def _verify_conservation_report(artifact_id: str, report: Any) -> None:
+    if not isinstance(report, ConservationReport):
+        raise ContractViolation("expected ConservationReport from check_conservation()")
+    if str(report.artifact_id) != artifact_id:
+        raise ContractViolation(
+            "artifact_id mismatch %s != %s" % (report.artifact_id, artifact_id)
+        )
+    physical_rows = _require_report_int(artifact_id, "physical_rows", report.physical_rows, 0)
+    expansion_factor = _require_report_int(
+        artifact_id, "expansion_factor", report.expansion_factor, 1
+    )
+    collapse_factor = _require_report_int(
+        artifact_id, "collapse_factor", report.collapse_factor, 1
+    )
+    observed = _require_report_int(
+        artifact_id, "measurement_rows_observed", report.measurement_rows_observed, 0
+    )
+    expected = _require_report_int(
+        artifact_id, "measurement_rows_expected", report.measurement_rows_expected, 0
+    )
+    numerator = physical_rows * expansion_factor
+    if numerator % collapse_factor != 0:
+        raise ContractViolation(
+            "%s: %d not divisible by collapse_factor %d"
+            % (artifact_id, numerator, collapse_factor)
+        )
+    recomputed_expected = numerator // collapse_factor
+    if expected != recomputed_expected or observed != expected:
+        raise ContractViolation(
+            "%s: identity_1 failed %d != %d"
+            % (artifact_id, observed, recomputed_expected)
+        )
+    status_total = _sum_report_counts(artifact_id, "status_counts", report.status_counts)
+    if status_total != observed:
+        raise ContractViolation(
+            "%s: identity_2 failed %d != %d" % (artifact_id, status_total, observed)
+        )
+    recoverability_total = _sum_report_counts(
+        artifact_id, "recoverability_counts", report.recoverability_counts
+    )
+    if recoverability_total != observed:
+        raise ContractViolation(
+            "%s: identity_3 failed %d != %d"
+            % (artifact_id, recoverability_total, observed)
+        )
+    report.assert_ok()
 
 
 def _measurement_rows_for_report(report: Any) -> Optional[Any]:

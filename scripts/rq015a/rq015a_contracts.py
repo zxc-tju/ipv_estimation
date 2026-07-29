@@ -112,6 +112,12 @@ def _validate_attempt_status(status: object, artifact_id: str) -> str:
 
 
 def _validate_optional_q_eff(value: object, artifact_id: str) -> Optional[float]:
+    """Validate a consumed q_eff value.
+
+    The accepted numeric path is intentionally float-based.  `Decimal` remains
+    rejected even for numerically valid values so the deterministic aggregation
+    contract stays on one `float` + `math.fsum` path.
+    """
     if value is None:
         return None
     if isinstance(value, bool) or not isinstance(value, numbers.Real):
@@ -154,6 +160,7 @@ def q_eff(ipv_error: float, K: int) -> Optional[float]:
     v3 的 `min(val, 1.0)` 是 fail-open：`ipv_error=1.1` 会返回看似合法的 1.0。
     合法域：`ipv_error ∈ [0, 1]` 且 `K ≥ 1`；`k_eff` 必须 `≤ K`（否则数据自相矛盾）。
     退化（error=1，含 warm-up 占位）返回 None，调用方须置 `attempt_status=UNKNOWN`。
+    `Decimal` 有意拒绝：R7 确定性求和只保留 `float` + `math.fsum` 一条数值路径。
     """
     ipv_error = _validate_ipv_error(ipv_error)
     K = _require_integral(K, "K", "q_eff", 1)
@@ -358,6 +365,8 @@ def aggregate_l3(l2_units: Sequence[L2Unit]) -> List[L3Unit]:
     某 case 若无任何合格 L2 -> ZERO_SUPPORT，`mean_q_eff=None`，**不以 0 参与任何平均**。
     """
     l2_units = list(l2_units)
+    if not l2_units:
+        raise ContractViolation("aggregate_l3 requires at least one L2 unit")
     groups: Dict[Optional[str], List[L2Unit]] = {}
     artifact_ids = set()
     for u in l2_units:
@@ -366,6 +375,9 @@ def aggregate_l3(l2_units: Sequence[L2Unit]) -> List[L3Unit]:
         if artifact_id is None:
             raise ContractViolation("every L2 unit must carry artifact_id")
         artifact_ids.add(artifact_id)
+        mean_q_eff = _require_l2_value(u, "mean_q_eff")
+        if mean_q_eff is not None:
+            _validate_optional_q_eff(mean_q_eff, "aggregate_l3")
     if len(artifact_ids) > 1:
         raise ContractViolation(
             f"cross-artifact pooling forbidden; got {sorted(map(str, artifact_ids))}")
@@ -390,11 +402,15 @@ def episode_summaries(ipvs: Sequence[float], q_effs: Sequence[Optional[float]]) 
     * `unweighted`         : 全部 ATTEMPTED 帧等权平均
     * `concentration_wtd`  : 以 `w = 1 − q_eff` 加权（越集中权重越大）
     绝不声称哪一种更准确。q_eff 为 None 的帧从两个摘要中同步剔除。
+    本函数只接收已抽取的数值序列；调用方必须先对源行执行 `assert_single_artifact()`。
     """
     if len(ipvs) != len(q_effs):
         raise ContractViolation("ipvs/q_effs length mismatch")
-    pairs = [(v, q) for v, q in zip(ipvs, q_effs)
-             if q is not None and math.isfinite(v) and math.isfinite(q)]
+    pairs = []
+    for v, q in zip(ipvs, q_effs):
+        q_value = _validate_optional_q_eff(q, "episode_summaries")
+        if q_value is not None and math.isfinite(v):
+            pairs.append((v, q_value))
     if not pairs:
         return {"unweighted": None, "concentration_wtd": None, "n_used": 0}
     pairs = sorted(pairs)                      # 逐位确定：先排序再 fsum
@@ -415,7 +431,11 @@ def band_shares(q_values: Sequence[Optional[float]], lo: float, hi: float) -> Di
     """三档占比（**仅描述性报告**，禁止进入任何判定或路由）。"""
     if not (0.0 < lo < hi <= 1.0):
         raise ContractViolation(f"invalid policy bins lo={lo} hi={hi}")
-    vals = [q for q in q_values if q is not None]
+    vals = []
+    for q in q_values:
+        q_value = _validate_optional_q_eff(q, "band_shares")
+        if q_value is not None:
+            vals.append(q_value)
     n = len(vals)
     if n == 0:
         return {"CONCENTRATED": 0.0, "INTERMEDIATE": 0.0, "NEAR_UNIFORM": 0.0, "n": 0}
@@ -456,13 +476,17 @@ def c0_route(uses_ipv: bool, n_rows: int, n_not_attempted: int, n_unknown: int,
     if n_not_attempted + n_unknown > n_rows:
         raise ContractViolation(
             "c0_route: n_not_attempted + n_unknown exceeds n_rows")
+    qs = []
+    for q in q_effs_attempted:
+        q_value = _validate_optional_q_eff(q, "c0_route")
+        if q_value is not None:
+            qs.append(q_value)
     if not uses_ipv:
         return {"terminal": "NOT_APPLICABLE", "reason_code": "no_ipv_derived_quantity"}
     if n_rows <= 0:
         return {"terminal": "INDETERMINATE_UNKNOWN_PROVENANCE", "reason_code": "no_rows"}
     unknown_share = n_unknown / n_rows
     unavailable_share = (n_not_attempted + n_unknown) / n_rows
-    qs = [q for q in q_effs_attempted if q is not None and math.isfinite(q)]
     mean_q = _det_mean(qs)
     n_attempted = n_rows - n_not_attempted - n_unknown
     metrics = {"unknown_share": unknown_share, "unavailable_share": unavailable_share,
