@@ -23,9 +23,10 @@ import validate_only
 from rq015a_contracts import ContractViolation, SCHEMA_VERSION, load_schema
 
 
-DEFAULT_RUN_SPEC = "reports/plans/RQ015A_run_spec_v2_20260727.json"
+DEFAULT_RUN_SPEC = "reports/plans/RQ015A_run_spec_v4_20260730.json"
 DEFAULT_SCHEMA = "reports/plans/RQ015A_ledger_schema_v2.json"
 DEFAULT_AUTHORIZATION = "configs/research_authorization.json"
+OPERATION_ID = "rq015a_concentration_audit"
 
 OPTIONAL_ENV_MODULES = ("scipy", "pytest", "pyarrow", "fastparquet")
 
@@ -47,6 +48,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--authorization", default=DEFAULT_AUTHORIZATION)
     parser.add_argument("--receipt", default=None,
                         help="explicit receipt path; must not already exist")
+    parser.add_argument("--validate-receipt", default=None,
+                        help="validate_receipt.json required before --execute")
     parser.add_argument("--output-root", default=None,
                         help="explicit output root for generated receipt paths; must not already exist")
     return parser
@@ -58,18 +61,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     repo_root = Path(args.repo_root).resolve()
     try:
         if args.validate_only:
-            _run_validate_only(args, repo_root)
-            return 0
+            result = _run_validate_only(args, repo_root)
+            return 0 if result.machine_verdict == "PASS" else 1
         return _run_execute(args, repo_root)
     except ContractViolation as exc:
         print("RQ015A_ENTRYPOINT_FAIL: %s" % exc, file=sys.stderr)
         return 1
 
 
-def _run_validate_only(args: argparse.Namespace, repo_root: Path) -> None:
+def _run_validate_only(args: argparse.Namespace, repo_root: Path) -> receipt.ValidationReceipt:
     run_spec_path = _resolve(repo_root, args.run_spec)
+    authorization_path = _resolve(repo_root, args.authorization)
     schema_path = _resolve(repo_root, args.schema)
     run_spec = _load_json(run_spec_path)
+    receipt.assert_run_spec_authorization_binding(
+        repo_root,
+        run_spec_path,
+        authorization_path,
+        OPERATION_ID,
+    )
     receipt_path = _receipt_path(args, repo_root, run_spec, "validate_receipt.json")
 
     validate_only.assert_validate_only_runtime_contract()
@@ -78,8 +88,21 @@ def _run_validate_only(args: argparse.Namespace, repo_root: Path) -> None:
     input_roots = tuple(run_spec.get("input_roots", ()))
     plan = validate_only.build_structural_scan_plan(schema, input_roots=input_roots)
 
-    fixture_result = validate_only.run_contract_fixtures(repo_root)
+    manifest_result = validate_only.verify_run_spec_checksum_manifest(
+        repo_root,
+        run_spec_path,
+        run_spec,
+    )
+    fixture_result = validate_only.run_contract_fixtures(
+        repo_root,
+        validate_only.fixture_paths_from_run_spec(run_spec),
+    )
     root_records, root_failures = validate_only.record_input_roots(repo_root, input_roots)
+    failure_reasons = validate_only._validate_only_failure_reasons(
+        root_failures,
+        manifest_result,
+        fixture_result,
+    )
     checks = receipt.build_receipt_checks_from_schema(
         schema,
         per_artifact_conservation={},
@@ -98,28 +121,50 @@ def _run_validate_only(args: argparse.Namespace, repo_root: Path) -> None:
             "validate-only only asserts this description is present."
         ),
         reads_measurement_fields=validate_only.READS_MEASUREMENT_FIELDS,
-        failure_reasons=tuple(root_failures),
+        failure_reasons=failure_reasons,
     )
     metadata = {
         "schema_load_self_check": schema.get("schema_id") == SCHEMA_VERSION,
         "must_precede_execute": validate_only.MUST_PRECEDE_EXECUTE,
         "run_spec_execution_authorized": run_spec.get("execution_authorized"),
         "contract_fixtures": fixture_result,
+        "checksum_manifest": manifest_result,
         "structural_requested_columns": {
             k: list(v.columns) for k, v in sorted(plan.requested_columns.items())
         },
         "runtime_environment": environment,
         "factor_analysis": {"bootstrap_counts_recordable": True},
     }
-    receipt.write_receipt(receipt_path, receipt.build_validate_receipt(checks, metadata=metadata))
+    result = receipt.build_validate_receipt(checks, metadata=metadata)
+    receipt.write_receipt(receipt_path, result)
+    print(
+        "RQ015A_VALIDATE_ONLY: machine_verdict=%s fixture_total_passed=%s"
+        % (result.machine_verdict, fixture_result["total_passed"])
+    )
+    return result
 
 
 def _run_execute(args: argparse.Namespace, repo_root: Path) -> int:
     run_spec_path = _resolve(repo_root, args.run_spec)
     authorization_path = _resolve(repo_root, args.authorization)
+    run_spec = _load_json(run_spec_path)
     ledger = importlib.import_module("build_ledger")
     try:
-        ledger.load_execute_permit(run_spec_path, authorization_path)
+        receipt.assert_run_spec_authorization_binding(
+            repo_root,
+            run_spec_path,
+            authorization_path,
+            OPERATION_ID,
+        )
+        if not args.validate_receipt:
+            raise ContractViolation("validate receipt is required before execute")
+        validate_receipt_path = _resolve(repo_root, args.validate_receipt)
+        ledger.load_execute_permit(run_spec_path, authorization_path, repo_root=repo_root)
+        validate_only.assert_validate_receipt_inputs_current(
+            repo_root,
+            run_spec,
+            validate_receipt_path,
+        )
     except ContractViolation as exc:
         if args.receipt:
             _write_execute_fail_receipt(args, repo_root, str(exc))

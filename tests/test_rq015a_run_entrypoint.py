@@ -13,12 +13,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts" / "rq015a"))
 
 import build_ledger  # noqa: E402
+import receipt  # noqa: E402
 import run_rq015a  # noqa: E402
 
 
 SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v2.json"
 RUN_SPEC_V2 = ROOT / "reports" / "plans" / "RQ015A_run_spec_v2_20260727.json"
-RUN_SPEC_V3 = ROOT / "reports" / "plans" / "RQ015A_run_spec_v3_20260730.json"
+RUN_SPEC_V3 = ROOT / "reports" / "plans" / "RQ015A_run_spec_v4_20260730.json"
 AUTH = ROOT / "configs" / "research_authorization.json"
 EXPECTED_RQ015A_FIXTURES = [
     "tests/test_rq015a_contracts.py",
@@ -45,8 +46,10 @@ def _run_spec(tmp_path: Path, execution_authorized=False) -> Path:
         "input_roots": [],
         "output_root": str(tmp_path / "out_<UTC>_<planSHA8>"),
         "bound_artifacts": {
-            "plan": "reports/plans/RQ015A_plan_v3_concentration_audit_20260726.md",
+            "plan": "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md",
             "ledger_schema": "reports/plans/RQ015A_ledger_schema_v2.json",
+            "fixtures": EXPECTED_RQ015A_FIXTURES,
+            "checksum_manifest": "reports/plans/RQ015A_plan_v6_checksums_20260730.sha256",
         },
     }
     path = tmp_path / "run_spec.json"
@@ -54,18 +57,32 @@ def _run_spec(tmp_path: Path, execution_authorized=False) -> Path:
     return path
 
 
-def _auth(tmp_path: Path, allowed=False) -> Path:
+def _auth(tmp_path: Path, allowed=False, run_spec_path: Path = None) -> Path:
     operations = ["rq015a_concentration_audit"] if allowed else []
+    bound_run_spec = str((run_spec_path or (tmp_path / "run_spec.json")).resolve())
     payload = {
         "schema_version": 1,
         "authorizations": {
             "rq015a_concentration_audit": {
                 "allowed_operations": operations,
                 "execution_authorized": allowed,
+                "run_spec_path": bound_run_spec,
+                "execution_contract_path": bound_run_spec,
             }
         },
     }
     path = tmp_path / "research_authorization.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def _validate_receipt(tmp_path: Path, input_sha256=None, machine_verdict="PASS") -> Path:
+    path = tmp_path / "validate_receipt.json"
+    payload = {
+        "receipt_kind": "validate_receipt",
+        "machine_verdict": machine_verdict,
+        "input_sha256": dict(input_sha256 or {}),
+    }
     path.write_text(json.dumps(payload), encoding="utf-8")
     return path
 
@@ -79,12 +96,14 @@ def test_execute_denies_false_authorization_before_measurement_reader(tmp_path, 
 
     monkeypatch.setattr(build_ledger, "open_measurement_reader", fail_if_opened)
     receipt_path = tmp_path / "run_receipt.json"
+    run_spec_path = _run_spec(tmp_path, execution_authorized=False)
 
     code = run_rq015a.main([
         "--execute",
-        "--run-spec", str(_run_spec(tmp_path, execution_authorized=False)),
-        "--authorization", str(AUTH),
+        "--run-spec", str(run_spec_path),
+        "--authorization", str(_auth(tmp_path, allowed=False, run_spec_path=run_spec_path)),
         "--schema", str(SCHEMA),
+        "--validate-receipt", str(_validate_receipt(tmp_path)),
         "--receipt", str(receipt_path),
     ])
 
@@ -105,13 +124,41 @@ def test_validate_only_does_not_call_execute_permit_loader(tmp_path, monkeypatch
     monkeypatch.setattr(
         run_rq015a.validate_only,
         "run_contract_fixtures",
-        lambda repo_root: {"command": ["pytest"], "passed": 1, "output_last_line": "1 passed"},
+        lambda *args, **kwargs: {
+            "command": ["pytest"],
+            "commands": [["pytest"]],
+            "expected_files": EXPECTED_RQ015A_FIXTURES,
+            "actual_files": EXPECTED_RQ015A_FIXTURES,
+            "per_file": {},
+            "passed": 1,
+            "total_passed": 1,
+            "has_failures": False,
+            "failures": [],
+            "output_last_line": "1 passed",
+        },
     )
+    monkeypatch.setattr(
+        run_rq015a.validate_only,
+        "verify_run_spec_checksum_manifest",
+        lambda *args, **kwargs: {
+            "path": "manifest.sha256",
+            "manifest_sha256": "0" * 64,
+            "line_count": 1,
+            "checked_count": 1,
+            "expected_paths": [],
+            "actual_paths": [],
+            "failure_count": 0,
+            "failures": [],
+            "entries": {},
+        },
+    )
+    run_spec_path = _run_spec(tmp_path)
     receipt_path = tmp_path / "validate_receipt.json"
 
     code = run_rq015a.main([
         "--validate-only",
-        "--run-spec", str(_run_spec(tmp_path)),
+        "--run-spec", str(run_spec_path),
+        "--authorization", str(_auth(tmp_path, run_spec_path=run_spec_path)),
         "--schema", str(SCHEMA),
         "--receipt", str(receipt_path),
     ])
@@ -177,16 +224,17 @@ def test_run_spec_v2_loads_and_binds_ledger_schema_v2_without_fixture_count():
     assert re.search(r"fixtures\s+\d+/\d+", text) is None
 
 
-def test_run_spec_v3_loads_binds_v5_plan_and_remains_denied():
+def test_run_spec_v4_loads_binds_v6_plan_and_remains_denied():
     data = json.loads(RUN_SPEC_V3.read_text(encoding="utf-8"))
     text = RUN_SPEC_V3.read_text(encoding="utf-8")
 
     assert data["operation_id"] == "rq015a_concentration_audit"
     assert data["execution_authorized"] is False
     assert data["bound_artifacts"]["plan"] == (
-        "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md"
+        "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md"
     )
     assert data["bound_artifacts"]["plan_superseded"] == [
+        "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md",
         "reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md",
         "reports/plans/RQ015A_plan_v3_concentration_audit_20260726.md",
     ]
@@ -195,9 +243,13 @@ def test_run_spec_v3_loads_binds_v5_plan_and_remains_denied():
     )
     assert data["bound_artifacts"]["fixtures"] == EXPECTED_RQ015A_FIXTURES
     assert data["bound_artifacts"]["checksum_manifest"] == (
-        "reports/plans/RQ015A_plan_v5_checksums_20260730.sha256"
+        "reports/plans/RQ015A_plan_v6_checksums_20260730.sha256"
     )
-    assert "T10" in data["bound_artifacts"]["checksum_manifest_pending"]
+    # v4 起清单不再是 pending：它已存在且由 validate-only 实际逐行校验。
+    assert "checksum_manifest_pending" not in data["bound_artifacts"]
+    manifest_rel = data["bound_artifacts"]["checksum_manifest"]
+    assert manifest_rel.endswith("RQ015A_plan_v6_checksums_20260730.sha256")
+    assert (ROOT / manifest_rel).is_file()
     assert "228 passed" not in text
     assert re.search(r"\b\d+\s+passed\b", text) is None
     assert re.search(r"fixtures\s+\d+/\d+", text) is None
@@ -239,10 +291,148 @@ def test_research_authorization_contains_denied_rq015a_operation():
 
     assert entry["execution_authorized"] is False
     assert entry["allowed_operations"] == []
-    assert entry["run_spec_path"] == "reports/plans/RQ015A_run_spec_v3_20260730.json"
+    assert entry["run_spec_path"] == "reports/plans/RQ015A_run_spec_v4_20260730.json"
     assert entry["execution_contract_path"] == (
-        "reports/plans/RQ015A_run_spec_v3_20260730.json"
+        "reports/plans/RQ015A_run_spec_v4_20260730.json"
     )
     assert entry["decision_path"] == (
-        "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md"
+        "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md"
+    )
+
+
+def test_forged_tmp_run_spec_is_rejected_by_cli_binding_check(tmp_path, capsys):
+    forged = _run_spec(tmp_path, execution_authorized=True)
+
+    code = run_rq015a.main([
+        "--execute",
+        "--run-spec", str(forged),
+        "--authorization", str(AUTH),
+        "--schema", str(SCHEMA),
+    ])
+
+    assert code != 0
+    captured = capsys.readouterr()
+    assert "run_spec_path mismatch" in captured.err
+
+
+def test_forged_tmp_run_spec_is_rejected_by_validate_only_binding_check(tmp_path, capsys):
+    forged = _run_spec(tmp_path, execution_authorized=True)
+
+    code = run_rq015a.main([
+        "--validate-only",
+        "--run-spec", str(forged),
+        "--authorization", str(AUTH),
+        "--schema", str(SCHEMA),
+    ])
+
+    assert code != 0
+    captured = capsys.readouterr()
+    assert "run_spec_path mismatch" in captured.err
+
+
+def test_canonical_v4_run_spec_binding_passes_before_authorization_denial():
+    entry = receipt.assert_run_spec_authorization_binding(
+        ROOT,
+        RUN_SPEC_V3,
+        AUTH,
+        "rq015a_concentration_audit",
+    )
+
+    assert entry["run_spec_path"] == "reports/plans/RQ015A_run_spec_v4_20260730.json"
+    with pytest.raises(build_ledger.ContractViolation, match="execution_authorized is not true"):
+        build_ledger.load_execute_permit(RUN_SPEC_V3, AUTH, repo_root=ROOT)
+
+
+def test_canonical_v4_cli_reaches_false_authorization_with_validate_receipt(tmp_path, capsys):
+    code = run_rq015a.main([
+        "--execute",
+        "--run-spec", str(RUN_SPEC_V3),
+        "--authorization", str(AUTH),
+        "--schema", str(SCHEMA),
+        "--validate-receipt", str(_validate_receipt(tmp_path)),
+    ])
+
+    assert code != 0
+    captured = capsys.readouterr()
+    assert "execution_authorized is not true" in captured.err
+
+
+def test_execute_requires_validate_receipt_before_permit(tmp_path, capsys):
+    run_spec_path = _run_spec(tmp_path, execution_authorized=True)
+
+    code = run_rq015a.main([
+        "--execute",
+        "--run-spec", str(run_spec_path),
+        "--authorization", str(_auth(tmp_path, allowed=True, run_spec_path=run_spec_path)),
+        "--schema", str(SCHEMA),
+    ])
+
+    assert code != 0
+    captured = capsys.readouterr()
+    assert "validate receipt is required before execute" in captured.err
+
+
+def test_execute_rejects_validate_receipt_input_digest_mismatch(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    data_root = repo / "data"
+    data_root.mkdir(parents=True)
+    target = data_root / "input.txt"
+    target.write_text("after", encoding="utf-8")
+    run_spec_path = repo / "run_spec.json"
+    payload = json.loads(_run_spec(tmp_path, execution_authorized=True).read_text())
+    payload["input_roots"] = ["data"]
+    payload["output_root"] = str(repo / "out_<UTC>_<planSHA8>")
+    run_spec_path.write_text(json.dumps(payload), encoding="utf-8")
+    auth_path = _auth(tmp_path, allowed=True, run_spec_path=run_spec_path)
+    validate_receipt = _validate_receipt(repo, {"data": "0" * 64})
+    run_receipt = tmp_path / "run_receipt.json"
+    opened = []
+    monkeypatch.setattr(
+        build_ledger,
+        "open_measurement_reader",
+        lambda *args, **kwargs: opened.append((args, kwargs)),
+    )
+
+    code = run_rq015a.main([
+        "--execute",
+        "--repo-root", str(repo),
+        "--run-spec", str(run_spec_path),
+        "--authorization", str(auth_path),
+        "--schema", str(SCHEMA),
+        "--validate-receipt", str(validate_receipt),
+        "--receipt", str(run_receipt),
+    ])
+
+    assert code != 0
+    assert opened == []
+    data = json.loads(run_receipt.read_text(encoding="utf-8"))
+    assert data["machine_verdict"] == "FAIL"
+    assert "input SHA differs from validate receipt" in ";".join(data["failure_reasons"])
+
+
+def test_run_spec_declared_manifest_members_match_derived_members():
+    """规格里声明的 checksum_manifest_members 必须与代码推导的成员集合一致。
+
+    代码从 bound_artifacts 的各具名字段推导校验清单成员；规格另外声明了一份
+    可读数组供外部消费者使用。两份列表若漂移，清单闸门保护的范围就与规格
+    宣称的范围不符——本项目已多次因"同一事实存两份"而出问题，故在此断言。
+    """
+    import json
+    import pathlib
+    import sys
+
+    repo_root = pathlib.Path(__file__).resolve().parents[1]
+    sys.path.insert(0, str(repo_root / "scripts" / "rq015a"))
+    import validate_only as vo
+
+    spec_path = repo_root / "reports/plans/RQ015A_run_spec_v4_20260730.json"
+    spec = json.loads(spec_path.read_text())
+    declared = spec.get("bound_artifacts", {}).get("checksum_manifest_members")
+    assert declared, "run spec must declare checksum_manifest_members"
+
+    derived = vo.expected_checksum_manifest_paths(repo_root, spec_path, spec)
+    assert set(declared) == set(derived), (
+        "declared manifest members drifted from derived members; "
+        "only-declared=%s only-derived=%s"
+        % (sorted(set(declared) - set(derived)), sorted(set(derived) - set(declared)))
     )

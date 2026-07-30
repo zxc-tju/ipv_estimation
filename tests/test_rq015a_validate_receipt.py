@@ -29,6 +29,41 @@ from rq015a_types import (  # noqa: E402
 
 SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v2.json"
 VALID_SHA256 = "0" * 64
+EXPECTED_RQ015A_FIXTURES = [
+    "tests/test_rq015a_contracts.py",
+    "tests/test_rq015a_build_ledger.py",
+    "tests/test_rq015a_validate_receipt.py",
+    "tests/test_rq015a_factor_analysis.py",
+    "tests/test_rq015a_run_entrypoint.py",
+]
+MANIFEST_PACKAGE_PATHS = [
+    "configs/research_authorization.json",
+    "reports/knowledge/RQ015A_ipv_estimability_labelling/known_issues_and_audit_boundary_20260730.md",
+    "reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md",
+    "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md",
+    "reports/plans/RQ015A_ledger_schema_v2.json",
+    "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md",
+    "reports/plans/RQ015A_run_spec_v3_20260730.json",
+    "reports/plans/RQ015A_wod_retrieval_spec_v1.json",
+    "scripts/rq015a/build_ledger.py",
+    "scripts/rq015a/factor_analysis.py",
+    "scripts/rq015a/receipt.py",
+    "scripts/rq015a/rq015a_contracts.py",
+    "scripts/rq015a/rq015a_types.py",
+    "scripts/rq015a/run_rq015a.py",
+    "scripts/rq015a/validate_only.py",
+    "tests/test_rq015a_build_ledger.py",
+    "tests/test_rq015a_contracts.py",
+    "tests/test_rq015a_factor_analysis.py",
+    "tests/test_rq015a_run_entrypoint.py",
+    "tests/test_rq015a_validate_receipt.py",
+]
+
+
+class _Completed:
+    def __init__(self, returncode, stdout):
+        self.returncode = returncode
+        self.stdout = stdout
 
 
 def _base_fields(schema):
@@ -103,6 +138,66 @@ def _run_checks(**updates):
     fields["input_sha256"] = {"fixture.csv": VALID_SHA256}
     fields.update(updates)
     return receipt.build_receipt_checks_from_schema(schema, **fields)
+
+
+def _empty_manifest_result():
+    return {
+        "path": "manifest.sha256",
+        "manifest_sha256": VALID_SHA256,
+        "line_count": 20,
+        "checked_count": 20,
+        "expected_paths": MANIFEST_PACKAGE_PATHS,
+        "actual_paths": MANIFEST_PACKAGE_PATHS,
+        "failure_count": 0,
+        "failures": [],
+        "entries": {},
+    }
+
+
+def _machine_verdict_for_fixture_result(result):
+    reasons = validate_only._validate_only_failure_reasons(
+        (),
+        _empty_manifest_result(),
+        result,
+    )
+    return receipt.build_validate_receipt(_checks(failure_reasons=reasons)).machine_verdict
+
+
+def _write_manifest_fixture_repo(tmp_path):
+    repo = tmp_path / "repo"
+    run_spec_rel = "reports/plans/RQ015A_run_spec_v3_20260730.json"
+    manifest_rel = "reports/plans/RQ015A_plan_v6_checksums_20260730.sha256"
+    payload = {
+        "operation_id": "rq015a_concentration_audit",
+        "entrypoint": "scripts/rq015a/run_rq015a.py",
+        "authorization_object": "configs/research_authorization.json#authorizations.rq015a_concentration_audit",
+        "input_roots": [],
+        "bound_artifacts": {
+            "plan": "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md",
+            "ledger_schema": "reports/plans/RQ015A_ledger_schema_v2.json",
+            "contracts_impl": "scripts/rq015a/rq015a_contracts.py",
+            "ledger_builder": "scripts/rq015a/build_ledger.py",
+            "validate_only_impl": "scripts/rq015a/validate_only.py",
+            "receipt_impl": "scripts/rq015a/receipt.py",
+            "factor_analysis_impl": "scripts/rq015a/factor_analysis.py",
+            "fixtures": EXPECTED_RQ015A_FIXTURES,
+            "checksum_manifest": manifest_rel,
+            "sealed_exposure_disclosure": "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md",
+        },
+    }
+    for rel in MANIFEST_PACKAGE_PATHS:
+        path = repo / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if rel == run_spec_rel:
+            path.write_text(json.dumps(payload, sort_keys=True), encoding="utf-8")
+        else:
+            path.write_text("content for %s\n" % rel, encoding="utf-8")
+    manifest_path = repo / manifest_rel
+    lines = []
+    for rel in sorted(MANIFEST_PACKAGE_PATHS):
+        lines.append("%s  %s" % (validate_only.sha256_file(repo / rel), rel))
+    manifest_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return repo, repo / run_spec_rel, payload, manifest_path
 
 
 def test_validate_only_ast_has_no_reader_or_permit_names():
@@ -540,3 +635,116 @@ def test_literal_backed_runtime_invariants_are_checked(monkeypatch):
 def test_pytest_pass_count_is_parsed_not_hardcoded():
     assert validate_only.parse_pytest_pass_count("29 passed in 0.44s") == 29
     assert validate_only.parse_pytest_pass_count("16 passed in 0.10s") == 16
+
+
+def test_contract_fixture_gate_fails_when_only_one_bound_file_runs(monkeypatch):
+    def fake_run(cmd, **kwargs):
+        return _Completed(0, "1 passed in 0.01s\n")
+
+    monkeypatch.setattr(validate_only.subprocess, "run", fake_run)
+    result = validate_only.run_contract_fixtures(
+        ROOT,
+        EXPECTED_RQ015A_FIXTURES,
+        actual_fixture_paths=EXPECTED_RQ015A_FIXTURES[:1],
+    )
+
+    assert result["total_passed"] == 1
+    assert result["has_failures"] is True
+    assert any("fixture_set_mismatch" in item for item in result["failures"])
+    assert _machine_verdict_for_fixture_result(result) == "FAIL"
+
+
+def test_contract_fixture_gate_fails_on_file_set_mismatch(monkeypatch):
+    def fake_run(cmd, **kwargs):
+        return _Completed(0, "2 passed in 0.01s\n")
+
+    monkeypatch.setattr(validate_only.subprocess, "run", fake_run)
+    result = validate_only.run_contract_fixtures(
+        ROOT,
+        EXPECTED_RQ015A_FIXTURES,
+        actual_fixture_paths=[EXPECTED_RQ015A_FIXTURES[0], "tests/not_bound.py"],
+    )
+
+    assert result["has_failures"] is True
+    assert any("missing=" in item and "extra=tests/not_bound.py" in item
+               for item in result["failures"])
+    assert _machine_verdict_for_fixture_result(result) == "FAIL"
+
+
+def test_contract_fixture_gate_passes_when_all_bound_files_pass(monkeypatch):
+    pass_counts = {
+        rel: index + 1
+        for index, rel in enumerate(EXPECTED_RQ015A_FIXTURES)
+    }
+
+    def fake_run(cmd, **kwargs):
+        rel = Path(cmd[-2]).relative_to(ROOT).as_posix()
+        return _Completed(0, "%d passed in 0.01s\n" % pass_counts[rel])
+
+    monkeypatch.setattr(validate_only.subprocess, "run", fake_run)
+    result = validate_only.run_contract_fixtures(ROOT, EXPECTED_RQ015A_FIXTURES)
+
+    assert result["has_failures"] is False
+    assert result["total_passed"] == sum(pass_counts.values())
+    assert set(result["per_file"]) == set(EXPECTED_RQ015A_FIXTURES)
+    assert _machine_verdict_for_fixture_result(result) == "PASS"
+
+
+def test_contract_fixture_gate_fails_when_any_file_fails(monkeypatch):
+    def fake_run(cmd, **kwargs):
+        rel = Path(cmd[-2]).relative_to(ROOT).as_posix()
+        if rel == EXPECTED_RQ015A_FIXTURES[1]:
+            return _Completed(1, "1 failed, 1 passed in 0.01s\n")
+        return _Completed(0, "2 passed in 0.01s\n")
+
+    monkeypatch.setattr(validate_only.subprocess, "run", fake_run)
+    result = validate_only.run_contract_fixtures(ROOT, EXPECTED_RQ015A_FIXTURES)
+
+    assert result["has_failures"] is True
+    assert result["per_file"][EXPECTED_RQ015A_FIXTURES[1]]["failed"] == 1
+    assert _machine_verdict_for_fixture_result(result) == "FAIL"
+
+
+def test_checksum_manifest_verifies_all_twenty_package_files(tmp_path):
+    repo, run_spec_path, run_spec, _manifest_path = _write_manifest_fixture_repo(tmp_path)
+
+    result = validate_only.verify_run_spec_checksum_manifest(repo, run_spec_path, run_spec)
+
+    assert result["failure_count"] == 0
+    assert result["line_count"] == 20
+    assert result["checked_count"] == 20
+
+
+def test_checksum_manifest_fails_when_registered_file_drifts(tmp_path):
+    repo, run_spec_path, run_spec, _manifest_path = _write_manifest_fixture_repo(tmp_path)
+    (repo / "scripts/rq015a/receipt.py").write_text("changed\n", encoding="utf-8")
+
+    result = validate_only.verify_run_spec_checksum_manifest(repo, run_spec_path, run_spec)
+
+    assert result["failure_count"] > 0
+    assert any("sha256_mismatch:scripts/rq015a/receipt.py" == item
+               for item in result["failures"])
+
+
+def test_checksum_manifest_fails_when_line_is_missing(tmp_path):
+    repo, run_spec_path, run_spec, manifest_path = _write_manifest_fixture_repo(tmp_path)
+    lines = manifest_path.read_text(encoding="utf-8").splitlines()
+    manifest_path.write_text("\n".join(lines[:-1]) + "\n", encoding="utf-8")
+
+    result = validate_only.verify_run_spec_checksum_manifest(repo, run_spec_path, run_spec)
+
+    assert result["failure_count"] > 0
+    assert any(item.startswith("missing_entries:") for item in result["failures"])
+
+
+def test_checksum_manifest_fails_when_extra_line_is_present(tmp_path):
+    repo, run_spec_path, run_spec, manifest_path = _write_manifest_fixture_repo(tmp_path)
+    extra = repo / "extra.txt"
+    extra.write_text("extra\n", encoding="utf-8")
+    with manifest_path.open("a", encoding="utf-8") as handle:
+        handle.write("%s  extra.txt\n" % validate_only.sha256_file(extra))
+
+    result = validate_only.verify_run_spec_checksum_manifest(repo, run_spec_path, run_spec)
+
+    assert result["failure_count"] > 0
+    assert any(item == "extra_entries:extra.txt" for item in result["failures"])

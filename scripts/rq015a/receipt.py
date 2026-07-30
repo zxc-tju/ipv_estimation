@@ -40,6 +40,64 @@ ZERO_REQUIRED_COUNTERS = (
     "unmapped_measurement_roles",
 )
 SHA256_HEX_RE = re.compile(r"^[0-9a-fA-F]{64}$")
+RUN_SPEC_BINDING_FIELDS = ("run_spec_path", "execution_contract_path")
+
+
+def canonical_repo_path(repo_root: Path, value: Any) -> Path:
+    if not isinstance(value, str) or not value.strip():
+        raise ContractViolation("path value must be a non-empty string")
+    path = Path(value)
+    if not path.is_absolute():
+        path = Path(repo_root) / path
+    return path.resolve()
+
+
+def strip_json_fragment(value: Any) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ContractViolation("path value must be a non-empty string")
+    return value.split("#", 1)[0]
+
+
+def load_json_object(path: Path, label: str) -> Mapping[str, Any]:
+    with Path(path).open(encoding="utf-8") as handle:
+        payload = json.load(handle)
+    if not isinstance(payload, Mapping):
+        raise ContractViolation("%s must be a JSON object: %s" % (label, path))
+    return payload
+
+
+def authorization_entry_for_operation(
+    authorization_path: Path,
+    operation_id: str,
+) -> Mapping[str, Any]:
+    auth = load_json_object(Path(authorization_path), "authorization file")
+    authorizations = auth.get("authorizations")
+    if not isinstance(authorizations, Mapping):
+        raise ContractViolation("authorization file missing authorizations object")
+    entry = authorizations.get(operation_id)
+    if not isinstance(entry, Mapping):
+        raise ContractViolation("authorization entry missing for %s" % operation_id)
+    return entry
+
+
+def assert_run_spec_authorization_binding(
+    repo_root: Path,
+    run_spec_path: Path,
+    authorization_path: Path,
+    operation_id: str,
+) -> Mapping[str, Any]:
+    provided = Path(run_spec_path).resolve()
+    entry = authorization_entry_for_operation(Path(authorization_path), operation_id)
+    for field_name in RUN_SPEC_BINDING_FIELDS:
+        bound_raw = strip_json_fragment(entry.get(field_name))
+        bound = canonical_repo_path(Path(repo_root), bound_raw)
+        if bound != provided:
+            raise ContractViolation(
+                "execution_authorized gate rejected unbound run spec; "
+                "authorization %s mismatch for %s: caller run spec %s != bound %s"
+                % (field_name, operation_id, provided, bound)
+            )
+    return entry
 
 
 @dataclass(frozen=True)

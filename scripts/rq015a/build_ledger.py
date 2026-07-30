@@ -20,6 +20,11 @@ from pathlib import Path
 from typing import Iterable, Iterator, List, Mapping, MutableMapping, Optional, Sequence, Tuple
 
 try:  # pragma: no cover - import style depends on caller path setup
+    import receipt as rq015a_receipt
+except ImportError:  # pragma: no cover
+    from . import receipt as rq015a_receipt
+
+try:  # pragma: no cover - import style depends on caller path setup
     from rq015a_contracts import (
         ContractViolation,
         SCHEMA_VERSION,
@@ -369,20 +374,32 @@ def resolve_artifact_scope(
     return scope
 
 
-def load_execute_permit(run_spec_path: Path, authorization_path: Path) -> ExecutePermit:
+def load_execute_permit(
+    run_spec_path: Path,
+    authorization_path: Path,
+    repo_root: Optional[Path] = None,
+) -> ExecutePermit:
     operation_id = "rq015a_concentration_audit"
-    run_spec = json.loads(Path(run_spec_path).read_text())
+    run_spec_path = Path(run_spec_path).resolve()
+    authorization_path = Path(authorization_path).resolve()
+    binding_root = Path(repo_root).resolve() if repo_root is not None else _infer_repo_root(run_spec_path)
+    run_spec = json.loads(run_spec_path.read_text())
     if run_spec.get("operation_id") != operation_id:
         raise ContractViolation("run spec operation_id mismatch")
+    entry = rq015a_receipt.authorization_entry_for_operation(authorization_path, operation_id)
+    has_binding_fields = all(
+        isinstance(entry.get(field_name), str) and entry.get(field_name).strip()
+        for field_name in rq015a_receipt.RUN_SPEC_BINDING_FIELDS
+    )
+    if has_binding_fields:
+        rq015a_receipt.assert_run_spec_authorization_binding(
+            binding_root,
+            run_spec_path,
+            authorization_path,
+            operation_id,
+        )
     if run_spec.get("execution_authorized") is not True:
         raise ContractViolation("execution_authorized is not true")
-    auth = json.loads(Path(authorization_path).read_text())
-    authorizations = auth.get("authorizations")
-    if not isinstance(authorizations, Mapping):
-        raise ContractViolation("authorization file missing authorizations object")
-    entry = authorizations.get(operation_id)
-    if not isinstance(entry, Mapping):
-        raise ContractViolation("authorization entry missing for %s" % operation_id)
     if entry.get("execution_authorized") is not True:
         raise ContractViolation("authorization entry execution_authorized is not true")
     allowed = entry.get("allowed_operations")
@@ -390,12 +407,28 @@ def load_execute_permit(run_spec_path: Path, authorization_path: Path) -> Execut
         raise ContractViolation("authorization entry allowed_operations must be a list")
     if operation_id not in [str(value) for value in allowed]:
         raise ContractViolation("authorization object does not allow rq015a_concentration_audit")
+    if not has_binding_fields:
+        rq015a_receipt.assert_run_spec_authorization_binding(
+            binding_root,
+            run_spec_path,
+            authorization_path,
+            operation_id,
+        )
     return ExecutePermit._from_authorization(
         operation_id,
         True,
-        Path(authorization_path),
-        _sha256(Path(authorization_path)),
+        authorization_path,
+        _sha256(authorization_path),
     )
+
+
+def _infer_repo_root(run_spec_path: Path) -> Path:
+    resolved = Path(run_spec_path).resolve()
+    if len(resolved.parents) >= 2:
+        parent = resolved.parent
+        if parent.name == "plans" and parent.parent.name == "reports":
+            return parent.parent.parent.resolve()
+    return Path.cwd().resolve()
 
 
 def _make_test_permit_UNSAFE() -> ExecutePermit:
