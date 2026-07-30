@@ -18,7 +18,15 @@ import run_rq015a  # noqa: E402
 
 SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v2.json"
 RUN_SPEC_V2 = ROOT / "reports" / "plans" / "RQ015A_run_spec_v2_20260727.json"
+RUN_SPEC_V3 = ROOT / "reports" / "plans" / "RQ015A_run_spec_v3_20260730.json"
 AUTH = ROOT / "configs" / "research_authorization.json"
+EXPECTED_RQ015A_FIXTURES = [
+    "tests/test_rq015a_contracts.py",
+    "tests/test_rq015a_build_ledger.py",
+    "tests/test_rq015a_validate_receipt.py",
+    "tests/test_rq015a_factor_analysis.py",
+    "tests/test_rq015a_run_entrypoint.py",
+]
 
 
 def _run_spec(tmp_path: Path, execution_authorized=False) -> Path:
@@ -169,9 +177,72 @@ def test_run_spec_v2_loads_and_binds_ledger_schema_v2_without_fixture_count():
     assert re.search(r"fixtures\s+\d+/\d+", text) is None
 
 
+def test_run_spec_v3_loads_binds_v5_plan_and_remains_denied():
+    data = json.loads(RUN_SPEC_V3.read_text(encoding="utf-8"))
+    text = RUN_SPEC_V3.read_text(encoding="utf-8")
+
+    assert data["operation_id"] == "rq015a_concentration_audit"
+    assert data["execution_authorized"] is False
+    assert data["bound_artifacts"]["plan"] == (
+        "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md"
+    )
+    assert data["bound_artifacts"]["plan_superseded"] == [
+        "reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md",
+        "reports/plans/RQ015A_plan_v3_concentration_audit_20260726.md",
+    ]
+    assert data["bound_artifacts"]["ledger_schema"].endswith(
+        "RQ015A_ledger_schema_v2.json"
+    )
+    assert data["bound_artifacts"]["fixtures"] == EXPECTED_RQ015A_FIXTURES
+    assert data["bound_artifacts"]["checksum_manifest"] == (
+        "reports/plans/RQ015A_plan_v5_checksums_20260730.sha256"
+    )
+    assert "T10" in data["bound_artifacts"]["checksum_manifest_pending"]
+    assert "228 passed" not in text
+    assert re.search(r"\b\d+\s+passed\b", text) is None
+    assert re.search(r"fixtures\s+\d+/\d+", text) is None
+    digest_policy = data["environment"]["input_digest_policy"]
+    assert digest_policy["large_file_policy"] == "sha256_full_file"
+    assert digest_policy["directory_manifest_sha256_includes"] == [
+        "path",
+        "bytes",
+        "sha256",
+    ]
+    assert "mtime_ns" in digest_policy["directory_manifest_entry_metadata_excluded"]
+    assert data["input_root_constraints"]["symlink_policy"].startswith(
+        "Reject every symlink"
+    )
+    assert data["aggregation_key_encoding"]["version"] == "rq015a-aggregation-key-v2"
+    assert data["aggregation_key_encoding"]["product_row_key_escaped_chars"] == [
+        "\\",
+        "|",
+        "=",
+    ]
+    assert data["trust_boundary"] == [
+        "`scripts/rq015a/run_rq015a.py` 是唯一受信入口。",
+        "直接调用内部函数，或用 object.__new__ / pickle / 元类伪造对象，不在信任模型内。",
+        "边界内必须成立：(a) 从公开 CLI 出发的任何可达路径都不得绕过 permit 校验、allowlist 回源核对、或结构列 denylist；(b) 外部对象不得替换掉已经过校验的对象。",
+    ]
+
+    code = run_rq015a.main([
+        "--execute",
+        "--run-spec", str(RUN_SPEC_V3),
+        "--authorization", str(AUTH),
+        "--schema", str(SCHEMA),
+    ])
+    assert code != 0
+
+
 def test_research_authorization_contains_denied_rq015a_operation():
     data = json.loads(AUTH.read_text(encoding="utf-8"))
     entry = data["authorizations"]["rq015a_concentration_audit"]
 
     assert entry["execution_authorized"] is False
-    assert entry["run_spec_path"] == "reports/plans/RQ015A_run_spec_v2_20260727.json"
+    assert entry["allowed_operations"] == []
+    assert entry["run_spec_path"] == "reports/plans/RQ015A_run_spec_v3_20260730.json"
+    assert entry["execution_contract_path"] == (
+        "reports/plans/RQ015A_run_spec_v3_20260730.json"
+    )
+    assert entry["decision_path"] == (
+        "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md"
+    )

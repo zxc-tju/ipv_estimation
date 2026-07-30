@@ -27,9 +27,9 @@
       "allowed_operations": [],
       "execution_authorized": false,
       "authorization_state": "BUILD_WHILE_DENY",
-      "run_spec_path": "reports/plans/RQ015A_run_spec_v2_20260727.json",
-      "execution_contract_path": "reports/plans/RQ015A_run_spec_v2_20260727.json",
-      "decision_path": "reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md"
+      "run_spec_path": "reports/plans/RQ015A_run_spec_v3_20260730.json",
+      "execution_contract_path": "reports/plans/RQ015A_run_spec_v3_20260730.json",
+      "decision_path": "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md"
     }
   }
 }
