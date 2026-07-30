@@ -31,6 +31,15 @@
       "execution_contract_path": "reports/plans/RQ015A_run_spec_v5_20260730.json",
       "authorized_package_commit": null,
       "decision_path": "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md"
+    },
+    "rq015a_wod_readonly_retrieval": {
+      "allowed_operations": [],
+      "execution_authorized": false,
+      "authorization_state": "SPEC_ONLY_PENDING_PI_SECOND_STEP_APPROVAL",
+      "run_spec_path": "reports/plans/RQ015A_wod_retrieval_spec_v3_20260731.json",
+      "execution_contract_path": "reports/plans/RQ015A_wod_retrieval_spec_v3_20260731.json",
+      "authorized_package_commit": null,
+      "decision_path": null
     }
   }
 }

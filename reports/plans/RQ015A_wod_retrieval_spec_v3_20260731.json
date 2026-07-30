@@ -1,0 +1,257 @@
+{
+  "spec_id": "rq015a-wod-retrieval-v3",
+  "supersedes": "reports/plans/RQ015A_wod_retrieval_spec_v2_20260730.json",
+  "operation_id": "rq015a_wod_readonly_retrieval",
+  "status": "SPEC_ONLY_PENDING_PI_SECOND_STEP_APPROVAL",
+  "created": "2026-07-31",
+  "execution_authorized": false,
+  "authorization_object": "configs/research_authorization.json#authorizations.rq015a_wod_readonly_retrieval",
+  "non_authorization_notice": "本规格仅定义取回对象、HPC 侧净化、凭证和校验要求；不构成执行授权。真正取回必须由 PI 在第二步单独批准。",
+  "authority": {
+    "basis": "PI 裁定分两步：第一步交付规格与授权对象供审阅；第二步才可单独批准真正取回。",
+    "scope_limit": "本 v3 规格只覆盖一个已探测的 RQ010B full479 audited CSV；不连接 HPC、不传输数据、不 replay、不改 owning RQ decision.md。",
+    "separate_from": "RQ015A 主审计操作 rq015a_concentration_audit；不得复用该授权。",
+    "requires_second_step_pi_approval": true
+  },
+  "probe_evidence": {
+    "probe_kind": "READ_ONLY_NO_TRANSFER",
+    "probe_generated_at": "2026-07-27T01:55:22Z",
+    "probe_host": "logini04",
+    "probe_artifact": "/Users/xiaocong/.codex-fleet-local/rq015a-implementation/board/reports/W0-hpc-probe-raw.json",
+    "local_data_retrieved_by_probe": false
+  },
+  "blinding_hazard": {
+    "severity": "HIGH",
+    "statement": "源 CSV 来自带评分语义的 RQ010B 路径，表头含 rating，且含 selected_track_avg_score / track_avg_score；这些列不得进入本地。",
+    "mandatory_control": "HPC 侧按 column allowlist 投影，生成 sanitization receipt，再校验投影产物；原始 CSV 不得离开 HPC。",
+    "forbidden_column_regex": "(?i)(rating|preference|human|score)"
+  },
+  "target": {
+    "artifact_id": "wod_rq010b_full479_audited",
+    "source_path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_full479_scored_audited_20260630T063600/rq010b_wod_e2e_multiframe_tracking_ipv_full479_audited_candidate_ipv_rating.csv",
+    "source_sha256_from_probe": "290ef593460d613491cac9a9d8e3de67f10384091869db5401a2ea608039653c",
+    "source_data_rows_from_probe": 906,
+    "source_bytes_from_probe": 1120289,
+    "source_header_column_count_from_probe": 65,
+    "source_header_columns_from_probe": [
+      "accel_rms",
+      "candidate_index",
+      "context_name",
+      "counterpart_future_method",
+      "counterpart_history_coverage_fraction",
+      "curvature_mean_abs",
+      "driven_ade_m",
+      "driven_fde_m",
+      "ego_ipv",
+      "ego_ipv_driven",
+      "ego_ipv_driven_error",
+      "ego_ipv_error",
+      "gate_pass_counts",
+      "gate_rejection_counts",
+      "intent_name",
+      "ipv_minus_driven",
+      "jerk_rms",
+      "min_gap_m",
+      "min_ttc_s",
+      "path_length",
+      "rating",
+      "scene_id",
+      "segment_key",
+      "selected_conflict_angle_deg",
+      "selected_conflict_candidate_index",
+      "selected_conflict_geometry",
+      "selected_conflict_lateral_m",
+      "selected_conflict_longitudinal_m",
+      "selected_conflict_source",
+      "selected_conflict_time_s",
+      "selected_current_distance_m",
+      "selected_min_predicted_gap_m",
+      "selected_min_ttc_s",
+      "selected_track_avg_score",
+      "selected_track_class",
+      "selected_track_displacement_m",
+      "selected_track_hits",
+      "selected_track_id",
+      "selected_track_span_s",
+      "selection_rule",
+      "track_avg_score",
+      "track_class",
+      "track_count",
+      "track_displacement_m",
+      "track_effective_speed_mps",
+      "track_effective_vx",
+      "track_effective_vy",
+      "track_first_obs_time_s",
+      "track_hits",
+      "track_jitter_ratio",
+      "track_last_obs_time_s",
+      "track_lateral_rms_from_best_line_m",
+      "track_max_observation_gap_s",
+      "track_max_step_m",
+      "track_mean_speed_mps",
+      "track_median_kalman_speed_mps",
+      "track_net_speed_mps",
+      "track_observed_points",
+      "track_path_length_m",
+      "track_span_s",
+      "track_stale_s_at_tstar",
+      "track_step_median_m",
+      "track_step_p95_m",
+      "tstar_context_step",
+      "usable_track_count"
+    ],
+    "forbidden_columns_observed_in_source_header": [
+      "rating",
+      "selected_track_avg_score",
+      "track_avg_score"
+    ],
+    "required_error_columns": [
+      "ego_ipv_error"
+    ],
+    "recoverability_after_successful_sanitized_retrieval": "L1_DIRECT",
+    "excluded_related_targets": {
+      "wod_phase1_phase1b_10hz_schemeb": "2026-07-27 只读探测确认 phase1 / phase1b / schemeB 表头无 error 列，ipv_error_source: absent 定性不变；不在本次取回范围。"
+    },
+    "K_determination": {
+      "K": 7,
+      "grid_id": "legacy7_pi_over_8",
+      "conclusion": "K = 7 已由三环 provenance 链确定；取回后 q_eff 可算，该产物可为 L1_DIRECT。",
+      "evidence_chain": [
+        {
+          "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_full479_scored_audited_20260630T063600/rq010b_wod_e2e_multiframe_tracking_ipv_full479_audited_stats.json",
+          "key_line": "记录 \"ipv_solver_mode\": \"fast\""
+        },
+        {
+          "path": "<RQ010B repo>/src/sociality_estimation/core/ipv_estimation.py",
+          "lines": "220-223",
+          "key_line": "exact → 7 candidates；fast → 7 candidates；realtime → 5 candidates"
+        },
+        {
+          "path": "<RQ010B repo>/src/sociality_estimation/core/agent.py",
+          "lines": "63-64,156-161",
+          "key_line": "virtual_agent_IPV_range = np.array([-3,-2,-1,0,1,2,3]) * math.pi / 8；realtime_agent_IPV_range = np.array([-3,-1,0,1,3]) * math.pi / 8；仅 solver_mode == \"realtime\" 返回 realtime range，其余一律返回 virtual range"
+        }
+      ]
+    },
+    "metric_resolution_after_successful_retrieval": {
+      "attempt_status_available": true,
+      "k_eff_available": true,
+      "K_available": true,
+      "q_eff_available": true,
+      "recoverability": "L1_DIRECT"
+    }
+  },
+  "column_policy": {
+    "selection_mode": "allowlist",
+    "why_allowlist_not_denylist": "黑名单漏一个评分同义列就泄漏；白名单漏列只会少拿数据并 fail closed 或降级覆盖。",
+    "allowed_columns_in_order": [
+      "segment_key",
+      "candidate_index",
+      "ego_ipv",
+      "ego_ipv_error"
+    ],
+    "column_justification": {
+      "segment_key": "WOD segment identity；与 schema v3 row_key_fields 对齐，用于逐段审计和去重。",
+      "candidate_index": "候选序号；与 segment_key 组成唯一候选行键，验证 302×3=906。",
+      "ego_ipv": "直接候选 IPV 估计值；为 ego_ipv_error 的测量对象提供配对值。",
+      "ego_ipv_error": "本次恢复 L1_DIRECT 所需的直接误差列，用于 RQ015A q_eff / concentration 审计。"
+    },
+    "no_additional_columns_reason": "context、geometry、track、gate、intent、路径形态列以及 driven baseline 对照列不进入 RQ015A 当前 ledger row key 或直接 error 度量；保留会扩大致盲、解释和误用风险。",
+    "forbidden_from_allowlist": "任何列名命中 (?i)(rating|preference|human|score) 均不得进入白名单。",
+    "expected_projected_column_count": 4,
+    "driven_columns_excluded_reason": "规格白名单是审计所需最小集；已确定 ego_ipv_driven / ego_ipv_driven_error 是对照基线、不进台账。保留会增加误用风险：日后可能被当作第二测量通道，破坏 expansion_factor = 1 与守恒恒等式。若将来确需 bias 交叉检查，应作为另一次单独取回并单独授权。"
+  },
+  "mandatory_order": [
+    "HPC 侧在新建 staging 目录按列名投影 source CSV",
+    "HPC 侧生成 sanitization_receipt.json，记录源文件 SHA、投影 SHA、行数、白名单、丢弃列和 forbidden scan",
+    "HPC 侧校验 receipt 与投影产物逐项一致，且 forbidden scan 为 0",
+    "PI 第二步单独批准后，才允许传输投影 CSV、receipt 和校验摘要；原始 CSV 永不传输"
+  ],
+  "hpc_projection": {
+    "script_path": "scripts/rq015a/hpc_project_wod_full479.sh",
+    "does_transfer": false,
+    "default_stage_root": "/share/home/u25310231/ZXC/RQ015A_wod_readonly_retrieval/staging",
+    "stage_directory_rule": "目标 staging 目录必须不存在；脚本用 mkdir 新建，任何已存在路径直接 fail closed。",
+    "projected_filename": "rq010b_wod_full479_audited_candidate_ipv_projected.csv",
+    "receipt_filename": "sanitization_receipt.json",
+    "source_sha256_must_match_probe": true,
+    "source_row_count_must_equal": 906
+  },
+  "receipt_schema": {
+    "schema_version": "rq015a-wod-full479-sanitization-receipt-v1",
+    "required_fields": [
+      "source_path",
+      "source_sha256",
+      "source_row_count",
+      "projected_path",
+      "projected_sha256",
+      "projected_row_count",
+      "column_whitelist",
+      "columns_dropped",
+      "forbidden_column_scan",
+      "generated_at",
+      "host",
+      "tool_version"
+    ],
+    "field_rules": {
+      "source_path": "必须等于 target.source_path。",
+      "source_sha256": "投影前源文件 SHA-256；必须等于 290ef593460d613491cac9a9d8e3de67f10384091869db5401a2ea608039653c。",
+      "source_row_count": "必须为 906（不含表头）。",
+      "projected_path": "HPC staging 目录内投影 CSV 的绝对路径。",
+      "projected_sha256": "投影 CSV 完整字节 SHA-256；传输后本地必须复核一致。",
+      "projected_row_count": "必须为 906（不含表头）。",
+      "column_whitelist": "实际投影出的列名，必须逐项等于 column_policy.allowed_columns_in_order。",
+      "columns_dropped": "源表头中未投影的列名，必须包含 rating、selected_track_avg_score、track_avg_score。",
+      "forbidden_column_scan": "对投影 CSV 表头重扫 (?i)(rating|preference|human|score)；match_count 必须为 0。",
+      "generated_at": "UTC ISO-8601 seconds。",
+      "host": "HPC 主机名。",
+      "tool_version": "生成脚本版本。"
+    }
+  },
+  "local_landing": {
+    "path_template": "data/derived/wod_e2e/RQ015A_retrieved_full479_<UTC>/",
+    "no_overwrite": true,
+    "allowed_files_after_transfer": [
+      "rq010b_wod_full479_audited_candidate_ipv_projected.csv",
+      "sanitization_receipt.json"
+    ],
+    "post_transfer_required_checks": [
+      "本地目标目录预先不存在；否则 fail closed。",
+      "json.load(sanitization_receipt.json) 成功且 required_fields 齐全。",
+      "本地 CSV 表头逐项等于 receipt.column_whitelist。",
+      "本地 CSV 行数等于 receipt.projected_row_count 且为 906。",
+      "本地 CSV SHA-256 等于 receipt.projected_sha256。",
+      "本地 CSV 表头 forbidden scan 命中数为 0。",
+      "任一检查失败即删除已落地数据并记录 FAIL。"
+    ]
+  },
+  "abort_conditions": [
+    "白名单外的列出现在投影或传输产物中",
+    "任一投影列名在源 CSV 中不存在",
+    "源文件 SHA-256 与探测记录不一致",
+    "源或投影 row_count 与 906 不符",
+    "投影后 SHA 与 receipt 不符",
+    "sanitization receipt 缺失或 required_fields 不全",
+    "receipt.column_whitelist 与本地实际收到的列集合或顺序不符",
+    "投影产物或本地落地产物出现 (?i)(rating|preference|human|score) 列",
+    "HPC staging 目录或本地目标目录已存在",
+    "任何原始 source CSV 离开 HPC 的迹象"
+  ],
+  "on_abort": {
+    "action": "fail closed；删除本次已落地投影数据，保留只含列名/计数/SHA/路径的失败记录。",
+    "fallback": "退回无 WOD 覆盖的缩减范围，并在报告标题级披露 WOD 零覆盖。"
+  },
+  "package_identity_binding": {
+    "required_when_execution_authorized_true": true,
+    "authorization_field": "configs/research_authorization.json#authorizations.rq015a_wod_readonly_retrieval.authorized_package_commit",
+    "false_state": "execution_authorized=false 时 authorized_package_commit 必须保持 null。",
+    "true_state": "若 PI 第二步批准，authorized_package_commit 必须填入当前审核通过包的 git HEAD，并由执行入口校验等于运行时 HEAD。",
+    "reason": "本操作触及 RQ014 致盲保护对象；授权若不绑定包身份，后续可在修改白名单或脚本后复用旧授权，产生 fail-open 风险。"
+  },
+  "pi_signature_required": true,
+  "signature_block": {
+    "signed_by": null,
+    "date": null,
+    "verdict": null
+  }
+}
