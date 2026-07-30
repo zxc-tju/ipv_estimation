@@ -19,6 +19,8 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 from typing import Literal
 
 from receipt import (
+    REQUIRED_RECEIPT_FIELDS,
+    ReceiptChecks,
     ValidationReceipt,
     assert_run_spec_authorization_binding,
     build_receipt_checks_from_schema,
@@ -40,7 +42,7 @@ RQ009_FOLD_NAMES = ("train", "guard_tune", "calibration", "test")
 RQ007_VALIDATE_SPLITS = ("development", "guard")
 MANIFEST_HASH_CHUNK_BYTES = 1024 * 1024
 OPERATION_ID = "rq015a_concentration_audit"
-DEFAULT_RUN_SPEC = "reports/plans/RQ015A_run_spec_v3_20260730.json"
+DEFAULT_RUN_SPEC = "reports/plans/RQ015A_run_spec_v5_20260730.json"
 DEFAULT_SCHEMA = "reports/plans/RQ015A_ledger_schema_v2.json"
 DEFAULT_AUTHORIZATION = "configs/research_authorization.json"
 V3_MANIFEST_SUPPLEMENTAL_PATHS = (
@@ -182,6 +184,7 @@ def run_validate_only(repo_root: Path, schema_path: Path, run_spec_path: Path,
         failure_reasons=failure_reasons,
     )
     metadata = {
+        "run_spec_path": _path_for_receipt_metadata(repo, spec_path),
         "schema_load_self_check": schema.get("schema_id") == SCHEMA_VERSION,
         "must_precede_execute": MUST_PRECEDE_EXECUTE,
         "run_spec_execution_authorized": run_spec.get("execution_authorized"),
@@ -406,19 +409,35 @@ def _repo_relative_existing_or_contract(repo_root: Path, path: Path) -> str:
 
 def assert_validate_receipt_inputs_current(
     repo_root: Path,
+    run_spec_path: Path,
     run_spec: Mapping[str, Any],
+    authorization_path: Path,
+    operation_id: str,
     validate_receipt_path: Path,
 ) -> Mapping[str, Any]:
+    repo = Path(repo_root).resolve()
+    spec_path = Path(run_spec_path).resolve()
     data = load_json_object(Path(validate_receipt_path), "validate receipt")
     if data.get("receipt_kind") != "validate_receipt":
         raise ContractViolation("validate receipt has wrong receipt_kind")
     if data.get("machine_verdict") != "PASS":
         raise ContractViolation("validate receipt machine_verdict is not PASS")
+    _validate_receipt_required_fields(data)
+    metadata = data.get("metadata")
+    if not isinstance(metadata, Mapping):
+        raise ContractViolation("validate receipt metadata must be an object")
+    assert_run_spec_authorization_binding(
+        repo,
+        spec_path,
+        Path(authorization_path).resolve(),
+        operation_id,
+    )
+    _assert_validate_receipt_binding(repo, spec_path, run_spec, data, metadata)
     recorded = data.get("input_sha256")
     if not isinstance(recorded, Mapping):
         raise ContractViolation("validate receipt missing input_sha256")
     current, failures = record_input_roots(
-        Path(repo_root).resolve(),
+        repo,
         tuple(run_spec.get("input_roots", ())),
     )
     if failures:
@@ -444,6 +463,67 @@ def assert_validate_receipt_inputs_current(
         "input_sha256": current_normalized,
         "validated_receipt": str(Path(validate_receipt_path).resolve()),
     }
+
+
+def _validate_receipt_required_fields(data: Mapping[str, Any]) -> None:
+    missing = [name for name in REQUIRED_RECEIPT_FIELDS if name not in data]
+    if missing:
+        raise ContractViolation("validate receipt missing required fields: " + ",".join(missing))
+    fields = {name: data[name] for name in REQUIRED_RECEIPT_FIELDS}
+    try:
+        ReceiptChecks(**fields)
+    except ContractViolation as exc:
+        raise ContractViolation("validate receipt required field invalid: %s" % exc)
+
+
+def _assert_validate_receipt_binding(
+    repo_root: Path,
+    run_spec_path: Path,
+    run_spec: Mapping[str, Any],
+    data: Mapping[str, Any],
+    metadata: Mapping[str, Any],
+) -> None:
+    recorded_spec = metadata.get("run_spec_path")
+    if not isinstance(recorded_spec, str) or not recorded_spec.strip():
+        raise ContractViolation("validate receipt missing metadata.run_spec_path")
+    recorded_spec_path = canonical_repo_path(repo_root, recorded_spec)
+    if recorded_spec_path != Path(run_spec_path).resolve():
+        raise ContractViolation(
+            "validate receipt run_spec_path mismatch: receipt %s != current %s"
+            % (recorded_spec_path, Path(run_spec_path).resolve())
+        )
+
+    if data.get("schema_version") != SCHEMA_VERSION:
+        raise ContractViolation(
+            "validate receipt schema_version mismatch: receipt %r != expected %s"
+            % (data.get("schema_version"), SCHEMA_VERSION)
+        )
+
+    bound = run_spec.get("bound_artifacts")
+    if not isinstance(bound, Mapping):
+        raise ContractViolation("run spec missing bound_artifacts object")
+    expected_manifest = bound.get("checksum_manifest")
+    if not isinstance(expected_manifest, str) or not expected_manifest.strip():
+        raise ContractViolation("run spec missing checksum_manifest binding")
+    checksum_manifest = metadata.get("checksum_manifest")
+    if not isinstance(checksum_manifest, Mapping):
+        raise ContractViolation("validate receipt missing metadata.checksum_manifest")
+    recorded_manifest = checksum_manifest.get("path")
+    if not isinstance(recorded_manifest, str) or not recorded_manifest.strip():
+        raise ContractViolation("validate receipt missing metadata.checksum_manifest.path")
+    if _normalize_repo_relative_string(recorded_manifest) != _normalize_repo_relative_string(expected_manifest):
+        raise ContractViolation(
+            "validate receipt checksum_manifest path mismatch: receipt %s != run spec %s"
+            % (recorded_manifest, expected_manifest)
+        )
+
+
+def _path_for_receipt_metadata(repo_root: Path, path: Path) -> str:
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(Path(repo_root).resolve()).as_posix()
+    except ValueError:
+        return str(resolved)
 
 
 def record_input_roots(repo_root: Path, input_roots: Sequence[str]) -> Tuple[Mapping[str, Any], Tuple[str, ...]]:

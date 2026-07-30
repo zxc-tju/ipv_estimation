@@ -42,8 +42,8 @@ MANIFEST_PACKAGE_PATHS = [
     "reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md",
     "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md",
     "reports/plans/RQ015A_ledger_schema_v2.json",
-    "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md",
-    "reports/plans/RQ015A_run_spec_v3_20260730.json",
+    "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md",
+    "reports/plans/RQ015A_run_spec_v5_20260730.json",
     "reports/plans/RQ015A_wod_retrieval_spec_v1.json",
     "scripts/rq015a/build_ledger.py",
     "scripts/rq015a/factor_analysis.py",
@@ -165,15 +165,15 @@ def _machine_verdict_for_fixture_result(result):
 
 def _write_manifest_fixture_repo(tmp_path):
     repo = tmp_path / "repo"
-    run_spec_rel = "reports/plans/RQ015A_run_spec_v3_20260730.json"
-    manifest_rel = "reports/plans/RQ015A_plan_v6_checksums_20260730.sha256"
+    run_spec_rel = "reports/plans/RQ015A_run_spec_v5_20260730.json"
+    manifest_rel = "reports/plans/RQ015A_plan_v7_checksums_20260730.sha256"
     payload = {
         "operation_id": "rq015a_concentration_audit",
         "entrypoint": "scripts/rq015a/run_rq015a.py",
         "authorization_object": "configs/research_authorization.json#authorizations.rq015a_concentration_audit",
         "input_roots": [],
         "bound_artifacts": {
-            "plan": "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md",
+            "plan": "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md",
             "ledger_schema": "reports/plans/RQ015A_ledger_schema_v2.json",
             "contracts_impl": "scripts/rq015a/rq015a_contracts.py",
             "ledger_builder": "scripts/rq015a/build_ledger.py",

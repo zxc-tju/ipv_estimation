@@ -27,9 +27,10 @@
       "allowed_operations": [],
       "execution_authorized": false,
       "authorization_state": "BUILD_WHILE_DENY",
-      "run_spec_path": "reports/plans/RQ015A_run_spec_v4_20260730.json",
-      "execution_contract_path": "reports/plans/RQ015A_run_spec_v4_20260730.json",
-      "decision_path": "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md"
+      "run_spec_path": "reports/plans/RQ015A_run_spec_v5_20260730.json",
+      "execution_contract_path": "reports/plans/RQ015A_run_spec_v5_20260730.json",
+      "authorized_package_commit": null,
+      "decision_path": "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md"
     }
   }
 }

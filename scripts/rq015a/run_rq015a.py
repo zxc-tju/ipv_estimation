@@ -23,7 +23,7 @@ import validate_only
 from rq015a_contracts import ContractViolation, SCHEMA_VERSION, load_schema
 
 
-DEFAULT_RUN_SPEC = "reports/plans/RQ015A_run_spec_v4_20260730.json"
+DEFAULT_RUN_SPEC = "reports/plans/RQ015A_run_spec_v5_20260730.json"
 DEFAULT_SCHEMA = "reports/plans/RQ015A_ledger_schema_v2.json"
 DEFAULT_AUTHORIZATION = "configs/research_authorization.json"
 OPERATION_ID = "rq015a_concentration_audit"
@@ -124,6 +124,7 @@ def _run_validate_only(args: argparse.Namespace, repo_root: Path) -> receipt.Val
         failure_reasons=failure_reasons,
     )
     metadata = {
+        "run_spec_path": _path_for_receipt_metadata(repo_root, run_spec_path),
         "schema_load_self_check": schema.get("schema_id") == SCHEMA_VERSION,
         "must_precede_execute": validate_only.MUST_PRECEDE_EXECUTE,
         "run_spec_execution_authorized": run_spec.get("execution_authorized"),
@@ -159,12 +160,15 @@ def _run_execute(args: argparse.Namespace, repo_root: Path) -> int:
         if not args.validate_receipt:
             raise ContractViolation("validate receipt is required before execute")
         validate_receipt_path = _resolve(repo_root, args.validate_receipt)
-        ledger.load_execute_permit(run_spec_path, authorization_path, repo_root=repo_root)
         validate_only.assert_validate_receipt_inputs_current(
             repo_root,
+            run_spec_path,
             run_spec,
+            authorization_path,
+            OPERATION_ID,
             validate_receipt_path,
         )
+        ledger.load_execute_permit(run_spec_path, authorization_path, repo_root=repo_root)
     except ContractViolation as exc:
         if args.receipt:
             _write_execute_fail_receipt(args, repo_root, str(exc))
@@ -284,6 +288,14 @@ def _plan_sha8(repo_root: Path, run_spec: Mapping[str, Any]) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()[:8]
+
+
+def _path_for_receipt_metadata(repo_root: Path, path: Path) -> str:
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(Path(repo_root).resolve()).as_posix()
+    except ValueError:
+        return str(resolved)
 
 
 def _load_json(path: Path) -> Mapping[str, Any]:

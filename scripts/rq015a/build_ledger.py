@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 import numbers
+import subprocess
 import weakref
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -414,12 +415,44 @@ def load_execute_permit(
             authorization_path,
             operation_id,
         )
+    _assert_authorized_package_commit(entry, binding_root)
     return ExecutePermit._from_authorization(
         operation_id,
         True,
         authorization_path,
         _sha256(authorization_path),
     )
+
+
+def _assert_authorized_package_commit(entry: Mapping[str, object], repo_root: Path) -> None:
+    authorized = entry.get("authorized_package_commit")
+    if not isinstance(authorized, str) or not authorized.strip():
+        raise ContractViolation(
+            "authorization entry authorized_package_commit is required when execution_authorized is true"
+        )
+    current = _current_git_head(repo_root)
+    if authorized.strip() != current:
+        raise ContractViolation(
+            "authorization entry authorized_package_commit mismatch: authorized %s != current HEAD %s"
+            % (authorized.strip(), current)
+        )
+
+
+def _current_git_head(repo_root: Path) -> str:
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(Path(repo_root).resolve()), "rev-parse", "HEAD"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ContractViolation("current git HEAD unavailable for package binding: %s" % exc)
+    head = completed.stdout.strip()
+    if not head:
+        raise ContractViolation("current git HEAD unavailable for package binding")
+    return head
 
 
 def _infer_repo_root(run_spec_path: Path) -> Path:
