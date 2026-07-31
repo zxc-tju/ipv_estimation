@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-26.
+Last reviewed: 2026-07-31.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -8,42 +8,44 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
-- **RQ015A 实现已完成 T1–T8，处于 `BUILD_WHILE_DENY`（2026-07-27，分支 `rq015a-implementation`）。**
+- **RQ015A 实现完成、三路最终复审通过、WOD 取回已执行；审计仍为 deny（2026-07-31，分支 `rq015a-implementation`）。**
   v3 复审的核心 blocker 是"完整 ledger builder / factor / bootstrap / validator / receipt 不存在"，
-  现已全部交付。**`execution_authorized` 仍为 `false`，从未运行审计，从未解析 held_out
-  的 measurement 列，从未读取任何评分字段。**
-  - 交付：`scripts/rq015a/{rq015a_types,build_ledger,validate_only,receipt,factor_analysis,run_rq015a}.py`
-    + `configs/research_authorization.json#authorizations.rq015a_concentration_audit`
-    + `reports/plans/RQ015A_run_spec_v2_20260727.json`
-    + `reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md`（v3 未被改动，SHA 仍 `75912bc1…`）。
-  - **验证命令（当前 81 passed）**：
+  现已全部交付并经**七轮独立健壮性审计**（每轮 agent 对此前所有审计与修复轮盲）收敛至零 blocker，
+  再经**三路最终独立复审**（技术／显著性／可执行性）全部 `PASS_WITH_CONDITIONS`，条件已闭合。
+  **`rq015a_concentration_audit` 的 `execution_authorized` 仍为 `false`、`allowed_operations` 为空、
+  `authorized_package_commit` 为 `null`；审计从未运行，held_out 的 measurement 列零解析。**
+  - **当前权威制品**：计划 `RQ015A_plan_v7_concentration_audit_20260730.md`；
+    运行合同 `RQ015A_run_spec_v6_20260731.json`；台账 `RQ015A_ledger_schema_v4_20260731.json`；
+    清单 `RQ015A_plan_v8_checksums_20260731.sha256`（20 项，自校验 OK）；
+    已知问题清单与审计边界声明 `reports/knowledge/RQ015A_ipv_estimability_labelling/known_issues_and_audit_boundary_20260730.md`。
+    **旧版本 v1–v6 一律未被改动**（R11）。
+  - **验证命令**：
     `/Users/xiaocong/.rq009_codex_fleet/venv/bin/python -m pytest tests/test_rq015a_contracts.py
     tests/test_rq015a_build_ledger.py tests/test_rq015a_validate_receipt.py
     tests/test_rq015a_factor_analysis.py tests/test_rq015a_run_entrypoint.py -q`
-  - `--execute` 实测拒绝：`RQ015A_EXECUTE_DENIED: execution_authorized is not true`，exit 1，
-    且全程未构造 `MeasurementReader`。授权是**双键**的（`allowed_operations` 空列表 +
-    `execution_authorized=false`）——**翻转时两个键都要审**，只改一个会产生语义矛盾。
-  - **零回归已用干净检出证实**：全量 21 failed / 549 passed；在 Wave 1 之前的
-    `19b28024` 干净检出上同一批文件是 **23 failed**。全部失败均为既有的
-    RQ014/launcher/shortcut 状态，与 RQ015A 无关，**不要去修它们**。
-  - 独立盲算（对实现与冻结数字皆盲，走 `pyarrow` 而非 pandas）**与冻结事实零分歧**，
-    另得两项净增益：feature matrix 的 `anchor_frame_index` 最小值 **7** 由"抽样实测"
-    升级为全量 6,397,266 行验证；OnSite `local_position < 4` = **1,068**（=267×4，v3 中不存在），
-    对照错误的全局 `frame_index < 4` 仅 **53** 行，两口径差 1,015 行。
-  - **HPC 只读探测（2026-07-27，未取回任何数据）**：六个 WOD 目标在 HPC 上全部存在。
-    **`wod_rq010b_full479_audited` 不是 L4** —— 其 906 行（与 schema v2 记的
-    `expected_unverified.rows` 吻合）含 `ego_ipv_error` / `ego_ipv_driven_error`，
-    取回后可为 `L1_DIRECT`；但同文件带 `rating` 列，**必须 HPC 侧先列投影 + sanitization
-    receipt**，且取回需单独授权。另三个（phase1 / phase1b / schemeB）确实全无 error 列，
-    `ipv_error_source: absent` 定性确认无误。**PI 裁定：分两步——先出取回规格与授权对象送审，
-    取回本身再单独批。**
-  - **已知未闭合**：(a) schema v2 的 `rq014_g2r_anchor_scores` 条目缺
-    `rq007_split_applicable`/`rq007_split_value`/`expansion_factor`/`collapse_factor`，
-    且 `recoverability` 写作 `L4_UNRECOVERABLE` 而非同类条目的
-    `ARTIFACT_NOT_PRESENT_LOCALLY` —— identity_3 按 recoverability 求和，此处有歧义；
-    当前实现强制取后者，**处置随 WOD 取回决定一并进 schema v3**；
-    (b) T10 checksum manifest 尚未重生成；(c) 最后一轮 ≥2 路独立复审尚未进行。
-
+    → **256 passed**（干净检出无 gitignored `data/` 时为 255 passed + 1 skipped，属预期）。
+    `run_rq015a.py --validate-only` → exit 0 `machine_verdict=PASS fixture_total_passed=256`；
+    `--execute` → exit 1。**`--run-spec` / `--schema` 不再硬编码**，
+    分别从授权对象的 `run_spec_path` 与该 spec 的 `bound_artifacts.ledger_schema` 推导。
+  - **执行授权是三重条件**：双键（`execution_authorized` + `allowed_operations`）、
+    run spec 路径绑定核对、以及 `authorized_package_commit` 必须等于当时的 git HEAD。
+    **翻转只能由 PI 手动做，且必须是最后一个动作**——其后任何提交都会使 commit 绑定失配。
+    PI 已选择方式 **B**（指挥者准备、PI 执行）。翻转后应重跑一次信任边界检验：
+    复审方明确记录"授权翻转后的端到端行为是**推断的、不是实测的**"。
+  - **WOD 取回已完成（PI 2026-07-31 批准）**：HPC 侧按 4 列白名单
+    （`segment_key` / `candidate_index` / `ego_ipv` / `ego_ipv_error`）投影 → 净化凭证 →
+    传输前五项校验 → 传输 → 本地四项复核，全部通过。落地
+    `data/derived/wod_e2e/rq015a_full479_projected/`（906 行，CSV SHA `d10c3a6f…30b7d1`，
+    被丢弃 61 列含 `rating`，禁词扫描命中 0，数据在 gitignore 内不进版本控制）。
+    `wod_rq010b_full479_audited` 因此升为 **`L1_DIRECT`**；K = 7 由三环证据链确定
+    （运行 `stats.json` 记 `ipv_solver_mode: fast` → `ipv_estimation.py:220-223` fast 为七候选
+    → `agent.py:63-64` 七点网格），故 `q_eff` 可算。
+    **另两个 WOD/RQ014 产物仍未取回**，报告须在标题级披露该覆盖缺口，不得表述为"全语料"。
+  - **已知未修（随包提交，复审方评价披露充分）**：同形字符列名仍可绕过结构列 denylist
+    （实测西里尔 `rаting` / `scоre` 通过；覆盖需定义 confusable 映射范围，属独立决策）；
+    D0 的 `NOT_ATTEMPTED` 行保留非空 `q_eff`/`k_eff`（下游按 `attempt_status` 过滤，未见污染）。
+    **方法学 caveat 已自我披露**：审计 1–6 的 prompt 为逐代 sed 派生，第七代膨胀致 agent 挂死，
+    故其指令一致性可能已被稀释且无法排除影响；零 blocker 那轮用的是重写后的干净稿。
 - **RQ015 已按 PI 决策 2026-07-26 拆分为 RQ015A / RQ015B；合并版 v1/v1.1/v1.2 仅作历史记录，不再是执行依据。**
   拆分依据：合并计划三轮独立复审均 BLOCKED，规格面积扩张快于闭合（见
   `reports/plans/RQ015_plan_v1p2_amendment_20260726.md` §A6）。历史复审记录保留于
