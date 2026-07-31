@@ -1,0 +1,86 @@
+{
+  "artifacts": {
+    "interhub_sigma01_hw4_timeseries": {
+      "primary": {
+        "metrics": {
+          "mean_q_eff_attempted": 0.7779253076675626,
+          "n_attempted": 4981984,
+          "n_q_evidence": 4981984,
+          "n_rows": 5197072,
+          "unavailable_share": 0.04138638063894439,
+          "unknown_share": 0.0
+        },
+        "reason_code": "below_all_cuts",
+        "terminal": "NO_AUDIT_TRIGGER_DETECTED"
+      },
+      "sensitivity_terminals": [
+        "OWNER_REANALYSIS_REQUIRED",
+        "NO_AUDIT_TRIGGER_DETECTED",
+        "NO_AUDIT_TRIGGER_DETECTED"
+      ],
+      "stable": false
+    },
+    "onsite_dense_timeseries": {
+      "primary": {
+        "metrics": {
+          "mean_q_eff_attempted": 0.6291194126098126,
+          "n_attempted": 2974,
+          "n_q_evidence": 2974,
+          "n_rows": 281268,
+          "unavailable_share": 0.9894264544846908,
+          "unknown_share": 0.9742380932064792
+        },
+        "reason_code": "unknown_share_ge_cut",
+        "terminal": "INDETERMINATE_UNKNOWN_PROVENANCE"
+      },
+      "sensitivity_terminals": [
+        "INDETERMINATE_UNKNOWN_PROVENANCE",
+        "INDETERMINATE_UNKNOWN_PROVENANCE",
+        "INDETERMINATE_UNKNOWN_PROVENANCE"
+      ],
+      "stable": true
+    },
+    "rq009_feature_matrix": {
+      "primary": {
+        "metrics": {
+          "mean_q_eff_attempted": 0.7186925125216556,
+          "n_attempted": 8994736,
+          "n_q_evidence": 8994736,
+          "n_rows": 8994736,
+          "unavailable_share": 0.0,
+          "unknown_share": 0.0
+        },
+        "reason_code": "below_all_cuts",
+        "terminal": "NO_AUDIT_TRIGGER_DETECTED"
+      },
+      "sensitivity_terminals": [
+        "OWNER_REANALYSIS_REQUIRED",
+        "NO_AUDIT_TRIGGER_DETECTED",
+        "NO_AUDIT_TRIGGER_DETECTED"
+      ],
+      "stable": false
+    },
+    "wod_rq010b_full479_audited": {
+      "primary": {
+        "metrics": {
+          "mean_q_eff_attempted": 0.4956433075958727,
+          "n_attempted": 906,
+          "n_q_evidence": 906,
+          "n_rows": 906,
+          "unavailable_share": 0.0,
+          "unknown_share": 0.0
+        },
+        "reason_code": "below_all_cuts",
+        "terminal": "NO_AUDIT_TRIGGER_DETECTED"
+      },
+      "sensitivity_terminals": [
+        "NO_AUDIT_TRIGGER_DETECTED",
+        "NO_AUDIT_TRIGGER_DETECTED",
+        "NO_AUDIT_TRIGGER_DETECTED"
+      ],
+      "stable": true
+    }
+  },
+  "descriptive_only": true,
+  "uses_report_bins": false
+}
