@@ -20,7 +20,7 @@ from rq015a_contracts import (  # noqa: E402
     k_eff_from_error, load_schema, local_positions, q_eff,
 )
 
-SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v2.json"
+SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v4_20260731.json"
 
 
 # ---------------- 派生量 ----------------
@@ -508,10 +508,30 @@ def test_schema_loads_and_is_consistent():
     ids = [a["artifact_id"] for a in d["artifacts"]]
     assert len(ids) == len(set(ids)) == 7
     assert d["ledger_bearing_artifact_ids"] == [
-        "interhub_sigma01_hw4_timeseries", "rq009_feature_matrix", "onsite_dense_timeseries"]
+        "interhub_sigma01_hw4_timeseries", "rq009_feature_matrix",
+        "onsite_dense_timeseries", "wod_rq010b_full479_audited"]
     by = {a["artifact_id"]: a for a in d["artifacts"]}
     assert by["interhub_sigma01_hw4_timeseries"]["expansion_factor"] == 2
     assert by["onsite_dense_timeseries"]["expansion_factor"] == 4
+    wod = by["wod_rq010b_full479_audited"]
+    assert "status" not in wod
+    assert wod["recoverability"] == "L1_DIRECT"
+    assert wod["format"] == "csv"
+    assert wod["role_source_columns"] == {"candidate": ["ego_ipv", "ego_ipv_error"]}
+    assert wod["not_attempted_rule"]["kind"] == "none_expected"
+    assert wod["measured"]["data_rows"] == 906
+    assert wod["measured"]["ego_ipv_error_validation"] == {
+        "empty_string_count": 0,
+        "placeholder_count": 0,
+        "non_numeric_count": 0,
+        "non_finite_count": 0,
+        "validated_from": "read-only CSV structure scan on 2026-07-31",
+    }
+    assert wod["column_whitelist"] == [
+        "segment_key", "candidate_index", "ego_ipv", "ego_ipv_error"]
+    assert wod["not_retrieved_columns"]["driven_baseline_columns"]["columns"] == [
+        "ego_ipv_driven", "ego_ipv_driven_error"]
+    assert wod["not_retrieved_columns"]["sanitization_dropped_source_columns"]["count"] == 61
     assert by["rq009_m3_predictions"]["status"] == "PROVENANCE_ONLY_NOT_IN_LEDGER"
     # OnSite 必须用局部序号规则，且明文禁止 frame_index-min
     rule = by["onsite_dense_timeseries"]["not_attempted_rule"]
@@ -546,11 +566,20 @@ def test_schema_rejects_tampering(tmp_path):
         load_schema(p2)
 
 
-def test_load_schema_accepts_real_v2_schema():
+def test_load_schema_accepts_real_v4_schema():
     d = load_schema(SCHEMA)
-    assert d["schema_id"] == "rq015a-concentration-ledger-v2"
+    assert d["schema_id"] == "rq015a-concentration-ledger-v4"
     assert any(a["artifact_id"] == "rq014_g2r_anchor_scores"
                for a in d["non_ledger_artifacts"])
+
+
+@pytest.mark.parametrize("rel_path", [
+    "reports/plans/RQ015A_ledger_schema_v2.json",
+    "reports/plans/RQ015A_ledger_schema_v3_20260731.json",
+])
+def test_load_schema_rejects_superseded_real_schema_versions(rel_path):
+    with pytest.raises(ContractViolation, match="schema_id mismatch"):
+        load_schema(ROOT / rel_path)
 
 
 def test_load_schema_rejects_ledger_missing_expansion_factor(tmp_path):
@@ -583,17 +612,22 @@ def test_load_schema_rejects_non_integral_constant_k_source(tmp_path):
         load_schema(p)
 
 
-def test_load_schema_rejects_v1_schema_id(tmp_path):
+@pytest.mark.parametrize("schema_id", [
+    "rq015a-concentration-ledger-v1",
+    "rq015a-concentration-ledger-v2",
+    "rq015a-concentration-ledger-v3",
+])
+def test_load_schema_rejects_old_schema_ids(tmp_path, schema_id):
     d = json.loads(SCHEMA.read_text())
-    d["schema_id"] = "rq015a-concentration-ledger-v1"
-    p = tmp_path / "v1.json"; p.write_text(json.dumps(d))
+    d["schema_id"] = schema_id
+    p = tmp_path / "old.json"; p.write_text(json.dumps(d))
     with pytest.raises(ContractViolation, match="schema_id mismatch"):
         load_schema(p)
 
 
 def test_load_schema_records_non_ledger_entries_by_status(tmp_path):
     d = {
-        "schema_id": "rq015a-concentration-ledger-v2",
+        "schema_id": "rq015a-concentration-ledger-v4",
         "artifacts": [
             {"artifact_id": "ledger", "expansion_factor": 1, "collapse_factor": 1},
             {"artifact_id": "provenance", "status": "PROVENANCE_ONLY_NOT_IN_LEDGER"},

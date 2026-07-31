@@ -23,12 +23,38 @@ import validate_only
 from rq015a_contracts import ContractViolation, SCHEMA_VERSION, load_schema
 
 
-DEFAULT_RUN_SPEC = "reports/plans/RQ015A_run_spec_v5_20260730.json"
-DEFAULT_SCHEMA = "reports/plans/RQ015A_ledger_schema_v2.json"
+# 默认的 run spec 与 schema 【不再硬编码】。
+# 历史教训：版本重绑（v3→v4→v5→v6）时每次都改了授权对象却漏改这里的常量，
+# 导致绑定核对拒绝默认路径。同一事实存两份必然漂移，故改为单一来源：
+#   run spec  ← 授权对象的 run_spec_path
+#   schema    ← 该 run spec 的 bound_artifacts.ledger_schema
 DEFAULT_AUTHORIZATION = "configs/research_authorization.json"
 OPERATION_ID = "rq015a_concentration_audit"
 
 OPTIONAL_ENV_MODULES = ("scipy", "pytest", "pyarrow", "fastparquet")
+
+
+
+def _resolve_defaults_from_authorization(repo_root: Path, args) -> None:
+    """未显式指定 --run-spec / --schema 时，从授权对象与 run spec 推导。
+
+    单一来源原则：授权对象是 run spec 路径的唯一权威，run spec 是 schema 路径的
+    唯一权威。任何一环重绑时都不必再同步修改本模块的常量。
+    """
+    if args.run_spec is None:
+        auth = _load_json(_resolve(repo_root, args.authorization))
+        entry = (auth.get("authorizations") or {}).get(OPERATION_ID)
+        if not isinstance(entry, dict) or not entry.get("run_spec_path"):
+            raise ContractViolation(
+                "authorization object has no run_spec_path for %s" % OPERATION_ID
+            )
+        args.run_spec = str(entry["run_spec_path"])
+    if args.schema is None:
+        spec = _load_json(_resolve(repo_root, args.run_spec))
+        bound = (spec.get("bound_artifacts") or {}).get("ledger_schema")
+        if not bound:
+            raise ContractViolation("run spec has no bound_artifacts.ledger_schema")
+        args.schema = str(bound)
 
 
 def repo_root_from_script() -> Path:
@@ -43,8 +69,10 @@ def build_parser() -> argparse.ArgumentParser:
     mode.add_argument("--execute", action="store_true",
                       help="attempt authorized execution; denied while authorization is false")
     parser.add_argument("--repo-root", default=str(repo_root_from_script()))
-    parser.add_argument("--run-spec", default=DEFAULT_RUN_SPEC)
-    parser.add_argument("--schema", default=DEFAULT_SCHEMA)
+    # default=None：未显式给出时由 _resolve_defaults_from_authorization() 从
+    # 授权对象与 run spec 推导，避免与授权绑定漂移。
+    parser.add_argument("--run-spec", default=None)
+    parser.add_argument("--schema", default=None)
     parser.add_argument("--authorization", default=DEFAULT_AUTHORIZATION)
     parser.add_argument("--receipt", default=None,
                         help="explicit receipt path; must not already exist")
@@ -60,6 +88,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(argv)
     repo_root = Path(args.repo_root).resolve()
     try:
+        _resolve_defaults_from_authorization(repo_root, args)
         if args.validate_only:
             result = _run_validate_only(args, repo_root)
             return 0 if result.machine_verdict == "PASS" else 1

@@ -56,7 +56,7 @@ from rq015a_types import (  # noqa: E402
 )
 
 
-SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v2.json"
+SCHEMA = ROOT / "reports" / "plans" / "RQ015A_ledger_schema_v4_20260731.json"
 RUN_SPEC = ROOT / "reports" / "plans" / "RQ015A_run_spec_v1.json"
 AUTH = ROOT / "configs" / "research_authorization.json"
 
@@ -384,7 +384,6 @@ def test_absent_artifacts_are_schema_derived_and_not_silently_skipped():
     schema = _schema()
 
     assert schema.artifacts_absent_locally == (
-        "wod_rq010b_full479_audited",
         "wod_phase1_phase1b_10hz_schemeb",
         "rq014_g2r_anchor_scores",
     )
@@ -393,7 +392,6 @@ def test_absent_artifacts_are_schema_derived_and_not_silently_skipped():
         for artifact_id in schema.artifacts_absent_locally
     ]
     assert [coverage.recoverability for coverage in coverages] == [
-        ARTIFACT_NOT_PRESENT_LOCALLY,
         ARTIFACT_NOT_PRESENT_LOCALLY,
         ARTIFACT_NOT_PRESENT_LOCALLY,
     ]
@@ -416,7 +414,7 @@ def test_l1_rows_require_artifact_and_cross_artifact_aggregation_fails():
             attempt_status=ATTEMPTED,
             reason_code=None,
             recoverability="L1_DIRECT",
-            ledger_schema_version="rq015a-concentration-ledger-v2",
+            ledger_schema_version="rq015a-concentration-ledger-v4",
             aggregation_perspective="agent_1",
             aggregation_configuration="sigma01_hw4",
         )
@@ -543,7 +541,7 @@ def _l1(artifact_id, case_id, key, role="agent_1"):
         attempt_status=ATTEMPTED,
         reason_code=None,
         recoverability="L1_DIRECT",
-        ledger_schema_version="rq015a-concentration-ledger-v2",
+        ledger_schema_version="rq015a-concentration-ledger-v4",
         aggregation_perspective=role,
         aggregation_configuration="cfg",
     )

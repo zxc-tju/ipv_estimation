@@ -6,7 +6,7 @@ L1–L3 聚合、episode 摘要、因素分析与 C0 路由必须是**唯一算�
 
 状态：`BUILD_WHILE_DENY`。本模块不读取任何真实数据、不被生产路径导入。
 计划：`reports/plans/RQ015A_plan_v3_concentration_audit_20260726.md`
-schema：`reports/plans/RQ015A_ledger_schema_v2.json`
+schema：`reports/plans/RQ015A_ledger_schema_v4_20260731.json`
 
 **关键设计（关闭 blocker 1/4 的冲突）**：下游（episode 摘要、C0 路由）**只使用连续量**，
 不使用报告用的 policy bins。bins 仅出现在描述性摘要里，且与任何判定无关。
@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-SCHEMA_VERSION = "rq015a-concentration-ledger-v2"
+SCHEMA_VERSION = "rq015a-concentration-ledger-v4"
 NON_LEDGER_STATUSES = {"PROVENANCE_ONLY_NOT_IN_LEDGER", "ARTIFACT_NOT_PRESENT_LOCALLY"}
 
 ATTEMPTED = "ATTEMPTED"
