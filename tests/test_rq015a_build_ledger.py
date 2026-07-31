@@ -258,7 +258,6 @@ def test_onsite_d0_uses_local_position_with_nonzero_discontinuous_frames():
     ("timestamp_ms", -1),
     ("timestamp_ms", False),
     ("timestamp_ms", 1000.0),
-    ("timestamp_ms", "1000"),
     ("timestamp_ms", None),
 ])
 def test_onsite_local_position_fields_fail_closed_at_ledger_entry(field, bad_value):
@@ -278,6 +277,29 @@ def test_onsite_local_position_fields_fail_closed_at_ledger_entry(field, bad_val
 
     with pytest.raises(ContractViolation, match=field):
         _build(spec, scope, [row])
+
+
+def test_onsite_local_position_accepts_csv_integer_strings():
+    schema = _schema()
+    spec = schema.artifacts_by_id["onsite_dense_timeseries"]
+    scope = resolve_artifact_scope(spec)
+    rows = [
+        {
+            "case_key": "onsite_case",
+            "frame_index": str(101 + idx),
+            "timestamp_ms": str(1000 + idx * 100),
+            "ipv_ego_hw4_error": "0.5",
+            "ipv_ego_hw10_error": "0.5",
+            "ipv_counterpart_hw4_error": "0.5",
+            "ipv_counterpart_hw10_error": "0.5",
+        }
+        for idx in range(5)
+    ]
+
+    out = _build(spec, scope, rows)
+
+    assert sum(1 for row in out.rows if row.attempt_status == NOT_ATTEMPTED) == 16
+    assert sum(1 for row in out.rows if row.attempt_status == ATTEMPTED) == 4
 
 
 def test_conservation_identity_failures_are_independent():
@@ -382,7 +404,10 @@ def test_onsite_empty_string_is_unknown_not_zero_after_d0():
 
 def test_absent_artifacts_are_schema_derived_and_not_silently_skipped():
     schema = _schema()
+    wod_spec = schema.artifacts_by_id["wod_rq010b_full479_audited"]
 
+    assert wod_spec.K == 7
+    assert wod_spec.candidate_grid_id == "legacy7_pi_over_8"
     assert schema.artifacts_absent_locally == (
         "wod_phase1_phase1b_10hz_schemeb",
         "rq014_g2r_anchor_scores",

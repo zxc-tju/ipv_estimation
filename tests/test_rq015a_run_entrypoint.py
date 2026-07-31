@@ -366,13 +366,13 @@ def test_run_spec_v7_loads_binds_v8_plan_schema_v4_and_is_authorized():
     )
     assert data["bound_artifacts"]["fixtures"] == EXPECTED_RQ015A_FIXTURES
     assert data["bound_artifacts"]["checksum_manifest"] == (
-        "reports/plans/RQ015A_plan_v9_checksums_20260731.sha256"
+        "reports/plans/RQ015A_plan_v10_checksums_20260731.sha256"
     )
-    # v7 binds the v9 manifest filename; this worker does not re-sign the manifest.
+    # v7 now binds the post-execute-wiring v10 manifest; v9 remains historical.
     assert "checksum_manifest_pending" not in data["bound_artifacts"]
     manifest_rel = data["bound_artifacts"]["checksum_manifest"]
-    assert manifest_rel.endswith("RQ015A_plan_v9_checksums_20260731.sha256")
-    assert "intentionally not created" in data["bound_artifacts"]["checksum_manifest_status"]
+    assert manifest_rel.endswith("RQ015A_plan_v10_checksums_20260731.sha256")
+    assert "Re-signed after wiring" in data["bound_artifacts"]["checksum_manifest_status"]
     assert "228 passed" not in text
     assert re.search(r"\b\d+\s+passed\b", text) is None
     assert re.search(r"fixtures\s+\d+/\d+", text) is None

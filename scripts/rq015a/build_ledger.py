@@ -235,7 +235,7 @@ def _artifact_spec(
     k_source = entry.get("K_source") or {}
     if not isinstance(k_source, Mapping):
         raise ContractViolation("%s: bad K_source" % entry.get("artifact_id"))
-    k_value = k_source.get("value") if k_source.get("kind") == "constant" else None
+    k_value = k_source.get("value") if "value" in k_source else None
     grid_id = str(k_source.get("grid_id") or "UNKNOWN")
     rq007_split_applicable = entry.get("rq007_split_applicable")
     split_policy = None
@@ -1164,7 +1164,17 @@ def _local_position_map(
         if "case_key" not in row or "timestamp_ms" not in row or "frame_index" not in row:
             raise ContractViolation("OnSite local_position requires case_key,timestamp_ms,frame_index")
         by_case[str(row["case_key"])].append(
-            (idx, (row["timestamp_ms"], row["frame_index"]))
+            (
+                idx,
+                (
+                    _parse_integral_field(
+                        row["timestamp_ms"], "timestamp_ms", spec.artifact_id, 0
+                    ),
+                    _parse_integral_field(
+                        row["frame_index"], "frame_index", spec.artifact_id, 0
+                    ),
+                ),
+            )
         )
     positions = {}
     for _, items in by_case.items():

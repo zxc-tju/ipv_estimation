@@ -55,8 +55,8 @@
       "tests/test_rq015a_run_entrypoint.py"
     ],
     "fixtures_note": "『fixtures 全部通过』指上列五个文件全部通过；不得只跑其中之一；通过数只从 pytest 输出解析并写入 receipt，不在规格中硬编码。",
-    "checksum_manifest": "reports/plans/RQ015A_plan_v9_checksums_20260731.sha256",
-    "checksum_manifest_status": "Checksum manifest path reserved for commander re-signing after run spec v7 authorization binding. This file is intentionally not created by this worker and must be signed later; validate-only must fail closed until it exists.",
+    "checksum_manifest": "reports/plans/RQ015A_plan_v10_checksums_20260731.sha256",
+    "checksum_manifest_status": "Re-signed after wiring the authorized execute path in scripts/rq015a/run_rq015a.py; v9 is retained as the pre-execute historical manifest and is not overwritten.",
     "checksum_manifest_members": [
       "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
       "reports/plans/RQ015A_run_spec_v7_20260731.json",
