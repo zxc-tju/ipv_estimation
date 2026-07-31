@@ -94,6 +94,62 @@ def _auth(
     return path
 
 
+def _git(repo_root: Path, *args: str) -> str:
+    completed = subprocess.run(
+        ["git", "-C", str(repo_root)] + list(args),
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    return completed.stdout.strip()
+
+
+def _commit_file(repo_root: Path, relative_path: str, content: str, message: str) -> str:
+    path = repo_root / relative_path
+    path.write_text(content, encoding="utf-8")
+    _git(repo_root, "add", relative_path)
+    _git(repo_root, "commit", "-m", message)
+    return _git(repo_root, "rev-parse", "HEAD")
+
+
+@pytest.fixture
+def package_git_repo(tmp_path):
+    repo_root = tmp_path / "package_repo"
+    subprocess.run(
+        ["git", "init", str(repo_root)],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    _git(repo_root, "config", "user.email", "rq015a-tests@example.invalid")
+    _git(repo_root, "config", "user.name", "RQ015A Tests")
+    base = _commit_file(repo_root, "package.txt", "base\n", "base package")
+    head = _commit_file(repo_root, "package.txt", "head\n", "head package")
+    main_branch = _git(repo_root, "rev-parse", "--abbrev-ref", "HEAD")
+    _git(repo_root, "checkout", "-b", "side-package", base)
+    side = _commit_file(repo_root, "side.txt", "side\n", "side package")
+    _git(repo_root, "checkout", main_branch)
+    return {
+        "repo_root": repo_root,
+        "base": base,
+        "head": head,
+        "side": side,
+    }
+
+
+def _load_temp_repo_permit(tmp_path: Path, repo_root: Path, authorized_package_commit):
+    run_spec_path = _run_spec(tmp_path, execution_authorized=True)
+    auth_path = _auth(
+        tmp_path,
+        allowed=True,
+        run_spec_path=run_spec_path,
+        authorized_package_commit=authorized_package_commit,
+    )
+    return build_ledger.load_execute_permit(run_spec_path, auth_path, repo_root=repo_root)
+
+
 def _validate_receipt(
     tmp_path: Path,
     run_spec_path: Path = None,
@@ -397,20 +453,44 @@ def test_canonical_v6_run_spec_binding_passes_before_authorization_denial():
         build_ledger.load_execute_permit(RUN_SPEC_V6, AUTH, repo_root=ROOT)
 
 
-def test_authorized_package_commit_null_is_rejected_when_authorization_true(tmp_path):
+def test_authorized_package_commit_head_is_accepted(tmp_path, package_git_repo):
+    permit = _load_temp_repo_permit(
+        tmp_path,
+        package_git_repo["repo_root"],
+        package_git_repo["head"],
+    )
+
+    assert permit.execution_authorized is True
+
+
+def test_authorized_package_commit_ancestor_is_accepted(tmp_path, package_git_repo):
+    permit = _load_temp_repo_permit(
+        tmp_path,
+        package_git_repo["repo_root"],
+        package_git_repo["base"],
+    )
+
+    assert permit.execution_authorized is True
+
+
+def test_authorized_package_commit_side_branch_is_rejected(tmp_path, package_git_repo):
     run_spec_path = _run_spec(tmp_path, execution_authorized=True)
     auth_path = _auth(
         tmp_path,
         allowed=True,
         run_spec_path=run_spec_path,
-        authorized_package_commit=None,
+        authorized_package_commit=package_git_repo["side"],
     )
 
-    with pytest.raises(build_ledger.ContractViolation, match="authorized_package_commit is required"):
-        build_ledger.load_execute_permit(run_spec_path, auth_path, repo_root=ROOT)
+    with pytest.raises(build_ledger.ContractViolation, match="not an ancestor of current HEAD"):
+        build_ledger.load_execute_permit(
+            run_spec_path,
+            auth_path,
+            repo_root=package_git_repo["repo_root"],
+        )
 
 
-def test_authorized_package_commit_mismatch_is_rejected_when_authorization_true(tmp_path):
+def test_authorized_package_commit_missing_object_is_rejected(tmp_path, package_git_repo):
     run_spec_path = _run_spec(tmp_path, execution_authorized=True)
     auth_path = _auth(
         tmp_path,
@@ -419,8 +499,112 @@ def test_authorized_package_commit_mismatch_is_rejected_when_authorization_true(
         authorized_package_commit="0" * 40,
     )
 
-    with pytest.raises(build_ledger.ContractViolation, match="authorized_package_commit mismatch"):
-        build_ledger.load_execute_permit(run_spec_path, auth_path, repo_root=ROOT)
+    with pytest.raises(build_ledger.ContractViolation, match="does not exist as a commit"):
+        build_ledger.load_execute_permit(
+            run_spec_path,
+            auth_path,
+            repo_root=package_git_repo["repo_root"],
+        )
+
+
+@pytest.mark.parametrize(
+    "authorized_package_commit, expected",
+    [
+        (None, "must be a string"),
+        (123, "must be a string"),
+        ("", "is required"),
+        ("   ", "is required"),
+        ("abc", "40-character hex"),
+        ("g" * 40, "40-character hex"),
+        ("0" * 39, "40-character hex"),
+        ("0" * 41, "40-character hex"),
+    ],
+)
+def test_authorized_package_commit_malformed_values_are_rejected(
+    tmp_path,
+    package_git_repo,
+    authorized_package_commit,
+    expected,
+):
+    run_spec_path = _run_spec(tmp_path, execution_authorized=True)
+    auth_path = _auth(
+        tmp_path,
+        allowed=True,
+        run_spec_path=run_spec_path,
+        authorized_package_commit=authorized_package_commit,
+    )
+
+    with pytest.raises(build_ledger.ContractViolation, match=expected):
+        build_ledger.load_execute_permit(
+            run_spec_path,
+            auth_path,
+            repo_root=package_git_repo["repo_root"],
+        )
+
+
+def test_authorized_package_commit_missing_allowed_when_execution_false(
+    tmp_path,
+    package_git_repo,
+):
+    run_spec_path = _run_spec(tmp_path, execution_authorized=False)
+    auth_path = _auth(
+        tmp_path,
+        allowed=False,
+        run_spec_path=run_spec_path,
+        authorized_package_commit=None,
+    )
+
+    with pytest.raises(build_ledger.ContractViolation, match="execution_authorized is not true"):
+        build_ledger.load_execute_permit(
+            run_spec_path,
+            auth_path,
+            repo_root=package_git_repo["repo_root"],
+        )
+
+
+def test_authorized_package_commit_non_repository_fails_closed(tmp_path, package_git_repo):
+    run_spec_path = _run_spec(tmp_path, execution_authorized=True)
+    auth_path = _auth(
+        tmp_path,
+        allowed=True,
+        run_spec_path=run_spec_path,
+        authorized_package_commit=package_git_repo["head"],
+    )
+    not_a_repo = tmp_path / "not_a_repo"
+    not_a_repo.mkdir()
+
+    with pytest.raises(build_ledger.ContractViolation, match="git repository unavailable"):
+        build_ledger.load_execute_permit(
+            run_spec_path,
+            auth_path,
+            repo_root=not_a_repo,
+        )
+
+
+def test_authorized_package_commit_git_unavailable_fails_closed(
+    tmp_path,
+    package_git_repo,
+    monkeypatch,
+):
+    run_spec_path = _run_spec(tmp_path, execution_authorized=True)
+    auth_path = _auth(
+        tmp_path,
+        allowed=True,
+        run_spec_path=run_spec_path,
+        authorized_package_commit=package_git_repo["head"],
+    )
+
+    def unavailable_git(*args, **kwargs):
+        raise OSError("git executable unavailable")
+
+    monkeypatch.setattr(build_ledger.subprocess, "run", unavailable_git)
+
+    with pytest.raises(build_ledger.ContractViolation, match="git unavailable"):
+        build_ledger.load_execute_permit(
+            run_spec_path,
+            auth_path,
+            repo_root=package_git_repo["repo_root"],
+        )
 
 
 def test_canonical_v6_cli_checks_validate_receipt_before_authorization(tmp_path, capsys):

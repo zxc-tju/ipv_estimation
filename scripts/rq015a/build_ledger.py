@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 import numbers
+import re
 import subprocess
 import weakref
 from collections import Counter, defaultdict
@@ -111,6 +112,7 @@ except ImportError:  # pragma: no cover
 
 L1_SORT_KEY = "artifact_id,case_id,product_row_key,measurement_role"
 L2_SORT_KEY = "artifact_id,case_id,perspective,configuration"
+COMMIT_SHA_RE = re.compile(r"^[0-9a-fA-F]{40}$")
 AGGREGATION_KEY_DERIVATION = {
     "version": "rq015a-aggregation-key-v2",
     "rules": {
@@ -425,34 +427,91 @@ def load_execute_permit(
 
 
 def _assert_authorized_package_commit(entry: Mapping[str, object], repo_root: Path) -> None:
+    """Require the authorized package commit to be committed and ancestry-bound.
+
+    The commit recorded here pins which already-reviewed package was authorized.
+    It is intentionally allowed to be an ancestor of HEAD, because execute also
+    requires a validate receipt whose checksum manifest verifies current files
+    byte-for-byte.  Together the checks mean: package X was authorized, and the
+    current working package still matches X's manifest.
+    """
     authorized = entry.get("authorized_package_commit")
-    if not isinstance(authorized, str) or not authorized.strip():
+    if not isinstance(authorized, str):
+        raise ContractViolation(
+            "authorization entry authorized_package_commit must be a string when execution_authorized is true"
+        )
+    authorized = authorized.strip()
+    if not authorized:
         raise ContractViolation(
             "authorization entry authorized_package_commit is required when execution_authorized is true"
         )
-    current = _current_git_head(repo_root)
-    if authorized.strip() != current:
+    if not COMMIT_SHA_RE.match(authorized):
         raise ContractViolation(
-            "authorization entry authorized_package_commit mismatch: authorized %s != current HEAD %s"
-            % (authorized.strip(), current)
+            "authorization entry authorized_package_commit must be a 40-character hex commit SHA"
         )
+    _assert_git_repository_available(repo_root)
+    _assert_current_head_available(repo_root)
+    _assert_commit_exists(repo_root, authorized)
+    _assert_commit_is_head_ancestor(repo_root, authorized)
 
 
-def _current_git_head(repo_root: Path) -> str:
+def _run_git(repo_root: Path, args: Sequence[str]) -> subprocess.CompletedProcess:
     try:
-        completed = subprocess.run(
-            ["git", "-C", str(Path(repo_root).resolve()), "rev-parse", "HEAD"],
-            check=True,
+        return subprocess.run(
+            ["git", "-C", str(Path(repo_root).resolve())] + list(args),
+            check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
         )
-    except (OSError, subprocess.CalledProcessError) as exc:
-        raise ContractViolation("current git HEAD unavailable for package binding: %s" % exc)
-    head = completed.stdout.strip()
-    if not head:
-        raise ContractViolation("current git HEAD unavailable for package binding")
-    return head
+    except OSError as exc:
+        raise ContractViolation("git unavailable for package binding: %s" % exc)
+
+
+def _git_failure_detail(completed: subprocess.CompletedProcess) -> str:
+    detail = (completed.stderr or completed.stdout or "").strip()
+    if detail:
+        return "exit %s: %s" % (completed.returncode, detail)
+    return "exit %s" % completed.returncode
+
+
+def _assert_git_repository_available(repo_root: Path) -> None:
+    completed = _run_git(repo_root, ["rev-parse", "--is-inside-work-tree"])
+    if completed.returncode != 0 or completed.stdout.strip() != "true":
+        raise ContractViolation(
+            "git repository unavailable for package binding: %s" % _git_failure_detail(completed)
+        )
+
+
+def _assert_current_head_available(repo_root: Path) -> None:
+    completed = _run_git(repo_root, ["rev-parse", "--verify", "HEAD^{commit}"])
+    if completed.returncode != 0 or not completed.stdout.strip():
+        raise ContractViolation(
+            "current git HEAD unavailable for package binding: %s" % _git_failure_detail(completed)
+        )
+
+
+def _assert_commit_exists(repo_root: Path, authorized: str) -> None:
+    completed = _run_git(repo_root, ["cat-file", "-e", "%s^{commit}" % authorized])
+    if completed.returncode != 0:
+        raise ContractViolation(
+            "authorization entry authorized_package_commit does not exist as a commit in this repository: %s"
+            % authorized
+        )
+
+
+def _assert_commit_is_head_ancestor(repo_root: Path, authorized: str) -> None:
+    completed = _run_git(repo_root, ["merge-base", "--is-ancestor", authorized, "HEAD"])
+    if completed.returncode == 0:
+        return
+    if completed.returncode == 1:
+        raise ContractViolation(
+            "authorization entry authorized_package_commit is not an ancestor of current HEAD: %s"
+            % authorized
+        )
+    raise ContractViolation(
+        "git merge-base failed for package binding: %s" % _git_failure_detail(completed)
+    )
 
 
 def _infer_repo_root(run_spec_path: Path) -> Path:
