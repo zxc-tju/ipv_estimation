@@ -8,16 +8,32 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
-- **RQ015A 本轮交付完成并结项（2026-07-31，分支 `rq015a-implementation`）。**
-  **⚠ 最重要的一句：`execution_authorized` 已翻为 `true`，但审计【仍无法运行】——
-  执行体不存在。** `run_rq015a.py` 的 `--execute` 在许可签发成功后仍无条件抛出
-  `refusing to run audit without PI-reviewed post-authorization handoff`；
-  没有任何代码把 `build_ledger` / `factor_analysis` / `receipt` 串成一次真实审计。
-  **这是原设计不是缺陷**——手册范围 T1–T11 全是"建"与"审"，无一项是"运行审计"。
-  运行审计属**新范围**，需先接出执行路径、再对该路径本身独立复审，
-  并移除那处硬阻断。详见已知问题清单 §7。
-  建议先在最小产物 `onsite_dense_timeseries`（70,317 行）打通，
-  再扩到 2.1 GB 的 sigma01 与 138 个 parquet 分片。
+- **RQ015A A1(r3) concentration audit 已执行完成（2026-07-31）。**
+  当前 canonical run 目录：
+  `reports/studies/RQ015A_ipv_estimability_labelling/RQ015A_1_concentration_audit_20260731T093746Z_e82091ce/`。
+  `run_receipt.json` 机器判定 `PASS`，`held_out_parsed_rows=0`，
+  四个本地可审计产物全部落盘 parquet L1 台账：
+  OnSite `281,268` measurement 行、WOD full479 `906` 行、sigma01 `5,197,072` 行、
+  RQ009 feature matrix `8,994,736` 行，合计 `14,473,982` 行。A2 科学交付物
+  `bounded_report.md` 已写入同一 run 目录，并同步生成 `figures/fig1`–`fig4`
+  的 PNG/PDF 与 `usable_subset.csv`（主判据 19,778 个 case/episode key，
+  3,049,608 个 ATTEMPTED 行，占 14,473,982 行分母的 21.27%）。后续若只需复核报告，
+  不要重跑审计。
+  当前执行绑定为 run spec v7 + schema v4 + 新清单
+  `reports/plans/RQ015A_plan_v10_checksums_20260731.sha256`；v9 是执行接线前的历史清单，
+  不要覆盖。最终验证：
+  `PYTHONPATH=src /Users/xiaocong/.rq009_codex_fleet/venv/bin/python -m pytest -q tests/test_rq015a*`
+  → `269 passed in 6.57s`。
+  本轮修复：`run_rq015a.py` 接出授权成功后的真实执行路径；`build_ledger.py`
+  最小修复 OnSite CSV 整数字符串 local-position 解析与 WOD provenance `K_source.value=7` 绑定。
+  A2 追加披露：`run_receipt.json` 顶层 `reads_measurement_fields=false` 是从 validate 路径继承的误标，
+  真值在 `metadata.execute_measurement_fields_read=true`；已追加到已知问题清单，留待下一次正当触碰
+  `run_rq015a.py` 时修。
+- **RQ015A pre-execute implementation package historical note（已被 A1(r3) 执行结果取代）。**
+  A1(r3) 之前的状态是：`execution_authorized` 已翻为 `true`，但审计仍无法运行，
+  因为 `run_rq015a.py` 的 `--execute` 在许可签发成功后仍无条件抛出
+  `refusing to run audit without PI-reviewed post-authorization handoff`。
+  该历史状态不再是当前事实；保留下方背景仅用于理解为什么需要 A1(r3) 接线。
   v3 复审的核心 blocker 是"完整 ledger builder / factor / bootstrap / validator / receipt 不存在"，
   现已全部交付并经**七轮独立健壮性审计**（每轮 agent 对此前所有审计与修复轮盲）收敛至零 blocker，
   再经**三路最终独立复审**（技术／显著性／可执行性）全部 `PASS_WITH_CONDITIONS`，条件已闭合。

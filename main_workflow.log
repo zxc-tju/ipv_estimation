@@ -2080,3 +2080,104 @@ RQ015A 执行编排（.codex-fleet/rq015a-run/board/）：
 故新提交不破坏绑定）；组件齐备；唯一缺口是 run_rq015a.py 的无条件硬拒绝。
 另核实生产缺陷 agent.py:1136-1139（sum(var)==0 → 均匀权重）**至今一字未改**，
 RQ015B 仍为 PROPOSED、从未复审、生产零改动。
+
+2026-07-31T17:46+0800 | RQ015A-A1-r3-CONCENTRATION-AUDIT-RUN | SUCCESS | A1(r3) 直接在主仓库接出并执行 rq015a_concentration_audit。最终 run 目录: reports/studies/RQ015A_ipv_estimability_labelling/RQ015A_1_concentration_audit_20260731T093746Z_e82091ce/。产物: concentration_ledger/*.parquet + concentration_ledger_summary.csv + portraits.json + c0_routing.json + run_receipt.json；run_receipt machine_verdict=PASS；held_out_parsed_rows=0；台账列名 rating/preference 禁词命中 0；手算 q_eff 样本 10/10。四个 ledger-bearing artifact 行数全部吻合: onsite_dense_timeseries 281,268；wod_rq010b_full479_audited 906；interhub_sigma01_hw4_timeseries 5,197,072；rq009_feature_matrix 8,994,736；合计 14,473,982。执行中暴露并最小修复两个真实路径缺口: build_ledger.py 的 OnSite local_position 对 CSV 整数字符串未解析即交给整数合同；WOD RQ010B 的 K_source.kind=provenance 但 value=7 未绑定到 spec.K。run_rq015a.py 移除授权成功后的硬阻断并接线 execute 路径；run spec v7 绑定新清单 reports/plans/RQ015A_plan_v10_checksums_20260731.sha256，v9 保留为历史清单未覆盖。最终验证: PYTHONPATH=src /Users/xiaocong/.rq009_codex_fleet/venv/bin/python -m pytest -q tests/test_rq015a* -> 269 passed in 6.57s。START_HERE.md 已更新为审计已执行当前事实；bounded_report.md 未写，留给下一个 agent。
+
+## 2026-07-31 RQ015A track A — checksum manifest re-signing (commander-ratified)
+Wiring the authorized execute path required re-signing the checksum manifest.
+In-place 2-line change to reports/plans/RQ015A_run_spec_v7_20260731.json:
+-    "checksum_manifest": "reports/plans/RQ015A_plan_v9_checksums_20260731.sha256",
+-    "checksum_manifest_status": "Checksum manifest path reserved for commander re-signing after run spec v7 authorization binding. This file is intentionally not created by this worker and must be signed later; validate-only must fail closed until it exists.",
++    "checksum_manifest": "reports/plans/RQ015A_plan_v10_checksums_20260731.sha256",
++    "checksum_manifest_status": "Re-signed after wiring the authorized execute path in scripts/rq015a/run_rq015a.py; v9 is retained as the pre-execute historical manifest and is not overwritten.",
+v9 bytes unchanged (retained as historical); v10 newly added.
+Ratified by commander 2026-07-31T10:09Z: the field itself reserved this action, and
+re-issuing as v8 would have broken the frozen "bound to run spec v7" governance fact.
+
+## 2026-07-31 RQ015B track B — 平价门与机制拆分（分层抽样，诊断性一轮）— DONE
+
+范围：不修生产、不重跑全量、不部署弃权闸、不接线估计器。仅在冻结的分层抽样上回答两问。
+编制：B1（抽样框+抽样，codex gpt-5.5 xhigh）→ 监督方核对 → B2（平价门+机制拆分+报告）。
+
+抽样合同 v1 于 09:00Z 冻结（早于任何解算）：12 格 = 2 源 × 2 n 带 × 3 签名，
+配额 U300/Z150/N125，共 2,300 锚点，确定性 sha256 排序键无 RNG，每案例上限 3，shortfall=0。
+抽样框仅 development + guard；1,097,445 非 dev+guard 行只读 split 字段即丢弃
+（1,097,445 + 2,598,536 = 3,695,981 全表行数闭合）。
+
+结论 (a) log 域改写与现行连乘等价、兜底不可达：
+  1,533 个未触发兜底且未部分下溢的锚点上权重差中位 2.78e-17、p99 1.44e-15；
+  仅 2 个(0.13%)超 1e-12，且最小残差 RMS 均在 n=11 下溢临界 ±2 mm 内，
+  偏差源自连乘在 subnormal 区的精度损失，非两式不等价。
+  兜底不可达：极端输入 denominator=1.0/finite=True；pytest 1 passed。
+
+结论 (b) 零值机制构成（HT 框 534,939，本地可达 nuplan+waymo 子集）：
+  waymo D1 58.73% / D2 30.45%；nuplan D1 1.06% / D2 63.56%；合并 D1 43.01% [39.35,46.83]。
+  **分源方向相反，合并值由占框 72.7% 的 waymo 抬起，不得只报合并值。**
+  log 域后权重实质非均匀 53.62% [50.12,57.46]；兜底行 509/603 转为实质非均匀。
+  D0 warm-up 普查 173,056。D3=0 系优先级产物（超阈锚点被 D1 先吸收），非无模型失配。
+
+一等边界：存档主表(2026-06-12)逐锚点值未能复现（复现门 gate_a 12/40，阈值 39/40；
+  U 12/14、Z 0/14、N 0/12），比例不得读作存档 M3 标签的成分构成。
+覆盖边界：lyft/av2 无本地 pkl；waymo 缺 500-799；waymo_300-499.pkl 截断。
+口径：精确零/后热身 24.10%；|ipv|<1e-6/dev+guard 全体 38.65%（即既有认知的"约四成"）。
+CI 半宽 3.74 pp > 3 pp 上限，照实报告，未追加抽样。
+
+硬约束终检全过：held_out 未解析；未读评分/偏好字段；agent.py sha256 bde0f582… 逐位未变、
+未接线生产；HEAD 仍 e82091ce；未发生工作区回滚；报告无因果措辞/estimability/"测出 IPV"表述。
+
+产物：.codex-fleet/rq015b-repair/board/reports/{B2_report.md, B2_leader_adjudication.md,
+  known_issue_snippet_repro_gate.md}、board/BLOCKED_B1.md、board/leader_prechecks.md、
+  work/{anchor_mse.csv, mechanism_split.csv, min_mse_misfit_threshold.json}。
+  **B2_report.md 须与 B2_leader_adjudication.md 一并阅读**（报告 §1 有三处表述经 leader 更正）。
+遗留：known-issue 片段待 A 轨结项后并入 RQ015A 知识库；rollback_watchdog(pid 90240)
+  须待 A 轨结项才可停（它是 A 轨未提交工作的自动保险）。
+START_HERE.md 未改动：本轮未改变当前活跃批次、数据路径、输出路径或测试命令。
+
+2026-07-31T18:45+0800 | RQ015A-A2-BOUNDED-SCIENCE-REPORT | SUCCESS | 按 experimenter 范围将 A1 已落盘数字写成科学交付物，未重跑审计，未改 `scripts/rq015a/`。输出位于 reports/studies/RQ015A_ipv_estimability_labelling/RQ015A_1_concentration_audit_20260731T093746Z_e82091ce/: `bounded_report.md`、`usable_subset.csv`、`figures/fig1_main_qeff_distributions.{png,pdf}`、`figures/fig2_stratified_qeff.{png,pdf}`、`figures/fig3_usable_subset.{png,pdf}`、`figures/fig4_covariates_c0.{png,pdf}`。核心数字: 四个可审计产物合计 ATTEMPTED 13,980,600 (96.59%) / NOT_ATTEMPTED 219,360 (1.52%) / UNKNOWN 274,022 (1.89%); OnSite 仅 2,974/281,268 行携带 IPV 数值; sigma01 median q_eff 0.9657 且 q_eff>=0.93 敏感性 53.49%; rq009_feature_matrix median 0.8651 且 46.10%; primary usable subset 19,778 case/episode keys、3,049,608 ATTEMPTED rows、21.27% of 14,473,982 denominator; strongest unit-level covariates with case/native-episode bootstrap B=2000 seed=20260726 were role=counterpart_current rho=-0.266 CI[-0.270,-0.261], role=target_future rho=0.155 CI[0.150,0.160], horizon=hw4 rho=0.115 CI[0.108,0.121]. C0: sigma01 and rq009_feature_matrix primary NO_AUDIT_TRIGGER_DETECTED but stable=false with OWNER_REANALYSIS_REQUIRED sensitivity; OnSite INDETERMINATE_UNKNOWN_PROVENANCE stable=true; WOD full479 NO_AUDIT_TRIGGER_DETECTED stable=true. Added known-issues §8 for run_receipt top-level reads_measurement_fields=false mislabel; true value is metadata.execute_measurement_fields_read=true, future fix should distinguish run_rq015a.py:301 true from run_rq015a.py:1146 false and update tests/test_rq015a_run_entrypoint.py:222. START_HERE.md updated from report-pending to report-complete state. Verification: bounded_report forbidden wording scan returned no hits; `usable_subset.csv` has 34,283 data rows; all 4 PNG/PDF figure pairs exist; fig1 and fig4 redrawn after visual QA to remove overlap/clipping. Known limitation: no code tests run because this was report/data-artifact generation only.
+
+## 2026-07-31 RQ015A track A — concentration audit EXECUTED + reported (DONE)
+Status: SUCCESS. The RQ015A concentration audit ran end-to-end for the first time.
+Fleet: 2 codex agents, 1 round (A1 wire-and-run, A2 findings-report), per the
+Research Velocity Principle. Contrast with the prior 32-agent round.
+
+Results (independently verified by leader and commander, not merely reported by agents):
+  onsite_dense_timeseries          281,268 rows | ATTEMPTED 2,974 | q_eff median 0.5860
+  wod_rq010b_full479_audited           906 rows | ATTEMPTED   906 | q_eff median 0.3719
+  interhub_sigma01_hw4_timeseries 5,197,072 rows | ATTEMPTED 4,981,984 | q_eff median 0.9657
+  rq009_feature_matrix            8,994,736 rows | ATTEMPTED 8,994,736 | q_eff median 0.8651
+  TOTAL 14,473,982 measurement rows; run_receipt machine_verdict = PASS
+  held_out_parsed_rows = 0 (structurally confirmed: rq007_split contains only
+  development/guard and the two values sum exactly to each total)
+  q_eff range hits both theoretical bounds bit-for-bit: [1/7, 1.0]; k_eff = q_eff*K in [1,7]
+  Test baseline: PYTHONPATH=src pytest -q tests/test_rq015a* -> 269 passed
+
+Key findings for PI:
+  1. C0 routing is UNSTABLE for the two largest artifacts. sigma01 and
+     rq009_feature_matrix have primary NO_AUDIT_TRIGGER_DETECTED but stable=false;
+     one sensitivity setting routes both to OWNER_REANALYSIS_REQUIRED.
+     rq009_feature_matrix is RQ009's own input. Whether to re-estimate RQ009 is a PI
+     decision; the report presents evidence only and makes no recommendation.
+  2. OnSite coverage is 1.06% -- only 2,974 of 281,268 rows carry an IPV value;
+     274,022 (97.42%) are EMPTY_CELL_UNEXPLAINED null cells. Empty strings were NOT
+     read as 0 and were NOT force-explained as warm-up (conservative, correct).
+  3. bins_stability: 3 of 4 artifacts BINS_WITHHELD_UNSTABLE (only WOD reportable),
+     so those three publish continuous distributions only.
+
+Artifacts: reports/studies/RQ015A_ipv_estimability_labelling/RQ015A_1_concentration_audit_20260731T093746Z_e82091ce/
+  bounded_report.md, portraits.json, c0_routing.json, run_receipt.json,
+  concentration_ledger_summary.csv, usable_subset.csv (34,283 unit rows),
+  figures/fig1-fig4 (PNG+PDF), concentration_ledger/*.parquet (374 MB, gitignored)
+
+Process notes:
+  - The previous leader's worktree + data/derived symlink was INCOMPATIBLE with the
+    input-root guard at validate_only.py:551 (symlink resolves outside the repo root).
+    Resolution: dropped the worktree and ran in the main repo, where data/derived is a
+    genuine in-repo directory. The guard was NOT modified -- it is a valid protection.
+  - macOS has no setsid; .codex-fleet/rq015a-run/board/detach_launch.py (double-fork +
+    os.setsid) was added so codex agents survive the leader process exiting. Two prior
+    agent deaths were caused by process-group kills on leader exit.
+  - Hard-constraint-3 protection without a worktree: 55 protected files (15 decision.md
+    + reports/plans/RQ015A_* + prior run dirs) sha256-baselined before dispatch and
+    re-verified after. Only run_spec_v7 changed (2-line manifest pointer, ratified).
+  - 3 mid-run debris run dirs moved to _to_delete/ with a README; NOT deleted.
+  - START_HERE.md and STUDIES.md updated in this task.
