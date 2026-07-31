@@ -8,7 +8,16 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
-- **RQ015A 实现完成、三路最终复审通过、WOD 取回已执行；审计仍为 deny（2026-07-31，分支 `rq015a-implementation`）。**
+- **RQ015A 本轮交付完成并结项（2026-07-31，分支 `rq015a-implementation`）。**
+  **⚠ 最重要的一句：`execution_authorized` 已翻为 `true`，但审计【仍无法运行】——
+  执行体不存在。** `run_rq015a.py` 的 `--execute` 在许可签发成功后仍无条件抛出
+  `refusing to run audit without PI-reviewed post-authorization handoff`；
+  没有任何代码把 `build_ledger` / `factor_analysis` / `receipt` 串成一次真实审计。
+  **这是原设计不是缺陷**——手册范围 T1–T11 全是"建"与"审"，无一项是"运行审计"。
+  运行审计属**新范围**，需先接出执行路径、再对该路径本身独立复审，
+  并移除那处硬阻断。详见已知问题清单 §7。
+  建议先在最小产物 `onsite_dense_timeseries`（70,317 行）打通，
+  再扩到 2.1 GB 的 sigma01 与 138 个 parquet 分片。
   v3 复审的核心 blocker 是"完整 ledger builder / factor / bootstrap / validator / receipt 不存在"，
   现已全部交付并经**七轮独立健壮性审计**（每轮 agent 对此前所有审计与修复轮盲）收敛至零 blocker，
   再经**三路最终独立复审**（技术／显著性／可执行性）全部 `PASS_WITH_CONDITIONS`，条件已闭合。

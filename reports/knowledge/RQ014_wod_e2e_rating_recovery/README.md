@@ -1,12 +1,14 @@
 # RQ014 — WOD-E2E rating↔IPV-deviation lost-result recovery
 
-Status: v1.5 `FORMAL_G1_PASS` for the first managed declassification step; no accepted empirical or manuscript claim.
+Status: R3 recovery screen complete; one secondary R04N/NMD/RWS candidate,
+primary NEX null, R10L `DEFECT`; selected-recipe freeze and clean replay remain
+pending. No accepted empirical or manuscript claim.
 
 ## Current contract
 
-The active candidate is base v1 + v1.3 provenance/hardening +
-`reports/plans/RQ014_plan_v1p5_amendment_20260712.md` + the primary
-`reports/plans/RQ014_recovery_lane_v2.json`. v1.3 bytes remain immutable and replayable.
+The active science authority is base v1 + v1.3 provenance/hardening +
+`reports/plans/RQ014_plan_v1p5_amendment_20260712.md` + the current
+`reports/plans/RQ014_recovery_lane_v3.json`. v1.3 bytes remain immutable and replayable.
 The attempted v1.4 launch is retained only as provenance: its waiver intent survives, while its illegal
 `INACCESSIBLE_PI_WAIVED` state, self-declared G1, ambiguous booleans, mutated v1p3 paths, and retired HPC
 execution paths are superseded.
@@ -20,12 +22,13 @@ returned `NO_BLOCKER` over the same 68-file manifest; the machine-readable adjud
 `reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p5_20260712.yaml`.
 Any reviewed-byte drift makes this adjudication stale.
 
-The primary science route is now explicitly specification recovery, not null-hypothesis discovery. A
-rating-blind 960-cell grid covers 4/10 Hz, true causal-history, look-ahead-future, two-sided combined,
-t*-prefix and full-future windows, three envelope constructions, two horizons, and ten deviation readouts.
-After a separately authorized one-time full-rated479 join, three association definitions yield 2,880
-append-only rows; rank 1 is frozen and independently reimplemented in a clean replay. The old split/power/
-confirmation machinery is optional non-gating follow-up and cannot hide a historically correct recipe.
+The primary science route is explicitly specification recovery, not null-hypothesis discovery. The
+rating-blind v3 grid has 320 predictor cells across 4/10 Hz, true causal-history, look-ahead-future,
+two-sided combined, t*-prefix and full-future windows, two horizons, and ten deviation readouts, using
+one frozen RQ009 M3 envelope. A separately authorized one-time full-rated479 join produced 960
+append-only association rows. If a compatible rank-1 row exists, the contract next requires an exact
+selected-recipe freeze and an independent clean replay. The old split/power/confirmation machinery is
+optional non-gating follow-up and cannot turn the same-data recovery screen into prospective confirmation.
 
 ## Rating-blind boundary
 
@@ -41,8 +44,28 @@ validated completion receipt. The launcher binds each source path/size/SHA to th
 binds the exact Python binary through a structured environment manifest, and requires formal-review bytes
 to equal executed bytes.
 
-A1–A4 are public aggregate receipts in G2; rho is not recomputed. Any G3R recovery join and G4R clean replay
-remain separately authorized future operations.
+A1–A4 are public aggregate receipts in G2; rho is not recomputed. G3R was later executed once under D4;
+G4R clean replay remains a separately authorized future operation.
+
+## Current result-review status (2026-07-25)
+
+- Managed R3 screen `RQ014_3_full_rating_join_and_rank_20260724T053954Z_49dcd5c0`
+  published 960 terminal rows. The final report records one compatible
+  secondary row, `RR3-R04N-CH-W25-H20-NMD_MEAN-RWS` (`r=-0.384`, `n=42`),
+  while the primary NEX family has zero compatible rows.
+- R10L is not a scientific null: its bank was cleared by a confirmed whole-branch
+  source-gap terminalization defect. The rating-free recovery probe reports a
+  per-cell support ceiling below the `n>=40` gate, but its full JSON/receipt package
+  is not tracked here; treat that ceiling as `UNCERTAIN` until promoted.
+- The current R3 artifact set does not include `selected_recovery_recipe.json`, and
+  no G4R clean independent replay PASS is present. The strongest contract-consistent
+  status is therefore `PENDING_REPLAY`, not
+  `HISTORICAL_RESULT_RECOVERED_ON_SAME_DATASET`.
+- Independent Codex result review:
+  `reviews/codex_review.md`.
+- No `decision.md` should be created and no manuscript claim should be accepted until
+  the selected-recipe/replay gate is either completed or explicitly retired with a
+  bounded non-acceptance decision.
 
 ## Current execution status
 
