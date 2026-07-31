@@ -25,12 +25,47 @@ Commits in this repo use short, imperative subjects (for example, `Enhance proce
 ## Data & Configuration Notes
 Large trajectory files stay outside version control; if you must share samples, provide download instructions instead. Keep environment-specific tweaks in separate config files or guarded by CLI flags, and sanitise paths before publishing job scripts.
 
+## Research Velocity Principle (PI ruling 2026-07-31) — read this before the section below
+
+**默认推进方式是高效、粗放、以结果产出为先。** 本项目此前出现过严重的过程膨胀：
+一个描述性数据质量审计走了 8 个计划版本、7 轮独立盲审、3 路最终复审、32 个 agent，
+最终科学结论产出为零。这不是标准，是需要避免的反面案例。
+
+**过程强度必须与主张风险成比例：**
+
+| 产出类型 | 该有的过程 |
+|---|---|
+| 探索性 / 诊断性 / 描述性结果（多数工作） | 跑出来 → 自查一遍数值健康与覆盖 → 出报告。**一轮即可** |
+| 进入手稿的主张 | 才启用多轮独立复审与证据冻结 |
+| 触及已冻结 `decision.md` 的改动 | 才需要完整治理闭环 |
+
+**验证策略**：本研究所用数据是**用于科研发现**的数据；结论的可靠性由**独立数据集上的复现**
+承担，不由对单次分析的层层加固承担。因此不要为一次描述性分析反复加固，
+把精力投到"换一个数据集/换一个口径看结论还在不在"。
+
+**明确的反模式**（出现即停下来问自己是否在浪费时间）：
+
+- 计划连出 2 版以上却没有新的事实进来
+- 为一次**尚未运行**的分析做多轮盲审
+- 为描述性产物建多重授权闸门
+- 把"程序对不对"的验证做到远超"结论对不对"的验证
+- 用治理文书替代实际产出
+
+**不属于"过程"、不得放松的少数几条**（它们是效度边界，不是流程）：
+
+1. RQ007 held-out 集不得被解析——它是确认性路径的唯一保障，一旦污染无法恢复
+2. RQ014 致盲相关的评分字段不得读取
+3. 不得静默覆盖已冻结产物或已接受的 `decision.md`
+4. 描述性结果不得写成因果主张
+
+除这四条外，遇到"要不要再加一道保险"的犹豫，**默认选不加，先把结果跑出来**。
+
 ## Scientific Analysis & Reporting Guidelines
 Start every research analysis by making the research question, unit of analysis, variable meanings, inclusion/exclusion criteria, and data provenance explicit. When semantics are unclear, inspect local dictionaries, source documentation, or generation scripts before interpreting a field. Distinguish descriptive patterns, predictive associations, and causal claims; do not use causal language unless the design supports it.
 
 Treat publication-oriented analyses as claim-indexed research, not as a dashboard of interesting plots. Prioritize conclusions with broad relevance, practical or theoretical guidance value, and some generalizability across contexts, while stating boundaries and limitations explicitly. A conclusion is not stable unless it is supported by multiple views of the data, including positive evidence, boundary cases, uncertainty, and robustness or negative checks.
 
-For high-stakes or full-dataset conclusion reports, use multiple independent evidence roles and at least three rounds of discussion/review before freezing major claims. A good default sequence is independent exploration, cross-review and falsification, then final no-blocker review. Aim for a small set of stable conclusions only when the data genuinely support them; do not inflate weak, local, or sampling-driven patterns into publication-level claims.
+**（2026-07-31 依速度原则收窄）** 多轮独立复审只适用于**即将写进手稿的主张**，不适用于探索性、诊断性或描述性产出，也不适用于尚未运行的分析。对手稿级主张，默认序列仍是独立探索 → 交叉复审与证伪 → 最终无 blocker 复审；对其余一切，一轮自查即可。Aim for a small set of stable conclusions only when the data genuinely support them; do not inflate weak, local, or sampling-driven patterns into publication-level claims.
 
 Every conclusion in a report artifact must have its own dedicated evidence and figure bundle. Figures under a conclusion must directly explain, test, qualify, or falsify that conclusion; remove charts that are merely adjacent or generally interesting. Use publication-grade figure standards: clean multi-panel layouts, readable labels, explicit units and sample sizes, uncertainty intervals or effect sizes where appropriate, colorblind-safe palettes, and export both PNG for viewing and PDF/SVG for publication editing when possible.
 

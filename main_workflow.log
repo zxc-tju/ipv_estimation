@@ -2043,3 +2043,40 @@ canonical paths、server/test command 或授权状态，无需更新。
 2026-07-31T13:30+0800 | RQ015A-post-flip-trust-boundary-VERIFIED | AUTHORIZED_BUT_NO_EXECUTION_BODY | 授权翻转后的信任边界复检完成(首次在开关打开状态下检验授权链;此前七轮健壮性审计与三路最终复审全部在执行被禁用时进行,第二道检查始终把后四道挡在门外)。结论: 边界仍然成立。六道检查逐道独立有效(逐一构造反例,单独破坏任一道均拒绝,消息互相区分);allowlist 回源核对三项均拦下 —— 伪造映射被拒于 reader 打开之前(event log 为空)、split 源 TOCTOU 替换在 measurement_iter_started 之后首行 yield 之前被 source_sha256 mismatch 拦下、duck-typed reader 注入被内部类型要求拒绝;结构列 denylist 成立且影响面未因授权开启而扩大(已披露的同形字符缺口判定入口未变)。复检方全程用 /tmp 合成副本构造,仓库内授权对象与 run spec 的 SHA-256 改前=改后,未执行 --execute。关键发现(指挥者追查复检方所报 Medium 后确认,性质比其描述更重要): scripts/rq015a/run_rq015a.py:207 在 permit 成功后无条件抛出 "execution permit unexpectedly succeeded in BUILD_WHILE_DENY; refusing to run audit without PI-reviewed post-authorization handoff" —— 即审计的执行体根本不存在,_run_execute 到此结束,没有任何代码把 build_ledger/factor_analysis/receipt 串成一次真实审计。这不是缺陷而是原设计: 交接手册范围 T1-T11 为台账构建器/校验器/回执/因素分析/唯一入口/授权对象/运行合同/计划/裁定书/校验清单/HPC 探测,无一项为"运行审计";交付物始终是"可被复审的实现"而非审计结果。故当前状态准确表述为: 授权已开启、信任边界经实测成立、但运行审计属新范围,需要先把各组件接成执行路径并对该执行路径本身做复审。未覆盖面(复检方如实标注): 真实大文件 _load_limited_rows 全路径、真实 validate receipt 的 input-root 全量 digest、permit 成功后 CLI 硬拒绝分支的实跑。
 
 2026-07-31T14:20+0800 | RQ015A-ROUND-CLOSED | DELIVERED_AUDIT_NOT_RUN | PI 裁定 A: 本轮到此收尾,运行审计留作独立课题另行立项。收尾动作: 已知问题清单追加 §7"本包不包含什么"—— 明写审计执行体不存在(run_rq015a.py 在许可签发成功后无条件硬拒,没有任何代码把 build_ledger/factor_analysis/receipt 串成真实审计运行)、这是原设计而非缺陷(手册范围 T1-T11 无一项为"运行审计",交付物始终是可被复审的实现)、"已授权"不等于"可运行"(接手者若期望翻转即可跑会卡在这里,那是范围问题不是环境问题)、运行审计属新范围需三步(接出执行路径 + 对该路径本身独立复审 + 移除硬阻断并记录授权依据)、强烈建议先在最小产物 onsite(70,317 行)打通再扩到 2.1GB sigma01 与 138 个 parquet 分片(依据: 从未被执行过的路径会藏东西,7-31 一天内授权链就暴露两个不可能被测到的缺陷)、以及 §7.4 记录信任边界已由实测确认取代此前的推断。文档头部与 §3 加了状态指针指向 §7,§1-§6 复审时点原文未改。START_HERE 首句改为范围警示,使接手者第一眼看到"已授权但无法运行"。清单 v9 重签 20/20 OK;测试 269 passed;validate-only exit 0 machine_verdict=PASS fixture_total_passed=269。本轮最终状态: 实现完成、七轮独立健壮性审计收敛至零 blocker、三路最终复审全部 PASS_WITH_CONDITIONS 且条件闭合、WOD 取回已执行(906 行 4 列,评分列 HPC 侧投影本地从未出现)、授权已开启、信任边界经实测成立、审计从未运行(held_out measurement 零解析、评分字段零读取、未产出任何台账画像或结论)。
+
+2026-07-31 | RESEARCH-VELOCITY-PRINCIPLE + RQ015A-RUN-PLAN | PI 裁定：转向高效粗放推进
+
+PI 裁定 2026-07-31：项目总体理念更新为**高效粗放、以结果产出为先**。依据是本项目
+出现严重过程膨胀——一个描述性数据质量审计走了 8 个计划版本、7 轮独立盲审、
+3 路最终复审、32 个 agent，科学结论产出为零。验证策略同步调整：本研究数据是
+用于科研发现的数据，结论可靠性由**独立数据集上的复现**承担，不由对单次分析的
+层层加固承担。
+
+AGENTS.md 变更：
+- 新增 `## Research Velocity Principle (PI ruling 2026-07-31)`，置于科研分析准则之前：
+  过程强度与主张风险成比例（探索/诊断/描述性产出一轮自查即可；只有手稿级主张
+  才启用多轮复审；只有触及冻结 decision.md 才需完整治理闭环）；列出五条反模式
+  （计划连出 2 版无新事实 / 为未运行的分析做盲审 / 为描述性产物建多重授权闸门 /
+  程序验证强度远超结论验证 / 用治理文书替代实际产出）。
+- 收窄原"至少三轮复审"条款：只适用于即将写进手稿的主张，不适用于探索性、
+  诊断性、描述性产出，也不适用于尚未运行的分析。
+- 明确四条**不属于流程、不得放松**的效度边界：RQ007 held_out 不得解析；
+  RQ014 致盲相关评分字段不得读取；不得静默覆盖冻结产物或已接受 decision.md；
+  描述性结果不得写成因果主张。除此之外默认不加保险。
+
+RQ015A 执行编排（.codex-fleet/rq015a-run/board/）：
+- plan.md：两个 agent、一轮、中间指挥者自查一次。范围为 4 个 ledger-bearing 产物
+  （onsite 281,268 / wod 906 / sigma01 5,197,072 / feature matrix 8,994,736，
+  合计约 1,447 万 measurement 行，纯本地 CPU）。
+- prompts/A1-wire-and-run.md：删除 run_rq015a.py:206-209 的硬拒绝，把
+  build_ledger → 聚合 → factor_analysis → receipt 接成真实执行路径；
+  **先在最小产物 onsite 端到端打通**再扩全量；改代码后须重签清单并重跑 validate-only。
+  裁定允许的偏离：台账逐行落 parquet + 另出人读 summary csv（1,447 万行单 CSV 不合理）。
+- prompts/A2-findings-report.md：产出 bounded_report.md（主分布 / 分层 / **可用子集清单** /
+  协变因素 / C0 路由 / 覆盖披露六件事）+ 图 + usable_subset.csv。
+
+核实的前置事实：授权三键已开（execution_authorized=true、allowed_operations=
+[rq015a_concentration_audit]、authorized_package_commit=e11ef71d，语义为 HEAD 祖先或等于，
+故新提交不破坏绑定）；组件齐备；唯一缺口是 run_rq015a.py 的无条件硬拒绝。
+另核实生产缺陷 agent.py:1136-1139（sum(var)==0 → 均匀权重）**至今一字未改**，
+RQ015B 仍为 PROPOSED、从未复审、生产零改动。
