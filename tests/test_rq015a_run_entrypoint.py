@@ -51,7 +51,7 @@ def _run_spec(tmp_path: Path, execution_authorized=False) -> Path:
         "input_roots": [],
         "output_root": str(tmp_path / "out_<UTC>_<planSHA8>"),
         "bound_artifacts": {
-            "plan": "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md",
+            "plan": "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
             "ledger_schema": "reports/plans/RQ015A_ledger_schema_v4_20260731.json",
             "fixtures": EXPECTED_RQ015A_FIXTURES,
             "checksum_manifest": "reports/plans/RQ015A_plan_v8_checksums_20260731.sha256",
@@ -282,9 +282,10 @@ def test_run_spec_v6_loads_binds_v7_plan_schema_v4_and_remains_denied():
     assert data["operation_id"] == "rq015a_concentration_audit"
     assert data["execution_authorized"] is False
     assert data["bound_artifacts"]["plan"] == (
-        "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md"
+        "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md"
     )
     assert data["bound_artifacts"]["plan_superseded"] == [
+        "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md",
         "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md",
         "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md",
         "reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md",
@@ -349,7 +350,7 @@ def test_research_authorization_contains_denied_rq015a_operation():
     )
     assert entry["authorized_package_commit"] is None
     assert entry["decision_path"] == (
-        "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md"
+        "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md"
     )
 
 

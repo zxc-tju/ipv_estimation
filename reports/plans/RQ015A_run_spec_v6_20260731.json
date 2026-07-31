@@ -23,8 +23,9 @@
     "cycle_break": "The authorization object is itself a checksum-manifest member, so it cannot bind the manifest SHA without a circular dependency. The post-review package is instead bound by the commit SHA in the later, independent authorization-flip commit."
   },
   "bound_artifacts": {
-    "plan": "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md",
+    "plan": "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
     "plan_superseded": [
+      "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md",
       "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md",
       "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md",
       "reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md",
@@ -47,7 +48,7 @@
     "checksum_manifest": "reports/plans/RQ015A_plan_v8_checksums_20260731.sha256",
     "checksum_manifest_status": "Checksum manifest path reserved for commander re-signing after schema v4 / run spec v6 binding. This file is intentionally not created by W34 and must be signed later; validate-only must fail closed until it exists.",
     "checksum_manifest_members": [
-      "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md",
+      "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
       "reports/plans/RQ015A_run_spec_v6_20260731.json",
       "reports/plans/RQ015A_ledger_schema_v4_20260731.json",
       "reports/plans/RQ015A_wod_retrieval_spec_v1.json",

@@ -30,7 +30,7 @@
       "run_spec_path": "reports/plans/RQ015A_run_spec_v6_20260731.json",
       "execution_contract_path": "reports/plans/RQ015A_run_spec_v6_20260731.json",
       "authorized_package_commit": null,
-      "decision_path": "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md"
+      "decision_path": "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md"
     },
     "rq015a_wod_readonly_retrieval": {
       "allowed_operations": [],
