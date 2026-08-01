@@ -2181,3 +2181,235 @@ Process notes:
     re-verified after. Only run_spec_v7 changed (2-line manifest pointer, ratified).
   - 3 mid-run debris run dirs moved to _to_delete/ with a README; NOT deleted.
   - START_HERE.md and STUDIES.md updated in this task.
+
+## 2026-07-31T17:09:43Z — RQ015E track E: RQ009 对低判别力行的依赖性敏感性检验（DONE）
+
+**任务**：RQ015A 审计发现 RQ009 feature matrix 46.10% 的行 q_eff ≥ 0.93（候选权重近均匀 ⇒
+该 IPV 数值不携带候选间判别信息），且 C0 路由 stable=false。检验 RQ009 的主结论
+（RQ009-KC-R3）是否建立在这些行上。**敏感性检验，非重跑 RQ009。**
+
+**编制**：1 个 codex agent（E1，gpt-5.5 xhigh，9.5 分钟）+ leader 独立复算 1 轮。
+方法为冻结逐行预测产物的**过滤 + 重聚合**，度量函数 import 自冻结的
+`RQ009 .../02_process/05_evaluation/evaluate.py:base_metric_row`，未重跑任何模型。
+
+**关键结构发现**：RQ009 冻结的 fold=test 含 2,270/7,576（29.96%）个 RQ007 held_out case
+（fold 与 split 正交）。故冻结口径 A 在硬约束下不可复算；改用 held-out-free 参照系
+B = fold=test ∩ dev+guard（5,306 case），受限集 C = ∩ usable_subset（2,825 case），
+补集 D = B\C（2,481 case）。
+
+**结论（量级变了，性质没变）**：C 上 `coverage_within_3pp = True`、
+`directional_tails_ok = True`、M2 仍显著窄于 M0 —— 组成性质成立；但幅度数字站不住：
+mean_width 收窄 −42.41%(B) → −29.65%(C)，Winkler −35.47% → −29.51%，
+coverage 0.898949 → 0.882762，abstention 4.94% → 6.29%。
+**+12.76 pp 是下界**（可用性口径为 case 级，C 内仍含 33.27% 近均匀权重行）。
+差异全部来自 M2 一侧（`mean_width(M0)` 在 B/C/D 上恒为 1.748666）。
+**只报共现，不作因果归因；不给"是否重估 RQ009"的建议——属 PI 决策。**
+
+**硬边界**：`held_out_rows_entering_any_statistic = 0`（结构佐证：台账 split 计数求和
+精确等于总行数；每 tier join 恒等式 2,666,676 + 1,145,022 = 3,811,698；C ⊆ B）。
+未读 RQ014 致盲字段；未改任何冻结产物 / decision.md；未写 data/derived；无 git 写操作。
+
+**产物**（均在 `.codex-fleet/rq015e-rq009-dependency/board/`，未纳入版本控制）：
+`reports/E1_dependency_report.md`、`reports/restricted_metrics.csv`、
+`reports/E1_numbers.json`、`scripts/e1_restricted_recompute.py`。
+
+**候选下一轮（未执行）**：E2 —— 按 `q_eff` 连续分层的 width/coverage 剖面，
+可把"下界"从定性论证变为可读剖面并压掉成分混淆。见报告附录 A.4。
+
+**START_HERE.md 维护**：本轮未改变 canonical 数据/输出路径、测试命令或活跃批次，
+故未修改 START_HERE.md。
+
+[2026-07-31T17:11:07Z] RQ015B B3 (track D, rq015d-sigma-rederive) — DONE
+  判定: 不需要重定全局 sigma, sigma=0.1 保持不动 (监督方 17:08Z 接受)。
+  编制: 1 个 codex agent + 1 轮 leader 自查 + 1 轮文字修订; 无新实验, 无重跑。
+  结论: (1) 400 行(17.4%, nuplan 内 34.8%, waymo 0)7 候选 MSE 逐位相同, 对任何 sigma 免疫,
+        ipv 恒为 0.0, at_grid_boundary 假阳性 33.8% -> 具名候选 RQ015-NEXT-CAND-01 (未立项);
+        (2) 不存在单一 sigma 同时缓解近均匀/硬 argmax 两端, 合计失效地板约 59%;
+        (3) 下溢兜底掩盖的是过锐而非过平 (603 行 legacy k_eff=7 但 log median 1.441)。
+  产物: .codex-fleet/rq015d-sigma-rederive/{board/reports/D1_sigma_report.md, work/*} 共 6 件, 未提交, 交 PI。
+  边界: split 仅 development+guard 无 sealed; src/ 未触碰; 无 git 写操作。
+
+[2026-07-31T17:14:26Z] RQ015C — sigma01 存档复现失败的代码漂移取证（track C, leader + 1 codex agent）
+状态：DONE（监督方已放行）
+任务：用 legacy commit 5edd2810（"Run full InterHub IPV with sigma 0.1", 2026-06-12）的代码
+      回放 RQ015B 冻结的 40 个 pilot 锚点，检验"存档由与本地现行代码有差异的那份代码产出"这一假设。
+结论（两句）：
+  1. 【证伪，确定性正面结果】本地代码漂移假设不成立。legacy 与当前 HEAD 的逐锚点结果逐位相同
+     （max|Δipv| = max|Δipv_error| = max|Δweights| = 0.000e+00，gate_a 通过的是同一批 12 个锚点）。
+     agent.py 983→1244、ipv_estimation.py 313→675 加一次目录重构，在这条计算路径上对这 40 个锚点严格保行为。
+     ⇒ RQ015B 基于当前代码得到的 D1/D2 机制结论不会因代码版本用错而失效。
+  2. 【存档来源未定论】verdict = LOCAL_FORENSICS_INCONCLUSIVE。legacy 代码 gate_a 同为 12/40（阈值 39/40）。
+     差异源既不在 legacy 代码也不在 current 代码。按 PI 裁定本轮不接 HPC，本地取证到此为止。
+附带发现：
+  - 与存档的失配分两类：Z 类 14/14 IPV 精确一致、仅二阶矩 Σw² 失配（ipv_error = 1 - sqrt(Σw²)，已实测核对）；
+    N 类 0/12 一阶矩即变。两类应分开追。
+  - 【数据完整性，独立于 RQ015，需 PI 处理】data/interhub/raw/full_datasets/pkl/waymo_300-499.pkl
+    于 2026-07-31T02:42:06Z 被改写且传输不完整，至今 UnpicklingError: pickle data was truncated、n_events=0。
+    其余 9 个 pkl mtime 为 2026-06-09，早于存档日期。B1 已按 pkl_available=False 排除，故未污染本轮结论。
+  - lyft/av2：本地 full_datasets 无 lyft、无 av2；5edd2810:process_argoverse.py 读的是预处理 CSV
+    而非原始 AV2 parquet（决定取数代价量级）。定量体量推断未复核，以 HPC inventory 实跑为准。
+产物：.codex-fleet/rq015c-drift-forensics/board/reports/C1_drift_report.md
+        （SHA-256 a173b47cb40ea46ad0f2e1aaf7f8c0e3e9e3d2576195a4ebc6a74d43cd14331f）
+      .codex-fleet/rq015c-drift-forensics/work/{c1_summary.json, gate_legacy_vs_current.csv,
+        current_40.json, legacy_40.json, pilot_40.json, run_c1_*.py, legacy_5edd2810_src/}
+仓库影响：无。未 commit、未 checkout 主工作区、未创建 worktree（sandbox 拒后改用 git 对象提取，
+      已逐 blob 验签与 5edd2810 一致）、src/ pipelines/ configs/ scripts/ 无改动、B 轨冻结产物未被触碰。
+待办（本轮不做，交 PI）：A. 比对 sigma01 时代记录过的输入 pkl SHA256/行数/case 数与本地现有 pkl
+      （最便宜、且唯一可能不接 HPC 出结论的一条）；B. 重新同步修复 waymo_300-499.pkl。
+START_HERE.md 维护：本轮**未改** START_HERE.md。理由：C/D/E 三条 track 正并发在同一工作区，
+      覆写式的共享根文件有互相冲掉的风险。需登记的"已知弱点"是 waymo_300-499.pkl 截断，
+      已在本条与报告 §11.1 中记录，建议由 PI 在三条 track 收束后统一并入 START_HERE.md。
+
+[2026-07-31T23:00:54Z] sigma01 计算链、复现路径与抽样验证（DONE）
+任务：溯源 20260612 sigma=0.1 InterHub 全量产物的输入、预处理、估计公式、HPC 生成/合并/
+      consolidation 流程，并用当前受管环境做抽样复现。未读取 RQ007 held-out measurement
+      字段，未读取 RQ014 致盲评分字段，未改算法、冻结产物或 decision.md。
+成品核验：38,228 case 全部 status=ok；sigma01_ipv_timeseries.csv 为 3,695,981 data rows、
+      2,206,337,163 bytes、SHA-256 a60404fb1cad14a2eb49a9a5e6d7dee6a4038234d18e1567733c023e42ab2df6。
+      生成参数由 configs/ipv_sigma01_exact.json 绑定（SHA-256
+      3add56c2785c4b11cdb5baf75e2505fe3ebb49c407c9f7f7c226652ca1e78522）：
+      solver_mode=exact、sigma=0.1、history_window=10、min_observation=4、reference 60/40/40、
+      NuPlan 20Hz->10Hz。原始 4 分片 x 96 workers，随后 merge 和 32-worker consolidation。
+本机抽测：tests/test_ipv_estimator_parity.py + tests/test_ipv_execution_profile.py =
+      8 passed, 1 skipped；冻结夹具 local exact 对 sigma01 max diff=0.0586656，fast 对 local exact=0。
+      真实 NuPlan case ipv_000001 端到端 status=ok、87 rows、键/时间戳对齐，但 macOS 对存档
+      max diff=1.1244582089284632，故本机不能作为严格数值复现环境。
+HPC 严格抽测：clean managed checkout 6bdcc2e64bacd75d02741aa18ef5d61eef5a2962，
+      envs/ipv-exact-sigma01 Python 3.9.24。Slurm 2022476 zxc-sigma01-fixture COMPLETED 0:0，
+      sigma01 max diff=4.44e-16；Slurm 2022477 zxc-sigma01-onecase COMPLETED 0:0，真实
+      ipv_000001 的 87 rows / 348 values 对存档 max diff=1.11e-16、mean diff=6.58e-18，
+      keys/timestamps identical。运行目录：
+      /share/home/u25310231/ZXC/sociality_estimation/work_dirs/INFRA/{sigma01_fixture_20260801T0700CST,
+      sigma01_onecase_20260801T0710CST}。
+数据完整性：本地 full_datasets/pkl 可见 10 个文件，9 个可反序列化；waymo_300-499.pkl
+      仍为 truncated，AV2/Lyft PKL 缺失。该问题仅阻断本地全量重跑，不影响本次受管 HPC 抽测。
+START_HERE.md 维护：已追加上述最新严格复现证据与本地 PKL 边界；canonical 数据/输出路径未变。
+
+[2026-07-31T23:32:00Z] 本地 watcher 重启（DONE）
+任务：定位并重启 `.codex-fleet/watcher.sh`。旧实例 PID 61176 位于 cmux `ttys001`，
+      工作目录为仓库根；已向旧前台进程组发送 SIGINT 并确认退出。
+新实例：按指定命令 `cd <repo>` + `bash .codex-fleet/watcher.sh` 在持久 PTY `ttys004`
+      启动，PID 52421，轮询周期 5s，且进程 cwd 与仓库根一致。
+验证：单实例检查通过；只读 `status` 冒烟请求
+      `restart-smoke-20260801T073125` 被成功消费，response `exit: 0`，audit.log 记录完整。
+运行边界：macOS 当时锁屏，cmux 图形终端无法接受自动化输入；故新实例由 Codex
+      持久 PTY 托管，原 cmux `ttys001` 终端本身未改动。
+START_HERE.md 维护：未改；本次仅恢复运行中的 watcher，未改变 canonical 数据、输出、测试或服务入口。
+
+[2026-07-31T23:42:00Z] Track F leader 重新启动（RUNNING）
+任务：在仓库根重新执行 `bash .codex-fleet/launch_leader.sh F`。
+结果：一次性执行虽返回 0 并写入 PID 55966，但后台 leader 随宿主会话结束而立即退出，
+      `leader.log` 为空，不得视为有效启动。随后在持久 PTY 内再次执行同一命令，
+      新 leader PID 56268，cwd 为仓库根，复核 34s 后仍存活。
+当前状态：`STATUS.md` 为 `state: LAUNCHING`，`leader_pid: 56268`；`leader.log` 仍为 0 字节，
+      与启动器已披露的 `claude -p` 行为一致。本条仅确认 leader 进程正在运行，
+      不表示 Track F 科学任务已完成。
+START_HERE.md 维护：未改；本次仅恢复既有 Track F 运行状态。
+
+[2026-07-31T23:44:00Z] Track F leader PID 复核（NO ACTIVE LEADER）
+任务：核对历史 PID 55966；若仍存活且不是当前 PID 56268，则发送 SIGTERM。
+结果：PID 55966 已不存在，因此未执行 `kill`。同时核对发现 PID 56268 也已退出，
+      当前无 Track F leader 进程存活。`STATUS.md` 仍停在 `state: LAUNCHING`，
+      `leader.log` 为 0 字节，`progress.log` 仅有两条 launch 记录；这是陈旧运行状态，
+      不能证明 leader 正常结项。本次未自动再启动。
+START_HERE.md 维护：未改；canonical 数据、输出与服务入口未变。
+
+[2026-08-01T00:05:30Z] Track F 防休眠脱离重派（RUNNING / HEALTHY START）
+任务：按监督方给出的判死线复核 PID 56268/55966 与 macOS Sleep/Wake 记录，
+      清理残留后持续防休眠，并只重派一次 Track F。
+前置核对：PID 56268 与 55966 均已不存在，`kill 56268 55966` 为无操作；
+      `pmset -g log` 末尾未显示新的实际 Sleep/Wake 事件。macOS 仍处于锁屏，
+      Computer Use 无法在 cmux 新建可见终端。
+脱离运行：通过仓库现有 `detach_launch.py`（double fork + `setsid`）启动
+      `/usr/bin/caffeinate -dimsu`，PID 61889，PPID 1，无 TTY。`pmset -g assertions`
+      确认它同时持有 PreventSystemSleep、PreventUserIdleSystemSleep 与
+      PreventUserIdleDisplaySleep 断言。
+重派结果：通过独立脱离会话仅执行一次
+      `bash .codex-fleet/launch_leader.sh F`；新 leader PID 61918，PPID 1，无 TTY，
+      cwd 为仓库根。启动后约 51s，leader 自行向 `progress.log` 写入
+      `preflight | 自检 pid=61918 == leader.pid ... 本实例为权威 leader`，满足 3 分钟内
+      首条 leader 进度健康判据。当前仅表明启动健康，不表示 F1 或 Track F 已完成。
+START_HERE.md 维护：未改；本次仅恢复 Track F 运行与防休眠保护。
+
+[2026-08-01T00:37Z] Track F (rq015f-estimability-contract) — F1 执行完毕，等待监督方放行
+  任务：RQ007 三条已接受主张（KC-C1/C2/C3）在 RQ015B/D 下溢发现之后是否仍成立。
+  编制：leader(pid 61918) + 单个 codex agent F1(pid 64166)，一轮自查，无第二轮、无盲审。
+  状态：WAITING_ON_COMMANDER（不自行转 DONE）。
+  产物：.codex-fleet/rq015f-estimability-contract/board/reports/F1_contract_recheck.md
+        .codex-fleet/rq015f-estimability-contract/board/reports/F1_leader_adjudication.md
+        .codex-fleet/rq015f-estimability-contract/work/f1_results.json（+23 个中间件）
+  关键结果：
+    - C1 需重述（代理量口径）：raw conflict gap dev -0.1497->-0.1571 (4.9%)、guard -0.1470->-0.1560 (6.1%)，
+      方向未翻但**加深**；headline -0.132 的 Phase-5 口径本轮未重建，判定基于代理量。
+    - C2 本轮未取证。
+    - C3 扛得住：mean|Δ| 0.2647->0.2919（不塌反升 10.3%）；22% 变号率纹丝不动的成因已查明——
+      RQ007 的 strict-sign 规则要求两侧均值非零，已结构性排除 663 个零均值 case-agent，
+      其中 628 个(94.7%)是 active 帧全为下溢所致，即该规则等价于一个下溢过滤器；
+      代价是静默丢弃 4.75% 的 case-agent，C3 原文未声明。
+    - 新事实：RQ007 的集中度指数 c1/c2 ≡ ipv_key_agent_N_error 字段本身；
+      RQ007 主输入为 20260612 版，RQ015A 台账为 20260626 hw4 版，两版 join 4,981,984 行
+      完全相等仅 0.22%、Pearson 0.432、frame 5 起分叉 ⇒ Q3 结论「同族但不同版本」。
+    - Q4b：spread(mse)==0 是无需阈值的精确判据(400/2300)；但与 conflict 的关联证据薄
+      （conflict=1 仅 68 锚点、spread=0 仅 5 个）且与 nuplan/waymo 完全共线，不可分离。
+  合规：held_out_parsed_rows=0，双恒等式佐证（dropped_rows_never_parsed=1,097,445 与 warmup=107,544
+        分别等于 RQ007 自身 summary_sensitivity_counts.json 的独立计数）；未重解轨迹；
+        未改任何冻结产物；无 git 写操作；禁用词零命中。
+  START_HERE.md 维护：未改（本轮为只读诊断，未改变任何 current-operating 事实）。
+
+[2026-08-01T00:44Z] Track F (rq015f-estimability-contract) — DONE（监督方第 5 条放行）
+  放行后按第 2/3/4/5/6/7 条完成修订（均为表述与版面，无重算结论），写入裁定书附录 B：
+    - 机制更正：gap 变深的驱动不是"小组杠杆"，是【非下溢基线水平差】。
+      实算 dev 非下溢均值 conf1=0.24476 / conf0=0.40184，距上界 E=0.6220355269907728
+      的距离比 1.71×；扣除量约 u·(E−m)，故 conf1 发生率虽低 4.1pp 而下降更大(0.0569 vs 0.0458)。
+      该水平差本身即 C1 的更强证据，且不依赖下溢。
+    - C3 披露句已给出原文（排除规则 + 628/13,214 = 4.75% + 几乎全为下溢行）。
+    - Q4 共线警告与 98.75% 数字同段（400 个 spread=0 全是 nuplan、waymo 0 行，不可分离）。
+    - Q5 分母表提到与 Q1 同级，并注明机会窗仅占 ATTEMPTED 的 4.00%。
+    - C2 记为 NOT ASSESSED，不入"扛得住"。
+    - 版本标注（hw10=RQ007/20260612 vs hw4=RQ015A 台账）提到全文口径层。
+  预判留档（监督方第 9 条要求）：leader 三处预判、监督方两处预判，均被数据推翻，已一并存证。
+  附带（第 6 条，非研究范围）：启动 track G 恰好一次，pid 70604，PPID=1，
+    38s 内写出自身 preflight，健康；未替 G 做任何研究工作。
+  START_HERE.md 维护：未改（本轮只读诊断，未改变任何 current-operating 事实）。
+
+[2026-08-01T12:26:20Z] Track H / I leader 启动（RUNNING）
+任务：在仓库根只执行一次 `bash .codex-fleet/launch_leader.sh H I`。
+执行方式：为避免 launcher 退出后子进程被宿主会话回收，使用仓库现有
+      `detach_launch.py`（double fork + `setsid`）承载该原始命令。
+结果：Track H（`rq015h-abstain-gate`）leader PID 9911；Track I
+      （`rq015i-underflow-regimes`）leader PID 9917。两者 PPID 均为 1、无 TTY，
+      cwd 均为仓库根；启动 55s 后均仍为 `S` 状态。当时两路 `STATUS.md`
+      均仍为 launcher 写入的 `LAUNCHING`，`leader.log` 为 0 字节，尚无 leader 自行
+      progress 条目；这仅证明进程已稳定启动，不表示 H/I 任务已完成。
+防休眠：既有 `/usr/bin/caffeinate -dimsu` PID 61889 仍存活。
+START_HERE.md 维护：未改；本次仅恢复既有 H/I 运行入口。
+
+[2026-08-01T12:39:37Z] Track H (rq015h-abstain-gate) — DONE
+任务：按 H1 要求只使用两份锚点 CSV（MAC `anchor_mse.csv`、HPC `anchor_mse_hpc.csv`）
+      定义 `k_eff_log` 弃权门，并用跨环境 `abs(ipv_log_mac - ipv_log_hpc)` 验收。
+结果：
+  - 脚本写入 `.codex-fleet/rq015h-abstain-gate/work/analyze_h1_abstain_gate.py`，
+    派生表/曲线写入同一 work 目录。
+  - 最终报告写入 `.codex-fleet/rq015h-abstain-gate/board/reports/H1_abstain_gate.md`。
+  - 反解阈值 `tau=1.0025780341559316`；通过率 all 10.74%、waymo 20.17%、nuplan 1.30%。
+  - 验收通过：通过者 p99 |Δipv_log| all 0.392608、waymo 0.364074、nuplan 0.392678，
+    均小于 pi/8=0.392699。
+  - D1 救回率 all 35.82%、waymo 37.02%、nuplan 23.08%；裸离散后验区间下界校准失败，
+    需外部半宽下界 0.392678。
+合规：未重解锚点；未跑全语料；未提交 HPC 作业；未改受保护模块；未执行 git commit/checkout/restore/stash/reset/clean；
+      禁词扫描报告与脚本零命中。
+START_HERE.md 维护：未改（本轮是 H 轨 sidecar 分析报告，未改变仓库 current-operating brief）。
+
+[2026-08-01T12:52:40Z] 自带上下文汇报规则全局同步与文档快照提交（DONE）
+任务：将本仓库 `AGENTS.md` 新增的「自带上下文的汇报」PI ruling 同步到
+      Claude 与 Codex 的全局指导文件，并提交当前仓库中已跟踪的文档更新。
+全局同步：已更新 `/Users/xiaocong/.claude/CLAUDE.md` 与
+      `/Users/xiaocong/.codex/AGENTS.md`。规则保留四项硬要求：先定位再讲进度、
+      不用黑话/比喻、结论与待决事项分开、数字必须自带可复算口径；
+      将适用范围从本项目改为所有多层协作。两份全局文件不属于本 Git 仓库。
+仓库提交范围：仅 `AGENTS.md`、`START_HERE.md`、`main_workflow.log` 三份 tracked 文档。
+      明确排除运行残留 `nohup.out` 与待删除暂存目录
+      `reports/studies/RQ015A_ipv_estimability_labelling/_to_delete/`；二者保持未跟踪，未删除。
+验证：人工核对两份全局规则的四项要求一致；`git diff --check` 通过。
+      本次仅文档与运行纪录变更，未运行代码测试。
+START_HERE.md 维护：保留已有 sigma01 HPC 严格复现证据更新；本次全局规则同步未再改它。

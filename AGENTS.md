@@ -73,6 +73,31 @@ Before accepting any result set, check numerical health, coverage, and data inte
 
 Keep report packages reproducible but tidy. The reader-facing report folder should retain the final report, figure exports, figure manifest or chart map, conclusions summary, and evidence summary. Move rebuild inputs, scripts, review notes, old report iterations, obsolete figures, and audit files into a report-linked process archive with a README and integrity-check record. Delete only reproducible caches unless the user explicitly approves deeper cleanup.
 
+## 自带上下文的汇报（PI ruling 2026-08-01）
+
+**原则：每一份向上的汇报，都必须能被一个没有跟进过程的读者一次读懂。**
+上下文重建的成本由写的人承担，不由读的人承担。
+
+这条适用于本项目中**每一层**向上的汇报——codex agent 交给 leader、leader 交给监督方、
+监督方交给 PI。每一层都倾向于假设读者一直在跟着看，而这个假设在每一层都不成立：
+读者往往隔很久才看一次，并且会跳过中间的过程性汇报，直接看最新的一份。
+
+四条硬性要求：
+
+1. **先定位，再讲进度。** 开头必须交代三件事：这项工作要解决什么问题、整体已经走到哪一步、
+   本次是其中哪一环。不得直接从增量讲起。
+2. **不用黑话，不用比喻。** 必须使用项目专有名词时，当场用一句话说明它是什么。
+   自造的形象化说法一律换成直白描述——例如「失效地板」应写成「失效比例的下限，
+   任何 σ 取值都压不下去」；「救回率」应写成「原本判为不可估、改用 log 域计算后变为可估的比例」。
+3. **结论与待决事项分开。** 需要上级拍板的事必须单独成节，写清选项、判断依据、以及不做的后果，
+   不得藏在叙述中间当作陈述句带过。
+4. **数字自带口径。** 给出百分比必须同时给分子、分母、筛选条件、来源文件与列名。
+   一个读者无法自行复算的数字，等于没给。
+
+反面基准（均为本项目真实发生过的）：把「D1 占 43%」单独引用而不带分源拆分（waymo 58.93% vs
+nuplan 1.10%，合并值会误导）；把自造词当作读者已知的术语直接使用；把需要 PI 决策的事
+写成叙述句混在段落里，导致它被当成已经定了的事。
+
 ## Shared Research Protocol
 Merged GitHub files are the source of truth. Every durable research task should have an RQ ID, a GitHub issue when practical, and a row in `STUDIES.md`. Keep the execution layer and interpretation layer separate: `reports/studies/RQxxx_topic/RQxxx_n_topic_date/` records what was run, where reports/artifacts live, commands, environment, deviations, and claim-level evidence; `reports/knowledge/RQxxx_topic/` records ChatGPT/Claude/Codex/human reviews, synthesis, and final accepted/rejected claims. One RQ may have multiple execution reports, but it should have one knowledge folder. Never silently change an approved plan. Every manuscript-relevant report claim must have an evidence row. Do not edit the paper repository and this research repository in the same PR. Paper edits may only use claims accepted in `reports/knowledge/RQxxx_topic/decision.md`.
 

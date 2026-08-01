@@ -909,6 +909,20 @@ question index in `STUDIES.md`.
   reference clip/max/smooth `60/40/40`, NuPlan 20-to-10 Hz downsampling, and the
   tracked `configs/ipv_sigma01_exact.json`; InterHub CLI reference defaults are
   now aligned to `60/40/40`.
+- **sigma01 reproduction spot-check refreshed 2026-08-01.** On the clean managed
+  HPC checkout at `6bdcc2e64bacd75d02741aa18ef5d61eef5a2962` with
+  `envs/ipv-exact-sigma01` (Python 3.9.24), Slurm job `2022476`
+  (`zxc-sigma01-fixture`) passed the strict two-case fixture with
+  `sigma01_max_abs_diff=4.44e-16`. Slurm job `2022477`
+  (`zxc-sigma01-onecase`) then reran real NuPlan case `ipv_000001` end to end:
+  87 frame rows / 348 IPV-or-error values matched the archived sigma01 rows at
+  max/mean absolute difference `1.11e-16` / `6.58e-18`; keys and timestamps were
+  identical. The same case on macOS produced `max_abs_diff=1.12446`, so strict
+  reproduction requires the pinned Linux/SciPy/BLAS ABI, not merely the same
+  source and parameters. Current local full-PKL replay is also structurally
+  incomplete: AV2/Lyft PKLs are absent and `waymo_300-499.pkl` remains truncated;
+  9 of the 10 visible local PKLs deserialize successfully. These local defects do
+  not affect the immutable managed-HPC snapshot used by the passing spot-check.
 - Git-based HPC deployment is active at
   `/share/home/u25310231/ZXC/sociality_estimation/code/repo`; the 2026-07-11/12
   root-cure cutover was validated at `47f79685`, and deployment follows
