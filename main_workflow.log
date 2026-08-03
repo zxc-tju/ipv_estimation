@@ -2400,6 +2400,25 @@ START_HERE.md 维护：未改；本次仅恢复既有 H/I 运行入口。
       禁词扫描报告与脚本零命中。
 START_HERE.md 维护：未改（本轮是 H 轨 sidecar 分析报告，未改变仓库 current-operating brief）。
 
+[2026-08-01T12:53:50Z] Track H2 (rq015h-abstain-gate) — DONE
+任务：只用 MAC `anchor_mse.csv` 与 HPC `anchor_mse_hpc.csv`，完成监督方要求的两项先行证伪检验：
+      σ 混淆检查，以及救回者跨环境稳定性检查。
+产物：
+  - 报告：`.codex-fleet/rq015h-abstain-gate/board/reports/H2_rescue_validation.md`
+  - 脚本：`.codex-fleet/rq015h-abstain-gate/work/h2_rescue_validation.py`
+  - 中间表：`.codex-fleet/rq015h-abstain-gate/work/h2_*.csv` 与 `h2_summary.json`
+关键结果：
+  - σ 网格 MAC/HPC 合并与分 source 均无 D1/非D1 中位数高低翻转；σ 增大时差距明显收窄。
+  - 救回者 `linear` p99=0.392676 < pi/8=0.392699，但余量仅约 2.3e-05；
+    `higher` 与 `nearest` method 翻为不通过。
+  - 通过者中 `d >= pi/8` 的 3 个锚点全部在救回者组（救回者 3/216，非D1通过者 0/31）。
+  - `ipv_034420|8|2` 复算确认为救回者组结构性反例：两环境 `k_eff_log=1.0`，
+    但 `ipv_log` 相差 0.785398（2 个网格步长），说明 `k_eff` 不能为个体点值正确背书。
+验证：钉死解释器运行脚本成功；不落盘语法检查 `syntax_ok`；关键 CSV 回读通过；
+      禁用词扫描报告与脚本零命中。未 commit；未改受保护模块；未重解锚点；未跑全语料；
+      未提交 HPC 作业；未覆盖 H1 产物。
+START_HERE.md 维护：未改（本轮仍是 H 轨 sidecar 分析报告，未改变仓库 current-operating brief）。
+
 [2026-08-01T12:52:40Z] 自带上下文汇报规则全局同步与文档快照提交（DONE）
 任务：将本仓库 `AGENTS.md` 新增的「自带上下文的汇报」PI ruling 同步到
       Claude 与 Codex 的全局指导文件，并提交当前仓库中已跟踪的文档更新。
@@ -2413,3 +2432,262 @@ START_HERE.md 维护：未改（本轮是 H 轨 sidecar 分析报告，未改变
 验证：人工核对两份全局规则的四项要求一致；`git diff --check` 通过。
       本次仅文档与运行纪录变更，未运行代码测试。
 START_HERE.md 维护：保留已有 sigma01 HPC 严格复现证据更新；本次全局规则同步未再改它。
+
+## 2026-08-01T12:58Z — RQ015 track H（弃权门 / 可估计性契约）— WAITING_ON_COMMANDER
+
+**任务**：定义 IPV 弃权门并用跨环境塌缩测试验收（纯分析，2,300 锚点 Mac/HPC 双环境重解，无 HPC 作业）。
+**编制**：leader（Claude）+ 2 个 codex agent（H1 门定义与验收；H2 commander 要求的两项证伪检验）。
+
+**结果**：
+- 救回率成立：原 D1（连乘域全下溢，n=603）在 log 域下变为具有判别信息的比例
+  合并 35.82% / waymo 37.02% / nuplan 23.08%。σ 混淆已证伪（12 个 σ × 2 环境 × 分 source 全未翻转）。
+- 验收判定由 leader 改判：H1 原判「通过」→ **waymo 通过 / nuplan 不通过 / 整体不稳健**
+  （nuplan 余量仅 2.11e-05、n=15、最大值本身已越界、higher/nearest 插值即翻转）。
+- 三项结构性发现：(a) `k_eff` 不认证跨环境可复现性（反例 ipv_034420|8|2 两环境 k_eff 均=1.0
+  却差 2 个网格步长）；(b) 判别力与跨环境稳定性反相关 ρ=-0.4920；
+  (c) **原病理未被 log 域消除**——47.0% 锚点近均匀、其中 684 行（全样本 29.7%）ipv_log 恰为 0.0；
+  且门筛出的是边界饱和锚点（通过者 81.78% at_grid_boundary、68.42% |ipv|=3π/8）。
+- leader 建议不发布 `k_eff` 门；并指出 ±3π/8 网格可能过窄，属更上游的设计问题。
+
+**产物**：`.codex-fleet/rq015h-abstain-gate/board/reports/`
+（`H_FINAL_leader_synthesis.md` 为裁决材料；另有 H1/H2 报告、leader 复核、2 脚本 + 24 CSV/SVG）。
+**状态**：等待 commander 裁决，未自行转 DONE。未 commit，未改受保护模块，未跑全语料。
+**START_HERE.md 维护**：本轮未改变 canonical 数据/输出路径、测试命令或受保护清单，故无需更新。
+
+### 2026-08-01T13:13Z — track H 结项更新（commander 13:10Z 裁决后）
+
+commander 独立复算全部头条数字，逐项一致（Spearman 除外：-0.4916 vs -0.4920，并列秩处理差异）。
+**裁决：采纳 leader 建议，不发布 `k_eff_log <= 1.00258` 弃权门。**
+commander 同时认领「跨环境稳定性单独作验收判据」这一设计有误——
+该判据可被「什么信息都不携带」轻松满足，故记为方法学教训而非验收失败。
+新增独立结论：判别力与跨环境稳定性反相关（ρ≈-0.49）。
+本轮订正：边界计数容差声明（采用 1e-6）与分母分写（169/247 vs 169/266）。
+「仅 waymo / 半宽 π/4」已按要求改写为取舍清单，不作推荐做法。
+状态仍为 WAITING_ON_COMMANDER（未自行 DONE），未 commit。
+
+### 2026-08-02T01:37:39Z — RQ015J 方案独立复审启动
+
+**任务定位**：RQ015J 要为 online verification 定义可执行的 IPV 弃权门规格；当前处于方案执行前的独立复审环节，本次仅启动复审，不执行 track J 本身。
+**启动结果**：已按指定参数启动 `J-plan-review-prompt.md`，模型 `gpt-5.5`、推理强度 `xhigh`、沙箱 `workspace-write`；脱离终端进程 PID `72769` 正在运行。
+**输出位置**：运行日志 `.codex-fleet/rq015j-gate-spec/board/reports/JR.log`；预期复审报告 `.codex-fleet/rq015j-gate-spec/board/reports/J_plan_review.md`；PID 文件 `.codex-fleet/rq015j-gate-spec/board/JR.pid`。
+**当前状态**：RUNNING，尚无复审结论。初始化日志含一个本地 skill YAML frontmatter 警告和一个连接器 OAuth `invalid_grant` 警告，进程仍存活，暂未证明影响本地只读复审。
+**START_HERE.md 维护**：本次只启动复审，尚未改变 canonical 数据、输出、测试命令或受保护清单，故未更新。
+
+### 2026-08-02T01:53:11Z — RQ015J 方案独立复审完成确认
+
+**任务定位**：RQ015J 要为 online verification 定义第一道 IPV 弃权门；本轮是执行前方案复审的完成确认，不是 track J 执行或执行授权。
+**轮询终态**：`2026-08-02T01:52:44Z`，PID `72769` 正常退出，正式报告已落盘，判定为 **`需修改后执行`**。
+**主要结论**：计划中 6.75--7.00 `k_eff_log` 模态的全样本计数应为 1,166/2,300=50.6957%，766 仅在排除 400 个 spread=0 锚点后成立；门后 `at_grid_boundary` 应为 nuplan 79/312=25.3205%、waymo 398/705=56.4539%，原 1%/20% 是精确端点命中口径。两条门判据完全重叠；当前锚点文件缺少 RQ009 的 29 个 context-only 变量，因此上下文分格按现计划不可直接执行。
+**产物**：报告 `.codex-fleet/rq015j-gate-spec/board/reports/J_plan_review.md`；复算脚本与证据 `.codex-fleet/rq015j-gate-spec/work/j_plan_review_compute.py`、`.codex-fleet/rq015j-gate-spec/work/j_plan_review_compute.json`；完整日志 `.codex-fleet/rq015j-gate-spec/board/reports/JR.log`。
+**验证边界**：复审方已运行复算脚本、`json.tool` 和 `py_compile`；未提交 git commit、未跑 HPC、未改受保护代码。复审完成不构成 track J 执行完成或执行授权。
+**START_HERE.md 维护**：已新增 RQ015J 当前复审结论、数字订正、设计基估计口径与执行 blocker。
+
+### 2026-08-02T04:00:31Z — RQ015J leader 启动
+
+**任务定位**：在 RQ015J 方案独立复审完成且 commander 已吸收修改后，启动 leader 编制一个 J1 codex agent，产出弃权门可执行规格与全域设计基影响估计；本次只确认 leader 真正运行，J1 交付尚未完成。
+**启动过程**：两次执行 `bash .codex-fleet/launch_leader.sh J` 均返回“已拉起”，但 PID `82736`、`83093` 随即无输出退出，`leader.log` 为 0 字节，故未把启动器返回码当作成功证据。Claude CLI 前台与小型后台诊断均通过；随后用同一 `.kickoff_resolved.md`、同一 `claude -p --output-format text --verbose --dangerously-skip-permissions` 参数改由受管长会话运行。
+**当前证据**：实际 leader PID `83148` 已持续存活并将 `STATUS.md` 写为 `state: RUNNING`、`phase: P1 — 派发前输入核验`；`leader.pid` 已订正为 `83148`。当前步骤是核验输入、写 J1 prompt、脱离派发 J1，尚无 `J1_gate_spec_and_impact.md` 完成证据。
+**监督订正**：leader 首次状态写入了比实际墙钟超前的 `2026-08-02T04:02:00Z`；已在 `commander_notes.md` 要求后续逐次调用 `date -u +%Y-%m-%dT%H:%M:%SZ` 并显式纠正，不得前瞻估计。
+**START_HERE.md 维护**：已把 RQ015J 从“复审后待执行”更新为“leader 运行中、J1 未完成”，并记录上下文分格 blocker 的修订处理方式。
+
+### 2026-08-02T07:26:57Z — RQ015K 双路独立方案评审启动
+
+**任务定位**：RQ015K 拟判断是否需要、以及如何安全地把 J1 弃权门应用到全语料；当前只做 K 计划的两路独立评审，本次是评审启动环节，不执行 K1 勘察或 K2 全语料重算。
+**启动结果**：KR-A PID `96401`，从计划书出发审查前提、批处理规格、成本与 K1/K2 分段；KR-B PID `96402`，先不读计划书，从数据与产物独立推导最小需求后再对照计划。两路均使用 `gpt-5.5`、`xhigh`、`workspace-write`，由 `detach_launch.py` 双 fork 后运行。
+**存活证据**：两进程核验时均为 `RUNNING`、`PPID=1`，PGID 分别为 `96400`、`96399`；日志已分别增长到 7,525 与 7,531 字节。初始化出现 connector OAuth `invalid_grant` 警告，但未使进程退出，尚不能据此判定影响本地评审。
+**输出位置**：`.codex-fleet/rq015k-fullcorpus-gate/board/reviews/{KR_A.log,KR_B.log,KR_A_review.md,KR_B_review.md}`；PID 文件为同目录 `KR_A.pid`、`KR_B.pid`。
+**状态边界**：两路尚无明确判定，评审启动不构成 K1/K2 执行授权、HPC 作业提交或全语料重算完成。
+**START_HERE.md 维护**：已新增 RQ015K 双路评审运行状态、两路职责、PID、输出路径与执行边界。
+
+### 2026-08-02T07:52:22Z — RQ015K KR-B 停滞实例终止并重启
+
+**任务定位**：RQ015K 双路独立方案评审中，KR-A 已生成报告；本次处理未产出报告且日志停滞的 KR-B，恢复第二路独立评审，不执行 K1/K2。
+**旧实例核验与处置**：PID `96402` 实际仍存在，`PPID=1`，命令行确认属于“独立审查方 B”；运行约 25 分钟时 `KR_B.log` 仍为 7,531 字节、只含初始化内容，`KR_B_review.md` 不存在。按用户明确指示发送普通 `TERM`，旧进程在 1 秒内退出，未使用强制 `KILL`。
+**重启结果**：沿用原 `KR-B-prompt.md`、`gpt-5.5`、`xhigh`、`workspace-write` 参数，经 `detach_launch.py` 重启为 PID `99546`；核验时 `RUNNING`、`PPID=1`、PGID `99545`，日志已增长到 14,110 字节，报告尚未生成。
+**并行状态**：KR-A 原 PID `96401` 已退出且 `KR_A_review.md` 已生成；未在本次重启工作中读取或综合其评审结论，以保持 KR-B 的独立入口边界。
+**状态边界**：KR-B 重启成功不等于评审完成，也不构成 K1/K2、HPC 或全语料重算授权。
+**START_HERE.md 维护**：已记录 KR-A 产物存在、KR-B 旧实例停滞证据、终止方式、新 PID 与当前未完成状态。
+
+### 2026-08-02T04:12:15Z — RQ015J J1 交付完成
+
+**任务定位**：RQ015J 要为 online verification 固化第一道 IPV 弃权门；本轮是唯一 J1 执行，产出可执行规格与全域 design-based estimate（不是普查），不是全语料重算。
+**完成结果**：报告已落盘 `.codex-fleet/rq015j-gate-spec/board/reports/J1_gate_spec_and_impact.md`，末尾写入 `J1_DONE 2026-08-02T04:11:51Z`。复算脚本与机器证据为 `.codex-fleet/rq015j-gate-spec/work/j1_gate_spec_compute.py` 与 `.codex-fleet/rq015j-gate-spec/work/j1_gate_spec_evidence.json`。
+**关键数字**：HT 分母 `2,646,058`，门后保留权重 `1,885,831.096`，全域 design-based estimate（不是普查）可估率 `71.2695%`，cluster bootstrap 95% CI `[67.1729%, 75.2135%]`；互斥 reason 权重占比 `NO_IPV_EFFECT 0.5095%`、`NEAR_UNIFORM 28.2210%`；样本内门后 `1,017/2,300=44.2174%` 仅作样本比例说明。
+**验证边界**：用钉死解释器 `/Users/xiaocong/.rq009_codex_fleet/venv/bin/python` 重跑脚本并复现复审数字；`PYTHONPYCACHEPREFIX=/private/tmp/j1_pycache` 下 `py_compile` 通过；报告禁用术语扫描无命中，报告中 `source` 只剩第 4 节标题。未提交 git commit、未跑 HPC、未改受保护估计器文件。
+**START_HERE.md 维护**：已更新 RQ015J 当前 active context，指向 J1 报告、脚本、证据 JSON 和完成时间戳。
+
+### 2026-08-02T04:17:26Z — RQ015J leader 自查完成，转 WAITING_ON_COMMANDER
+
+**任务定位**：RQ015J 为 online verification（判断 AV 的 IPV 是否符合人类分布）冻结第一道弃权门
+（「IPV 没估出来」）。本轮编制为 1 个执行 agent（J1）+ leader 一轮自查，产出规格与全域
+design-based estimate（不是普查）——现有台账缺逐候选 MSE 与 log 域权重，全量重跑未获授权。
+**leader 独立复算**：用 /Users/xiaocong/.rq009_codex_fleet/venv/bin/python 重算，未复用 J1 脚本：
+门后 1,017/2,300、HT 分母 2,646,058、保留权重 1,885,831.096、可估率 71.2695%、cluster 1,909，
+逐项与 J1 一致；互斥 reason 13,482.740 + 746,744.164 = 760,226.904 = 分母 − 保留，无重复计数。
+**leader 补记 3 处（不改数字，已在报告末尾具名）**：(1) 新增 §3.1.1——门后 238 行 ipv_log 恰好为 0
+（占门后 HT 权重 10.2788%，分层 N 12/363、U 91/511、Z 135/143），J1 未披露；须告知 RQ009
+「ipv_log==0 不得反推为弃权」，并确认 Z 层分位数全为 0 是真实零点质量而非常数化缺陷；
+(2) 新增 §3.3 口径提示——n_obs 的 11 箱与 n_band 的 FULL 行是同一批行，不构成两次独立验证；
+(3) §2 表格去冗余，design-based 标注本身未删。
+**合规**：无禁用术语；src/ 与 pipelines/ 无改动（含 reliability_logdomain.py）；无 git commit；无 HPC 作业；
+未解析 RQ007 held_out；未读 RQ009 feature matrix。
+**时间戳纠正**：此前 STATUS 写入的 04:02:00Z 系前瞻估计（当时墙钟 04:00:31Z），已改为逐次实取。
+**状态**：state=WAITING_ON_COMMANDER，等待放行，未自行转 DONE。
+
+### 2026-08-02T08:37:53Z — RQ015K leader 启动并进入 K1-prep
+
+**任务定位**：RQ015K 要判断 J1 log 域弃权门能否以及如何物化到 RQ015A 当前 4 份本地可审计 ledger；双路独立评审已完成且任务书吸收 11 条强制修订。本次启动 K leader，只推进 K1 勘察与资源规划，K2 全量重算未授权。
+**启动过程**：执行 `bash .codex-fleet/launch_leader.sh K` 返回 PID `3704`，但该 PID 随即无输出退出、`leader.log` 为 0、`STATUS.md` 停在 `LAUNCHING`，故未按返回码认定成功。随后用启动器生成的同一 `.kickoff_resolved.md` 与同一 `claude -p --output-format text --verbose --dangerously-skip-permissions` 参数改由受管长会话运行。
+**当前证据**：实际 leader PID `3811` 已持续存活并将看板写为 `state: RUNNING`、`phase: K1-prep`；`leader.pid` 已订正。KR-A/KR-B 两份报告均已生成，leader 正在把双盲复审结论固化进单个 K1 agent prompt；K1 报告尚未生成。
+**HPC 约束**：已读取实际位于外置卷的共享指南 `/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/HPC_TONGJI_USAGE_GUIDE.md`（AGENTS.md 中旧内置盘路径不存在），并通过 `commander_notes.md` 强制 K1 使用 `tongji-hpc`、`/share/home/u25310231/ZXC`、`zxc-` job 名、Slurm `sbatch` 与提交前检查；密码提示必须停止。授权范围仅为 K1 分层小批，K2 不得提交。
+**时间戳监督**：leader 首次 `STATUS.md` 写入的 `08:37:00Z` 比当时墙钟 `08:36:51Z` 超前 9 秒；已要求后续逐次实取 UTC 时间并显式纠正。
+**状态边界**：leader 运行不等于 K1 完成，更不等于 K2 授权、HPC 全量作业提交或全语料重算完成。
+**START_HERE.md 维护**：已把 RQ015K 更新为“双评审完成、K1-prep 运行中、K2 未授权”，并记录报告路径、真实 PID、预期产物和下一道放行门。
+
+2026-08-02T09:25:15Z | K1 full-ledger log-domain gate preflight completed | report=.codex-fleet/rq015k-fullcorpus-gate/board/reports/K1_preflight_and_plan.md; pilot_job_id=2068610; no full-scale job submitted; START_HERE updated with K1 completion; K2 remains unauthorized.
+
+### 2026-08-02T10:56:30Z — Tongji HPC CPU 节点与账号额度只读核查
+
+**任务定位**：回答本项目在 Tongji HPC 上最多可用多少 CPU 节点；本次只查集群规模、实时状态、分区限制与项目账号/QOS，不提交计算作业。
+**账号上限**：本项目既有 RQ015G 作业 `2024766` 使用 `Account=p_p25310231`、`QOS=cpu-4000_core-l40-16_card-a800-16_card`。`sacctmgr show qos` 显示该 QOS 的 `MaxTRESPerAccount=cpu=4000`；集群本机 `sacctmgr` man page 定义该字段为账号可同时使用的最大 TRES。快照时该账号/QOS 只有作业 `2068003` 在运行并占 1 个 CPU 核，理论剩余额度 3,999 核。因此整节点等价上限仍为 Intel 96 核节点 `floor(3999/96)=41` 个，或 AMD/fata 192 核节点 `floor(3999/192)=20` 个。限制按 CPU 核而非节点计，部分节点分配时节点数不由这两个整数直接限定。
+**集群规模与实时状态**：CPU-only 分区物理共 530 节点（intel 232、amd 280、fata 18），分区 `MaxNodes=UNLIMITED`。快照时非 down/drain/inval 节点共 172（intel 48、amd 121、fata 3）；完全 idle 节点为 AMD 56 个。空闲 CPU 核为 intel 2,341、amd 20,016、fata 130，合计 22,487，但项目账号仍受 4,000 核 QOS 限制，且排队/节点状态决定即时可得量。
+**其他账号边界**：用户默认账号显示为 `d_000723`、QOS `normal`，SlurmDB 未展示 CPU TRES 上限；本次不把“未展示”解释为无限授权，也不建议切换账号规避项目 QOS。K/RQ015 实际沿用的已验证通道是 `p_p25310231`。
+**验证边界**：4 组 `sbatch --test-only` 临界请求只返回调度估计，随后 `squeue` 与 `sacct` 均确认无对应作业记录；没有提交真实作业。`--test-only` 接受请求不能替代 `MaxTRESPerAccount` 作为额度证据。
+**START_HERE.md 维护**：本次是实时容量快照，易随节点状态变化，未写入当前操作简报；长期约束仍以共享 HPC 指南和 Slurm 实时配置为准。
+
+### 2026-08-02T11:04:57Z — Tongji HPC intel/fata 单节点内存与实时可用节点核查
+
+**任务定位**：细化上一条 CPU 额度查询，回答 intel/fata 单节点配置内存，以及“可用节点”在运维状态、可接新 CPU、满足 RQ015K 单 shard 资源三种口径下的数量；只读查询，无作业提交。
+**单节点配置**：`sinfo` 的节点 `RealMemory` 显示 intel 为 644,000 MB（约 628.9 GiB），96 CPU 核；fata 为 3,094,000 MB（约 2.95 TiB），192 CPU 核。
+**分区状态**：intel 物理 232 节点，48 个非 down/drain（41 `mix`、7 `alloc`），完全 idle 为 0；41 个 mix 节点合计还有 2,337 空闲 CPU 核。fata 物理 18 节点，3 个非 drain/inval 且均为 `mix`，完全 idle 为 0；其空闲 CPU 分别为 fata01=1、fata02=128、fata04=1，合计 130 核。
+**RQ015K 单 shard 口径**：按 K1 推荐的每 shard 至少 6 CPU、`--mem=160G`，用 Slurm 的 `CPUAlloc/CPUTot` 与 `AllocMem/RealMemory` 计算，快照时 intel 有 36 节点满足，fata 只有 1 节点满足。操作系统 `FreeMem` 口径给 intel 40、fata 1，但调度规划采用更保守的 Slurm 已分配内存口径 36/1。
+**START_HERE.md 维护**：实时资源状态会变化，未写入操作简报；后续提交前必须重新查询。
+
+### 2026-08-02T11:14:03Z — RQ015K K1b 单-PKL内存与并发 pilot 启动
+
+**任务定位**：K1 已完成勘察并证明全量 K2 的资源模型仍需细化；K1b 只测单 PKL 分片下 6/10/16 workers 的峰值 RSS、吞吐与逐位数值一致性，为监督方决定是否放行 K2 提供分片依据。本次不执行 K2。
+**启动结果**：使用 `detach_launch.py`、`gpt-5.5`、`xhigh`、`workspace-write`，并通过 `-c sandbox_workspace_write.network_access=true` 单独开放网络。CLI 接受该配置键，未出现“不认识 network_access”的错误；PID `15750`，核验时 `RUNNING`、`PPID=1`、PGID `15749`。
+**实质进度证据**：日志从 8,477 增长到 202,854 字节，agent 已读取 K1 证据清单并查找共享 HPC 指南。AGENTS.md 中旧内置盘指南路径不存在；agent 已定位正确外置卷路径 `/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/HPC_TONGJI_USAGE_GUIDE.md`，进程未因此退出。
+**边界**：只允许三个约 1,120 单元的小配置；不得全量、不得扩大规模、不得改四个受保护文件或 sigma/grid 配置。跨 worker 数若 `mse_per_candidate[7]` 非逐位一致，必须立刻停止，不继续测吞吐。
+**输出位置**：日志 `.codex-fleet/rq015k-fullcorpus-gate/board/reports/K1b.log`；PID 文件 `board/K1b.pid`；预期报告 `board/reports/K1b_memory_pilot.md`，当前尚未生成。
+**状态边界**：K1b 已启动不等于 pilot 已完成，也不构成 K2/HPC 全量重算授权。
+**START_HERE.md 维护**：已新增 K1b 运行状态、网络沙箱方式、三组小配置、停止条件与输出路径。
+
+### 2026-08-02T11:37:36Z — RQ015K K1b 单-PKL内存与并发 pilot 完成
+
+**任务定位**：K1b 只补 K1 未测的一项资源问题：K2 若按单 PKL + row-key range 分片，每个 worker 的真实峰值 RSS 与 6/10/16 worker 吞吐如何变化；本次不执行 K2。
+**执行范围**：只提交一个合并小批 Slurm job `2068976`（`zxc-rq015k-k1b`），remote work dir `/share/home/u25310231/ZXC/sociality_estimation/work_dirs/INFRA/rq015k_k1b_memory_pilot_20260802T112244Z`。目标 PKL 为 K1 已见 PKL 中磁盘最大的 `waymo_0-299.pkl`，每个配置 1,120 个 InterHub 求解单元；OnSite/WOD 未触碰。
+**测量结果**：P6/P10/P16 的吞吐分别为 2.869391、4.503571、6.467854 单元/秒；RSS 合计分别为 16.337、27.228、43.583 GiB。按 30% margin 并向上取 8G 档，建议内存分别为 24G、40G、64G；推荐 P16 + `--mem=64G`。
+**正确性结果**：`mse_per_candidate[7]` 精确字符串一致性通过；P6 vs P10 比较 1,120/1,120 行，P6 vs P16 比较 1,120/1,120 行；与 K1 pilot 重叠 72/72 行也通过。三配置 `failure_counts_interhub.OK=1120`，`held_out_parsed_rows=0`，四个线程环境变量均为 1。
+**排产口径**：按题面 36 个 intel 节点 + fata02 快照，P16/64G 在 intel 每节点 6 片、fata02 12 片，合计 228 片、3,648 核，不受 4,000 核 QOS 约束；用 3,704 核·小时估算墙钟为 1.02 小时。
+**产物**：报告 `.codex-fleet/rq015k-fullcorpus-gate/board/reports/K1b_memory_pilot.md`；证据目录 `.codex-fleet/rq015k-fullcorpus-gate/work/k1b_memory_pilot/`，含 `k1b_sample_summary.json`、三组 `k1b_pilot_summary.json`、`k1b_consistency_summary.json`、`k1b_sacct_final.txt` 与 pre-submit cluster snapshot。
+**边界**：未提交全量 K2 作业，未提交 git commit，未改 `agent.py` / `ipv_estimation.py` / `process_interhub.py` / `reliability_logdomain.py` / `configs/ipv_sigma01_exact.json`。K1b 的推荐配置仍不构成 K2 执行授权。
+**START_HERE.md 维护**：已把 RQ015K 当前状态从“K1b 运行中”更新为“K1b 完成、K2 未授权”，并登记报告、证据目录、job id、推荐 P16/64G 与 1.02 小时排产估算。
+
+### 2026-08-02T12:13:48Z — RQ015K K2 执行任务书双路独立复审启动
+
+**任务定位**：K1/K1b 已完成勘察与单-PKL资源实测，K2 执行任务书已经形成；本次是 K2 派发前的两路独立方案复审，用于重新核算资源、检查门规格批处理实现、分片幂等与验收判据。本次不执行 K2，也不提交任何 Slurm 作业。
+**启动结果**：审查 A、B 均通过 `detach_launch.py` 并行派发，使用 `gpt-5.5`、`model_reasoning_effort=xhigh`、`--sandbox workspace-write` 与 `sandbox_workspace_write.network_access=true`。A PID `20270`（PPID `1`、PGID `20268`），B PID `20271`（PPID `1`、PGID `20269`）；核验时两者均为 `RUNNING`。
+**实质进度证据**：A 日志已增长到 85,334 字节，B 日志已增长到 80,173 字节，均已越过 prompt 回显与初始化。CLI 未报告 network_access 配置键错误。日志中的连接器 OAuth `invalid_grant` 是非阻断告警，两路主进程仍存活；两份最终复审报告当前均尚未生成。
+**隔离与边界**：A 从任务书逐项复核；B 必须先在不读取任务书、K1b 建议与监督方笔记的情况下独立推导，再进入对照阶段。两份 prompt 均禁止读取对方产物，禁止 `sbatch` / `srun` / `salloc`、重解锚点或创建 K2 work_dir，只允许限定命令的只读 HPC 查询；因此复审启动不等于 K2 已获最终执行裁定，更不等于全量重算已启动。
+**输出位置**：A 日志/报告为 `.codex-fleet/rq015k-fullcorpus-gate/board/reviews/K2R_A.log` 与 `K2R_A_review.md`；B 日志/报告为同目录下 `K2R_B.log` 与 `K2R_B_review.md`。PID 文件分别为 `K2R_A.pid`、`K2R_B.pid`。
+**START_HERE.md 维护**：已新增 K2 双路复审运行状态、PID、日志/报告路径、沙箱方式、审查隔离规则及“K2 尚未派发”的状态边界。
+
+### 2026-08-02T12:48:51Z — RQ015K K2 执行 leader 派发与早退恢复
+
+**任务定位**：K1/K1b 已完成，K2R-A/K2R-B 两份独立复审报告均已落盘，修订后的 `K2-leader-kickoff.md` 明确记录 PI 已授权执行；本次启动负责生成 K2-1 prompt、派发唯一执行 agent、监督 HPC 全量重算并收取结项的 K2 leader。
+**首次启动结果**：执行 `bash .codex-fleet/launch_leader.sh K2` 返回成功并登记 PID `23579`，但该 nohup 实例在 8 秒内无输出退出，`leader.log=0`、`STATUS.md` 停在 `LAUNCHING`。这与 kickoff 已记录的 J/K 轨连续早退故障一致；此状态未被解释为 K2 已运行。
+**恢复结果**：按 kickoff 的明确恢复要求，以相同 `.kickoff_resolved.md`、`claude -p`、`--output-format text --verbose --dangerously-skip-permissions` 启动受管长会话。进程表复核 shell PID `23745`、实际 Claude leader PID `23746`、tee PID `23748` 均存活；`leader.pid` 已订正为 `23746`。leader 已将 `STATUS.md` 写为 `RUNNING / K2-prep`，并记录已读取双盲复审裁定、正在撰写 `K2_prompt.md`。
+**当前状态边界**：K2 执行授权已成立，执行 leader 已启动并进入准备阶段；但当前尚无 K2-1 PID、尚无 Slurm 作业号，因此不能声称全量计算已提交或开始运行。后续以 `STATUS.md`、`progress.log`、K2-1 PID 和 Slurm 作业记录分别判定 leader、agent 与集群作业状态。
+**START_HERE.md 维护**：已把旧的“复审运行中/K2 未授权”更新为“双评审完成、PI 已授权、leader K2-prep 运行中”，并保留“尚未出现 K2-1/Slurm”的明确边界。
+
+### 2026-08-02T18:49:06Z — RQ015K K2-1 full-corpus log-domain gate ledger stopped at validation
+
+Status: BLOCKED / NOT ACCEPTED. K2 materialized and fetched the 14,473,982-row L1 ledger under data/derived/rq015k_logdomain_gate/ and generated 510 manifests, but final validation failed on the G-anchor numeric canary. Additional stop condition: six A-class shards exceed the per-shard SOLVER_FAILURE threshold. Main report: .codex-fleet/rq015k-fullcorpus-gate/board/reports/K2_fullcorpus_gate_ledger.md. Evidence: .codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/validation/. Protected files were not modified; no git commit/add/push was run; amd partition was not used. START_HERE.md was updated with the current blocked state.
+
+### 2026-08-03T00:20:13Z — RQ015K K2-2 结项收尾启动
+
+**任务定位**：K2-1 已完成 14,473,982 行 L1 台账物化，但报告以两个 blocker 记为 FAIL；监督方后续复核认定 G-anchor 选错基线、单片 `SOLVER_FAILURE` 阈值未校准并撤销。K2-2 只补齐正确校验、未实测的 RQ009 join key 唯一性、失败行刻画与报告/看板收尾，不重跑求解或 join，不提交 Slurm。
+**启动结果**：将用户消息中被压成一行的续行符还原为正常 shell 命令，通过 `detach_launch.py` 使用 `gpt-5.5`、`model_reasoning_effort=xhigh`、`--sandbox workspace-write` 与 `sandbox_workspace_write.network_access=true` 派发。PID `69090`，核验时 `RUNNING`、PPID `1`、PGID `69089`；CLI 未报告 network_access 配置键错误。
+**实质进度证据**：日志由 9,131 增长到 29,751 字节，已越过 prompt 回显与初始化。连接器 OAuth `invalid_grant` 为非阻断告警，主进程仍存活。预期的 `g_anchor_hpc_baseline.json`、`rq009_join_key_uniqueness.json` 与 `solver_failure_characterization.json` 当前均尚未生成。
+**边界与验收**：只允许 `k2_fullcorpus_materializer.py` 的指定 G-anchor 路径修正、一个 G-anchor 校验、RQ009 key 去重实测、1,934 行工程失败刻画及文档/看板更新；禁止 Slurm、全量重算、阈值扫描、受保护估计器改动和 git commit。K2-2 启动不等于报告已经 PASS；必须等三份机器证据、完整失败史、接口警告、状态更新全部落盘后再判定结项。
+**输出位置**：日志 `.codex-fleet/rq015k-fullcorpus-gate/board/reports/K2-2.log`；PID 文件 `board/K2-2.pid`；更新目标报告 `board/reports/K2_fullcorpus_gate_ledger.md`。
+**START_HERE.md 维护**：已新增 K2-2 运行状态、监督方推翻原 blocker 的依据、四项限定任务及“尚未转 PASS”的状态边界。
+
+### 2026-08-03T00:28:54Z — RQ015K K2-2 结项收尾完成，等待 commander
+
+**任务定位**：K2-1 已完成 14,473,982 行 K2 L1 台账物化并回收本地，但旧报告以 `g_anchor` 与 `solver_failure_threshold` 两条 blocker 记为 FAIL。监督方 `2026-08-02T19:12:54Z` 裁定两条 blocker 都不成立：G-anchor 比错到 RQ015B Mac 基线，单片 SOLVER_FAILURE 阈值未在 nuPlan Vegas 校准并已撤销。本次 K2-2 只做结项收尾，不重跑求解、不重跑 join、不改阈值。
+**执行结果**：只改 `.codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/k2_fullcorpus_materializer.py` 中 `validate_g_anchor()` 的基线 CSV 路径，改为 `.codex-fleet/rq015g-hpc-resolve/work/anchor_mse_hpc.csv`；随后只调用该函数对本地 `data/derived/rq015k_logdomain_gate/l1_v1/` 做 G-HPC 锚点比对，结果 `anchor_rows=2300`、`compared_rows=2300`、`max_abs_diff=0.0`、`first_mismatch=null`，写入 `validation/g_anchor_hpc_baseline.json`。
+**补测结果**：RQ009 join 行 `canonical_key` 唯一性实测 `rows=8,994,736`、`unique_keys=8,994,736`、`duplicates=0`，写入 `validation/rq009_join_key_uniqueness.json`；`new_solve_rows=0` 只保留为 join-only 构造事实，不写成实测。
+**失败行刻画**：1,934 行 `SOLVER_FAILURE` 全部来自 `nuplan` / `train_vegas2-6.pkl`，分布为 `train_vegas2=130`、`train_vegas3=634`、`train_vegas4=384`、`train_vegas5=392`、`train_vegas6=394`；`n_obs=11` 为 1,862/1,934，`signature=N` 为 1,693/1,934，按 `signature in {U,Z}` 的 source-collinear 代理为 241/1,934。判断为 nuPlan Vegas 几何压力下的工程失败，和既有 400 个 `spread(mse)==0` 退化锚点不是同一机制。证据写入 `validation/solver_failure_characterization.json`。
+**报告与看板**：`board/reports/K2_fullcorpus_gate_ledger.md` 已改为 PASS 版并保留完整失败史；`INTERFACE_NOTE.md` 已补 `ipv_log = 0` 是合法且高频通过门估计值（门后 23.40%），判别只能用 `status` / `reason_code`；`board/STATUS.md` 已转 `WAITING_ON_COMMANDER`，未自行转 DONE；`START_HERE.md` 已同步为当前事实。
+**边界**：未提交 Slurm，未重跑 solve/join，未读 RQ007 held_out，未读 RQ014 致盲字段，未改 `agent.py` / `ipv_estimation.py` / `process_interhub.py` / `reliability_logdomain.py` / `configs/ipv_sigma01_exact.json`，未提交 git commit。
+
+### 2026-08-03T03:03:30Z — RQ015L 收官 leader 启动
+
+**任务定位**：RQ015 A–K 已完成，L 轨是本研究线收官轮；先由 L1 查证 RQ009 的 273,819/1,270,566 个精确零点是否能与 K2 台账精确连接并拆分真中性与弃权伪零，由 L2 查清 OnSite 274,022 行 `UNKNOWN` 的产生条件与输入支持状态，二者返回后再由 L3 写完整 `RQ015_consolidated_report.md`。
+**启动结果**：执行 `bash .codex-fleet/launch_leader.sh L`。脚本已接入 `rq015l-consolidate/board/L-leader-kickoff.md`，并使用 2026-08-03 修订后的 `detach_launch.py` 双重脱离实现启动；leader PID `96939`、PPID `1`、PGID `96938`。启动命令 exit 0，进程在 69 秒复核时仍为 `RUNNING`，未复发 J/K/K2 的旧 nohup 早退模式。
+**当前证据**：`board/STATUS.md` 仍为 `state: LAUNCHING`，`leader.log` 为 0 字节；kickoff 已明确说明 `claude -p` 在 leader 结束前可能一直不输出，因此 0 字节本身不是失败证据。当前尚无 L1/L2 PID 或日志，只能确认 leader 进程已稳定启动，不能确认子任务已派发或分析已完成。
+**范围边界**：本轮全部工作使用本地既有产物，不投 Slurm、不重解锚点、不重跑 K2 join、不修改 RQ009 文件；L1 若无法建立精确一对一 join 必须如实停止在不可 join 结论，不得近似匹配。L1/L2 完成后才允许 L3 成文。
+**输出位置**：看板 `.codex-fleet/rq015l-consolidate/board/STATUS.md`；进度 `.codex-fleet/rq015l-consolidate/board/progress.log`；leader PID/日志为同目录 `leader.pid` 与 `leader.log`；最终预期报告 `board/reports/RQ015_consolidated_report.md`。
+**START_HERE.md 维护**：已新增 L leader 启动事实、三阶段依赖、实际 PID、当前仅 LAUNCHING 的状态边界与本地只读分析范围。
+
+### 2026-08-03T03:19:05Z — RQ015L L1 RQ009 精确零点拆分交付
+
+**任务定位**：RQ015L 收官轮需要先完成两个本地只读查证，再由 L3 汇总成文；L1 负责判断 RQ009 已接受报告中的 273,819/1,270,566 个 `y == 0.0` 精确零点能否与 K2 台账精确连接，并把 K2 可判别状态拆成通过门零点、非 OK 状态与 join 未命中三类。
+**执行结果**：交付目录 `.codex-fleet/rq015l-consolidate/work/L1_rq009_zero_atom_split/` 已生成 `L1_join_feasibility.json`、`L1_zero_atom_split.json`、`L1_zero_atom_split.csv`、`L1_fingerprint_crosstab.csv`、可重跑脚本 `L1_rq009_zero_atom_split.py` 与 `L1_report_section.md`。RQ009 目标定义为 M3 test prediction parquet 的 `y` 列、`alpha ~= 0.10`；1,270,566 行目标键 `case_key + anchor_frame_index + perspective` 唯一，连接 K2 时按 `source_dataset` 与 `|role=target_future` 组成 `canonical_key`。
+**关键数字**：K2 `rq009_feature_matrix` 分区 `canonical_key` 为 8,994,736/8,994,736 唯一；`target_future` 子集为 4,497,368 行且 `canonical_key`、`product_row_key`、`interhub_canonical_key` 均唯一。RQ009 1,270,566 个单 alpha 目标左连接 K2 命中 888,892、未命中 381,674；3,811,698 = 1,270,566 × 3 是三个 alpha 展开，不是额外样本。273,819 个精确零点中，K2 命中 192,271、未命中 81,548；命中行里 `status=OK` 99,938，`status` 非 OK 92,333，其中 `NEAR_UNIFORM` 90,490、`NO_IPV_EFFECT` 1,796、`SOLVER_FAILURE` 47。
+**自查结果**：守恒关系通过（99,938 + 92,333 + 81,548 = 273,819；90,490 + 1,796 + 47 = 92,333），报告内百分数均紧跟分母，L1 交付目录未新增禁用表述。`L1_report_section.md` 末尾已写 `state: WAITING_ON_LEADER` 与实取 UTC 时间戳 `2026-08-03T03:17:47Z`。
+**边界**：未修改 RQ009 目录、未改受保护源文件、未投 Slurm、未重跑 K2 生成流程、未提交 git commit。`START_HERE.md` 已同步 L1 交付事实；L2 与 L3 状态不由本线程判定。
+
+### 2026-08-03T03:22:56Z — RQ015L L2 OnSite UNKNOWN 查证交付
+
+**任务定位**：RQ015L 收官轮需要先完成两个本地只读查证，再由 L3 汇总成文；L2 负责查清 K2 台账中 OnSite `onsite_dense_timeseries` 的 274,022 行 `UNKNOWN` 来源状态来自哪段代码，以及这些行是否具备 IPV 求值所需的基础输入字段。本轮只查证，不重算、不补数据。
+**执行结果**：交付目录 `.codex-fleet/rq015l-consolidate/work/L2_onsite_unknown/` 已生成 `L2_unknown_provenance.json`、`L2_input_availability.csv`、`L2_input_availability.json`、`L2_rq015a_consistency.json`、可重跑脚本 `l2_onsite_unknown_audit.py` 与 `L2_report_section.md`。代码来源确认在 `scripts/rq015a/build_ledger.py:1219-1233`：先判 OnSite 局部序号 warm-up，再由空 role 误差单元写 `UNKNOWN` / `EMPTY_CELL_UNEXPLAINED`，不是隐式 else 兜底。
+**关键数字**：K2 OnSite 台账 281,268 行中 `UNKNOWN` 为 274,022/281,268，`ATTEMPTED` 为 2,974/281,268，`NOT_ATTEMPTED` 为 4,272/281,268；全部 `UNKNOWN` 行为 274,022/274,022 个 `EMPTY_CELL_UNEXPLAINED`。这些 `UNKNOWN` role 行的 dense 源表基础字段（case/frame/time、ego/counterpart ID、位置、速度、heading、距离、相对速度）均为 274,022/274,022 非空；真实地图/车道/reference-line 字段为 0/274,022。默认 bounded-anchor 产物仅选 267 个 AV anchor，同目录 all-valid artifact 有 67,861 行，未物化候选为 67,594/67,861。
+**判断**：证据支持“既有 OnSite 生成合同下默认 bounded-anchor 流程未覆盖大多数 dense role 行”，不支持解释为轨迹或配对字段普遍缺失。边界是当前 dense 表不能证明真实地图或车道参考线已齐备，因为当时生成脚本使用 observed trajectory fallback。
+**RQ015A 口径核对**：RQ015A `concentration_ledger_summary.csv` 中筛选 `artifact == onsite_dense_timeseries` 且 `attempt_status == ATTEMPTED`，列为 `artifact/attempt_status/rows`，分子 2,974、分母 281,268；K2 来源状态列名为 `source_attempt_status`，分子分母与状态计数一致。
+**自查结果**：重跑 L2 脚本 exit 0，仅出现 pyarrow CPU cache 权限警告；交付目录禁用表述扫描为 0 命中，报告内百分数均紧跟分母，关键 CSV 计数与 JSON 口径一致，Q1 行号已逐行对照源码。`L2_report_section.md` 末尾已写 `state: WAITING_ON_LEADER` 与实取 UTC 时间戳 `2026-08-03T03:21:28Z`。
+**边界**：未修改受保护源文件、未修改 `scripts/rq015a/`、未修改 RQ009 目录、未投 Slurm、未重解锚点、未补数据、未提交 git commit。`START_HERE.md` 已同步 L2 交付事实；L3 状态不由本线程判定。
+
+## 2026-08-03T03:47:35Z — RQ015 track L（rq015l-consolidate）收官轮
+
+**任务**：RQ015 十一轨（A–K）已全部结项，本轨为收官轮，不重算、不投 Slurm，
+全部工作在 K2 已交付的全语料台账（14,473,982 行）上完成。三件事：
+L1 拆分 RQ009 打分目标的精确零点原子；L2 查证 OnSite 274,022 行 UNKNOWN 来源；L3 成文。
+
+**状态**：`WAITING_ON_COMMANDER`（leader 不自行 DONE）。用时约 45 分钟。
+编制：3 个 codex agent（L1/L2 并行 → L3），1 轮 leader 自查，0 次盲审，0 版第二规格。
+
+**主要产出**：`.codex-fleet/rq015l-consolidate/board/reports/RQ015_consolidated_report.md`
+
+**科学结论**：RQ009 accepted 报告的 Limitations 记有其打分目标存在 21.5509%
+（273,819/1,270,566）的精确零点原子，当时无法判断这些 0 是什么。本轨拆开了它：
+在 K2 台账覆盖域内（分母 192,271），48.0223%（92,333/192,271）不是中性 IPV 点值，
+而是弃权情形下被写成 0 的数值（主体为权重近均匀 NEAR_UNIFORM，90,490/192,271 = 47.0638%）；
+真中性零为 51.9777%（99,938/192,271）。
+OnSite 的 274,022/281,268（97.4238%）UNKNOWN 判定为「流水线没走到」而非「数据不支持」：
+轨迹与配对字段 100%（274,022/274,022）非空，而生成脚本默认 --max-anchors-per-unit 1。
+
+**leader 自查发现的两处问题（均已处理并上报）**：
+1. L1 报了 29.78%（81,548/273,819）的 join miss 却未定性。leader 只读元数据补查得
+   整案级排除（2,270 个 case，0/2,270 出现在台账 case_id，0/7,576 被部分覆盖），
+   命中 5,306 个 case 与 RQ015E 的 dev+guard case 集吻合，据此推断属 RQ007 held_out
+   （推断，未开受保护划分文件）。主口径分母由 273,819 改为 192,271。
+2. 「门后 23.40% 取 ipv_log=0」分母错标：实际是 J 锚点样本 238/1,017，
+   InterHub 门后通过行普查（分母 3,502,340）为 5.0097%（恰好为 0）至 9.9516%（abs<=1e-9）。
+   该错误同时在 K2 报告 §9 与 K2 INTERFACE_NOTE.md 中；本轨未改 K2 文件，待裁定。
+
+**待监督方裁定**：(1) L1 对 381,674 行统计 y==0.0 是否构成 RQ007 held_out 污染事件
+（同时发现 RQ009 已发表的原子计数本身就算在含该 2,270 个 case 的 fold 上）；
+(2) 是否授权直读受保护划分文件确认 held_out 归属；(3) 是否回改 K2 INTERFACE_NOTE.md 的分母；
+(4) OnSite 补齐范围与参考线合同（本轮不补齐）。
+
+**遗留项**：J 轨 HT 分母 2,646,058 与 RQ009 台账行 8,994,736 的关系仍 not yet established。
+
+**合规自证**：五个受保护文件 SHA-256 与 K2 记录逐个相同；RQ009 目录与 scripts/rq015a 未被修改；
+git status 与开轨前快照一致，未 commit；未投 Slurm；未访问 confirmation_PROTECTED/；
+未读 RQ014 致盲字段；全文无 estimability 与「测出/未测出 IPV」字样。
+
+**START_HERE.md 维护**：已更新 RQ015L 条目（L3 完成 + 两处订正）与 RQ015K 条目的
+ipv_log=0 分母订正。
