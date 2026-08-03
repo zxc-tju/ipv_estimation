@@ -1,0 +1,39 @@
+{
+  "additional_repro": "On HPC, re-running the same G workdir sample row with the same run_b1/run_b2/core file SHAs and same PKL SHA produced the K2 L1 values, not the anchor_mse.csv values.",
+  "anchor_file": ".codex-fleet/rq015b-repair/work/anchor_mse.csv",
+  "anchor_file_sha256": "b0f6202501ea738b1ae6d49f83af1877bee85b391d5db6a44375d67b552eb114",
+  "anchor_id": "ipv_007137|46|1",
+  "anchor_mse": [
+    0.5247940149308349,
+    0.1574064132129574,
+    0.12332716425144798,
+    0.06302367791654959,
+    0.049646404785225216,
+    0.05323298329326465,
+    0.3680952134404656
+  ],
+  "blocker": "g_anchor_numeric_mismatch",
+  "created_utc": "2026-08-02T18:43:56Z",
+  "diff_k2_minus_anchor": [
+    -0.013332352186283258,
+    -0.002449443468882373,
+    -0.0012689462893134135,
+    0.009408003053556671,
+    0.004914846858771506,
+    -0.0002079740531644239,
+    0.0033392873997810657
+  ],
+  "hpc_g_anchor_path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/INFRA/rq015g_anchor_resolve_20260801T012113Z/repo_stage/.codex-fleet/rq015b-repair/work/anchor_mse.csv",
+  "hpc_k2_authoritative_path": "data/derived/rq015k_logdomain_gate/l1_v1",
+  "k2_l1_mse": [
+    0.5114616627445516,
+    0.15495696974407502,
+    0.12205821796213456,
+    0.07243168097010626,
+    0.05456125164399672,
+    0.05302500924010023,
+    0.37143450084024665
+  ],
+  "max_abs_diff": 0.013332352186283258,
+  "status": "BLOCKED"
+}

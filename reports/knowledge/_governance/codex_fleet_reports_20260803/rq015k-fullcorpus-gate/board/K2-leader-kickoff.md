@@ -1,0 +1,313 @@
+# Track K2 leader — 全语料重算：物化 InterHub 的 log 域门判据台账
+
+仓库根：`<REPO_ROOT>`
+看板：`<REPO_ROOT>/.codex-fleet/rq015k-fullcorpus-gate/board/`
+工作区：`<REPO_ROOT>/.codex-fleet/rq015k-fullcorpus-gate/work/`
+
+**PI 已授权执行。** 前置的 K1 勘察与 K1b 内存 pilot 均已完成并经监督方独立复算。
+本任务书是 K2 的唯一依据；与任何早前文档冲突时以本文为准。
+
+## 一、位置与产出
+
+最终用途是 online verification：判断自动驾驶车辆的 IPV 是否落在人类分布内。
+两个弃权机制**串联**：机制一（本轨物化的）判「这一帧的 IPV 能不能估」，
+弃权则直接结束、不进机制二；机制二是 RQ009 已 accepted 的 envelope 支持度判据。
+
+**K2 的产出是一张台账**：InterHub 每个求解单元一行，含
+`mse_per_candidate[7]`、`w_log[7]`、`max_w_log`、`mse_spread`、`k_eff_log`、
+`status`、`reason_code`、`ipv_log`、以及能 join 回 RQ009 的键。
+有了它，RQ009 才能筛出可用的人类样本建 envelope，在线检测才能逐帧调用同一判据。
+
+## 二、门的规格（**冻结，一个字不许改**）
+
+```text
+输入（单帧内可得）: frame_id, candidate_grid_id, K=7, candidate_ipv[7],
+                    mse_per_candidate[7], log_score[7]
+
+log_score_i = -mse_i / (2 * sigma^2)     其中 sigma = 0.1   ← 必须钉死
+w_log       = softmax(log_score)          用 log-sum-exp（复用现成实现）
+mse_spread  = max(mse_per_candidate) - min(mse_per_candidate)
+max_w_log   = max(w_log)
+k_eff_log   = 1 / sum(w_log_i^2)
+
+if 输入非有限 / 缺列 / 求解失败:
+        status=ENGINEERING_FAILURE, reason_code=NON_FINITE_INPUT 或 SOLVER_FAILURE,
+        ipv_log=null, w_log=null
+elif mse_spread == 0:   status=ABSTAIN, reason_code=NO_IPV_EFFECT, ipv_log=null
+elif max_w_log < 0.20:  status=ABSTAIN, reason_code=NEAR_UNIFORM,  ipv_log=null
+else:                   status=OK, reason_code=null,
+                        ipv_log = sum(candidate_ipv_i * w_log_i)
+```
+
+- `sigma = 0.1`、候选网格 `legacy7_pi_over_8`（7 点 `[-3..3]·π/8`）、`K = 7`：**全部不得改**
+- `theta = 0.20` 是**政策阈值**，不是数据断点，**不得调参、不得做阈值扫描**
+- **必须在 log 域算。** 连乘域下溢会把可估的行错判为不可估
+- `mse_spread == 0` 是**精确浮点相等**，先断言 7 个 MSE 均为有限 float64 且长度为 7，
+  再判 `max - min == 0.0`。**不得用 `np.isclose`**
+- 两条科学 reason **互斥且有序**：先 `NO_IPV_EFFECT`，否则再 `NEAR_UNIFORM`。
+  向量化实现必须用有序 `np.select` 或「先写 1 再只在 null 处写 2」。
+  **两个布尔掩码顺序覆盖会写反**——样本内 400 个 `mse_spread==0` 的行全部也满足
+  `max_w_log<0.20`，写反了看不出来
+- **工程失败绝不允许被记成两个科学 reason 之一**
+- softmax 复用 `src/sociality_estimation/core/reliability_logdomain.py` 的
+  `weights_from_mse()`（第 172-188 行，已是稳定实现），不要另写
+
+## 三、范围（PI 已裁定）
+
+| 项 | 决定 |
+|---|---|
+| InterHub | **做**，4,981,984 个求解单元 |
+| RQ009 feature matrix | **不重解**，8,994,736 行全部由 InterHub 结果 join 回填（K1 干跑 512/512 精确一对一，0 漏 0 重） |
+| OnSite（2,974）/ WOD（906） | **本轮不做**。写 `gate_applicable = false` 或工程状态，保留 `source_attempt_status`；**绝不允许写成两个科学 reason** |
+| 非 `ATTEMPTED` 行 | 219,360 `NOT_ATTEMPTED` + 274,022 `UNKNOWN` 同样写 `gate_applicable = false` |
+
+**「全语料」在本轮一律限定为「RQ015A 当前 4 份本地可审计 L1 parquet ledger 的 InterHub 部分」**，
+不得写成「全 WOD」或「全项目全语料」。
+
+## 四、资源配置（**已按 K2R-A / K2R-B 双盲复审修订，2026-08-02T12:30Z**）
+
+原版本写死 P6 / `--mem=48G` / **418 片** / 2,508 核 / 1.15 小时。
+两位审查方**独立**判定该片数算错，监督方复算确认：
+**418 是把分区空闲核当成连续资源池除以 6 得到的；而 Slurm 单个作业步必须落在单个节点上，
+正确算法是逐节点向下取整再求和。** 按 K1b 投递前旧快照，正确值是 402 片而非 418；
+按 2026-08-02T12:15:01Z 实况快照，正确值是 447 片 / 2,682 核 / 1.079 小时（三方独立算得同值）。
+
+**因此本节不再写死片数。并发是投递时算出来的，不是从任务书里抄的。**
+
+### 4.1 固定的部分
+
+- **每片 6 worker（P6）。** 每 worker 吞吐 0.4782 units/s，P16 为 0.4042，核效率高 18%。
+  **核·小时与分片形状无关，恒为 2,893.75 核·小时**（4,981,984 ÷ 0.4782319 ÷ 3600），
+  所以在核数受限时 P6 严格优于 P16。
+- **`--mem=48G`。这是明确的保守策略，不是公式结果。**
+  P6 实测 6 worker 合计峰值 RSS 16.337 GiB，48G 是 2.94 倍余量。
+  原版本同时给出 `× 1.3` 的自适应公式（代入 P6 得 24G），与 48G 自相矛盾——**该矛盾已修正**：
+  余量系数统一为 **3.0**，自适应公式改为 `--mem = ceil_to_8G(2.789 GiB x workers x 3.0)`。
+  OOM 是本项目唯一真正炸过的失败模式，不要压缩这个余量。
+- **分片粒度固定、并发不固定。** 按 `(单个 PKL, 行键区间)` 切，每片目标 10,000-12,000 canonical units。
+  一个节点可承载多片；不得沿用 K1 报告的 `one node per shard` 写法。
+
+### 4.2 投递时必须现算的部分
+
+投递前重查快照，按**逐节点装箱**计算并发上限：
+
+```
+slots       = sum_over_nodes  min( floor(idle_cpus_node / workers),
+                                   floor(free_mem_MB_node / mem_MB_per_shard) )
+concurrency = min(slots, floor(4000 / workers))      # QOS 合计核上限
+```
+
+只统计 state 不含 `down` / `drain` / `inval` / `drng` 的节点。
+**禁止用「分区空闲核总数 ÷ 每片 worker 数」——那正是原版本的错误。**
+Slurm array 用 `%concurrency` 限流；并发不足只会多跑几波，不影响数值结果。
+
+参考量级（2026-08-02T12:15:01Z 实况，`intel`+`fata`，51 个可用节点、2,838 空闲核）：
+
+| 配置 | CPU 侧 slot | 内存侧 slot | 实际 slot | 活跃核 | 墙钟 |
+|---|---:|---:|---:|---:|---:|
+| **P6 / 48G** | 457 | 664 | **447** | 2,682 | **1.079 h** |
+| P6 / 24G | 457 | 1,352 | 457 | 2,742 | 1.055 h |
+| P16 / 64G | 157 | 488 | 157 | 2,512 | 1.363 h |
+
+### 4.3 分区范围：本轮仍限 `intel` + `fata`，**不放开 `amd`**（监督方裁定）
+
+复审 B 正确指出集群另有 `amd` 分区，当前空闲核 19,088。若放开全部 CPU 分区，
+约束会从空闲核变成 QOS 的 4,000 核，并发可达 666 片、墙钟 0.724 小时。**本轮不放开**，两条理由：
+
+1. G 轨的逐位一致性证据覆盖的是 `fata` 与 `intel` 两类节点（Slurm 2024766，348/348）。
+   放开第三个分区属于把确定性证据**静默外推**，本项目一贯不做。
+2. 收益约 21 分钟墙钟，代价是一个未经验证的数值通道加一轮 canary。不划算。
+
+**若 PI 要求放开：必须先在 amd 节点上重跑 G 锚点重叠、要求逐位相同，通过后才准用。**
+
+⚠ 实况风险：当前 `intel` 的 232 个节点中有 183 个处于 `down`，可用节点只有 51 个。
+投递时若可用节点更少，按 4.2 现算并发即可，墙钟相应拉长、**核·小时不变**；
+超过第十节的 4 小时上限再报监督方。
+
+## 五、分片、续算、重投、校验（照 K1 报告 §5，此处为强制版）
+
+**分片 manifest 必须含**：`shard_id`、`artifact_scope`、`pkl_file_list`、`source_dataset`、
+`row_key_min`、`row_key_max`、`canonical_key_count`、`expected_output_rows`、
+`input_ledger_sha256`、`input_pkl_sha256`、`code_sha`、`command`、`sigma`、
+`candidate_grid_id`、`created_utc`。**同一 canonical key 只能出现在一个分片里。**
+
+**断点续算**：先写 `<shard>.tmp.parquet` 与 `.tmp.manifest.json`，校验后**原子 rename**。
+一个分片算完成，必须 manifest 的输入 SHA、代码 SHA、命令、canonical 行数、
+预期输出行数、输出 SHA **全部匹配**；**文件存在不等于完成**。
+重投必须幂等：已完成且 manifest 匹配则跳过；最终文件存在但不匹配 → 按 `SCHEMA_MISMATCH` 硬停。
+
+**失败分类与重投**：
+- `SCHEMA_MISMATCH` → **立即整体停止**，报监督方
+- `OOM` → 该片降到 3 worker 重投一次；再 OOM 则停止并报
+- `TIMEOUT` → 该片加倍墙钟或减半行区间重投一次；再超时则停止并报
+- `SOLVER_FAILURE` → 只重跑失败行一次；单片失败行超过 100 行或 2.0%（取小）则停止
+- `NON_FINITE_INPUT` → 不盲目重试；分类记录，单片超过 0.1% 则停止并报
+
+**产物校验（全部通过才算完成）**：主键唯一；无缺失/重复分片区间；`K=7`；
+数组长度恰为 7；科学 reason 赋值前 `mse_per_candidate[7]` 必须有限；
+工程失败行 `ipv_log` 与 `w_log[7]` 均为 null；reason 顺序正确；
+`ipv_log` 的 null 规则；状态计数与源 `attempt_status` 对账；
+随机抽样与 G 锚点重叠重跑一致；全部输入与 PKL 的 SHA 清单匹配；
+**`held_out_parsed_rows = 0`**。
+
+### 5.6 实现与 schema 强制要求（复审 A 提出，**不改第二节的门规格，只补实现侧**）
+
+- **输出 schema 的 7 元数组 element dtype 必须是 double（float64）。**
+  `mse_spread == 0` 是精确浮点相等，任何 float32 降精度都会改变判定
+- **状态枚举唯一**：与 `reliability_logdomain.py:36-49` 的 `STATUS_NON_FINITE_INPUT` /
+  `STATUS_SOLVER_FAILURE` 对齐，不得在批处理侧另起一套写法
+- **表级缺列 → `SCHEMA_MISMATCH` 整体停止**，不得降级成逐行工程失败继续产出
+- **行级 list 为 null / 为空 / 长度 ≠ 7 → 明确归入 `NON_FINITE_INPUT`**，不得留作未定义
+- **`sigma = 0.1` 必须由调用方显式传入** `weights_from_mse(mse, sigma)`
+  （该函数第 172 行签名两个参数皆必填、无默认值，不会替调用方钉死 0.1），并写入每一份 manifest
+- **rename 顺序：先 parquet、后 manifest，manifest 是唯一完成标记。**
+  两个 rename 不构成一个事务；下游必须先核 manifest 才认 parquet
+- **完整 L1 产物的分片账必须覆盖全部四类行**：InterHub solve 行、RQ009 join 回填行、
+  非 `ATTEMPTED` 行、OnSite/WOD pass-through 行。每一类都要有归属分片与预期行数。
+  只按 solve shard 判完成，产物会「看起来完成」而缺失后三类
+  （**复审 A 判定这是最可能造成实际损失的一处**）
+
+
+## 六、验收判据（**已按双盲复审修订**：原第 1 条降级为解释性对照，新增普查完整性判据）
+
+### 6.1 普查完整性（**任一条不过即为未完成**）
+
+1. **InterHub 覆盖**：输出 canonical key 数 = **4,981,984**，缺失 0，重复 0
+2. **RQ009 回填**：**8,994,736** 行全部 exact-one join，misses 0，duplicates 0，新增求解行 0
+3. **非科学范围行**：`NOT_ATTEMPTED` 219,360 + `UNKNOWN` 274,022 + OnSite 2,974 + WOD 906
+   全部有归属分片、全部 `gate_applicable = false`，**无一行落入两个科学 reason**
+4. **manifest 对账**：每片的输入 SHA / PKL SHA / 代码 SHA / 命令 / sigma / grid /
+   canonical 行数 / 预期输出行数 / 输出 SHA **全部匹配**
+5. **逐行门不变量（从产物重算，不是相信 writer）**：`K = 7`；数组长度 7 且 dtype 为 double；
+   `sum(w_log)` 与 1 的偏差 ≤ 1e-12；`max_w_log` 落在 [1/7, 1]；`k_eff_log` 落在 [1, 7]；
+   reason 顺序正确；非 OK 行的 `ipv_log` 与 `w_log` 均为 null；OK 行的 `ipv_log` 有限
+6. **`held_out_parsed_rows = 0`**
+
+### 6.2 数值 canary（必过，但不充分）
+
+**G 锚点重叠逐位一致。** 比较口径必须是：按 canonical key 对齐后**解析为 float64 逐位比较**，
+**不得用 CSV 字符串相等**（字符串比较会把格式差异误报成数值差异）。不同则停止并报。
+
+**worker 数不变性**：本轮固定 P6，K1b 已证 P6/P10/P16 在 1,120 行上零不一致，无需重跑；
+**若投递时改了 worker 数，必须重跑同样的抽查。**
+
+### 6.3 解释性对照（**不是验收判据**）
+
+J 轨的全域可估率 71.2695%、CI [67.1729%, 75.2135%] 是**设计基抽样估计**，
+分母是 2,646,058 的 HT 权重、2,300 个锚点、1,909 个 cluster；
+K2 是**行级普查**，分母是 4,981,984 个 canonical solve unit（另有 8,994,736 个 join 行）。
+**两边的域与分母不是同一个东西，落不落在该 CI 内都不能判定 K2 成功或失败。**
+原版本把它写成必过判据是错的——两位审查方**独立**指出，监督方接受。
+正确用法：把 K2 普查结果与该区间并列报出，**差异只需解释，不触发停止**。
+两条 reason 的全域权重占比参照：`NO_IPV_EFFECT` 0.5095%、`NEAR_UNIFORM` 28.2210%。
+
+## 七、必须随台账交付给 RQ009 的一条警告
+
+J 轨实测：**门后（`status=OK`）的行里有 23.40% 的 `ipv_log` 恰好为零**
+（判定为 `|ipv_log| <= 1e-9`；分 signature 为 N 12/363、U 91/511、Z 135/143）。
+
+本门保证「弃权」不再写成 `ipv=0`，但**反过来不成立**——
+`ipv_log = 0` 仍是合法且高频的**通过门**的估计值（中性社会倾向）。
+**判别字段只能是 `status` 与 `reason_code`，不是 `ipv_log` 的数值。**
+这条必须写进交付给 RQ009 的接口说明，不能只留在报告正文。
+（旁证：RQ009 `decision.md` Boundaries 记有 `Target exact-zero atom ~21.6%`，量级一致。）
+
+## 八、HPC 通道（复用，不要另造）
+
+- 冻结环境 `/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/bin/python`
+  （Python 3.9.24 / numpy 1.21.6 / scipy 1.7.3 / OpenBLAS）
+- 冻结 PKL 快照 `.../snapshots/interhub_legacy_20260711_v1/full_datasets/pkl`
+  （**禁用** `subsets_for_yiru/pkl`）
+- managed checkout `6bdcc2e6`
+- 线程钉死 `OMP=MKL=OPENBLAS=NUMEXPR=1`（不设会破坏确定性）
+- 分区 `fata` 与 `intel` 均可（G 轨已证 AMD 与 Intel 对本计算逐位相同，Slurm 2024766，348/348）
+- 每次投递用**新建** work_dir，不得覆盖任何既有目录
+- 放网写法：`--sandbox workspace-write -c sandbox_workspace_write.network_access=true`
+  （已实测被接受）。**不得用 `danger-full-access`**
+
+## 九、硬边界
+
+- **不改** `agent.py` / `ipv_estimation.py` / `process_interhub.py` / `reliability_logdomain.py`
+  与 `configs/ipv_sigma01_exact.json`。新增 writer/materializer 可以，改计算不行
+- 不提交 git commit
+- 不解析 RQ007 held_out，不读 RQ014 致盲字段
+- 不改 RQ009 任何东西，不重算它的 4.78% 弃权率
+- 不做阈值扫描、不提替代判据、不写「规格 v2」
+- 时间戳一律 `date -u +%Y-%m-%dT%H:%M:%SZ`，**不要前瞻估计**
+- 结项须自证边界：四个受保护文件 SHA、`git --no-optional-locks status --porcelain` 输出、
+  本轮全部 Slurm 作业号与各自规模
+
+## 十、编制与汇报
+
+**一个 codex agent（K2-1），leader 在本回合内阻塞轮询至结项，一轮自查，
+转 `WAITING_ON_COMMANDER`，不得自行 DONE。**
+派发用 `.codex-fleet/rq015a-run/board/detach_launch.py`。
+
+⚠ `launch_leader.sh` 用 nohup 拉起的 leader 已在 J、K 两轨**连续早退过三次**，
+每次都靠改用受管长会话恢复。若你发现自己是那个早退的实例，直接按同 prompt 改用受管长会话。
+
+产出 `board/reports/K2_fullcorpus_gate_ledger.md`。**预计墙钟约 1.1 小时**（按第 4.2 节投递时现算的并发为准，不是固定值）；
+若超过 4 小时仍未完成，写明原因并报监督方，不要无限重投。
+
+## 舰队通用规则（A/B 轮踩出来的，逐条都是事故换来的）
+
+**你的角色**：leader。你自己**不写实现代码、不跑数据管线**——交给 codex CLI。
+你负责：分解、写/派 prompt、判定结果、汇报。上面有监督方（Cowork 的 Claude）通过文件与你异步交互。
+
+**1. 速度原则是最高准则**（见 `AGENTS.md` → Research Velocity Principle）。
+本轮是诊断性/描述性产出：**一个 codex agent，一轮自查，出报告，结束**。
+不做盲审、不做多路复审、不出第二版规格、不加授权闸门。
+**发现自己在写规格 v2 就是跑偏了，停下。**
+反面案例：上一轮一个描述性审计走了 8 个计划版本、7 轮盲审、32 个 agent，科学结论产出为零。
+
+**2. `claude -p` 是单回合的——派完 codex 不要结束回合。**
+A/B 两轨的 leader 都栽在这：派出 codex、写完汇报、进程即退出，子进程随之被杀，
+`STATUS.md` 还停在 `RUNNING`，**没有人在收结果**。
+正确做法：派完在**本回合内**阻塞轮询（`sleep 60` 看日志增长，每 5 分钟写一行 progress.log），
+等 codex 真正结项 → 做那一轮自查 → 写 `WAITING_ON_COMMANDER` → 才结束回合。
+
+**3. 派发必须脱离进程组，macOS 没有 `setsid`。**
+用现成的：`.codex-fleet/rq015a-run/board/detach_launch.py`（双 fork + `os.setsid`）
+```bash
+python3 .codex-fleet/rq015a-run/board/detach_launch.py \
+  --log <你的 board>/reports/<AGENT>.log --pidfile <你的 board>/<AGENT>.pid \
+  -- codex exec --cd "$PWD" --model gpt-5.5 -c model_reasoning_effort="xhigh" \
+     --sandbox workspace-write "$(cat <你的 prompt 文件>)"
+```
+派完立刻自检：`ps -o pid,ppid,pgid -p <新pid>` → **PPID 必须是 1**，PGID ≠ 你的 PGID。
+⚠ `codex exec` **没有** `--ask-for-approval` 参数（0.144.1 起），带上直接报错退出。
+
+**4. 本轮只有 K2 一条在跑。铁律，不可协商：**
+```
+禁止 git checkout -- . / git restore . / git stash / git reset --hard / git clean -fd
+禁止 git checkout 任何历史提交到主工作区（要看旧代码用 git worktree add）
+禁止 git commit（本轮产物由 PI 统一提交）
+工作区非空是【预期状态】——此前轨道留下的文件仍在，工作区非空是预期状态。
+你只对自己创建/修改的文件负责；清洁性检查只查自己的文件清单，不看全仓库 git status。
+```
+
+**5. 四条硬约束（与流程无关，不得放松）**
+```
+1. RQ007 held_out 不得被解析（污染不可恢复）
+2. RQ014 致盲相关的评分字段不得读取
+3. 不得静默覆盖冻结产物或已接受的 decision.md
+4. 描述性结果不得写成因果主张
+```
+另：全文禁用 `estimability` 与"测出/未测出 IPV"。
+可辩护的表述是：**权重近均匀 ⇒ 该 IPV 数值不携带候选间的判别信息**。
+
+**6. 杂项，都是踩过的**
+- 解释器钉死 `<local-rq009-venv>/bin/python`（系统 python3 缺 pytest，会把基线判错）
+- 时间戳一律 `date -u +%Y-%m-%dT%H:%M:%SZ`，**不要前瞻估计**（上一轮 progress.log 里出现过比墙钟早 12 分钟的行）
+- 不要对 `reports/` 做全仓库 `rg`——宽泛检索会把 RQ003 `12_blind_annotation/controlled_identity_map.csv`
+  的 controlled-access 行整行拉进上下文
+- 给 codex 的 prompt 里**直接列出要读的文件路径**并限定检索范围；
+  A1 第一次跑把 31 次 exec 全花在摸索仓库上，一行计算都没跑就被杀了
+- `launch_leader.sh` 会**覆写 STATUS.md**；真正要留存的交接信息写进 `commander_notes.md`（追加式，不会丢）
+
+**7. 你必须维护的三个文件**
+- `board/STATUS.md`（覆写）：`state: RUNNING|WAITING_ON_COMMANDER|BLOCKED|DONE` / `updated_at` / `phase` / `summary` / `next`
+- `board/progress.log`（追加）：`<UTC> | <阶段> | 做了什么 | 结论`
+- `board/commander_notes.md`：监督方写给你的，**每完成一个阶段读一次**
+
+结项后写 `state: WAITING_ON_COMMANDER` 并轮询 `commander_notes.md` 等放行，**不要自行转 DONE**。

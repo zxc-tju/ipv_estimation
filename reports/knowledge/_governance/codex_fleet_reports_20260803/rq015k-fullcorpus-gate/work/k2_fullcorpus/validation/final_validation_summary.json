@@ -1,0 +1,86 @@
+{
+  "blockers": [
+    "g_anchor"
+  ],
+  "counts": {
+    "artifact::interhub_sigma01_hw4_timeseries": 5197072,
+    "artifact::onsite_dense_timeseries": 281268,
+    "artifact::rq009_feature_matrix": 8994736,
+    "artifact::wod_rq010b_full479_audited": 906,
+    "attempt::ATTEMPTED": 13980600,
+    "attempt::NOT_ATTEMPTED": 219360,
+    "attempt::UNKNOWN": 274022,
+    "gate_applicable_false": 497262,
+    "gate_applicable_true": 13976720,
+    "reason::NEAR_UNIFORM": 4008706,
+    "reason::NO_IPV_EFFECT": 54796,
+    "reason::SOLVER_FAILURE": 5586,
+    "status::ABSTAIN": 4063502,
+    "status::OK": 9907632,
+    "status::SOLVER_FAILURE": 5586,
+    "total_l1_rows": 14473982
+  },
+  "created_utc": "2026-08-02T18:28:58Z",
+  "g_anchor_overlap": {
+    "anchor_rows": 2300,
+    "compared_rows": 0,
+    "comparison": "float64 numeric equality after canonical key alignment",
+    "first_mismatch": {
+      "anchor_id": "ipv_007137|46|1",
+      "max_abs_diff": 0.013332352186283258
+    },
+    "max_abs_diff": 0.0,
+    "status": "FAIL"
+  },
+  "held_out_parsed_rows": 0,
+  "interhub_coverage": {
+    "canonical_keys": 4981984,
+    "duplicates": 0,
+    "expected": 4981984,
+    "missing": 0
+  },
+  "invariant_examples": [],
+  "manifest_validation": {
+    "bad": [],
+    "bad_count": 0,
+    "checked_manifests": 510,
+    "status": "PASS"
+  },
+  "non_solve_rows": {
+    "interhub_sigma01_hw4_timeseries::NOT_ATTEMPTED": 215088,
+    "onsite_dense_timeseries::ATTEMPTED": 2974,
+    "onsite_dense_timeseries::NOT_ATTEMPTED": 4272,
+    "onsite_dense_timeseries::UNKNOWN": 274022,
+    "rows": 497262,
+    "wod_rq010b_full479_audited::ATTEMPTED": 906
+  },
+  "rq009_array_restore_1000": {
+    "array_restore_method": "join RQ009 interhub_canonical_key to A-class InterHub rows and read candidate_ipv_0..6/mse_0..6/log_score_0..6/w_log_0..6 from that A row; candidate order is [-3,-2,-1,0,1,2,3] * pi/8",
+    "comparison": "1,000 sampled RQ009 foreign keys resolved to A-class row scalar array columns",
+    "found_in_A": 500,
+    "missing": 0,
+    "missing_examples": [],
+    "non_finite_examples": [],
+    "sampled_rows": 1000,
+    "status": "FAIL"
+  },
+  "rq009_join": {
+    "duplicates": 0,
+    "new_solve_rows": 0,
+    "rows": 8994736
+  },
+  "solve_summary": {
+    "counts": {
+      "reason::NEAR_UNIFORM": 1457746,
+      "reason::NO_IPV_EFFECT": 19964,
+      "reason::SOLVER_FAILURE": 1934,
+      "rows": 4981984,
+      "status::ABSTAIN": 1477710,
+      "status::OK": 3502340,
+      "status::SOLVER_FAILURE": 1934
+    },
+    "duplicate_keys": 0,
+    "interhub_keys": 4981984
+  },
+  "status": "FAIL"
+}

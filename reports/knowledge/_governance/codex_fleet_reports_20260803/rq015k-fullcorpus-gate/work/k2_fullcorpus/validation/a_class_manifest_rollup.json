@@ -1,0 +1,20 @@
+{
+  "a_failure_counts": {
+    "OK": 4980050,
+    "SOLVER_FAILURE": 1934
+  },
+  "a_manifest_count": 460,
+  "a_reason_counts": {
+    "NEAR_UNIFORM": 1457746,
+    "NO_IPV_EFFECT": 19964,
+    "SOLVER_FAILURE": 1934
+  },
+  "a_rows": 4981984,
+  "a_shard_max_rows": 11000,
+  "a_shard_min_rows": 338,
+  "a_status_counts": {
+    "ABSTAIN": 1477710,
+    "OK": 3502340,
+    "SOLVER_FAILURE": 1934
+  }
+}
