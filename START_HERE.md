@@ -1390,6 +1390,22 @@ question index in `STUDIES.md`.
   `../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`.
   Do not recreate a top-level `paper/` directory here.
 
+## Repository State
+
+对齐时间 2026-08-04T13:40Z（每次分支或远端状态变化时更新本节）。
+
+- 工作分支 `rq016-rq017-online-verification`，已推送并跟踪
+  `origin/rq016-rq017-online-verification`。RQ016 / RQ016B / RQ016C / RQ017
+  四轮成果都在这条分支上，**远端已有备份**。
+- 本地共 6 条分支（另有 `main`、`rq007-estimability-run`、`rq015a-implementation`
+  与两条归档分支），1 个 worktree。
+- `reports/` 的三个一级目录 `plans/` / `studies/` / `knowledge/` 为治理层，
+  `AGENTS.md`、`STUDIES.md`、本文件三处表述已一致（2026-08-04 PI 裁定保留 `plans/`）。
+- `.git` 已做过一次 `git gc`：5.0 GB → 21 MB，`git fsck` 无错，六条分支与工作区
+  逐一核对无损。**未做任何历史改写。**
+- 受保护文件基线校验清单：`.codex-fleet/git_cleanup_protected_sha_before.txt`
+  （`shasum -a 256 -c` 应全部 `OK`）。
+
 ## Active Study Map
 
 | RQ | Study folder | Knowledge folder |
