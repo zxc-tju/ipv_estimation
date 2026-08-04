@@ -1392,13 +1392,21 @@ question index in `STUDIES.md`.
 
 ## Repository State
 
-对齐时间 2026-08-04T13:40Z（每次分支或远端状态变化时更新本节）。
+对齐时间 2026-08-04T15:50Z（每次分支或远端状态变化时更新本节）。
 
-- 工作分支 `rq016-rq017-online-verification`，已推送并跟踪
-  `origin/rq016-rq017-online-verification`。RQ016 / RQ016B / RQ016C / RQ017
-  四轮成果都在这条分支上，**远端已有备份**。
-- 本地共 6 条分支（另有 `main`、`rq007-estimability-run`、`rq015a-implementation`
-  与两条归档分支），1 个 worktree。
+- **RQ015A / RQ015K/L / RQ016 / RQ016B / RQ016C / RQ017 全部已合入 `main`**，
+  经 PR #46（38 个提交，337 文件，零冲突，merge commit `caa4f09`）。
+  这几轮的成果不再只存在于某条特性分支上。
+- 工作分支 `rq018-next-round`，从合并后的 `main` 开出，尚未推送。
+  **分支名是占位**：下一轮 RQ 编号确定后应改名（推送前改名无成本）。
+- 分支已整理：远端 22 条降到 3 条，本地 6 条降到 4 条。
+  删除依据是「相对 `main` 领先 0 个提交」，即无独有内容。
+  - 远端保留：`main`、`rq007-estimability-run`、`codex/rq014-spawn-path-fix`
+    （后者 PR #36 已关闭未合并，尚有 1 个独有提交，故未删）。
+  - 本地额外保留两条历史分支：`archive/rq014-wod-e2e-recovery-20260712`、
+    `codex/backup-rq012-diverged-20260623T201226`。三条历史分支各落后 `main`
+    136–190 个提交，内容主体已在 `main` 内但仍有零星差异，**2026-08-04 PI 裁定暂留**，
+    未做逐文件核查。
 - `reports/` 的三个一级目录 `plans/` / `studies/` / `knowledge/` 为治理层，
   `AGENTS.md`、`STUDIES.md`、本文件三处表述已一致（2026-08-04 PI 裁定保留 `plans/`）。
 - `.git` 已做过一次 `git gc`：5.0 GB → 19 MB，`git fsck` 无错，六条分支与工作区
