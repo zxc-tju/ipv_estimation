@@ -1,0 +1,144 @@
+{
+  "spec_id": "rq015a-run-spec-v2",
+  "operation_id": "rq015a_concentration_audit",
+  "status": "BUILD_WHILE_DENY_IMMUTABLE_CANDIDATE_PENDING_REVIEW",
+  "created": "2026-07-27",
+  "supersedes": "reports/plans/RQ015A_run_spec_v1.json",
+  "execution_authorized": false,
+  "authorization_object": "configs/research_authorization.json#authorizations.rq015a_concentration_audit",
+
+  "entrypoint": "scripts/rq015a/run_rq015a.py",
+  "exact_commands": {
+    "validate_only": "python3 scripts/rq015a/run_rq015a.py --validate-only",
+    "execute": "python3 scripts/rq015a/run_rq015a.py --execute"
+  },
+
+  "bound_artifacts": {
+    "plan": "reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md",
+    "plan_superseded": "reports/plans/RQ015A_plan_v3_concentration_audit_20260726.md",
+    "ledger_schema": "reports/plans/RQ015A_ledger_schema_v2.json",
+    "contracts_impl": "scripts/rq015a/rq015a_contracts.py",
+    "ledger_builder": "scripts/rq015a/build_ledger.py",
+    "validate_only_impl": "scripts/rq015a/validate_only.py",
+    "receipt_impl": "scripts/rq015a/receipt.py",
+    "factor_analysis_impl": "scripts/rq015a/factor_analysis.py",
+    "fixtures": ["tests/test_rq015a_contracts.py",
+                 "tests/test_rq015a_build_ledger.py",
+                 "tests/test_rq015a_validate_receipt.py",
+                 "tests/test_rq015a_factor_analysis.py",
+                 "tests/test_rq015a_run_entrypoint.py"],
+    "fixtures_note": "『fixtures 全部通过』指上列五个文件全部通过；不得只跑其中之一。",
+    "checksum_manifest": "reports/plans/RQ015A_plan_v3_checksums_20260726.sha256",
+    "checksum_manifest_pending": "T10 须重生成覆盖 v4 / schema v2 / 五个 fixture 文件 / run spec v2 / 取回规格 / 裁定书(新 SHA b4e2bcbf…) 的 v4 manifest，并把上一行替换为它。",
+    "sealed_exposure_disclosure": "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md"
+  },
+
+  "environment": {
+    "min_python": "3.9",
+    "required_modules": ["json", "math", "dataclasses", "pathlib", "csv", "pandas", "numpy"],
+    "parquet_engine": {
+      "accept": ["pyarrow", "fastparquet"],
+      "record_actual_in_receipt": true
+    },
+    "validate_phase_only": ["pytest"],
+    "forbidden": [
+      "network access",
+      "HPC / slurm",
+      "GPU",
+      "audit execution while execution_authorized=false"
+    ],
+    "note": "v1 的『纯标准库』为误述：feature matrix 与 OnSite 孪生文件为 parquet。实际解释器路径与各包版本由 receipt 在运行时记录，不在本规格中钉死。"
+  },
+
+  "input_roots": [
+    "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/target_hw4",
+    "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/04_calibration/predictions",
+    "data/derived/onsite_competition/RQ012B_event_harm",
+    "reports/studies/RQ010_wod_e2e_tracking_feasibility",
+    "reports/studies/RQ014_wod_e2e_rating_recovery"
+  ],
+  "split_source": "RQ007 case_split_assignment.csv",
+
+  "output_root": "reports/studies/RQ015A_ipv_estimability_labelling/RQ015A_1_concentration_audit_<UTC>_<planSHA8>",
+  "no_overwrite": true,
+
+  "phases": [
+    {
+      "phase": "validate_only",
+      "command": "python3 scripts/rq015a/run_rq015a.py --validate-only",
+      "must_precede_execute": true,
+      "checks": [
+        "manifest verify",
+        "schema load self-check",
+        "all RQ015A fixtures pass; actual pass count is parsed from pytest output and recorded in receipt",
+        "input root existence + size/SHA record",
+        "split allowlist wiring",
+        "no output root pre-existing"
+      ],
+      "produces": ["validate_receipt.json"],
+      "reads_measurement_fields": false
+    },
+    {
+      "phase": "execute",
+      "command": "python3 scripts/rq015a/run_rq015a.py --execute",
+      "single_use": true,
+      "authorization_gate": "load_execute_permit() must succeed before any MeasurementReader is constructed",
+      "current_expected_result": "DENY_NONZERO while execution_authorized=false",
+      "steps": [
+        "case-ID allowlist filter",
+        "per-artifact ledger build",
+        "conservation identities 1-3",
+        "L1->L2->L3 aggregation",
+        "continuous q_eff distributions",
+        "policy bins + 9-cell sensitivity",
+        "episode definition sensitivity",
+        "factor Spearman + cluster CI",
+        "C0 routing + sensitivity"
+      ],
+      "produces": [
+        "concentration_ledger.csv",
+        "portraits.json",
+        "c0_routing.json",
+        "run_receipt.json",
+        "bounded_report.md"
+      ]
+    }
+  ],
+
+  "receipt_required_fields": {
+    "machine_verdict": "PASS | FAIL",
+    "per_artifact_conservation": "identity_1/2/3 results and measurement_rows",
+    "held_out_parsed_rows": "must be 0",
+    "held_out_conclusion_rows": "must be 0",
+    "duplicate_primary_keys": "must be 0",
+    "unmapped_measurement_roles": "must be 0",
+    "k_unknown_rows": "count, may be nonzero",
+    "bins_stability_verdict": "BINS_REPORTABLE | BINS_WITHHELD_UNSTABLE",
+    "c0_routing_stability": "stable marker per downstream RQ",
+    "input_sha256": "file-level SHA or structural directory digest per input root",
+    "metadata.runtime_environment": "actual interpreter path, python version, package versions, parquet engine name/version",
+    "metadata.factor_analysis": "factor outputs include n_bootstrap_defined and n_bootstrap_undefined"
+  },
+
+  "known_schema_v2_defects": [
+    {
+      "artifact_id": "rq014_g2r_anchor_scores",
+      "defect": "The schema entry is inconsistent with the other ARTIFACT_NOT_PRESENT_LOCALLY entries: it lacks rq007_split_applicable, rq007_split_value, expansion_factor, and collapse_factor, and records recoverability as L4_UNRECOVERABLE rather than ARTIFACT_NOT_PRESENT_LOCALLY.",
+      "why_it_matters": "identity_3 is measurement_rows = sum over recoverability counts; the same absent-local rows otherwise have two competing recoverability values, making the sum ambiguous.",
+      "current_implementation_handling": "T1 forces ARTIFACT_NOT_PRESENT_LOCALLY for schema-status ARTIFACT_NOT_PRESENT_LOCALLY rows before constructing absent coverage.",
+      "defer_to": "plan v4 / schema v3"
+    }
+  ],
+
+  "abort_conditions": [
+    "manifest validation fails",
+    "not all RQ015A fixtures pass",
+    "input SHA differs from validate phase record",
+    "output root already exists",
+    "any conservation identity fails",
+    "held_out_parsed_rows != 0",
+    "duplicate primary key or unmapped role",
+    "reads any rating / preference_score / human-score field",
+    "attempts replay or writes any frozen artifact"
+  ]
+}

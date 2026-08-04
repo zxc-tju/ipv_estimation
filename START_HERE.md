@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-07-23.
+Last reviewed: 2026-08-04.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -8,6 +8,362 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
+- **RQ017 已完成并经监督方独立复算放行（2026-08-04T13:12:45Z）。这条替代了 M1 那条「等待 commander 复核」，M1 原始交付完整保存在执行记录目录里。**
+  **背景一句话**：在线验证串联两道弃权机制——机制一判断某一帧的 IPV（表示交互倾向的标量）
+  数值是否携带七个候选间的判别信息，机制二用人类参照分布判断当前情境是否有足够人类样本可比。
+  RQ015 冻结机制一、RQ016C 建好纯人类参照，**但在 RQ017 之前这套方法从未真正对准过一辆
+  自动驾驶车**（OnSite 台账 281,268 行的机制一判据非空计数为 0）。RQ017 补上了这一块。
+  **产物落位**：`reports/studies/RQ017_onsite_mechanism_one/RQ017_1_onsite_gate_20260804T075311Z_406e7a65/`；
+  知识层 `reports/knowledge/RQ017_onsite_mechanism_one/`；
+  正式台账 `data/derived/rq017_onsite_gate/l1_v1/`（约 19 MB、67,861 行，**未入库**，
+  `data/derived/` 整体被 gitignore）。轨道原始工作区 `.codex-fleet/rq017-onsite-materializer/`。
+  **venue = 同济 HPC**（分区 intel,fata，未用 amd），理由是产物来源一致性而非速度：
+  Mac 与 HPC 的求解结果在 1,867/2,300 = 81.17% 的锚点上不同。同源已验证：G 锚点重算
+  **max_abs_diff = 0.0**。
+  **帧级结果**（分母 67,861）：`OK` 37,520 = 55.2971%、`ABSTAIN` 30,341 = 44.7029%
+  （**全部 `NEAR_UNIFORM`**）、`NO_IPV_EFFECT` 0、工程失败 0；与 RQ016C 支持门交叉后
+  **两门都过 14,099 = 20.7763%**。
+  **Case 级结果**（分母 267 个 case）：至少 1 帧可判的 **231 个 = 86.5169%**；全程不可判 36 个，
+  **其中因机制一全程无解的为 0 个 = 0.0000%**——**没有任何一个 case 是全程无法估计 IPV 的**，
+  36 个全部死于机制二无参照。**真正的约束是人类参照覆盖，不是可估计性。**
+  **必须一并引用的边界**：(1) `NO_IPV_EFFECT` 在 OnSite 上**实际不可达**
+  （0/67,861，最小非零 `mse_spread` 2.32e-08 对 InterHub 的 4.77e-15），
+  **弃权理由构成不可与 InterHub 对比，只能比总弃权率**；(2) 机制二比的是运动学邻域
+  （12 项距离特征）**不是 IPV 数值**，「机制二不通过」**只意味着无法判定，不得解读为
+  「该车不像人」**；(3) 机制二缺口是**重叠不是数量**——`MP` 两格逾百万行人类支撑而通过率
+  仅 13–15%，`F|priority` 仅 45,283 行却 47.03%；(4) **本轮不对任何车辆作出判断**；
+  (5) 未解释观察：短历史行（1,572 行）机制一通过率 73.92%，高于满历史行 54.85%。
+  **一次公开失败的预测**：监督方预注册（时间戳 2026-08-04T06:22:47Z，早于派发）预测机制一
+  通过率 ≈ 80%（区间 65–85%），**实测 55.2971%，落在区间外，预测失败**。原因是校准样本来自
+  `max_anchors_per_unit=1` 年代、锚点是被选出来的，选择效应把预测整体抬高——该弱点在预注册时
+  已写明。**下次从「被挑选的子集」外推到全集时须先处理选择效应。**
+- **RQ016B / RQ016C 两轮已完成并经监督方独立复算放行（2026-08-04T02:03:12Z）。**
+  这一条替代了 RQ016C-H2 / RQ016C-H1 / RQ016B-F2 / RQ016B-F1 四条 `WAITING_ON_COMMANDER`
+  状态条目，四个 agent 的原始交付内容完整保存在下方执行记录目录里。
+  **背景一句话**：在线验证的判定串联两道弃权机制——机制一判断某一帧的 IPV 数值能否估出
+  （RQ015 已冻结），机制二拿它与人类参照分布（envelope）比。RQ015/RQ016 只用了 InterHub
+  的人类数据，而要判的自动驾驶车在 WOD 与 OnSite 里。这两轮回答「能不能用、怎么用」。
+  **产物落位**：`reports/studies/RQ016B_wod_onsite_feasibility/RQ016B_1_feasibility_20260804T001351Z_7480c173/`
+  与 `reports/studies/RQ016C_human_only_envelope/RQ016C_1_human_only_envelope_20260804T005716Z_7480c173/`；
+  知识层 `reports/knowledge/RQ016B_wod_onsite_feasibility/` 与 `reports/knowledge/RQ016C_human_only_envelope/`。
+  **RQ016B 结论**：直接套用**不可行**——WOD 与 OnSite 一行都没有七候选 MSE
+  （`mse_0..6`/`status`/`reason_code` 非空计数全为 0），机制一判不了。WOD 本地只有 4 列 906 行、
+  29 个 M2 特征全 MISSING，需重做脱敏投影且触及 RQ014 致盲边界，**PI 已裁定本轮放弃 WOD**。
+  OnSite 可行：67,861 行 AV 锚点、29 个 M2 特征一个不缺、类别取值 100% 被 InterHub 覆盖，
+  缺的只有 materializer。**另查实 RQ016 的 envelope 里 10.9009%（69,288/635,618）的目标值
+  是自动驾驶车自己的 IPV**（`target_ipv_future` 取自 ego 一侧，而 `ego` 是 AV 的专属 track id）。
+  **RQ016C 结论**：据 PI 2026-08-04 裁定（envelope 是查询机制，不同目标可建不同 envelope），
+  只用纯人-人 2,442,625 行重建了供 OnSite 使用的参照 envelope。90% 层 coverage 0.898038
+  （414,837/461,937）、平均宽度 1.238468、机制二弃权 5.0801%（24,723/486,660）。
+  特征集较 RQ009 M2 移除 `agent_type_pair` / `av_included` / `vehicle_type_list` 三列——
+  车辆是否为自动驾驶车是被检验对象而非情境，且 OnSite 在这三列的取值在人类训练池中从未出现。
+  **产物已在真实 OnSite 全量 67,861 行上跑通打分（只加载不重拟），支持门通过
+  21,936/67,861 = 32.3249%**，逐格从 `F|priority` 47.03% 到 `CP|equal` 0.00%。
+  ⚠ **该演练只证明管线可运行，不构成对任何一辆自动驾驶车的判定**——OnSite 无机制一判据。
+  **未入库产物**：拟合模型本体 164 MB 在
+  `.codex-fleet/rq016c-human-only-envelope/work/H2/envelope_model/rq016c_h2_envelope.pkl`
+  （sha256 `bc25302b4a7a307e3c73b3429b880e3cfda59074fc80850a732a93a67ef75de2`），可由已入库脚本重生成。
+  **后续状态更新**：materializer 动工前的范围与参考线合同已由 RQ017 v4 裁定并执行：
+  范围选 B 全 timing-valid anchor 67,861，参考线合同沿用 observed-trajectory fallback
+  （OnSite dense 源表真实 map/lane/route/reference-line 字段为 0/274,022）。
+  **已知边界**：无同源迁移证据（RQ009 LODO 4 个留出源均不含 OnSite 与该 WOD 产物，
+  90% coverage 波动 0.7484–0.9921）；OnSite 有 7 行坐标系异常
+  （`relative_distance_anchor` ≈ 570,762 米）真正分析前须处理；
+  `apet_online_proxy` 填充率 OnSite 7.90% vs InterHub 40.26%。
+- **RQ016 机制二 envelope 重建已完成并经监督方独立复算放行（2026-08-03T15:34Z）。**
+  这条替代了同日 13:48Z 那条「等待监督方核数」的状态，A1 原始交付内容仍完整保存在
+  执行记录目录里。
+  **背景一句话**：在线验证的判定由两道串联弃权机制构成——机制一判断某一帧的 IPV
+  数值能否估出（RQ015 已冻结），机制二判断人类样本是否足以判断该车偏离。机制二依赖的
+  人类参照分布此前建在含伪零的样本上（旧估计器数值下溢时退回七候选等权，写出 IPV
+  恰为 0，使「没估出来」与「恰为中性」不可区分）。本轮重建它。
+  **产物落位**：`reports/studies/RQ016_human_envelope_rebuild/RQ016_1_envelope_rebuild_20260803T134808Z_d23fa836/`
+  （报告、`01_results/key_numbers.json`、`02_process/` 下的可复跑脚本与任务书与裁定记录）；
+  知识层 `reports/knowledge/RQ016_human_envelope_rebuild/`；
+  轨道原始工作区 `.codex-fleet/rq016-envelope-rebuild/`。
+  **主要结果**：在 `development + guard` 域同法跑两臂，唯一变量是样本口径。90% 名义层
+  coverage 由 0.898832（758,857/844,270）变为 0.902689（545,159/603,928），
+  平均区间宽度由 1.016189 变为 1.300967，即 **+28.02%**；覆盖基本不变而区间宽近三成。
+  两道门串联合并弃权 **32.0583%（284,964/888,892）**，机制一贡献 28.4932%
+  （253,274/888,892）、机制二贡献 3.5651%（31,690/888,892）。
+  **变宽的机制已由监督方独立证实**（独立于执行方的 conformal 实现）：目标
+  `target_ipv_future` 的四分位距由 0.0493 变为 0.2017（约 4.09 倍）；恰为 0 的行由
+  192,221/888,892 = 21.6248% 降为 99,908/635,618 = 15.7182%；另以完全不训练模型的
+  边际分位数宽度复核，B/A 比值 80/90/95 三层为 1.3763/1.1896/1.0130，同向同量级。
+  **实际含义**：旧 envelope 偏窄，会比人类数据本身所支持的更频繁地把一辆车判为「不像人」。
+  **必须一并引用的边界**：(1) 与 RQ009 已发表数**不构成复现关系**——其 test 域含
+  RQ007 held_out，本轮受红线约束仅 dev+guard；(2) 零点聚集只被减半未消除，
+  `|y| < 1e-6` 占比 A 臂 42.39%、B 臂 29.63%；(3) 支持门用 12 项距离特征而非 RQ009
+  原门 15 项（排除 3 个由旧估计器算出的 `counterpart_ipv_*` 列，监督方已裁定接受）；
+  (4) 描述性结果，不得写成因果主张；(5) 尚无 `decision.md`，无已接受手稿主张。
+  **合规**：参与计算行中 `rq007_split` 不在 `{development, guard}` 的实测计数为 0
+  （A1 与监督方各自独立测得）；未打开受保护 confirmation 划分文件；未改 `data/derived/`
+  与 RQ009 原 run；未改五个受保护的估计器/管线/配置文件。
+- **注意：RQ015 收官报告 §10 第 3 项「K2 `INTERFACE_NOTE.md` 的 23.40% 待订正」已过期。**
+  该订正在 2026-08-03 就已执行完毕，`INTERFACE_NOTE.md` 与 K2 报告 §9 都已带订正块、
+  原文保留。仅 `K1_preflight_and_plan.md:303` 仍有旧措辞，属历史计划文档，按「保留错误
+  历史」原则不动。引用 `ipv_log = 0` 比例时用普查值 5.0097%（175,458/3,502,340）等，
+  不要引用 23.40%（那是 J 轨锚点样本 238/1,017）。
+- **RQ015L 收官轮 L1/L2/L3 均已交付，全轨转 `WAITING_ON_COMMANDER`（2026-08-03T03:47Z）。**
+  合并报告为 `.codex-fleet/rq015l-consolidate/board/reports/RQ015_consolidated_report.md`
+  （L3 撰写，leader 复核后就地纠正两处，见下）。leader 派出 L1 pid 98586、L2 pid 98772
+  并行执行（各约 19/15 分钟），归队后派 L3 pid 8350 成文（约 4.5 分钟）。
+  **leader 复核发现并处理的两件事：**
+  (1) L1 报了 29.78%（81,548/273,819）的 join miss 却未定性。leader 用只读元数据补查得：
+  **整案级排除**——涉及 2,270 个 case，出现在 K2 台账 `case_id` 中的为 0/2,270，
+  被部分覆盖的 case 为 0/7,576；命中的 5,306 个 case 与 RQ015E 记录的 dev+guard case 集吻合。
+  **据此推断（非直读标签，未打开受保护 confirmation 划分文件）这些 case 属 RQ007 held_out。**
+  因此**主口径分母改为 192,271**（零点原子中落在台账覆盖域内的行），不再用 273,819。
+  证据：`work/L1_rq009_zero_atom_split/L1b_leader_selfcheck.md` 与 `L1b_joinmiss_diagnosis.json`。
+  **须监督方裁定**：L1 曾对那 381,674 行统计 `y==0.0` 计数（81,548）并落盘，若 held_out
+  推断成立即为跨界统计；且 RQ009 已发表的原子计数 273,819/1,270,566 本身就算在含这 2,270 个
+  case 的 fold 上。leader 未删改证据，原样上报。
+  (2) **「门后 23.40% 取 `ipv_log=0`」的分母是错的**，详见下方 RQ015K 条目的修订。
+  **L1 主结论**：在台账覆盖域上，RQ009 精确零点原子里 48.0223%（92,333/192,271）不是中性
+  IPV 点值，而是弃权情形下被写成 0 的数值，主体为 `NEAR_UNIFORM` 47.0638%（90,490/192,271）；
+  真中性零为 51.9777%（99,938/192,271）。这直接回应 RQ009 自己关于零点原子的 Limitations 警告。
+- **（历史记录，保留）L1/L2 交付当时的看板状态：**
+  L 轨解决 RQ015 最后两项查证并成文：L1 判定 RQ009 的 273,819/1,270,566 个精确零点能否与
+  K2 台账精确一对一连接并拆分真中性/弃权伪零；L2 查清 OnSite 274,022 行 `UNKNOWN` 的代码来源
+  与输入支持状态；两者完成后才派 L3 写 `board/reports/RQ015_consolidated_report.md`。
+  `bash .codex-fleet/launch_leader.sh L` 已通过修订后的 `detach_launch.py` 路径启动，leader PID
+  `96939`、PPID `1`、PGID `96938`，核验 69 秒后仍存活，未复发旧 nohup 早退；`leader.log`
+  仍为 0 字节符合 `claude -p` 完成前不输出的已知行为。`STATUS.md` 最近读取仍为 `LAUNCHING`。
+  本线程已直接完成 L1 本地只读分析，交付目录为
+  `.codex-fleet/rq015l-consolidate/work/L1_rq009_zero_atom_split/`：RQ009 `y == 0.0`
+  精确零点 273,819/1,270,566；K2 `target_future` 精确左连接为 192,271/273,819 命中、
+  81,548/273,819 未命中；命中行中 `status=OK` 为 99,938/273,819，`status` 非 OK 为
+  92,333/273,819（`NEAR_UNIFORM` 90,490，`NO_IPV_EFFECT` 1,796，`SOLVER_FAILURE` 47）。
+  `L1_report_section.md` 末尾状态为 `state: WAITING_ON_LEADER`。
+  L2 本地只读分析也已交付，目录为
+  `.codex-fleet/rq015l-consolidate/work/L2_onsite_unknown/`：OnSite K2 台账 281,268 行中
+  `UNKNOWN` 为 274,022/281,268，全部带 `source_reason_code=EMPTY_CELL_UNEXPLAINED`；
+  这些行的 dense 源表轨迹、配对 ID、位置、速度、heading、距离与相对速度字段均为
+  274,022/274,022 非空，但真实地图/车道/reference-line 字段为 0/274,022。L2 判断为既有
+  OnSite 生成合同下默认 bounded-anchor 流程未覆盖大多数 dense role 行，不是轨迹或配对字段普遍缺失；
+  RQ015A 旧口径的分子分母与 K2 来源状态一致，均为 2,974/281,268。`L2_report_section.md`
+  末尾状态为 `state: WAITING_ON_LEADER`。L3 当前不由本线程判定。
+  本轨仅使用本地既有产物，不投 Slurm、不重算 K2 join、不修改 RQ009。
+- **RQ015K K2 全语料收尾已由 K2-2 完成，当前等待 commander 复核（2026-08-03）。**
+  K2 materializer 已生成并回取本地：`data/derived/rq015k_logdomain_gate/`（约 1.7G，
+  510 个 L1 parquet 分片、510 个 manifest）。远端权威目录为
+  `/share/home/u25310231/ZXC/sociality_estimation/work_dirs/INFRA/rq015k_k2_fullcorpus_finalize_20260802T175006Z/`。
+  K2-1 曾以 `final_status=FAIL`、`blockers=g_anchor, solver_failure_threshold` 结项；监督方
+  `2026-08-02T19:12:54Z` 逐项复核后裁定两条 blocker 都不成立：`g_anchor` 是把 HPC 产物错比到
+  RQ015B Mac 基线，`solver_failure_threshold` 是未在 nuPlan Vegas 校准的单片 tripwire 并已撤销。
+  K2-2 只做四项收尾，不重跑求解、不重跑 join、不改阈值：指定基线路径改为
+  `.codex-fleet/rq015g-hpc-resolve/work/anchor_mse_hpc.csv`；正确 G-HPC anchor 校验
+  `anchor_rows=2300`、`compared_rows=2300`、`max_abs_diff=0.0`、`first_mismatch=null`；
+  RQ009 join `canonical_key` 去重实测 `rows=8,994,736`、`unique_keys=8,994,736`、`duplicates=0`；
+  1,934 行 `SOLVER_FAILURE` 已刻画为工程失败。主报告为
+  `.codex-fleet/rq015k-fullcorpus-gate/board/reports/K2_fullcorpus_gate_ledger.md`；
+  机器证据新增在 `.codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/validation/{g_anchor_hpc_baseline.json,rq009_join_key_uniqueness.json,solver_failure_characterization.json}`。
+  `board/STATUS.md` 已刷新为 `state: WAITING_ON_COMMANDER`，**不得由 K2-2 自行转 DONE**。
+  **当前边界**：下游只能用 `status` / `reason_code` 判别门状态；`ipv_log=0` 是合法且高频的通过门估计值，
+  不能把数值 0 当作弃权。
+  **⚠ 分母订正（track L leader，2026-08-03T03:44:10Z）**：此前写作「门后 23.40%」的说法**分母是错的**。
+  23.40% 的实际出处是 **J 轨锚点样本 238/1,017**，不是全语料普查值。
+  **InterHub 门后通过行（分母 3,502,340）的普查值是：`ipv_log` 恰好为 0 → 5.0097%（175,458/3,502,340）；
+  `abs(ipv_log)<=1e-9` → 9.9516%（348,539/3,502,340）。**
+  机器证据：`.codex-fleet/rq015l-consolidate/work/L1_rq009_zero_atom_split/L3b_ipvlog_zero_census.json`。
+  该错误分母同时存在于 **K2 报告 §9 与 K2 的 `INTERFACE_NOTE.md`**（下游要读的那份）；
+  **track L 未改 K2 任何文件**，是否回改待监督方裁定。结论方向不变、且更硬：即便按最严口径，
+  门后仍有 5.0097% 的通过行取 `ipv_log=0`。
+- **RQ015K K1 勘察与 K1b 单-PKL内存/并发 pilot 已完成（2026-08-02）；K2 后续已由 PI 单独授权。**
+  K1 交付报告为
+  `.codex-fleet/rq015k-fullcorpus-gate/board/reports/K1_preflight_and_plan.md`，
+  支撑脚本与证据在 `.codex-fleet/rq015k-fullcorpus-gate/work/`。K1 只提交了一个
+  小批 Slurm pilot，job id `2068610`，未提交全量作业、未提交 git commit、未改受保护估计器文件。
+  报告结论是：InterHub/RQ009 可进入下一步规划，但 OnSite/WOD 需要先明确新 materializer
+  或工程状态处理规则；K2 千万行级重算需监督方另行放行。
+  K1b 交付报告为
+  `.codex-fleet/rq015k-fullcorpus-gate/board/reports/K1b_memory_pilot.md`，
+  证据目录为 `.codex-fleet/rq015k-fullcorpus-gate/work/k1b_memory_pilot/`。K1b 只提交了
+  一个合并小批 Slurm job `2068976`，在 `waymo_0-299.pkl` 上各跑 1,120 单元的 P6/P10/P16；
+  三配置 `mse_per_candidate[7]` 逐位一致性通过，且与 K1 pilot 重叠 72 行通过。推荐的 K2
+  InterHub shard 形状为单 PKL + row-key range、16 workers、`--mem=64G`；在 36 个 intel
+  节点 + fata02 的题面快照下为 228 个并发位、3,648 核、预计 1.02 小时。K1b 未提交全量作业、
+  未提交 git commit、未改受保护估计器或 `configs/ipv_sigma01_exact.json`；K1b 的推荐本身不构成
+  K2 放行，当前授权来自后续 PI 明示与修订后的 `K2-leader-kickoff.md`。
+- **RQ015J J1 弃权门规格与全域影响 design-based estimate 已完成（2026-08-02T04:11:51Z）。**
+  权威复审报告为
+  `.codex-fleet/rq015j-gate-spec/board/reports/J_plan_review.md`，复算脚本与机器证据为
+  `.codex-fleet/rq015j-gate-spec/work/{j_plan_review_compute.py,j_plan_review_compute.json}`。
+  J1 交付报告为
+  `.codex-fleet/rq015j-gate-spec/board/reports/J1_gate_spec_and_impact.md`，
+  J1 复算脚本与机器证据为
+  `.codex-fleet/rq015j-gate-spec/work/{j1_gate_spec_compute.py,j1_gate_spec_evidence.json}`。
+  J1_DONE 时间戳为 `2026-08-02T04:11:51Z`；本次未提交 git commit、未跑 HPC、
+  未改 `agent.py` / `ipv_estimation.py` / `process_interhub.py` / `reliability_logdomain.py`。
+  两项必须订正的计划事实：(1) `anchor_mse.csv` 全 2,300 行按 `k_eff_log` 统计，
+  6.75--7.00 格为 1,166/2,300=50.6957%；766 仅在额外排除 400 个
+  `mse_per_candidate[7]` spread=0 锚点后成立；(2) 门后 `at_grid_boundary` 为
+  nuplan 79/312=25.3205%、waymo 398/705=56.4539%，原 1%/20% 实为
+  `ipv_log` 精确命中 ±3π/8 端点的 3/312=0.9615%、143/705=20.2837%。
+  样本内未加权保留率为 1,017/2,300=44.2174%；按 `mechanism_split.csv` 的
+  `ht_weight`、全域分母 2,646,058 做设计基估计后为
+  1,885,831.096/2,646,058=71.2695%，cluster bootstrap 95% CI
+  [67.1729%, 75.2135%]。复审确认 2,300 锚点文件不含 RQ009 的 29 个 context-only
+  变量；修订后的 J 任务已取消本轮上下文分格，改为只按锚点自带的
+  `signature` / `n_band` / `n_obs` 汇报，并把上下文分格留给 RQ009 应用门时处理。
+  这表示不可执行要求已删除，不表示缺失字段已经补齐。复审未提交 commit、未跑 HPC、
+  未改受保护估计器代码。
+- **RQ015A A1(r3) concentration audit 已执行完成（2026-07-31）。**
+  当前 canonical run 目录：
+  `reports/studies/RQ015A_ipv_estimability_labelling/RQ015A_1_concentration_audit_20260731T093746Z_e82091ce/`。
+  `run_receipt.json` 机器判定 `PASS`，`held_out_parsed_rows=0`，
+  四个本地可审计产物全部落盘 parquet L1 台账：
+  OnSite `281,268` measurement 行、WOD full479 `906` 行、sigma01 `5,197,072` 行、
+  RQ009 feature matrix `8,994,736` 行，合计 `14,473,982` 行。A2 科学交付物
+  `bounded_report.md` 已写入同一 run 目录，并同步生成 `figures/fig1`–`fig4`
+  的 PNG/PDF 与 `usable_subset.csv`（主判据 19,778 个 case/episode key，
+  3,049,608 个 ATTEMPTED 行，占 14,473,982 行分母的 21.27%）。后续若只需复核报告，
+  不要重跑审计。
+  当前执行绑定为 run spec v7 + schema v4 + 新清单
+  `reports/plans/RQ015A_plan_v10_checksums_20260731.sha256`；v9 是执行接线前的历史清单，
+  不要覆盖。最终验证：
+  `PYTHONPATH=src /Users/xiaocong/.rq009_codex_fleet/venv/bin/python -m pytest -q tests/test_rq015a*`
+  → `269 passed in 6.57s`。
+  本轮修复：`run_rq015a.py` 接出授权成功后的真实执行路径；`build_ledger.py`
+  最小修复 OnSite CSV 整数字符串 local-position 解析与 WOD provenance `K_source.value=7` 绑定。
+  A2 追加披露：`run_receipt.json` 顶层 `reads_measurement_fields=false` 是从 validate 路径继承的误标，
+  真值在 `metadata.execute_measurement_fields_read=true`；已追加到已知问题清单，留待下一次正当触碰
+  `run_rq015a.py` 时修。
+- **RQ015A pre-execute implementation package historical note（已被 A1(r3) 执行结果取代）。**
+  A1(r3) 之前的状态是：`execution_authorized` 已翻为 `true`，但审计仍无法运行，
+  因为 `run_rq015a.py` 的 `--execute` 在许可签发成功后仍无条件抛出
+  `refusing to run audit without PI-reviewed post-authorization handoff`。
+  该历史状态不再是当前事实；保留下方背景仅用于理解为什么需要 A1(r3) 接线。
+  v3 复审的核心 blocker 是"完整 ledger builder / factor / bootstrap / validator / receipt 不存在"，
+  现已全部交付并经**七轮独立健壮性审计**（每轮 agent 对此前所有审计与修复轮盲）收敛至零 blocker，
+  再经**三路最终独立复审**（技术／显著性／可执行性）全部 `PASS_WITH_CONDITIONS`，条件已闭合。
+  **`rq015a_concentration_audit` 的 `execution_authorized` 仍为 `false`、`allowed_operations` 为空、
+  `authorized_package_commit` 为 `null`；审计从未运行，held_out 的 measurement 列零解析。**
+  - **当前权威制品**：计划 `RQ015A_plan_v7_concentration_audit_20260730.md`；
+    运行合同 `RQ015A_run_spec_v6_20260731.json`；台账 `RQ015A_ledger_schema_v4_20260731.json`；
+    清单 `RQ015A_plan_v8_checksums_20260731.sha256`（20 项，自校验 OK）；
+    已知问题清单与审计边界声明 `reports/knowledge/RQ015A_ipv_estimability_labelling/known_issues_and_audit_boundary_20260730.md`。
+    **旧版本 v1–v6 一律未被改动**（R11）。
+  - **验证命令**：
+    `/Users/xiaocong/.rq009_codex_fleet/venv/bin/python -m pytest tests/test_rq015a_contracts.py
+    tests/test_rq015a_build_ledger.py tests/test_rq015a_validate_receipt.py
+    tests/test_rq015a_factor_analysis.py tests/test_rq015a_run_entrypoint.py -q`
+    → **256 passed**（干净检出无 gitignored `data/` 时为 255 passed + 1 skipped，属预期）。
+    `run_rq015a.py --validate-only` → exit 0 `machine_verdict=PASS fixture_total_passed=256`；
+    `--execute` → exit 1。**`--run-spec` / `--schema` 不再硬编码**，
+    分别从授权对象的 `run_spec_path` 与该 spec 的 `bound_artifacts.ledger_schema` 推导。
+  - **执行授权是三重条件**：双键（`execution_authorized` + `allowed_operations`）、
+    run spec 路径绑定核对、以及 `authorized_package_commit` 必须等于当时的 git HEAD。
+    **翻转只能由 PI 手动做，且必须是最后一个动作**——其后任何提交都会使 commit 绑定失配。
+    PI 已选择方式 **B**（指挥者准备、PI 执行）。翻转后应重跑一次信任边界检验：
+    复审方明确记录"授权翻转后的端到端行为是**推断的、不是实测的**"。
+  - **WOD 取回已完成（PI 2026-07-31 批准）**：HPC 侧按 4 列白名单
+    （`segment_key` / `candidate_index` / `ego_ipv` / `ego_ipv_error`）投影 → 净化凭证 →
+    传输前五项校验 → 传输 → 本地四项复核，全部通过。落地
+    `data/derived/wod_e2e/rq015a_full479_projected/`（906 行，CSV SHA `d10c3a6f…30b7d1`，
+    被丢弃 61 列含 `rating`，禁词扫描命中 0，数据在 gitignore 内不进版本控制）。
+    `wod_rq010b_full479_audited` 因此升为 **`L1_DIRECT`**；K = 7 由三环证据链确定
+    （运行 `stats.json` 记 `ipv_solver_mode: fast` → `ipv_estimation.py:220-223` fast 为七候选
+    → `agent.py:63-64` 七点网格），故 `q_eff` 可算。
+    **另两个 WOD/RQ014 产物仍未取回**，报告须在标题级披露该覆盖缺口，不得表述为"全语料"。
+  - **已知未修（随包提交，复审方评价披露充分）**：同形字符列名仍可绕过结构列 denylist
+    （实测西里尔 `rаting` / `scоre` 通过；覆盖需定义 confusable 映射范围，属独立决策）；
+    D0 的 `NOT_ATTEMPTED` 行保留非空 `q_eff`/`k_eff`（下游按 `attempt_status` 过滤，未见污染）。
+    **方法学 caveat 已自我披露**：审计 1–6 的 prompt 为逐代 sed 派生，第七代膨胀致 agent 挂死，
+    故其指令一致性可能已被稀释且无法排除影响；零 blocker 那轮用的是重写后的干净稿。
+- **RQ015 已按 PI 决策 2026-07-26 拆分为 RQ015A / RQ015B；合并版 v1/v1.1/v1.2 仅作历史记录，不再是执行依据。**
+  拆分依据：合并计划三轮独立复审均 BLOCKED，规格面积扩张快于闭合（见
+  `reports/plans/RQ015_plan_v1p2_amendment_20260726.md` §A6）。历史复审记录保留于
+  `reports/knowledge/RQ015_ipv_estimability_contract/reviews/`。
+  - **RQ015A v3 三路独立复审完成（2026-07-26）— `BLOCKED / REQUEST_CHANGES`**：
+    计划 `reports/plans/RQ015A_plan_v3_concentration_audit_20260726.md`（SHA-256
+    `75912bc1433a5efb5b0520af492e27579e9a1f6652074d3f37eb3a77befff264`），基线 manifest
+    `RQ015A_plan_v3_checksums_20260726.sha256` **6/6 OK**。三路为 R1 4B/3M/1m、
+    R2 2B/3M/2m、R3 2B/3M/0m；综合在
+    `reports/knowledge/RQ015A_ipv_estimability_labelling/reviews/rq015a_three_reviewer_synthesis_v3_20260726.md`。
+    **已接受并须保留**：continuous `q_eff` primary、bins 不进入 episode/C0、三恒等式骨架、
+    OnSite local-position、`sorted + math.fsum` 和 L3 `ZERO_SUPPORT` 不填 0。
+    **仍阻断 Formal G1**：PI rederivation condition 未被 append-only supersede；run spec 无 exact
+    command/entrypoint、授权 fragment 不存在、split 未绑定；逐产物 path/hash/key/role 与真实数据
+    不一致（含 RQ014 wrong key、OnSite `case_key`、M3 collapse/role 混淆）；invalid
+    `ipv_error` 可产生有效 q；L2/L3 可跨 artifact pooling；C0 无 q 可返回 NO_TRIGGER；完整
+    ledger builder/factor/bootstrap/validator/receipt 不存在。显式外部 venv 下合并测试 **52 passed**，
+    但 declared stdlib environment 不含 tests 所需 `pytest`，故该通过不等于 validate-only 可复现。
+  - **PI 裁定 2026-07-26 — 按路径 A 推进（把实现写完再送最后一轮复审）**，执行中可调用 codex
+    做边界明确的任务。另两项裁定：(a) 修订 plan §9，**授权对三个 WOD/RQ014 产物做只读取回**；
+    (b) feature matrix 的 **M4_ONLY_ego_self_anchor 通道排除**，`expansion_factor` 固定为 2。
+  - **预执行合同核验完成（2026-07-26，对真实文件；只读结构，未解析任何 `ipv_*` 数值）**：
+    `reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md`，
+    可复现脚本 `scripts/rq015a/preflight_structural_scan.py`。得 **C1–C14 共 14 项修正**，
+    已吸收进 `reports/plans/RQ015A_ledger_schema_v2.json`（不覆写 v1）。三条要害：
+    **C6（安全）** RQ009 的 fold `{train,guard_tune,calibration,test}` 与 RQ007 的 split 正交，
+    每个 fold 都含约 29% held_out；按 fold 过滤会解析 **1,899,898 行 held_out**——必须先按
+    `case_id` 白名单过滤再读 measurement。
+    **C3/C4/C5（产物指认错）** `rq009_m3_predictions` 的 15 列**无任何 `ipv_error`**；三角色实为
+    feature matrix 的列；3× alpha 折叠只属于 predictions，feature matrix 为 `E=2 / C=1`；
+    v1 的 `anchors_dev_guard=1778594` 无法复现已删除，实测 dev+guard **4,497,368** 行。
+    **C1（恒等式）** sigma01 的 2,490,992 是**已排除 D0** 的数，用作 identity_1 基数会使
+    identity_2 的 `NOT_ATTEMPTED` 恒为 0；改为 physical **2,598,536** / measurement **5,197,072** /
+    NOT_ATTEMPTED **215,088**。
+    另：**C14** WOD 三产物（RQ010B full479、phase1b schemeB、RQ014 anchor scores）本地全部缺失，
+    可审计范围实为 3/6。fixtures 已修至 **20/20**。
+  - **交接手册（新线程从这里开始）**：`reports/plans/RQ015A_execution_handoff_20260727.md`。
+    含 12 条铁律、已冻结常量与逐产物实测事实、T1–T11 待办与验收标准、立即停止条件。
+  - **编排合同（PI 裁定 2026-07-27）**：接手方**只做指挥者**——分解工作流、写 prompt、
+    判定可信度、最终综合；**任何边界明确的执行任务一律交给 codex CLI**
+    （`gpt-5.5` + `xhigh`，并行后台，写代码的 agent 用 `--worktree`）。
+    **fleet 目录已移出 OneDrive** → `~/.codex-fleet-local/rq015a-implementation/board/`
+    （原 `.codex-fleet/rq015a-implementation/` 已不存在）。移动原因：worktree 建在
+    OneDrive 同步目录内会使路径超长（实测 333 字符，OneDrive 拒绝同步），
+    **后续所有 `--worktree` agent 的 fleet-dir 都必须用该本地路径**。
+    同理 `.codex-fleet/rq014-execution-v1p6/agents/` 也已移至
+    `~/.codex-fleet-local/rq014-execution-v1p6/`；该 fleet 的 `board/`（含 `w4g_evidence/`）
+    **仍留在仓库内**，本文件其它位置对它的引用依然有效。
+    board 内容：`plan.md`、`module_interface_v1.md` 与指挥者裁定
+    `module_interface_v1_commander_addendum.md`（6 条强制修正）、
+    `prompts/`（W0–W7 共 9 份）、`reports/`（各 agent 的有界结项报告）。
+    交叉验证已执行：`W7-replicate-conservation` 盲算守恒数字**与冻结事实零分歧**；
+    `W6-red-team`（专找 fail-open / 过滤顺序 / pooling / 非确定性）进行中。
+  - **HPC 工作已移交接手方**（PI 裁定 2026-07-27，接手方有权限）：T11 只读探测
+    `bash scripts/rq015a/hpc_probe_wod_targets.sh > rq015a_wod_probe.json`，
+    规格 `reports/plans/RQ015A_wod_retrieval_spec_v1.json`。**致盲危险 HIGH**：
+    传输前须在 HPC 侧做列投影 + sanitization receipt；**探测≠取回，取回需单独授权**。
+  - **T9 已由 PI 裁定解除（2026-07-27）**：`sealed_exposure_disclosure_20260726.md`
+    新增 **§8**（append-only supersede，§6 原文一字未改），正式解除 §6「附加条件」
+    的三条——即"两阈值须从 dev+guard 重导出 / 导出规则须先冻结登记 SHA / 重导出前
+    不得产出结论画像"，并撤销 `PROVISIONAL_PENDING_DEVGUARD_REDERIVATION` 标记。
+    解除理由：`4/7`（⇔`ipv_error=0.5`）与 `0.93`（⇔`ipv_error=0.608069099165`）
+    已由科学阈值降为**报告用 policy bins**，而 R6 + `test_c0_routing_never_consumes_report_bins`
+    已在代码层强制 bins 不进入任何判定，该条件已丧失保护对象。
+    **不在解除范围**：§6 判读 A 与记录豁免、§7 措辞精确化（扫描程序确实解析并聚合过
+    held_out 逐行字段）、§7 三条治理动作、R1/R2/R3、以及 `execution_authorized` 仍为 `false`
+    ——本次解除**不构成任何执行授权**。
+    文件 SHA-256 由 `aabbd0d6…4ab24` 变为 `6c904b806e28bb4d940db145bd365287fa23287ddd22881caa41bc8c44439f54`；
+    v1/v2/v3 manifest 为各自复审时点的历史快照，v4 包须由 T10 重新登记。
+    签署状态 **`RECORDED_ON_PI_RULING`（已生效，无待签事项）**——PI 于 2026-07-27 明确选择
+    以「会话裁定 + 指挥者记录」形式生效，不留签署栏，避免空置签署栏成为后续复审的未闭合项。
+  - **RQ015B — 估计器修复与 verifier 弃权闸**：
+    `reports/plans/RQ015B_plan_v0_estimator_repair_and_abstain_gate_20260726.md`。
+    B1 log 域改写（`w=softmax(−MSEᵢ/2σ²)`，平价门 ≤1e-12）；B2 正交结果契约 +
+    **生产兼容层三项（未交付，不得接线）**；D1–D4 可执行分类器（D1 定义为
+    "legacy 结果是否被改变"，D2 更名 `D2_FLAT_UNDER_CURRENT_GRID_AND_MODEL`、
+    禁用"固有不可辨识"）；`min_mse_misfit := Q_0.99(min_mse)` 在 dev+guard 上冻结
+    （sealed 禁止参与）；B3 σ 仅在证据支持时执行；**部署前必须通过 gate-pass 条件
+    覆盖审计**（RQ009 test fold 独用、4 分层、case-cluster bootstrap B=2000
+    seed 20260726、点估计 ±3pp 且 CI 下界 ≥ nominal−5pp）。
+    实现现状 `BUILD_WHILE_DENY`：`src/sociality_estimation/core/reliability_logdomain.py`
+    + `tests/test_rq015_reliability_logdomain.py` **36/36 通过**；legacy 未改、未接线生产。
+  - RQ009 hw4 的含-sealed 立项基线：有效 agent-value（7,086,138）近零 **41.2794%**、
+    `err≥0.61` **52.5810%**、`err≤0.50` **24.1688%**；不得泛化为所有估计器配置或
+    最终画像。该 InterHub 产物的 D0 warm-up 占位为 305,824 个 agent-value
+    （=38,228×4×2，原"K≥9 网格混入"结论已证伪）；下溢临界 RMS
+    n=5 为 1.6915/1.7336 m、n=11 为 1.1470/1.1752 m；复现脚本
+    `reports/plans/prompts/RQ015_portrait_scan_v1.sh`。
+  - **措辞订正**：并非"每个测不出的帧都判合规"——冻结 M3 test fold 90% nominal 支持域内，
+    `|y|<1e-6` 近零行有 **520,826/522,219 = 99.7333%** 的区间包含 0（约 0.27% 不含）。
+  - 两个 RQ 均 `execution_authorized=false`；RQ015A v3 已三路独立复审并 BLOCKED，
+    `formal_g1_eligible=false`；RQ015B 仍待其自己的独立复审。RQ015A v3 复审包为
+    `reports/knowledge/RQ015A_ipv_estimability_labelling/reviews/rq015a_review_manifest_v3_20260726.sha256`。
 - **RQ010B COMPLETE (2026-07-03; 10Hz sensitivity closed 2026-07-04) = bounded NULL.** Reframed WOD-E2E human-preference
   validity: candidate IPV does NOT predict human preference and is not comparable to
   physics (Scheme 1 future-only n=75 rho=0.148 p=0.10; Scheme 2 history+future >=1s
@@ -316,6 +672,20 @@ question index in `STUDIES.md`.
   The output contract at that checkpoint was SHA-256
   `36f5bbd089627e4e1e9cd5e45599d890529fc6313b793e98a108d95c2f0328ca`;
   it is superseded by the D4 Wave-A source-contract re-anchor below.
+- **RQ014 R3 result review complete (2026-07-25; this supersedes the execution-state
+  wording in the D4/R3 bullet below for scientific status).** Managed R3 run
+  `RQ014_3_full_rating_join_and_rank_20260724T053954Z_49dcd5c0` produced 960
+  terminal association rows and one compatible secondary
+  `RR3-R04N-CH-W25-H20-NMD_MEAN-RWS` row (`r=-0.384`, `n=42`); primary NEX has
+  zero compatible rows. R10L is `DEFECT`, not a scientific null, because a
+  whole-branch source-gap terminalization cleared the arm before the frozen
+  per-window semantics could apply. Its rating-free support ceiling is
+  `UNCERTAIN` until the full probe receipt is tracked. The current R3 artifact
+  set has no `selected_recovery_recipe.json`, and no G4R clean replay PASS is
+  present. Current status is therefore `PENDING_REPLAY / NOT ACCEPTED`; do not
+  create an accepting `decision.md` or route a confirmed-transfer claim to the
+  paper repository. Independent review:
+  `reports/knowledge/RQ014_wod_e2e_rating_recovery/reviews/codex_review.md`.
 - **RQ014 D4/R3 Wave B conditionally authorizes the single managed R3 operation
   (2026-07-23; no rating read, HPC action, or commit).** The immutable blind bank
   `RQ014_2_blind_feature_build_20260722T210000Z_e41c8792` is complete with
@@ -739,6 +1109,20 @@ question index in `STUDIES.md`.
   reference clip/max/smooth `60/40/40`, NuPlan 20-to-10 Hz downsampling, and the
   tracked `configs/ipv_sigma01_exact.json`; InterHub CLI reference defaults are
   now aligned to `60/40/40`.
+- **sigma01 reproduction spot-check refreshed 2026-08-01.** On the clean managed
+  HPC checkout at `6bdcc2e64bacd75d02741aa18ef5d61eef5a2962` with
+  `envs/ipv-exact-sigma01` (Python 3.9.24), Slurm job `2022476`
+  (`zxc-sigma01-fixture`) passed the strict two-case fixture with
+  `sigma01_max_abs_diff=4.44e-16`. Slurm job `2022477`
+  (`zxc-sigma01-onecase`) then reran real NuPlan case `ipv_000001` end to end:
+  87 frame rows / 348 IPV-or-error values matched the archived sigma01 rows at
+  max/mean absolute difference `1.11e-16` / `6.58e-18`; keys and timestamps were
+  identical. The same case on macOS produced `max_abs_diff=1.12446`, so strict
+  reproduction requires the pinned Linux/SciPy/BLAS ABI, not merely the same
+  source and parameters. Current local full-PKL replay is also structurally
+  incomplete: AV2/Lyft PKLs are absent and `waymo_300-499.pkl` remains truncated;
+  9 of the 10 visible local PKLs deserialize successfully. These local defects do
+  not affect the immutable managed-HPC snapshot used by the passing spot-check.
 - Git-based HPC deployment is active at
   `/share/home/u25310231/ZXC/sociality_estimation/code/repo`; the 2026-07-11/12
   root-cure cutover was validated at `47f79685`, and deployment follows
@@ -1005,6 +1389,29 @@ question index in `STUDIES.md`.
 - Manuscript drafting lives in the standalone paper repository:
   `../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`.
   Do not recreate a top-level `paper/` directory here.
+
+## Repository State
+
+对齐时间 2026-08-04T13:40Z（每次分支或远端状态变化时更新本节）。
+
+- 工作分支 `rq016-rq017-online-verification`，已推送并跟踪
+  `origin/rq016-rq017-online-verification`。RQ016 / RQ016B / RQ016C / RQ017
+  四轮成果都在这条分支上，**远端已有备份**。
+- 本地共 6 条分支（另有 `main`、`rq007-estimability-run`、`rq015a-implementation`
+  与两条归档分支），1 个 worktree。
+- `reports/` 的三个一级目录 `plans/` / `studies/` / `knowledge/` 为治理层，
+  `AGENTS.md`、`STUDIES.md`、本文件三处表述已一致（2026-08-04 PI 裁定保留 `plans/`）。
+- `.git` 已做过一次 `git gc`：5.0 GB → 19 MB，`git fsck` 无错，六条分支与工作区
+  逐一核对无损。**未做任何历史改写。** 44 个 `tmp_obj_*` 垃圾文件已手动清除。
+- `.codex-fleet/` 已清理大块中间数据：**6.5 GB → 384 MB**。删除项、引用检查依据与再生方式
+  见 `reports/knowledge/_governance/codex_fleet_cleanup_20260804/`。
+  **承重产物全部保留**，其中 RQ017 依赖的
+  `.codex-fleet/rq016c-human-only-envelope/work/H2/envelope_model/rq016c_h2_envelope.pkl`
+  与 `H2/onsite_scoring_dryrun.parquet` 清理后已功能性复验
+  （67,861 行 / 67,861 唯一键 / `mechanism2_gate_ok` 为真 21,936，与记录一致）。
+  RQ016C 的 H1 产物（已被 H2 取代且判定不可用）已删除，H1 报告内已加注。
+- 受保护文件基线校验清单：`.codex-fleet/git_cleanup_protected_sha_before.txt`
+  （`shasum -a 256 -c` 应全部 `OK`）。
 
 ## Active Study Map
 

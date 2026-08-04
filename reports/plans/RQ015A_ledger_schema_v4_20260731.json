@@ -1,0 +1,723 @@
+{
+  "schema_id": "rq015a-concentration-ledger-v4",
+  "created": "2026-07-31",
+  "supersedes": "rq015a-concentration-ledger-v3",
+  "status": "CANDIDATE_PENDING_REVIEW",
+  "purpose": "逐行记录 IPV 估计尝试状态与候选权重集中度；无 estimability 断言。",
+  "change_basis": "reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md（C1–C13，全部对真实文件实测）；2026-07-31 WOD RQ010B full479 sanitized retrieval landed and bound by SHA-256 receipt.",
+  "verification_script": "scripts/rq015a/preflight_structural_scan.py",
+  "auditable_scope": {
+    "note": "2026-07-31 取回 wod_rq010b_full479_audited 后，6 个候选产物中 4 个在本地/绑定路径有逐行数据；另 2 个仍 absent。",
+    "present_and_auditable": [
+      "interhub_sigma01_hw4_timeseries",
+      "rq009_feature_matrix",
+      "onsite_dense_timeseries",
+      "wod_rq010b_full479_audited"
+    ],
+    "absent_locally": [
+      "wod_phase1_phase1b_10hz_schemeb",
+      "rq014_g2r_anchor_scores"
+    ],
+    "pi_decision": {
+      "date": "2026-07-26",
+      "verdict": "AMEND_PLAN_SECTION_9_TO_PERMIT_READ_ONLY_HPC_RETRIEVAL",
+      "note": "PI 授权把三个 WOD 产物只读取回本地后一并审计。取回是独立操作，须有自己的授权对象与 SHA 清单；取回失败或数据已不在 HPC 时，自动退回缩减范围并按覆盖缺口披露。"
+    },
+    "retrieval_spec": "reports/plans/RQ015A_wod_retrieval_spec_v3_20260731.json",
+    "fallback_if_retrieval_fails": "仅 wod_phase1_phase1b_10hz_schemeb 与 rq014_g2r_anchor_scores 仍按 absent 覆盖缺口披露；wod_rq010b_full479_audited 不再计入本地缺失。",
+    "retrieval_result": {
+      "date": "2026-07-31",
+      "artifact_id": "wod_rq010b_full479_audited",
+      "status": "SANITIZED_PROJECTED_ARTIFACT_PRESENT_LOCALLY",
+      "path": "data/derived/wod_e2e/rq015a_full479_projected/rq010b_wod_full479_audited_candidate_ipv_projected.csv",
+      "sha256": "d10c3a6f903dae19bf14de6b895c72f6c4ffc92688d97baa9a7c26684930b7d1",
+      "receipt_path": "data/derived/wod_e2e/rq015a_full479_projected/sanitization_receipt.json",
+      "receipt_sha256": "f2435ed9190cac0f4b64e20a4f10edc1412d8bd1f965124f63684abf672c0fdf"
+    }
+  },
+  "primary_key": [
+    "artifact_id",
+    "product_row_key",
+    "measurement_role"
+  ],
+  "split_join": {
+    "note": "C2：三个字段取同一值域（形如 ipv_000001），实测 3,695,981 行零未映射。",
+    "canonical_case_key": "case_id",
+    "equivalent_columns": {
+      "case_split_assignment.csv": "case_id",
+      "interhub_sigma01_hw4_timeseries": "scene_unique_id",
+      "rq009_feature_matrix": "case_key (== scene_unique_id, 两列同值)"
+    },
+    "on_unmapped": "fail_closed",
+    "assert_unmapped_rows": 0
+  },
+  "fold_is_not_split": {
+    "note": "C6 安全阻断：RQ009 的 fold 与 RQ007 的 split 正交，每个 fold 都含 held_out。",
+    "rq009_folds": [
+      "train",
+      "guard_tune",
+      "calibration",
+      "test"
+    ],
+    "rq007_splits": [
+      "development",
+      "guard",
+      "held_out"
+    ],
+    "measured_held_out_rows_per_fold": {
+      "train": 751826,
+      "guard_tune": 389818,
+      "calibration": 376580,
+      "test": 381674
+    },
+    "forbidden": "以任何 fold 名近似 RQ007 split（例如把 fold=guard_tune 当作 guard）",
+    "required": "先按 case_id → split 白名单过滤，再读取任何 measurement 列"
+  },
+  "fields": {
+    "artifact_id": {
+      "role": "provenance",
+      "type": "string",
+      "nullable": false
+    },
+    "product_row_key": {
+      "role": "provenance",
+      "type": "string",
+      "nullable": false,
+      "note": "该产物自身主键的规范化字符串，见 artifacts[].row_key_fields"
+    },
+    "measurement_role": {
+      "role": "provenance",
+      "type": "string",
+      "nullable": false,
+      "enum": [
+        "agent_1",
+        "agent_2",
+        "ego_hw4",
+        "ego_hw10",
+        "counterpart_hw4",
+        "counterpart_hw10",
+        "counterpart_current",
+        "target_future",
+        "M4_ONLY_ego_self_anchor",
+        "candidate"
+      ]
+    },
+    "case_id": {
+      "role": "provenance",
+      "type": "string",
+      "nullable": true
+    },
+    "rq007_split": {
+      "role": "provenance",
+      "type": "string",
+      "nullable": false,
+      "enum": [
+        "development",
+        "guard",
+        "held_out",
+        "RQ007_SPLIT_NOT_APPLICABLE",
+        "unknown"
+      ]
+    },
+    "ipv_error": {
+      "role": "observed",
+      "type": "float64",
+      "nullable": true
+    },
+    "K": {
+      "role": "observed",
+      "type": "int32",
+      "nullable": true
+    },
+    "candidate_grid_id": {
+      "role": "provenance",
+      "type": "string",
+      "nullable": false,
+      "enum": [
+        "legacy7_pi_over_8",
+        "realtime5_pi_over_8",
+        "UNKNOWN"
+      ],
+      "note": "C12：K 非常量，禁止把 7 外推到未经 provenance 确认的产物"
+    },
+    "k_eff": {
+      "role": "derived",
+      "type": "float64",
+      "nullable": true,
+      "formula": "1.0 / (1.0 - ipv_error) ** 2"
+    },
+    "q_eff": {
+      "role": "derived",
+      "type": "float64",
+      "nullable": true,
+      "formula": "k_eff / K",
+      "range": "(0, 1]",
+      "note": "主量。K 或 ipv_error 缺失/退化时为 null"
+    },
+    "attempt_status": {
+      "role": "verdict",
+      "type": "string",
+      "nullable": false,
+      "enum": [
+        "ATTEMPTED",
+        "NOT_ATTEMPTED",
+        "UNKNOWN"
+      ]
+    },
+    "reason_code": {
+      "role": "verdict",
+      "type": "string",
+      "nullable": true
+    },
+    "recoverability": {
+      "role": "verdict",
+      "type": "string",
+      "nullable": false,
+      "enum": [
+        "L1_DIRECT",
+        "L2_PROVENANCE",
+        "L3_PENDING_RQ015B",
+        "L4_UNRECOVERABLE",
+        "RECOVERABLE_BY_REPLAY_OUT_OF_SCOPE",
+        "ARTIFACT_NOT_PRESENT_LOCALLY"
+      ]
+    },
+    "ledger_schema_version": {
+      "role": "provenance",
+      "type": "string",
+      "nullable": false
+    }
+  },
+  "status_precedence": {
+    "note": "C11/C13：D0 规则与退化规则会在同一行同时触发，必须冻结优先级。",
+    "order": [
+      "NOT_ATTEMPTED",
+      "UNKNOWN",
+      "ATTEMPTED"
+    ],
+    "rule": "已知成因优先于兜底：命中该产物的 not_attempted_rule 即记 NOT_ATTEMPTED，即使 ipv_error 也满足退化条件（>=1）或为空。",
+    "rationale": "warm-up 占位写入 ipv_error = 1.0（精确值），若让退化规则优先，全部 D0 行会被归入成因不明的 UNKNOWN，掩盖一个已完全解释的机制。",
+    "sentinels": {
+      "warmup_placeholder_error": 1.0,
+      "uniform_fallback_error_K7": 0.6220355269907728,
+      "uniform_fallback_error_K5": 0.5527864045000421,
+      "note": "占位（从未求解）与均匀回退（求解了但权重摊平）是两件事，不得混为一谈"
+    },
+    "empty_cell_rule": {
+      "empty_and_in_d0": {
+        "attempt_status": "NOT_ATTEMPTED",
+        "reason_code": "D0_WARMUP"
+      },
+      "empty_and_past_d0": {
+        "attempt_status": "UNKNOWN",
+        "reason_code": "EMPTY_CELL_UNEXPLAINED"
+      },
+      "forbidden": "把空串读作 0"
+    }
+  },
+  "unknown_sentinel": {
+    "q_eff": null,
+    "k_eff": null,
+    "K": null,
+    "attempt_status": "UNKNOWN"
+  },
+  "row_conservation": {
+    "note": "C1：identity_1 的基数必须是**未排除 D0** 的物理行数，否则 identity_2 的 NOT_ATTEMPTED 项恒为 0，断言退化为空。",
+    "identity_1_expansion": "measurement_rows = physical_rows * expansion_factor / collapse_factor",
+    "identity_2_partition": "measurement_rows = n(ATTEMPTED) + n(NOT_ATTEMPTED) + n(UNKNOWN)",
+    "identity_3_recoverability": "measurement_rows = Σ_over_recoverability n(recoverability)",
+    "enforcement": "三条恒等式逐 artifact 断言；任一不成立即 fail closed"
+  },
+  "artifacts": [
+    {
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "path": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/target_hw4/sigma01_hw4_ipv_timeseries.csv",
+      "format": "csv",
+      "row_key_fields": [
+        "scene_unique_id",
+        "frame_index"
+      ],
+      "expansion_factor": 2,
+      "collapse_factor": 1,
+      "measurement_roles": [
+        "agent_1",
+        "agent_2"
+      ],
+      "role_source_columns": {
+        "agent_1": [
+          "ipv_key_agent_1",
+          "ipv_key_agent_1_error"
+        ],
+        "agent_2": [
+          "ipv_key_agent_2",
+          "ipv_key_agent_2_error"
+        ]
+      },
+      "not_attempted_rule": {
+        "kind": "global_frame_index",
+        "expr": "frame_index < 4",
+        "min_observation": 4,
+        "validity_evidence": "每个 case 恰有 1 行 frame_index==0（19258/7628/11342，与 case 数逐一相等）⇒ frame_index 逐 case 从 0 起且连续，全局规则对本产物有效"
+      },
+      "K_source": {
+        "kind": "constant",
+        "value": 7,
+        "grid_id": "legacy7_pi_over_8",
+        "provenance": "configs/ipv_sigma01_exact.json solver_mode=exact → agent.py:63 virtual_agent_IPV_range"
+      },
+      "rq007_split_applicable": true,
+      "recoverability": "L1_DIRECT",
+      "measured": {
+        "total_data_rows_all_splits": 3695981,
+        "rows_per_split": {
+          "development": 1865625,
+          "guard": 732911,
+          "held_out": 1097445
+        },
+        "unmapped_scene_ids": 0,
+        "dev_guard_physical_rows": 2598536,
+        "dev_guard_d0_rows": 107544,
+        "measurement_rows_expected": 5197072,
+        "not_attempted_measurement_rows_expected": 215088
+      },
+      "superseded_expected_v1": {
+        "physical_rows_dev_guard_post_d0": 2490992,
+        "why_wrong": "该数已排除 D0，用作 identity_1 基数会使 identity_2 的 NOT_ATTEMPTED 恒为 0"
+      }
+    },
+    {
+      "artifact_id": "rq009_feature_matrix",
+      "replaces_v1_artifact": "rq009_m3_predictions",
+      "replacement_reason": "C3：predictions.parquet 的 15 列中没有任何 ipv_error；三个角色实际是 feature matrix 的三列。",
+      "path_glob": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix/fold=*/source_dataset=*/features_part_*.parquet",
+      "format": "parquet",
+      "row_key_fields": [
+        "case_key",
+        "anchor_frame_index",
+        "perspective",
+        "source_dataset"
+      ],
+      "expansion_factor": 2,
+      "collapse_factor": 1,
+      "collapse_note": "C4：3× alpha 折叠只属于 predictions.parquet；feature matrix 每 (anchor, perspective) 恰 1 行。",
+      "measurement_roles": [
+        "counterpart_current",
+        "target_future"
+      ],
+      "role_source_columns": {
+        "counterpart_current": [
+          "counterpart_ipv_current",
+          "counterpart_ipv_error_current"
+        ],
+        "target_future": [
+          "target_ipv_future",
+          "target_ipv_error_future"
+        ]
+      },
+      "excluded_roles": {
+        "M4_ONLY_ego_self_anchor": {
+          "columns": [
+            "M4_ONLY_ego_self_anchor_ipv_current",
+            "M4_ONLY_ego_self_anchor_ipv_error_current"
+          ],
+          "default": "EXCLUDED",
+          "reason": "列名前缀 M4_ONLY 即禁用标记；纳入会把 M4 自锚通道混入 M3 语境。",
+          "pi_decision": {
+            "date": "2026-07-26",
+            "verdict": "EXCLUDE",
+            "note": "PI 确认排除。expansion_factor 固定为 2。若未来需要，必须以独立 artifact_id 单列，绝不与另两条通道合并聚合（cross_artifact_pooling 同样适用）。"
+          },
+          "pi_decision_required": false
+        }
+      },
+      "perspective_values": [
+        "key_agent_1",
+        "key_agent_2"
+      ],
+      "not_attempted_rule": {
+        "kind": "none_expected",
+        "expr": "assert n(NOT_ATTEMPTED) == 0",
+        "rationale": "anchor 由构造起于 min_observation 之后（抽样实测最小 anchor_frame_index = 7）"
+      },
+      "K_source": {
+        "kind": "constant",
+        "value": 7,
+        "grid_id": "legacy7_pi_over_8",
+        "provenance": "派生自同一 sigma01 exact 运行"
+      },
+      "rq007_split_applicable": true,
+      "split_filter_column": "case_key",
+      "recoverability": "L1_DIRECT",
+      "measured": {
+        "parquet_parts": 138,
+        "total_rows_all_splits": 6397266,
+        "rows_per_fold": {
+          "train": 2558374,
+          "guard_tune": 1302044,
+          "calibration": 1266282,
+          "test": 1270566
+        },
+        "dev_rows": 3229842,
+        "guard_rows": 1267526,
+        "held_out_rows": 1899898,
+        "dev_guard_rows": 4497368,
+        "measurement_rows_expected": 8994736
+      },
+      "superseded_expected_v1": {
+        "anchors_dev_guard": 1778594,
+        "cases_dev_guard": 10580,
+        "why_wrong": "两数无法由任何实测口径复现，来源不明，已删除"
+      },
+      "pooling": "FORBIDDEN_DERIVATIVE_OF_sigma01_hw4"
+    },
+    {
+      "artifact_id": "rq009_m3_predictions",
+      "status": "PROVENANCE_ONLY_NOT_IN_LEDGER",
+      "path_glob": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/04_calibration/predictions/tier=M3/fold=*/predictions.parquet",
+      "columns": [
+        "case_key",
+        "anchor_frame_index",
+        "perspective",
+        "source_dataset",
+        "fold",
+        "tier",
+        "alpha",
+        "nominal",
+        "q_lo",
+        "q_hi",
+        "lo_cal",
+        "hi_cal",
+        "width",
+        "abstain",
+        "y"
+      ],
+      "exclusion_reason": "无任何 ipv_error 列，对集中度审计零信息量。",
+      "measured": {
+        "rows_fold_test": 3811698,
+        "rows_fold_calibration": 3798846,
+        "alpha_multiplicity": 3,
+        "identity_check": "3811698 == 1270566 * 3 且 3798846 == 1266282 * 3"
+      }
+    },
+    {
+      "artifact_id": "onsite_dense_timeseries",
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.csv",
+      "format": "csv",
+      "parquet_twin": "同目录 onsite_ipv_timeseries.parquet；若两者并用须先断言逐行一致",
+      "row_key_fields": [
+        "case_key",
+        "frame_index",
+        "timestamp_ms"
+      ],
+      "row_key_correction": "C7：v1 写作 case_id，该列在本产物中不存在。",
+      "expansion_factor": 4,
+      "collapse_factor": 1,
+      "measurement_roles": [
+        "ego_hw4",
+        "ego_hw10",
+        "counterpart_hw4",
+        "counterpart_hw10"
+      ],
+      "role_source_columns": {
+        "ego_hw4": [
+          "ipv_ego_hw4",
+          "ipv_ego_hw4_error"
+        ],
+        "ego_hw10": [
+          "ipv_ego_hw10",
+          "ipv_ego_hw10_error"
+        ],
+        "counterpart_hw4": [
+          "ipv_counterpart_hw4",
+          "ipv_counterpart_hw4_error"
+        ],
+        "counterpart_hw10": [
+          "ipv_counterpart_hw10",
+          "ipv_counterpart_hw10_error"
+        ]
+      },
+      "not_attempted_rule": {
+        "kind": "local_position",
+        "expr": "local_position < 4",
+        "local_position_algorithm": [
+          "1. 应用冻结 filtering",
+          "2. 按 (timestamp_ms, frame_index) 升序稳定排序（每 case_key 内）",
+          "3. local_position = row_number - 1（0-based）",
+          "4. 禁止使用 frame_index - min(frame_index)",
+          "5. 禁止使用全局 frame_index < 4"
+        ],
+        "validity_evidence": "首行 frame_index = 101；254/267 cases 首帧非 0；36 cases frame_index 不连续"
+      },
+      "K_source": {
+        "kind": "constant",
+        "value": 7,
+        "grid_id": "legacy7_pi_over_8",
+        "provenance": "C8：onsite_ipv/provenance.json 记 legacy_slsqp=true 且无 solver_mode 覆写；vendored_estimator/agent.py:57 virtual_agent_IPV_range 为 7 候选",
+        "supersedes_v1": "v1 记为 kind=provenance/可能为 null，实为可确定"
+      },
+      "rq007_split_applicable": false,
+      "rq007_split_value": "RQ007_SPLIT_NOT_APPLICABLE",
+      "recoverability": "L1_DIRECT",
+      "measured": {
+        "physical_rows": 70317,
+        "measurement_rows_expected": 281268,
+        "has_empty_ipv_cells": true,
+        "first_row_all_four_ipv_fields_empty": true
+      }
+    },
+    {
+      "artifact_id": "wod_rq010b_full479_audited",
+      "row_key_fields": [
+        "segment_key",
+        "candidate_index"
+      ],
+      "expansion_factor": 1,
+      "collapse_factor": 1,
+      "measurement_roles": [
+        "candidate"
+      ],
+      "not_attempted_rule": {
+        "kind": "none_expected",
+        "expr": "assert n(NOT_ATTEMPTED) == 0",
+        "rationale": "该投影产物每行是 WOD 候选而非时间序列，无 warm-up/D0 语义；2026-07-31 只读 CSV 核验显示 ego_ipv_error 空串、占位、非数、非有限计数均为 0。"
+      },
+      "K_source": {
+        "kind": "provenance",
+        "value": 7,
+        "grid_id": "legacy7_pi_over_8",
+        "provenance": {
+          "conclusion": "solver_mode = fast → virtual 七点网格 → K = 7，grid_id = legacy7_pi_over_8",
+          "evidence_chain": [
+            {
+              "path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_full479_scored_audited_20260630T063600/rq010b_wod_e2e_multiframe_tracking_ipv_full479_audited_stats.json",
+              "key_line": "记录 \"ipv_solver_mode\": \"fast\""
+            },
+            {
+              "path": "<RQ010B repo>/src/sociality_estimation/core/ipv_estimation.py",
+              "lines": "220-223",
+              "key_line": "exact → 7 candidates；fast → 7 candidates；realtime → 5 candidates"
+            },
+            {
+              "path": "<RQ010B repo>/src/sociality_estimation/core/agent.py",
+              "lines": "63-64,156-161",
+              "key_line": "virtual_agent_IPV_range = np.array([-3,-2,-1,0,1,2,3]) * math.pi / 8；realtime_agent_IPV_range = np.array([-3,-1,0,1,3]) * math.pi / 8；仅 solver_mode == \"realtime\" 返回 realtime range，其余一律返回 virtual range"
+            }
+          ]
+        }
+      },
+      "rq007_split_applicable": false,
+      "rq007_split_value": "RQ007_SPLIT_NOT_APPLICABLE",
+      "recoverability": "L1_DIRECT",
+      "reporting_requirement": "报告中可纳入 WOD RQ010B full479 candidate 台账覆盖；同时披露 driven baseline 未取回且 61 个源列已丢弃。",
+      "driven_baseline_exclusion": {
+        "columns": [
+          "ego_ipv_driven",
+          "ego_ipv_driven_error"
+        ],
+        "ledger_policy": "对照基线，不进台账；measurement_roles 保持 [\"candidate\"]；expansion_factor 保持 1",
+        "reason": "driven 是独立的 302 行（每段一行），不是每候选一条的第二测量通道。",
+        "evidence": [
+          {
+            "path": "analyze_multiframe_tracking_ipv.py",
+            "lines": "1094-1102",
+            "key_line": "从 driven_state 估 ego_ipv_driven"
+          },
+          {
+            "path": "analyze_multiframe_tracking_ipv.py",
+            "lines": "1104-1116",
+            "key_line": "候选循环另外估 ego_ipv"
+          },
+          {
+            "path": "analyze_multiframe_tracking_ipv.py",
+            "lines": "1126-1130",
+            "key_line": "候选行同时存 ego_ipv / ego_ipv_driven / ipv_minus_driven"
+          },
+          {
+            "path": "结果报告",
+            "line": 7,
+            "key_line": "Candidate IPV rows: 906 plus 302 actual-driven rows"
+          },
+          {
+            "path": "pilot 脚本",
+            "line": 759,
+            "key_line": "driven future 作为 bias check 单独分析"
+          }
+        ]
+      },
+      "path": "data/derived/wod_e2e/rq015a_full479_projected/rq010b_wod_full479_audited_candidate_ipv_projected.csv",
+      "format": "csv",
+      "role_source_columns": {
+        "candidate": [
+          "ego_ipv",
+          "ego_ipv_error"
+        ]
+      },
+      "column_whitelist": [
+        "segment_key",
+        "candidate_index",
+        "ego_ipv",
+        "ego_ipv_error"
+      ],
+      "not_retrieved_columns": {
+        "driven_baseline_columns": {
+          "columns": [
+            "ego_ipv_driven",
+            "ego_ipv_driven_error"
+          ],
+          "policy": "对照基线，不进台账；未随四列投影取回。"
+        },
+        "sanitization_dropped_source_columns": {
+          "count": 61,
+          "includes_rating_column": true,
+          "policy": "源表非白名单列全部丢弃；投影 CSV 仅保留 column_whitelist。"
+        }
+      },
+      "measured": {
+        "data_rows": 906,
+        "sha256": "d10c3a6f903dae19bf14de6b895c72f6c4ffc92688d97baa9a7c26684930b7d1",
+        "retrieved_on": "2026-07-31",
+        "retrieval_receipt": {
+          "path": "data/derived/wod_e2e/rq015a_full479_projected/sanitization_receipt.json",
+          "sha256": "f2435ed9190cac0f4b64e20a4f10edc1412d8bd1f965124f63684abf672c0fdf"
+        },
+        "projected_columns": [
+          "segment_key",
+          "candidate_index",
+          "ego_ipv",
+          "ego_ipv_error"
+        ],
+        "sanitization": {
+          "source_rows": 906,
+          "projected_rows": 906,
+          "dropped_source_columns": 61,
+          "projected_forbidden_column_scan_hits": 0
+        },
+        "ego_ipv_error_validation": {
+          "empty_string_count": 0,
+          "placeholder_count": 0,
+          "non_numeric_count": 0,
+          "non_finite_count": 0,
+          "validated_from": "read-only CSV structure scan on 2026-07-31"
+        }
+      }
+    },
+    {
+      "artifact_id": "wod_phase1_phase1b_10hz_schemeb",
+      "status": "ARTIFACT_NOT_PRESENT_LOCALLY",
+      "exclusion_reason": "C14：同上，本地无逐行产物。",
+      "row_key_fields": [
+        "segment_key",
+        "candidate_index",
+        "phase_id"
+      ],
+      "expansion_factor": 1,
+      "collapse_factor": 1,
+      "measurement_roles": [
+        "candidate"
+      ],
+      "ipv_error_source": {
+        "kind": "absent",
+        "note": "error 被丢弃，可由 replay 恢复，但本 RQ 禁止 replay"
+      },
+      "not_attempted_rule": {
+        "kind": "not_determinable"
+      },
+      "rq007_split_applicable": false,
+      "rq007_split_value": "RQ007_SPLIT_NOT_APPLICABLE",
+      "recoverability": "ARTIFACT_NOT_PRESENT_LOCALLY",
+      "attempt_status_forced": "UNKNOWN",
+      "reporting_requirement": "必须在报告的覆盖缺口一节显式披露"
+    },
+    {
+      "artifact_id": "rq014_g2r_anchor_scores",
+      "status": "ARTIFACT_NOT_PRESENT_LOCALLY",
+      "exclusion_reason": "C9：仓库内只有 JSON schema 与 HPC 回执/slurm 日志，无任何 anchor-score 数据文件；计划 §9 禁用 HPC，本 RQ 内不可补。",
+      "row_key_fields_v1_wrong": [
+        "segment_key",
+        "cell_id",
+        "tau_tick"
+      ],
+      "row_key_fields_actual": [
+        "segment_id",
+        "feature_id",
+        "sampling_id",
+        "temporal_id",
+        "horizon_id",
+        "tau_tick",
+        "candidate_ordinal"
+      ],
+      "row_key_source": "configs/artifact_schemas/rq014_g2r_anchor_score_row_v1.schema.json x-rq014-logical-key-order",
+      "ipv_error_source": {
+        "kind": "absent",
+        "confirmed": "行内仅有 candidate_ipv，无任何 error 字段"
+      },
+      "recoverability": "ARTIFACT_NOT_PRESENT_LOCALLY",
+      "attempt_status_forced": "UNKNOWN",
+      "reporting_requirement": "必须在报告的覆盖缺口一节显式披露，不得静默省略",
+      "superseded_expected_v1": {
+        "unique_candidate_tau_rows": 37242,
+        "forced_unknown_rows": 21576,
+        "why_wrong": "无本地数据可核对，作为未经证实的数处理"
+      },
+      "expansion_factor": 1,
+      "collapse_factor": 1,
+      "measurement_roles": [
+        "candidate"
+      ],
+      "rq007_split_applicable": false,
+      "rq007_split_value": "RQ007_SPLIT_NOT_APPLICABLE",
+      "content_recoverability_note": {
+        "verdict_if_retrieved": "L4_UNRECOVERABLE_FOR_IPV_ERROR",
+        "fact_preserved": "该产物行内确无任何 error 字段（仅 candidate_ipv），故即便取回也不可恢复 q_eff。",
+        "effect_on_identity_3": "recoverability 计数统一使用 ARTIFACT_NOT_PRESENT_LOCALLY，避免与同类 absent 条目求和歧义。"
+      }
+    }
+  ],
+  "cross_artifact_pooling": {
+    "policy": "FORBIDDEN",
+    "reason": "rq009_feature_matrix 由 interhub_sigma01_hw4_timeseries 派生；pooling 会对同一原始 observation 重复加权",
+    "only_corpus_level_source": "interhub_sigma01_hw4_timeseries",
+    "enforcement": "scripts/rq015a/rq015a_contracts.py::assert_single_artifact（代码强制，非仅声明）"
+  },
+  "split_filter": {
+    "order": [
+      "1. 按 case_id 白名单过滤",
+      "2. 才读取任何 measurement 字段"
+    ],
+    "allowlist": [
+      "development",
+      "guard"
+    ],
+    "forbidden_expressions": [
+      "split != 'sealed'",
+      "fold == 'guard_tune'",
+      "fold != 'test'"
+    ],
+    "assertions": {
+      "held_out_parsed_rows": 0,
+      "held_out_conclusion_rows": 0,
+      "unmapped_case_rows": 0
+    },
+    "not_applicable_artifacts_bypass": true
+  },
+  "environment": {
+    "note": "C10：v1 的『纯标准库』为误述——feature matrix、OnSite anchors、predictions 均为 parquet。",
+    "required": [
+      "python>=3.9",
+      "pandas",
+      "numpy"
+    ],
+    "parquet_engine": {
+      "accept": [
+        "pyarrow",
+        "fastparquet"
+      ],
+      "record_in_receipt": true
+    },
+    "forbidden": [
+      "network access",
+      "HPC / slurm",
+      "GPU"
+    ]
+  }
+}

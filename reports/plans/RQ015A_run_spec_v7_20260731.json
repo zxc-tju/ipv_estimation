@@ -1,0 +1,278 @@
+{
+  "spec_id": "rq015a-run-spec-v7",
+  "operation_id": "rq015a_concentration_audit",
+  "status": "BUILD_WHILE_DENY_IMMUTABLE_CANDIDATE_PENDING_REVIEW",
+  "created": "2026-07-31",
+  "supersedes": "reports/plans/RQ015A_run_spec_v6_20260731.json",
+  "execution_authorized": true,
+  "authorization_object": "configs/research_authorization.json#authorizations.rq015a_concentration_audit",
+  "authorization_adjudication_record": {
+    "authorized_by": "PI（人类）",
+    "executed_by": "codex agent，依 PI 2026-07-31 明确指示执行；非 PI 本人手动操作",
+    "basis": "三路最终独立复审全部 PASS_WITH_CONDITIONS 且条件已闭合；七轮独立健壮性审计收敛至零 blocker",
+    "scope": "仅授权 rq015a_concentration_audit 的执行；不含任何新的数据取回；不构成对 RQ015B 或其它 RQ 的授权",
+    "note": "授权不自动运行审计；PI 已裁定翻转后先重跑信任边界检验再决定是否运行"
+  },
+  "known_redundant_authorization_state": {
+    "statement": "execution_authorized 同时存在于本 run spec 顶层与 configs/research_authorization.json 的条目中；两处必须一致，任一为 false 即拒绝执行。这是已知的一份事实两处存，待后续单独裁决是否收敛为单一来源（本轮不改契约形状）。"
+  },
+  "entrypoint": "scripts/rq015a/run_rq015a.py",
+  "exact_commands": {
+    "validate_only": "<PYTHON> scripts/rq015a/run_rq015a.py --validate-only --run-spec reports/plans/RQ015A_run_spec_v7_20260731.json --receipt <VALIDATE_RECEIPT_JSON>",
+    "execute": "<PYTHON> scripts/rq015a/run_rq015a.py --execute --run-spec reports/plans/RQ015A_run_spec_v7_20260731.json --validate-receipt <VALIDATE_RECEIPT_JSON> --receipt <RUN_RECEIPT_JSON>"
+  },
+  "exact_command_notes": {
+    "python_placeholder": "<PYTHON> must be a Python >=3.9 interpreter that can import pandas, numpy, pytest, and at least one parquet engine accepted by this spec.",
+    "no_personal_absolute_path": "The command intentionally does not pin a machine-local virtualenv path; the actual interpreter path and package versions are recorded by the receipt at runtime.",
+    "receipt_placeholders": "<VALIDATE_RECEIPT_JSON> and <RUN_RECEIPT_JSON> are no-overwrite paths selected for the concrete run package."
+  },
+  "authorization_package_binding": {
+    "authorization_field": "configs/research_authorization.json#authorizations.rq015a_concentration_audit.authorized_package_commit",
+    "false_state": "When execution_authorized is false, authorized_package_commit may be null.",
+    "true_state": "When execution_authorized is true, authorized_package_commit must be a non-empty string that is the current git HEAD commit SHA or an ancestor of the current git HEAD, and load_execute_permit() must reject null, malformed, missing, or non-ancestor values.",
+    "cycle_break": "The authorization object is itself a checksum-manifest member, so it cannot bind the manifest SHA without a circular dependency. The post-review package is instead bound by the commit SHA in the later, independent authorization-flip commit."
+  },
+  "bound_artifacts": {
+    "plan": "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
+    "plan_superseded": [
+      "reports/plans/RQ015A_plan_v7_concentration_audit_20260730.md",
+      "reports/plans/RQ015A_plan_v6_concentration_audit_20260730.md",
+      "reports/plans/RQ015A_plan_v5_concentration_audit_20260730.md",
+      "reports/plans/RQ015A_plan_v4_concentration_audit_20260727.md",
+      "reports/plans/RQ015A_plan_v3_concentration_audit_20260726.md"
+    ],
+    "ledger_schema": "reports/plans/RQ015A_ledger_schema_v4_20260731.json",
+    "contracts_impl": "scripts/rq015a/rq015a_contracts.py",
+    "ledger_builder": "scripts/rq015a/build_ledger.py",
+    "validate_only_impl": "scripts/rq015a/validate_only.py",
+    "receipt_impl": "scripts/rq015a/receipt.py",
+    "factor_analysis_impl": "scripts/rq015a/factor_analysis.py",
+    "fixtures": [
+      "tests/test_rq015a_contracts.py",
+      "tests/test_rq015a_build_ledger.py",
+      "tests/test_rq015a_validate_receipt.py",
+      "tests/test_rq015a_factor_analysis.py",
+      "tests/test_rq015a_run_entrypoint.py"
+    ],
+    "fixtures_note": "『fixtures 全部通过』指上列五个文件全部通过；不得只跑其中之一；通过数只从 pytest 输出解析并写入 receipt，不在规格中硬编码。",
+    "checksum_manifest": "reports/plans/RQ015A_plan_v10_checksums_20260731.sha256",
+    "checksum_manifest_status": "Re-signed after wiring the authorized execute path in scripts/rq015a/run_rq015a.py; v9 is retained as the pre-execute historical manifest and is not overwritten.",
+    "checksum_manifest_members": [
+      "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
+      "reports/plans/RQ015A_run_spec_v7_20260731.json",
+      "reports/plans/RQ015A_ledger_schema_v4_20260731.json",
+      "reports/plans/RQ015A_wod_retrieval_spec_v1.json",
+      "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md",
+      "reports/knowledge/RQ015A_ipv_estimability_labelling/known_issues_and_audit_boundary_20260730.md",
+      "reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md",
+      "configs/research_authorization.json",
+      "scripts/rq015a/rq015a_contracts.py",
+      "scripts/rq015a/rq015a_types.py",
+      "scripts/rq015a/build_ledger.py",
+      "scripts/rq015a/validate_only.py",
+      "scripts/rq015a/receipt.py",
+      "scripts/rq015a/factor_analysis.py",
+      "scripts/rq015a/run_rq015a.py",
+      "tests/test_rq015a_contracts.py",
+      "tests/test_rq015a_build_ledger.py",
+      "tests/test_rq015a_validate_receipt.py",
+      "tests/test_rq015a_factor_analysis.py",
+      "tests/test_rq015a_run_entrypoint.py"
+    ],
+    "sealed_exposure_disclosure": "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md"
+  },
+  "implemented_machine_gates": [
+    {
+      "gate": "run_spec_binding",
+      "machine_check": "The CLI --run-spec path must exactly match configs/research_authorization.json#authorizations.rq015a_concentration_audit.run_spec_path and execution_contract_path; mismatch is rejected."
+    },
+    {
+      "gate": "checksum_manifest",
+      "machine_check": "The checksum manifest is read line-by-line and SHA-256 checked against checksum_manifest_members; digest drift, missing member rows, or extra rows produce machine_verdict=FAIL."
+    },
+    {
+      "gate": "fixtures",
+      "machine_check": "The fixture gate reads the fixtures array from this spec, executes each listed test file, and summarizes results; set mismatch or any failure produces machine_verdict=FAIL. The pass count is parsed from runtime output, not hardcoded."
+    },
+    {
+      "gate": "validate_receipt_for_execute",
+      "machine_check": "Execute requires a validate receipt with every required field and valid types, machine_verdict=PASS, run spec path/schema version/checksum manifest path matching this spec and the authorization binding, and current input digests matching the receipt before constructing any MeasurementReader; any mismatch aborts."
+    },
+    {
+      "gate": "authorized_package_commit",
+      "machine_check": "load_execute_permit() requires authorized_package_commit to be non-empty and equal to or an ancestor of the current git HEAD when execution_authorized is true; null, malformed, missing, or non-ancestor commits abort."
+    }
+  ],
+  "environment": {
+    "min_python": "3.9",
+    "required_modules": [
+      "json",
+      "math",
+      "dataclasses",
+      "pathlib",
+      "csv",
+      "pandas",
+      "numpy",
+      "pytest"
+    ],
+    "parquet_engine": {
+      "accept": [
+        "pyarrow",
+        "fastparquet"
+      ],
+      "record_actual_in_receipt": true
+    },
+    "validate_phase_only": [
+      "pytest"
+    ],
+    "input_digest_policy": {
+      "file_policy": "sha256_full_file",
+      "small_file_policy": "sha256_full_file",
+      "large_file_policy": "sha256_full_file",
+      "directory_manifest_sha256_policy": "content_only_file_path_size_sha256",
+      "directory_manifest_sha256_includes": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "directory_manifest_entry_metadata_excluded": [
+        "kind",
+        "hash_policy",
+        "mtime_ns"
+      ],
+      "mtime_ns_role": "metadata only; never included in hash input",
+      "sha_mismatch_abort": "Any input SHA-256 mismatch from the validate-phase record aborts before execution."
+    },
+    "forbidden": [
+      "network access",
+      "HPC / slurm",
+      "GPU",
+      "audit execution while execution_authorized=false"
+    ],
+    "note": "v1 的『纯标准库』为误述：feature matrix 与 OnSite 孪生文件为 parquet。<PYTHON> 必须满足本节依赖；实际解释器路径与各包版本由 receipt 在运行时记录，不在本规格中钉死。输入文件一律用全文件 SHA-256；mtime_ns 只作为元数据记录，不进入文件或目录 manifest 的哈希输入。"
+  },
+  "input_roots": [
+    "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/target_hw4",
+    "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/04_calibration/predictions",
+    "data/derived/onsite_competition/RQ012B_event_harm",
+    "reports/studies/RQ010_wod_e2e_tracking_feasibility",
+    "reports/studies/RQ014_wod_e2e_rating_recovery"
+  ],
+  "input_root_constraints": {
+    "resolution": "Each input root must resolve to an absolute path that remains inside the repository root.",
+    "escape_policy": "../ segments, absolute paths, and symlink-resolved paths that escape the repository root abort.",
+    "symlink_policy": "Reject every symlink inside input roots; do not follow symlinks and do not define follow rules.",
+    "reason": "Avoid directory cycles and repository-boundary escapes."
+  },
+  "split_source": "RQ007 case_split_assignment.csv",
+  "output_root": "reports/studies/RQ015A_ipv_estimability_labelling/RQ015A_1_concentration_audit_<UTC>_<planSHA8>",
+  "no_overwrite": true,
+  "aggregation_key_encoding": {
+    "version": "rq015a-aggregation-key-v2",
+    "product_row_key_escape_char": "\\",
+    "product_row_key_escaped_chars": [
+      "\\",
+      "|",
+      "="
+    ],
+    "product_row_key_separator": "|",
+    "product_row_key_assignment": "=",
+    "parse_rule": "Split only on unescaped separators and assignments, then unescape components.",
+    "duplicate_field_policy": "Reject duplicate product_row_key fields."
+  },
+  "trust_boundary": [
+    "`scripts/rq015a/run_rq015a.py` 是唯一受信入口。",
+    "直接调用内部函数，或用 object.__new__ / pickle / 元类伪造对象，不在信任模型内。",
+    "边界内必须成立：(a) 从公开 CLI 出发的任何可达路径都不得绕过 permit 校验、allowlist 回源核对、或结构列 denylist；(b) 外部对象不得替换掉已经过校验的对象。"
+  ],
+  "phases": [
+    {
+      "phase": "validate_only",
+      "command": "<PYTHON> scripts/rq015a/run_rq015a.py --validate-only --run-spec reports/plans/RQ015A_run_spec_v7_20260731.json --receipt <VALIDATE_RECEIPT_JSON>",
+      "must_precede_execute": true,
+      "checks": [
+        "run spec path binding matches authorization object",
+        "checksum manifest full SHA-256 verification over checksum_manifest_members",
+        "schema load self-check",
+        "all RQ015A fixtures pass; actual pass count is parsed from pytest output and recorded in receipt",
+        "input root existence + full-file SHA-256 record",
+        "input roots resolve under repository root and contain no symlinks",
+        "split allowlist wiring",
+        "no output root pre-existing"
+      ],
+      "produces": [
+        "validate_receipt.json"
+      ],
+      "reads_measurement_fields": false
+    },
+    {
+      "phase": "execute",
+      "command": "<PYTHON> scripts/rq015a/run_rq015a.py --execute --run-spec reports/plans/RQ015A_run_spec_v7_20260731.json --validate-receipt <VALIDATE_RECEIPT_JSON> --receipt <RUN_RECEIPT_JSON>",
+      "single_use": true,
+      "authorization_gate": "validate-receipt structural/binding/digest checks, load_execute_permit() double-key authorization, path binding, and authorized_package_commit binding must succeed before any MeasurementReader is constructed",
+      "current_expected_result": "AUTHORIZED_GATE_OPEN; this state flip does not run the audit and execute still requires a valid validate receipt plus an explicit later run decision",
+      "steps": [
+        "case-ID allowlist filter",
+        "per-artifact ledger build",
+        "conservation identities 1-3",
+        "L1->L2->L3 aggregation",
+        "continuous q_eff distributions",
+        "policy bins + 9-cell sensitivity",
+        "episode definition sensitivity",
+        "factor Spearman + cluster CI",
+        "C0 routing + sensitivity"
+      ],
+      "produces": [
+        "concentration_ledger.csv",
+        "portraits.json",
+        "c0_routing.json",
+        "run_receipt.json",
+        "bounded_report.md"
+      ]
+    }
+  ],
+  "receipt_required_fields": {
+    "machine_verdict": "PASS | FAIL",
+    "per_artifact_conservation": "identity_1/2/3 results and measurement_rows",
+    "held_out_parsed_rows": "must be 0",
+    "held_out_conclusion_rows": "must be 0",
+    "duplicate_primary_keys": "must be 0",
+    "unmapped_measurement_roles": "must be 0",
+    "k_unknown_rows": "count, may be nonzero",
+    "bins_stability_verdict": "BINS_REPORTABLE | BINS_WITHHELD_UNSTABLE",
+    "c0_routing_stability": "stable marker per downstream RQ",
+    "input_sha256": "full-file SHA-256 per file or directory manifest_sha256 per input root; directory manifest_sha256 hashes only path/bytes/sha256 entries, with mtime_ns metadata excluded from the hash input",
+    "metadata.run_spec_path": "validate receipt must record the run spec path it validated",
+    "metadata.checksum_manifest.path": "validate receipt must record the checksum manifest filename checked from this spec",
+    "metadata.runtime_environment": "actual interpreter path, python version, package versions, parquet engine name/version",
+    "metadata.factor_analysis": "factor outputs include n_bootstrap_defined and n_bootstrap_undefined",
+    "aggregation_key_derivation": "must report rq015a-aggregation-key-v2 and product_row_key escaping policy"
+  },
+  "known_schema_v2_defects": [
+    {
+      "artifact_id": "rq014_g2r_anchor_scores",
+      "defect": "The schema entry is inconsistent with the other ARTIFACT_NOT_PRESENT_LOCALLY entries: it lacks rq007_split_applicable, rq007_split_value, expansion_factor, and collapse_factor, and records recoverability as L4_UNRECOVERABLE rather than ARTIFACT_NOT_PRESENT_LOCALLY.",
+      "why_it_matters": "identity_3 is measurement_rows = sum over recoverability counts; the same absent-local rows otherwise have two competing recoverability values, making the sum ambiguous.",
+      "current_implementation_handling": "T1 forces ARTIFACT_NOT_PRESENT_LOCALLY for schema-status ARTIFACT_NOT_PRESENT_LOCALLY rows before constructing absent coverage.",
+      "defer_to": "plan v5 / schema v3"
+    }
+  ],
+  "abort_conditions": [
+    "run spec path mismatch with authorization object",
+    "checksum manifest validation fails, is missing, has missing member rows, or has extra member rows",
+    "not all RQ015A fixtures pass",
+    "fixture list in runtime does not match the fixtures array in this spec",
+    "execute is invoked without a validate receipt",
+    "input SHA differs from validate phase full-file SHA-256 or directory manifest record",
+    "input root resolves outside repository root",
+    "any symlink appears within an input root",
+    "output root already exists",
+    "any conservation identity fails",
+    "held_out_parsed_rows != 0",
+    "duplicate primary key or unmapped role",
+    "reads any structure-column denylisted field",
+    "attempts replay or writes any frozen artifact",
+    "authorized_package_commit is null, malformed, missing from git, or not equal to / an ancestor of current git HEAD when execution_authorized=true",
+    "validate receipt is missing required fields, has invalid field types, records machine_verdict other than PASS, or records run spec/schema/checksum bindings that differ from this spec"
+  ]
+}

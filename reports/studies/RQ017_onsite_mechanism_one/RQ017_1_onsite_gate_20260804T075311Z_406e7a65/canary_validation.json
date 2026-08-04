@@ -1,0 +1,84 @@
+{
+  "c1_mechanism2_key_join": {
+    "dryrun_rows": 67861,
+    "dryrun_unique_product_row_key": 67861,
+    "extra_in_dryrun": 67815,
+    "intersection": 46,
+    "missing_from_dryrun": 0,
+    "natural_rows": 46,
+    "natural_unique_product_row_key": 46
+  },
+  "canary_checks": {
+    "array_task_count_required_by_manifest": 2,
+    "natural_coordinate_abnormal_rows_present": 7,
+    "null_scalar_failure_rows": 2,
+    "reference_fail_closed_sentinel_rows": 1,
+    "sentinel_reason_counts": {
+      "NEAR_UNIFORM": 2,
+      "NON_FINITE_INPUT": 1,
+      "NO_IPV_EFFECT": 1,
+      "SOLVER_FAILURE": 1
+    },
+    "sentinel_rows": 7,
+    "sentinel_status_counts": {
+      "ABSTAIN": 3,
+      "NON_FINITE_INPUT": 1,
+      "OK": 2,
+      "SOLVER_FAILURE": 1
+    }
+  },
+  "created_utc": "2026-08-04T07:43:17Z",
+  "engineering_failure_science_reason_rows": 0,
+  "gate_recompute_mismatches": 0,
+  "mechanism2_cross_count": {
+    "denominator": 46,
+    "mechanism1_ok_and_mechanism2_gate_ok_rows": 6,
+    "mechanism2_columns_read": [
+      "product_row_key",
+      "mechanism2_gate_ok"
+    ],
+    "mechanism2_source": ".codex-fleet/rq016c-human-only-envelope/work/H2/onsite_scoring_dryrun.parquet"
+  },
+  "mode": "canary",
+  "natural_rows": 46,
+  "negative_controls": {
+    "isclose_atol_1e_12": {
+      "mutant_reason": "NO_IPV_EFFECT",
+      "mutant_status": "ABSTAIN",
+      "result": "FAIL",
+      "true_reason": "NEAR_UNIFORM",
+      "true_status": "ABSTAIN"
+    },
+    "theta_0_22": {
+      "mutant_reason": "NEAR_UNIFORM",
+      "mutant_status": "ABSTAIN",
+      "result": "FAIL",
+      "true_max_w_log": 0.2100275316859058,
+      "true_reason": null,
+      "true_status": "OK"
+    }
+  },
+  "numeric_health_bad_rows": 0,
+  "ok_identity_failures": 0,
+  "reason_counts": {
+    "NEAR_UNIFORM": 11,
+    "NON_FINITE_INPUT": 1,
+    "NO_IPV_EFFECT": 1,
+    "SOLVER_FAILURE": 1
+  },
+  "rows": 53,
+  "sentinel_included_in_validation_dataset": true,
+  "status": "PASS",
+  "status_conservation": {
+    "abstain_rows": 12,
+    "near_uniform_plus_no_ipv_effect": 12,
+    "ok_plus_abstain_plus_engineering": 53,
+    "total_rows": 53
+  },
+  "status_counts": {
+    "ABSTAIN": 12,
+    "NON_FINITE_INPUT": 1,
+    "OK": 39,
+    "SOLVER_FAILURE": 1
+  }
+}

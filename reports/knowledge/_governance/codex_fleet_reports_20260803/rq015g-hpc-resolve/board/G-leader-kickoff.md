@@ -1,0 +1,169 @@
+# Track G leader — 把 2,300 锚点样本拿到受管 HPC 上重解
+
+你是 track G 的 **leader**，在 `<REPO_ROOT>` 工作。**PI 已批准本轮使用 HPC。**
+
+## 为什么有这一轮
+
+RQ015B 的 T5 把 2,300 个冻结锚点重解了一遍，**但那是在 macOS 上跑的**。
+PI 于 2026-08-01 给出了受管 HPC 的严格复现证据，结论是：
+
+```
+本地夹具   local exact vs sigma01        max diff  0.0586656
+本地真实   nuplan ipv_000001（87 帧）     max diff  1.1244582   ← 与网格端点 3π/8=1.178 同量级
+HPC 夹具   Slurm 2022476                 max diff  4.44e-16
+HPC 端到端 Slurm 2022477（87 帧/348 值）  max diff  1.11e-16   mean|Δ| 6.58e-18
+```
+
+**sigma01 严格可复现，但只在冻结的 Linux/SciPy/BLAS 环境里；根因是 SLSQP 的数值环境差异。**
+（代码已被 track C 排除：`5edd2810 ≡ current` 逐位相同；参数也已核对一致。）
+
+后果：**建立在 Mac 重解 MSE 之上的结论要分两类**——
+
+| 结论 | 是否受影响 | 理由 |
+|---|---|---|
+| 平价门 log 域 ≡ 连乘（3.75e-15） | **不受** | 比的是同一组 MSE 上的两种权重公式，喂什么 MSE 都成立 |
+| log 域下兜底不可达 | **不受** | 解析论证 + 极端输入 + pytest |
+| 400 行 MSE 逐位相同（无交互退化） | **应不受** | 无交互时目标退化为 `cos(ipv)·interior + 常数`，正标量不改极小点——解析性质 |
+| **D1/D2 机制拆分（43.01% / waymo 58.73% / nuplan 1.06%）** | **受影响** | 下溢与否取决于残差量级；Mac 若收敛到更差的解 ⇒ 残差更大 ⇒ **D1 被高估** |
+| **D 轨 σ 扫描（53.17% 近均匀 / 12.87% 硬 argmax / 59% 地板）** | **受影响** | 同上 |
+
+**本轮唯一目标：在冻结环境里把那 2,300 个锚点重解一遍，让"各占多少"变成可信数字。**
+这是全量重跑决策的前置——它比全量重跑便宜约四个数量级。
+
+## 已证可用的通道（复用它，不要另造）
+
+```
+managed checkout   6bdcc2e64bacd75d02741aa18ef5d61eef5a2962
+conda env          envs/ipv-exact-sigma01   Python 3.9.24
+work dir 根        /share/home/u25310231/ZXC/sociality_estimation/work_dirs/INFRA/
+已跑通的先例       sigma01_fixture_20260801T0700CST  (Slurm 2022476)
+                   sigma01_onecase_20260801T0710CST  (Slurm 2022477)
+```
+
+**先读这两处记录，把提交方式照抄过来**（不要重新发明）：
+- `main_workflow.log` 中 `[2026-07-31T23:00:54Z] sigma01 计算链、复现路径与抽样验证（DONE）` 那一条
+- `START_HERE.md` 第 912 行起的运行简报
+
+⚠ 注意：RQ015B 计划 §11 记着"HPC 路径当前字面不可执行（`rq_id` 钉死 RQ014、launcher 带
+`--rq014-only`、`5edd2810` 已退役）"——**那说的是另一条路**。上面这条 INFRA 受管通道
+是新的、已验证的，走这条。
+
+## 输入：冻结样本，不得重抽
+
+```
+.codex-fleet/rq015b-repair/work/sample_v1.csv        2,300 锚点，12 格，配额 U300/Z150/N125
+.codex-fleet/rq015b-repair/work/sample_v1.sha256     运行时须校验，B2 当时报过 sample_sha_ok
+.codex-fleet/rq015b-repair/board/sampling_contract_v1.md   抽样合同（已冻结，不得出 v2）
+.codex-fleet/rq015b-repair/work/anchor_mse.csv       Mac 版结果，本轮的【对照基线】
+```
+
+**必须是同一批锚点**，否则 Mac↔HPC 无法逐锚点比对，本轮就白做了。
+
+## 产出与判定
+
+**1. `anchor_mse_hpc.csv`——列与 Mac 版 `anchor_mse.csv` 完全一致。**
+   同样的 `mse_per_candidate[7]` / `rms_per_candidate[7]` / `legacy_var[7]` /
+   `min_mse` / `min_rms` / `argmin_candidate` / `legacy_fallback_triggered` /
+   `w_legacy[7]` / `w_log[7]` / `max_abs_diff` / `n_obs` / `K` / `split` / `source` / `signature`。
+   列名不一致就没法自动比对，这条别省。
+
+**2. Mac vs HPC 逐锚点对照。** 至少给：
+   - `min_mse`、`min_rms`、`ipv`、`ipv_error` 的差异分布（max / p99 / median）
+   - **`argmin_candidate` 变了多少个锚点**（这是"落到不同候选"的直接计数）
+   - **`legacy_fallback_triggered` 翻转了多少**（Mac 触发 HPC 不触发，及反向）
+     ← 这一条直接决定 D1 被高估了多少
+
+**3. 在 HPC 数字上重算，与 Mac 版并列呈现：**
+   - D0–D4 机制拆分，**必须分源**（waymo / nuplan），合并值不得单独呈现
+   - σ 扫描的关键点（至少 σ = 0.02 / 0.1 / 0.2347），看 59% 地板与两曲线反向单调是否仍成立
+   - 那 400 行 `spread(mse) == 0` 的退化锚点是否仍然逐位相同（**我预期成立，若不成立要重点解释**）
+
+**4. 判定：** 对 B2 与 D 的每条结论给"存活 / 数值需更新 / 结论改变"三选一 + 支撑数字。
+
+## 硬边界
+
+```
+□ 【绝不覆盖】sigma01 任何冻结产物、pinned legacy checkout、RQ009/RQ015A 的 run 目录
+   HPC 侧写入【新的】work_dir，本地写入 board/ 与 work/ 下的新文件
+□ dev+guard only；held_out 封条守住；结项报 held_out_parsed_rows = 0 并给结构佐证
+□ 不重抽样、不出合同 v2、不改估计器算法
+□ 不接线生产：src/sociality_estimation/core/agent.py 一字不动
+□ 必须使用那个冻结环境（envs/ipv-exact-sigma01, Python 3.9.24）——【这就是本轮的全部意义】
+   若因任何原因改了环境，本轮结论作废，如实上报而不是将就
+□ 描述性，不作因果主张；只给证据不给建议
+   （"要不要申请全量重跑"是 PI 的决定，你给的是修正后的 D1/D2 数字）
+□ 三条 track 可能并发在同一工作区：禁止任何回滚 / git checkout 主工作区 / git clean / git commit
+```
+
+## 编制
+
+```
+G1 HPC 重解 + 对照分析  ──►  你的一轮自查  ──►  等监督方放行
+```
+
+**一个 codex agent。** 报告写到 `board/reports/G1_hpc_resolve_report.md`。
+
+HPC 作业是异步的：提交后**在本回合内轮询 `squeue` / 输出目录**，不要提交完就结束回合。
+作业若排队较久，每 5 分钟往 progress.log 写一行队列状态。
+## 舰队通用规则（A/B 轮踩出来的，逐条都是事故换来的）
+
+**你的角色**：leader。你自己**不写实现代码、不跑数据管线**——交给 codex CLI。
+你负责：分解、写/派 prompt、判定结果、汇报。上面有监督方（Cowork 的 Claude）通过文件与你异步交互。
+
+**1. 速度原则是最高准则**（见 `AGENTS.md` → Research Velocity Principle）。
+本轮是诊断性/描述性产出：**一个 codex agent，一轮自查，出报告，结束**。
+不做盲审、不做多路复审、不出第二版规格、不加授权闸门。
+**发现自己在写规格 v2 就是跑偏了，停下。**
+反面案例：上一轮一个描述性审计走了 8 个计划版本、7 轮盲审、32 个 agent，科学结论产出为零。
+
+**2. `claude -p` 是单回合的——派完 codex 不要结束回合。**
+A/B 两轨的 leader 都栽在这：派出 codex、写完汇报、进程即退出，子进程随之被杀，
+`STATUS.md` 还停在 `RUNNING`，**没有人在收结果**。
+正确做法：派完在**本回合内**阻塞轮询（`sleep 60` 看日志增长，每 5 分钟写一行 progress.log），
+等 codex 真正结项 → 做那一轮自查 → 写 `WAITING_ON_COMMANDER` → 才结束回合。
+
+**3. 派发必须脱离进程组，macOS 没有 `setsid`。**
+用现成的：`.codex-fleet/rq015a-run/board/detach_launch.py`（双 fork + `os.setsid`）
+```bash
+python3 .codex-fleet/rq015a-run/board/detach_launch.py \
+  --log <你的 board>/reports/<AGENT>.log --pidfile <你的 board>/<AGENT>.pid \
+  -- codex exec --cd "$PWD" --model gpt-5.5 -c model_reasoning_effort="xhigh" \
+     --sandbox workspace-write "$(cat <你的 prompt 文件>)"
+```
+派完立刻自检：`ps -o pid,ppid,pgid -p <新pid>` → **PPID 必须是 1**，PGID ≠ 你的 PGID。
+⚠ `codex exec` **没有** `--ask-for-approval` 参数（0.144.1 起），带上直接报错退出。
+
+**4. 三条 track（C/D/E）并发在同一个工作区。铁律，不可协商：**
+```
+禁止 git checkout -- . / git restore . / git stash / git reset --hard / git clean -fd
+禁止 git checkout 任何历史提交到主工作区（要看旧代码用 git worktree add）
+禁止 git commit（本轮产物由 PI 统一提交）
+工作区非空是【预期状态】——另外两条 track 的 agent 正在同一仓库工作。
+你只对自己创建/修改的文件负责；清洁性检查只查自己的文件清单，不看全仓库 git status。
+```
+
+**5. 四条硬约束（与流程无关，不得放松）**
+```
+1. RQ007 held_out 不得被解析（污染不可恢复）
+2. RQ014 致盲相关的评分字段不得读取
+3. 不得静默覆盖冻结产物或已接受的 decision.md
+4. 描述性结果不得写成因果主张
+```
+另：全文禁用 `estimability` 与"测出/未测出 IPV"。
+可辩护的表述是：**权重近均匀 ⇒ 该 IPV 数值不携带候选间的判别信息**。
+
+**6. 杂项，都是踩过的**
+- 解释器钉死 `<local-rq009-venv>/bin/python`（系统 python3 缺 pytest，会把基线判错）
+- 时间戳一律 `date -u +%Y-%m-%dT%H:%M:%SZ`，**不要前瞻估计**（上一轮 progress.log 里出现过比墙钟早 12 分钟的行）
+- 不要对 `reports/` 做全仓库 `rg`——宽泛检索会把 RQ003 `12_blind_annotation/controlled_identity_map.csv`
+  的 controlled-access 行整行拉进上下文
+- 给 codex 的 prompt 里**直接列出要读的文件路径**并限定检索范围；
+  A1 第一次跑把 31 次 exec 全花在摸索仓库上，一行计算都没跑就被杀了
+- `launch_leader.sh` 会**覆写 STATUS.md**；真正要留存的交接信息写进 `commander_notes.md`（追加式，不会丢）
+
+**7. 你必须维护的三个文件**
+- `board/STATUS.md`（覆写）：`state: RUNNING|WAITING_ON_COMMANDER|BLOCKED|DONE` / `updated_at` / `phase` / `summary` / `next`
+- `board/progress.log`（追加）：`<UTC> | <阶段> | 做了什么 | 结论`
+- `board/commander_notes.md`：监督方写给你的，**每完成一个阶段读一次**
+
+结项后写 `state: WAITING_ON_COMMANDER` 并轮询 `commander_notes.md` 等放行，**不要自行转 DONE**。

@@ -1,0 +1,12 @@
+{
+  "artifact_id": "rq009_feature_matrix",
+  "comparison": "measured exact canonical_key uniqueness across local L1 artifact_id=rq009_feature_matrix rows",
+  "duplicate_examples": [],
+  "duplicates": 0,
+  "l1_partition": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=rq009_feature_matrix",
+  "new_solve_rows": 0,
+  "new_solve_rows_basis": "by construction from join-only B-class materialization; not remeasured by this uniqueness scan",
+  "rows": 8994736,
+  "status": "PASS",
+  "unique_keys": 8994736
+}

@@ -22,6 +22,58 @@
       "g3r_decision_path": "reports/plans/RQ014_PI_decision_D4_G3R_authorize_20260723.md",
       "formal_g1_path": "reports/studies/RQ014_wod_e2e_rating_recovery/01_plan_review/RQ014_formal_G1_v1p6_preflight_20260713.yaml",
       "execution_contract_path": "reports/plans/RQ014_execution_contract_v1p5.json"
+    },
+    "rq015a_concentration_audit": {
+      "allowed_operations": [
+        "rq015a_concentration_audit"
+      ],
+      "execution_authorized": true,
+      "authorization_state": "AUTHORIZED_NOT_YET_EXECUTED",
+      "run_spec_path": "reports/plans/RQ015A_run_spec_v7_20260731.json",
+      "execution_contract_path": "reports/plans/RQ015A_run_spec_v7_20260731.json",
+      "authorized_package_commit": "e11ef71d833d37aaa4bd6772f49773db641d4b09",
+      "decision_path": "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
+      "adjudication_record": {
+        "date": "2026-07-31",
+        "verdict": "APPROVE_AUDIT_EXECUTION",
+        "authorized_by": "PI（人类）",
+        "executed_by": "codex agent（W37），依 PI 2026-07-31 明确指示执行；非 PI 本人手动操作",
+        "authorization_source": "PI 于 2026-07-31 在指挥者会话中：1. 选择翻转方式 B（指挥者准备、PI 执行）；2. 随后明确改变指示为「拉起一个 codex 直接去操作」，即由 agent 代为执行翻转。",
+        "basis": "三路最终独立复审全部 PASS_WITH_CONDITIONS 且条件已闭合；七轮独立健壮性审计收敛至零 blocker",
+        "scope": "仅授权 rq015a_concentration_audit 的执行；不含任何新的数据取回；不构成对 RQ015B 或其它 RQ 的授权",
+        "note": "翻转不自动运行审计。PI 已裁定：翻转后先重跑信任边界检验，再单独决定是否运行。"
+      }
+    },
+    "rq015a_wod_readonly_retrieval": {
+      "allowed_operations": [
+        "rq015a_wod_readonly_retrieval"
+      ],
+      "execution_authorized": true,
+      "authorization_state": "APPROVED_AND_EXECUTED",
+      "run_spec_path": "reports/plans/RQ015A_wod_retrieval_spec_v3_20260731.json",
+      "execution_contract_path": "reports/plans/RQ015A_wod_retrieval_spec_v3_20260731.json",
+      "authorized_package_commit": null,
+      "decision_path": null,
+      "pi_decision": {
+        "date": "2026-07-31",
+        "verdict": "APPROVE_READ_ONLY_RETRIEVAL",
+        "authorized_by": "PI（人类）",
+        "recorded_by": "Claude Code CLI（指挥者）—— 依 PI 明确批准如实记录，非代为裁定",
+        "scope": "唯一目标文件；4 列白名单 segment_key/candidate_index/ego_ipv/ego_ipv_error；强制顺序 HPC 侧投影 → 净化凭证 → 校验 → 才允许传输；本地永不得出现评分列",
+        "execution": {
+          "status": "COMPLETED",
+          "date": "2026-07-31",
+          "executed_by": "codex agent（W33-b），依 PI 批准执行",
+          "landed": "data/derived/wod_e2e/rq015a_full479_projected/",
+          "rows": 906,
+          "projected_csv_sha256": "d10c3a6f903dae19bf14de6b895c72f6c4ffc92688d97baa9a7c26684930b7d1",
+          "sanitization_receipt_sha256": "f2435ed9190cac0f4b64e20a4f10edc1412d8bd1f965124f63684abf672c0fdf",
+          "columns_dropped": 61,
+          "forbidden_column_scan_matches": 0
+        },
+        "record_integrity_note": "本条记录曾于 2026-07-31 丢失并经指挥者恢复。原因：指挥者记录 PI 批准时未提交，随后派出的 agent（W32）拥有本文件、其 worktree 自 HEAD 检出（不含该未提交改动），合并时覆盖了该记录。丢失期间取回已依 PI 批准实际执行完成，故此处为【恢复既有事实】而非补授权。数据落地与净化凭证的 SHA 见上，可独立复核。",
+        "note": "本批准仅覆盖 rq015a_wod_readonly_retrieval，且已执行完毕；不构成对 rq015a_concentration_audit 或任何其它操作的授权。"
+      }
     }
   }
 }

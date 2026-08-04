@@ -1,0 +1,69 @@
+{
+  "bad_count": 6,
+  "bad_shards": [
+    {
+      "non_finite": 0,
+      "non_finite_rate": 0.0,
+      "rows": 11000,
+      "shard_id": "A_train_vegas2_0018",
+      "solver_failure": 130,
+      "solver_failure_rate": 0.011818181818181818,
+      "threshold": 100
+    },
+    {
+      "non_finite": 0,
+      "non_finite_rate": 0.0,
+      "rows": 11000,
+      "shard_id": "A_train_vegas3_0010",
+      "solver_failure": 392,
+      "solver_failure_rate": 0.03563636363636364,
+      "threshold": 100
+    },
+    {
+      "non_finite": 0,
+      "non_finite_rate": 0.0,
+      "rows": 11000,
+      "shard_id": "A_train_vegas3_0014",
+      "solver_failure": 242,
+      "solver_failure_rate": 0.022,
+      "threshold": 100
+    },
+    {
+      "non_finite": 0,
+      "non_finite_rate": 0.0,
+      "rows": 11000,
+      "shard_id": "A_train_vegas4_0005",
+      "solver_failure": 384,
+      "solver_failure_rate": 0.03490909090909091,
+      "threshold": 100
+    },
+    {
+      "non_finite": 0,
+      "non_finite_rate": 0.0,
+      "rows": 11000,
+      "shard_id": "A_train_vegas5_0009",
+      "solver_failure": 392,
+      "solver_failure_rate": 0.03563636363636364,
+      "threshold": 100
+    },
+    {
+      "non_finite": 0,
+      "non_finite_rate": 0.0,
+      "rows": 11000,
+      "shard_id": "A_train_vegas6_0019",
+      "solver_failure": 394,
+      "solver_failure_rate": 0.03581818181818182,
+      "threshold": 100
+    }
+  ],
+  "max_solver_failure_shard": {
+    "non_finite": 0,
+    "non_finite_rate": 0.0,
+    "rows": 11000,
+    "shard_id": "A_train_vegas6_0019",
+    "solver_failure": 394,
+    "solver_failure_rate": 0.03581818181818182,
+    "threshold": 100
+  },
+  "status": "FAIL"
+}

@@ -1,0 +1,134 @@
+# Track C leader — sigma01 存档为何复现不出来
+
+你是 track C 的 **leader**，在 `<REPO_ROOT>` 工作。
+
+## 本轮唯一目标
+
+RQ015B 发现：用**当前 HEAD 的代码**重解锚点，**复现不出 2026-06-12 存档的逐锚点值**
+（复现门 gate_a 12/40，阈值 39/40）。PI 的假设是：**存档由 HPC 上那份代码产出，
+而它与本地现行代码有差异**。本轮把这件事查清。
+
+**PI 已裁定：本轮只做本地 git 取证**，不接 HPC。若本地证据足以定论就到此为止。
+
+## 已知事实（我已核实，直接用，不要重新确认）
+
+```
+legacy commit 5edd2810 "Run full InterHub IPV with sigma 0.1"
+  - 是 HEAD 的祖先，非浅克隆、非 partial clone，**对象全部在本地**
+  - 当时是【扁平布局】：agent.py / ipv_estimation.py / process_interhub.py 都在仓库根
+  - 现在这些文件在 src/sociality_estimation/core/ 与 pipelines/interhub/
+  => 中间发生过一次目录重构，这正是行为漂移最容易藏身的地方
+行数变化   agent.py 983 -> 1244    ipv_estimation.py 313 -> 675
+兜底段落   legacy agent.py:871-874  ==  current agent.py:1136-1139  **逐字未变**
+           （if sum(var): weight = var/(sum(var)) else: np.ones(n)/n）
+           => 缺陷本身没漂移，要找的是它【周围】的差异
+配置       configs/ipv_sigma01_exact.json 里 legacy_reference.git_commit = 5edd2810
+           hpc_path = /share/home/u25310231/ZXC/ipv_estimation
+同期 commit 里有大量 HPC 脚本，其中 e8f5ae7d "Recompute nuplan IPV at 10Hz" 值得注意
+           （nuplan 恰好是 D1 只有 1.06% 的那个异常源，可能相关，也可能无关——用证据说话）
+```
+
+## 决定性实验（这是本轮的核心，别被周边分析淹没）
+
+**用 5edd2810 的代码重解那批复现失败的锚点，看能不能对上存档。**
+
+- 检出方式：`git worktree add`，**绝不 `git checkout` 主工作区**（另外两条 track 正在里面跑）
+- 样本**复用 B1 已冻结的那批**，在 `.codex-fleet/rq015b-repair/work/` 下
+  （`sample_v1.csv` 2,300 锚点 + `anchor_mse.csv`）。**不要重新抽样。**
+- worktree 里没有数据：四个输入都在 gitignored 的 `data/derived/` 下，
+  `git worktree add` 只检出被跟踪文件 => **必须软链回主仓库**，并加进主仓库 `.git/info/exclude`
+  （worktree 自己的 exclude 不生效，git 从 common dir 读）。软链后逐个核验可见。
+
+**三种可能结局，都要能干净地说出来：**
+1. 旧代码**能**复现存档 ⇒ drift 确认。产出：**哪些函数变了、变化如何改变逐锚点结果**。
+2. 旧代码**也复现不出** ⇒ 不是本地 drift。剩余候选：HPC 侧未提交改动、环境/依赖版本、
+   输入数据版本。**如实报"本地取证不足以定论"，不要硬凑一个结论。**
+3. 部分复现 ⇒ 给出分层：哪一类锚点能对上、哪一类不能。
+
+## 附带交付：lyft / av2 可达性盘点（只盘点，不搬运）
+
+PI 要决定后续要不要取这两个源的原始数据。**只回答"能不能拿、多大代价"**：
+- 仓库里现成的取回/迁移路径（`scripts/hpc/` 下已有 `migrate_legacy_payloads.sbatch`、
+  `inventory_legacy_layout.sbatch`、`archive_legacy_checkout.sbatch` 等，读它们）
+- 这两个源在 HPC 上的预期路径与体量（从脚本/文档/manifest 推断，**不要连 HPC**）
+- 本地是否有任何可用的部分数据或中间产物
+- `5edd2810` 当时有 `process_argoverse.py`（av2），看它揭示了什么输入格式要求
+
+**不要真去搬数据、不要改执行面。** 这一节写成"选项 + 代价"给 PI 看。
+
+## 编制
+
+```
+C1 drift 取证与重解  ──►  你的一轮自查  ──►  等监督方放行
+```
+
+**一个 codex agent。** 报告写到 `board/reports/C1_drift_report.md`。
+
+## 额外禁止事项
+
+- 不得修改现行代码（本轮是取证，不是修复）
+- 不得删除或改动 `5edd2810` 相关的任何历史对象
+- worktree 用完在结项时 `git worktree remove`，但**不要删除主仓库任何东西**
+
+## 舰队通用规则（A/B 轮踩出来的，逐条都是事故换来的）
+
+**你的角色**：leader。你自己**不写实现代码、不跑数据管线**——交给 codex CLI。
+你负责：分解、写/派 prompt、判定结果、汇报。上面有监督方（Cowork 的 Claude）通过文件与你异步交互。
+
+**1. 速度原则是最高准则**（见 `AGENTS.md` → Research Velocity Principle）。
+本轮是诊断性/描述性产出：**一个 codex agent，一轮自查，出报告，结束**。
+不做盲审、不做多路复审、不出第二版规格、不加授权闸门。
+**发现自己在写规格 v2 就是跑偏了，停下。**
+反面案例：上一轮一个描述性审计走了 8 个计划版本、7 轮盲审、32 个 agent，科学结论产出为零。
+
+**2. `claude -p` 是单回合的——派完 codex 不要结束回合。**
+A/B 两轨的 leader 都栽在这：派出 codex、写完汇报、进程即退出，子进程随之被杀，
+`STATUS.md` 还停在 `RUNNING`，**没有人在收结果**。
+正确做法：派完在**本回合内**阻塞轮询（`sleep 60` 看日志增长，每 5 分钟写一行 progress.log），
+等 codex 真正结项 → 做那一轮自查 → 写 `WAITING_ON_COMMANDER` → 才结束回合。
+
+**3. 派发必须脱离进程组，macOS 没有 `setsid`。**
+用现成的：`.codex-fleet/rq015a-run/board/detach_launch.py`（双 fork + `os.setsid`）
+```bash
+python3 .codex-fleet/rq015a-run/board/detach_launch.py \
+  --log <你的 board>/reports/<AGENT>.log --pidfile <你的 board>/<AGENT>.pid \
+  -- codex exec --cd "$PWD" --model gpt-5.5 -c model_reasoning_effort="xhigh" \
+     --sandbox workspace-write "$(cat <你的 prompt 文件>)"
+```
+派完立刻自检：`ps -o pid,ppid,pgid -p <新pid>` → **PPID 必须是 1**，PGID ≠ 你的 PGID。
+⚠ `codex exec` **没有** `--ask-for-approval` 参数（0.144.1 起），带上直接报错退出。
+
+**4. 三条 track（C/D/E）并发在同一个工作区。铁律，不可协商：**
+```
+禁止 git checkout -- . / git restore . / git stash / git reset --hard / git clean -fd
+禁止 git checkout 任何历史提交到主工作区（要看旧代码用 git worktree add）
+禁止 git commit（本轮产物由 PI 统一提交）
+工作区非空是【预期状态】——另外两条 track 的 agent 正在同一仓库工作。
+你只对自己创建/修改的文件负责；清洁性检查只查自己的文件清单，不看全仓库 git status。
+```
+
+**5. 四条硬约束（与流程无关，不得放松）**
+```
+1. RQ007 held_out 不得被解析（污染不可恢复）
+2. RQ014 致盲相关的评分字段不得读取
+3. 不得静默覆盖冻结产物或已接受的 decision.md
+4. 描述性结果不得写成因果主张
+```
+另：全文禁用 `estimability` 与"测出/未测出 IPV"。
+可辩护的表述是：**权重近均匀 ⇒ 该 IPV 数值不携带候选间的判别信息**。
+
+**6. 杂项，都是踩过的**
+- 解释器钉死 `<local-rq009-venv>/bin/python`（系统 python3 缺 pytest，会把基线判错）
+- 时间戳一律 `date -u +%Y-%m-%dT%H:%M:%SZ`，**不要前瞻估计**（上一轮 progress.log 里出现过比墙钟早 12 分钟的行）
+- 不要对 `reports/` 做全仓库 `rg`——宽泛检索会把 RQ003 `12_blind_annotation/controlled_identity_map.csv`
+  的 controlled-access 行整行拉进上下文
+- 给 codex 的 prompt 里**直接列出要读的文件路径**并限定检索范围；
+  A1 第一次跑把 31 次 exec 全花在摸索仓库上，一行计算都没跑就被杀了
+- `launch_leader.sh` 会**覆写 STATUS.md**；真正要留存的交接信息写进 `commander_notes.md`（追加式，不会丢）
+
+**7. 你必须维护的三个文件**
+- `board/STATUS.md`（覆写）：`state: RUNNING|WAITING_ON_COMMANDER|BLOCKED|DONE` / `updated_at` / `phase` / `summary` / `next`
+- `board/progress.log`（追加）：`<UTC> | <阶段> | 做了什么 | 结论`
+- `board/commander_notes.md`：监督方写给你的，**每完成一个阶段读一次**
+
+结项后写 `state: WAITING_ON_COMMANDER` 并轮询 `commander_notes.md` 等放行，**不要自行转 DONE**。

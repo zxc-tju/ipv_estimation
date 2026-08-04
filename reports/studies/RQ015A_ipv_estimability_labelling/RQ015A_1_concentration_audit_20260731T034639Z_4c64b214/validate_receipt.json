@@ -1,0 +1,401 @@
+{
+  "aggregation_key_derivation": "v1: perspective/configuration are supplied by W1 adapter; validate-only only asserts this description is present.",
+  "artifacts_absent_locally": [
+    "wod_phase1_phase1b_10hz_schemeb",
+    "rq014_g2r_anchor_scores"
+  ],
+  "bins_stability_verdict": "BINS_REPORTABLE",
+  "c0_routing_stability": {},
+  "duplicate_primary_keys": 0,
+  "failure_reasons": [
+    "fixtures:fixture_failed:tests/test_rq015a_run_entrypoint.py:1 failed, 36 passed in 4.74s"
+  ],
+  "held_out_conclusion_rows": 0,
+  "held_out_parsed_rows": 0,
+  "input_sha256": {
+    "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/target_hw4": "62db4070127ff8239cefebd547c526fb7009df3acd041fdf78bd87dd8b5d602c",
+    "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/04_calibration/predictions": "a40c60ef3144213c5337290ab01bd122a8d80c0e5ada1a986b4537acd02fe2ab",
+    "data/derived/onsite_competition/RQ012B_event_harm": "ba0056d9d50cedf8bd382d62cde17720a2ce0779302ac70fc10f60fc538d8a84",
+    "reports/studies/RQ010_wod_e2e_tracking_feasibility": "92c7a20030972fbce85f5ebab67c18095975dc03f2d2b791a3a4589b3cdf390b",
+    "reports/studies/RQ014_wod_e2e_rating_recovery": "2a949e0152761025ce7b16b30018797c2ef095ead871413d1c90f43c7b0459e6"
+  },
+  "k_unknown_rows": 0,
+  "ledger_bearing_artifacts": [
+    "interhub_sigma01_hw4_timeseries",
+    "rq009_feature_matrix",
+    "onsite_dense_timeseries",
+    "wod_rq010b_full479_audited"
+  ],
+  "m4_only_channel_excluded": true,
+  "machine_verdict": "FAIL",
+  "metadata": {
+    "checksum_manifest": {
+      "actual_paths": [
+        "configs/research_authorization.json",
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/known_issues_and_audit_boundary_20260730.md",
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md",
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md",
+        "reports/plans/RQ015A_ledger_schema_v4_20260731.json",
+        "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
+        "reports/plans/RQ015A_run_spec_v7_20260731.json",
+        "reports/plans/RQ015A_wod_retrieval_spec_v1.json",
+        "scripts/rq015a/build_ledger.py",
+        "scripts/rq015a/factor_analysis.py",
+        "scripts/rq015a/receipt.py",
+        "scripts/rq015a/rq015a_contracts.py",
+        "scripts/rq015a/rq015a_types.py",
+        "scripts/rq015a/run_rq015a.py",
+        "scripts/rq015a/validate_only.py",
+        "tests/test_rq015a_build_ledger.py",
+        "tests/test_rq015a_contracts.py",
+        "tests/test_rq015a_factor_analysis.py",
+        "tests/test_rq015a_run_entrypoint.py",
+        "tests/test_rq015a_validate_receipt.py"
+      ],
+      "checked_count": 20,
+      "entries": {
+        "configs/research_authorization.json": {
+          "actual": "eb6ec4d22c7e22be8d05a677dbed1641f110faffe412322663231189021abc10",
+          "expected": "eb6ec4d22c7e22be8d05a677dbed1641f110faffe412322663231189021abc10",
+          "ok": true
+        },
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/known_issues_and_audit_boundary_20260730.md": {
+          "actual": "2ffcc1acca33020a0f6797fcfd1670c9061bec54443afa7085ab024946830790",
+          "expected": "2ffcc1acca33020a0f6797fcfd1670c9061bec54443afa7085ab024946830790",
+          "ok": true
+        },
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md": {
+          "actual": "37b05c9bdcc8eebaeec34c9622e202e6188c0372e101fa1e6ff3843ad4b0a42e",
+          "expected": "37b05c9bdcc8eebaeec34c9622e202e6188c0372e101fa1e6ff3843ad4b0a42e",
+          "ok": true
+        },
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md": {
+          "actual": "54cd217f38b9dda91379ce91eef7b9247f43b4bb1a5b9092ffb5808379c5024d",
+          "expected": "54cd217f38b9dda91379ce91eef7b9247f43b4bb1a5b9092ffb5808379c5024d",
+          "ok": true
+        },
+        "reports/plans/RQ015A_ledger_schema_v4_20260731.json": {
+          "actual": "97afe371797acccee26e041a8c02007905c01313043cd8a2136252b9e7c08dad",
+          "expected": "97afe371797acccee26e041a8c02007905c01313043cd8a2136252b9e7c08dad",
+          "ok": true
+        },
+        "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md": {
+          "actual": "4c64b2148a427835b8a39084fdc91f0e69c010f436b91dc5ee25591c4cdb1115",
+          "expected": "4c64b2148a427835b8a39084fdc91f0e69c010f436b91dc5ee25591c4cdb1115",
+          "ok": true
+        },
+        "reports/plans/RQ015A_run_spec_v7_20260731.json": {
+          "actual": "38a3629978a5f69b7b9ddeb9c8287ff5a27365f02d870de918d0a77630bf523c",
+          "expected": "38a3629978a5f69b7b9ddeb9c8287ff5a27365f02d870de918d0a77630bf523c",
+          "ok": true
+        },
+        "reports/plans/RQ015A_wod_retrieval_spec_v1.json": {
+          "actual": "8da851f74fcf5aa80d02381342235c78ef10e6820fe37d4adffa1f6f716af58d",
+          "expected": "8da851f74fcf5aa80d02381342235c78ef10e6820fe37d4adffa1f6f716af58d",
+          "ok": true
+        },
+        "scripts/rq015a/build_ledger.py": {
+          "actual": "429a1821aa1299936695eb4650faa9b547fcfe71f109501627d1d67ed76280c8",
+          "expected": "429a1821aa1299936695eb4650faa9b547fcfe71f109501627d1d67ed76280c8",
+          "ok": true
+        },
+        "scripts/rq015a/factor_analysis.py": {
+          "actual": "114772a9847c859d870cc1974e49916cbab228692b5a4718b606a8f8be0e2f66",
+          "expected": "114772a9847c859d870cc1974e49916cbab228692b5a4718b606a8f8be0e2f66",
+          "ok": true
+        },
+        "scripts/rq015a/receipt.py": {
+          "actual": "dbe393c0f2f205efa6ddb43877ce43fd5461fa572e8efe27d1542b8693268d56",
+          "expected": "dbe393c0f2f205efa6ddb43877ce43fd5461fa572e8efe27d1542b8693268d56",
+          "ok": true
+        },
+        "scripts/rq015a/rq015a_contracts.py": {
+          "actual": "723b56dffb873f38904d180c6dd0296836d9120ba32959ae0b7753f4d3a07382",
+          "expected": "723b56dffb873f38904d180c6dd0296836d9120ba32959ae0b7753f4d3a07382",
+          "ok": true
+        },
+        "scripts/rq015a/rq015a_types.py": {
+          "actual": "4957c196a8ac1f2eb49fdff248e60259cb3d16f2bf9c40fb731064cda4baff14",
+          "expected": "4957c196a8ac1f2eb49fdff248e60259cb3d16f2bf9c40fb731064cda4baff14",
+          "ok": true
+        },
+        "scripts/rq015a/run_rq015a.py": {
+          "actual": "31b07398b3a94c300b423269c2c9c972a95f83829bc9fcbc773c866900ee38da",
+          "expected": "31b07398b3a94c300b423269c2c9c972a95f83829bc9fcbc773c866900ee38da",
+          "ok": true
+        },
+        "scripts/rq015a/validate_only.py": {
+          "actual": "f4a5f114bae0c63f143a442b1ee714f531d4ddb7760747ae5d91cef62496f646",
+          "expected": "f4a5f114bae0c63f143a442b1ee714f531d4ddb7760747ae5d91cef62496f646",
+          "ok": true
+        },
+        "tests/test_rq015a_build_ledger.py": {
+          "actual": "a40a9c8dd4779e64d7714fbfdccb2b2f1140a8b8a6aef321f67b46cf31bccd45",
+          "expected": "a40a9c8dd4779e64d7714fbfdccb2b2f1140a8b8a6aef321f67b46cf31bccd45",
+          "ok": true
+        },
+        "tests/test_rq015a_contracts.py": {
+          "actual": "32a8739fdc2f40b23bee6b7fbbb682a42b17efc64a235f00403550c623c386c4",
+          "expected": "32a8739fdc2f40b23bee6b7fbbb682a42b17efc64a235f00403550c623c386c4",
+          "ok": true
+        },
+        "tests/test_rq015a_factor_analysis.py": {
+          "actual": "7f78a5bb0cf25534c76fd35c19be276110eb524ddf7a87bc31024b632f695f54",
+          "expected": "7f78a5bb0cf25534c76fd35c19be276110eb524ddf7a87bc31024b632f695f54",
+          "ok": true
+        },
+        "tests/test_rq015a_run_entrypoint.py": {
+          "actual": "92687cf22c41d3797ad5f829cf0adda8d635ff5447bbb030bd45cff427addf34",
+          "expected": "92687cf22c41d3797ad5f829cf0adda8d635ff5447bbb030bd45cff427addf34",
+          "ok": true
+        },
+        "tests/test_rq015a_validate_receipt.py": {
+          "actual": "44be238e87419a712150d05647f363657e680b22c905514f8e5c34b6fe6b2a6d",
+          "expected": "44be238e87419a712150d05647f363657e680b22c905514f8e5c34b6fe6b2a6d",
+          "ok": true
+        }
+      },
+      "expected_paths": [
+        "configs/research_authorization.json",
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/known_issues_and_audit_boundary_20260730.md",
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/preflight_contract_verification_20260726.md",
+        "reports/knowledge/RQ015A_ipv_estimability_labelling/sealed_exposure_disclosure_20260726.md",
+        "reports/plans/RQ015A_ledger_schema_v4_20260731.json",
+        "reports/plans/RQ015A_plan_v8_concentration_audit_20260731.md",
+        "reports/plans/RQ015A_run_spec_v7_20260731.json",
+        "reports/plans/RQ015A_wod_retrieval_spec_v1.json",
+        "scripts/rq015a/build_ledger.py",
+        "scripts/rq015a/factor_analysis.py",
+        "scripts/rq015a/receipt.py",
+        "scripts/rq015a/rq015a_contracts.py",
+        "scripts/rq015a/rq015a_types.py",
+        "scripts/rq015a/run_rq015a.py",
+        "scripts/rq015a/validate_only.py",
+        "tests/test_rq015a_build_ledger.py",
+        "tests/test_rq015a_contracts.py",
+        "tests/test_rq015a_factor_analysis.py",
+        "tests/test_rq015a_run_entrypoint.py",
+        "tests/test_rq015a_validate_receipt.py"
+      ],
+      "failure_count": 0,
+      "failures": [],
+      "line_count": 20,
+      "manifest_sha256": "4b6873a5f69ecb317d00d774631a9f52d475484ed206715aecd6c43452ca753d",
+      "path": "reports/plans/RQ015A_plan_v9_checksums_20260731.sha256"
+    },
+    "contract_fixtures": {
+      "actual_files": [
+        "tests/test_rq015a_contracts.py",
+        "tests/test_rq015a_build_ledger.py",
+        "tests/test_rq015a_validate_receipt.py",
+        "tests/test_rq015a_factor_analysis.py",
+        "tests/test_rq015a_run_entrypoint.py"
+      ],
+      "command": [
+        "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+        "-m",
+        "pytest",
+        "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_contracts.py",
+        "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_build_ledger.py",
+        "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_validate_receipt.py",
+        "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_factor_analysis.py",
+        "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_run_entrypoint.py",
+        "-q"
+      ],
+      "commands": [
+        [
+          "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+          "-m",
+          "pytest",
+          "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_contracts.py",
+          "-q"
+        ],
+        [
+          "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+          "-m",
+          "pytest",
+          "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_build_ledger.py",
+          "-q"
+        ],
+        [
+          "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+          "-m",
+          "pytest",
+          "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_validate_receipt.py",
+          "-q"
+        ],
+        [
+          "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+          "-m",
+          "pytest",
+          "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_factor_analysis.py",
+          "-q"
+        ],
+        [
+          "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+          "-m",
+          "pytest",
+          "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_run_entrypoint.py",
+          "-q"
+        ]
+      ],
+      "expected_files": [
+        "tests/test_rq015a_contracts.py",
+        "tests/test_rq015a_build_ledger.py",
+        "tests/test_rq015a_validate_receipt.py",
+        "tests/test_rq015a_factor_analysis.py",
+        "tests/test_rq015a_run_entrypoint.py"
+      ],
+      "failures": [
+        "fixture_failed:tests/test_rq015a_run_entrypoint.py:1 failed, 36 passed in 4.74s"
+      ],
+      "has_failures": true,
+      "output_last_line": "1 failed, 36 passed in 4.74s",
+      "passed": 268,
+      "per_file": {
+        "tests/test_rq015a_build_ledger.py": {
+          "command": [
+            "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+            "-m",
+            "pytest",
+            "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_build_ledger.py",
+            "-q"
+          ],
+          "errors": 0,
+          "failed": 0,
+          "output_last_line": "49 passed in 0.28s",
+          "passed": 49,
+          "returncode": 0,
+          "summary_found": true
+        },
+        "tests/test_rq015a_contracts.py": {
+          "command": [
+            "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+            "-m",
+            "pytest",
+            "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_contracts.py",
+            "-q"
+          ],
+          "errors": 0,
+          "failed": 0,
+          "output_last_line": "83 passed in 0.04s",
+          "passed": 83,
+          "returncode": 0,
+          "summary_found": true
+        },
+        "tests/test_rq015a_factor_analysis.py": {
+          "command": [
+            "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+            "-m",
+            "pytest",
+            "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_factor_analysis.py",
+            "-q"
+          ],
+          "errors": 0,
+          "failed": 0,
+          "output_last_line": "24 passed in 0.99s",
+          "passed": 24,
+          "returncode": 0,
+          "summary_found": true
+        },
+        "tests/test_rq015a_run_entrypoint.py": {
+          "command": [
+            "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+            "-m",
+            "pytest",
+            "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_run_entrypoint.py",
+            "-q"
+          ],
+          "errors": 0,
+          "failed": 1,
+          "output_last_line": "1 failed, 36 passed in 4.74s",
+          "passed": 36,
+          "returncode": 1,
+          "summary_found": true
+        },
+        "tests/test_rq015a_validate_receipt.py": {
+          "command": [
+            "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+            "-m",
+            "pytest",
+            "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/tests/test_rq015a_validate_receipt.py",
+            "-q"
+          ],
+          "errors": 0,
+          "failed": 0,
+          "output_last_line": "76 passed in 0.12s",
+          "passed": 76,
+          "returncode": 0,
+          "summary_found": true
+        }
+      },
+      "total_passed": 268
+    },
+    "factor_analysis": {
+      "bootstrap_counts_recordable": true
+    },
+    "must_precede_execute": true,
+    "run_spec_execution_authorized": true,
+    "run_spec_path": "reports/plans/RQ015A_run_spec_v7_20260731.json",
+    "runtime_environment": {
+      "executable": "/Users/xiaocong/.rq009_codex_fleet/venv/bin/python",
+      "module_versions": {
+        "csv": "1.0",
+        "dataclasses": "stdlib",
+        "fastparquet": "NOT_INSTALLED",
+        "json": "2.0.9",
+        "math": "stdlib",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pathlib": "stdlib",
+        "pyarrow": "21.0.0",
+        "pytest": "8.4.2",
+        "scipy": "1.13.1"
+      },
+      "parquet_engine": {
+        "name": "pyarrow",
+        "version": "21.0.0"
+      },
+      "python_version": "3.9.6"
+    },
+    "schema_load_self_check": true,
+    "structural_requested_columns": {
+      "interhub_sigma01_hw4_timeseries": [
+        "frame_index",
+        "scene_unique_id"
+      ],
+      "onsite_dense_timeseries": [
+        "case_key",
+        "frame_index",
+        "timestamp_ms"
+      ],
+      "rq009_feature_matrix": [
+        "anchor_frame_index",
+        "case_key",
+        "fold",
+        "perspective",
+        "source_dataset"
+      ],
+      "rq009_m3_predictions": [],
+      "rq014_g2r_anchor_scores": [],
+      "wod_phase1_phase1b_10hz_schemeb": [
+        "candidate_index",
+        "phase_id",
+        "segment_key"
+      ],
+      "wod_rq010b_full479_audited": [
+        "candidate_index",
+        "segment_key"
+      ]
+    }
+  },
+  "parquet_engine": {
+    "name": "pyarrow",
+    "version": "21.0.0"
+  },
+  "per_artifact_conservation": {},
+  "reads_measurement_fields": false,
+  "receipt_kind": "validate_receipt",
+  "schema_version": "rq015a-concentration-ledger-v4",
+  "unmapped_measurement_roles": 0
+}

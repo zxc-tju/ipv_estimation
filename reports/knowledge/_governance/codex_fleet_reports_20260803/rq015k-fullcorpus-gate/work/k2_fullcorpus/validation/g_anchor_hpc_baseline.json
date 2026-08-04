@@ -1,0 +1,8 @@
+{
+  "anchor_rows": 2300,
+  "compared_rows": 2300,
+  "comparison": "float64 numeric equality after canonical key alignment",
+  "first_mismatch": null,
+  "max_abs_diff": 0.0,
+  "status": "PASS"
+}

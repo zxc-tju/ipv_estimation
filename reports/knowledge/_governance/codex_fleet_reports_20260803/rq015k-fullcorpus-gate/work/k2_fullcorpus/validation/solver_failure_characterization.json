@@ -1,0 +1,814 @@
+{
+  "artifact_id": "interhub_sigma01_hw4_timeseries",
+  "case_frame_structure": {
+    "case_count_by_pkl_file": {
+      "train_vegas2.pkl": 1,
+      "train_vegas3.pkl": 2,
+      "train_vegas4.pkl": 1,
+      "train_vegas5.pkl": 1,
+      "train_vegas6.pkl": 1
+    },
+    "frame_index_summary": {
+      "count": 1934,
+      "max": 200.0,
+      "mean": 92.10961737331955,
+      "median": 87.0,
+      "min": 4.0,
+      "p25": 44.0,
+      "p75": 138.0
+    },
+    "frames_per_scene_summary": {
+      "count": 6,
+      "max": 197.0,
+      "mean": 161.16666666666666,
+      "median": 194.0,
+      "min": 65.0,
+      "p25": 138.75,
+      "p75": 196.0
+    },
+    "rows_per_case_frame_counts": {
+      "2": 967
+    },
+    "top_scene_unique_id_counts": [
+      {
+        "count": 394,
+        "key": "ipv_012600"
+      },
+      {
+        "count": 392,
+        "key": "ipv_000875"
+      },
+      {
+        "count": 392,
+        "key": "ipv_009708"
+      },
+      {
+        "count": 384,
+        "key": "ipv_009097"
+      },
+      {
+        "count": 242,
+        "key": "ipv_001328"
+      },
+      {
+        "count": 130,
+        "key": "ipv_008344"
+      }
+    ],
+    "unique_case_frame_pairs": 967,
+    "unique_scene_unique_id": 6
+  },
+  "comparison_to_400_degenerate_anchors": {
+    "degenerate_anchor_reference": {
+      "claim": "G report: all 400 degenerate anchors are nuplan; mostly signature U; MSE spread zero and platform-stable.",
+      "n_band": {
+        "FULL": 219,
+        "RAMP": 181
+      },
+      "rows": 400,
+      "signature": {
+        "N": 1,
+        "U": 399
+      },
+      "source": {
+        "nuplan": 400,
+        "waymo": 0
+      }
+    },
+    "judgement": "Not the same failure mechanism as the 400 degenerate anchors: K2 failures are all nuplan/Las Vegas and n_obs=11 like the degenerate anchor subset, but they are signature N rather than U/Z, have no MSE vector because the solver raised an engineering failure before gate metrics were materialized, and cannot be classified as spread(mse)==0. They are adjacent to the nuPlan geometry stress regime, not evidence of the same source-collinearity/no-IPV-effect mechanism.",
+    "k2_solver_failure_rows": {
+      "mse_available": false,
+      "n_band": {
+        "FULL": 1862,
+        "RAMP": 72
+      },
+      "n_obs": {
+        "10": 12,
+        "11": 1862,
+        "5": 12,
+        "6": 12,
+        "7": 12,
+        "8": 12,
+        "9": 12
+      },
+      "rows": 1934,
+      "signature": {
+        "N": 1693,
+        "U": 21,
+        "Z": 220
+      },
+      "source": {
+        "nuplan": 1934
+      }
+    }
+  },
+  "distribution_by_agent_slot": {
+    "1": 967,
+    "2": 967
+  },
+  "distribution_by_context_cell": [
+    {
+      "count": 827,
+      "key": "nuplan|development|FULL|N|agent_1"
+    },
+    {
+      "count": 801,
+      "key": "nuplan|development|FULL|N|agent_2"
+    },
+    {
+      "count": 118,
+      "key": "nuplan|development|FULL|Z|agent_2"
+    },
+    {
+      "count": 101,
+      "key": "nuplan|development|FULL|Z|agent_1"
+    },
+    {
+      "count": 35,
+      "key": "nuplan|development|RAMP|N|agent_1"
+    },
+    {
+      "count": 30,
+      "key": "nuplan|development|RAMP|N|agent_2"
+    },
+    {
+      "count": 12,
+      "key": "nuplan|development|FULL|U|agent_2"
+    },
+    {
+      "count": 6,
+      "key": "nuplan|development|RAMP|U|agent_2"
+    },
+    {
+      "count": 3,
+      "key": "nuplan|development|FULL|U|agent_1"
+    },
+    {
+      "count": 1,
+      "key": "nuplan|development|RAMP|Z|agent_1"
+    }
+  ],
+  "distribution_by_dataset": {
+    "nuplan_train": 1934
+  },
+  "distribution_by_folder": {
+    "train_vegas2": 130,
+    "train_vegas3": 634,
+    "train_vegas4": 384,
+    "train_vegas5": 392,
+    "train_vegas6": 394
+  },
+  "distribution_by_measurement_role": {
+    "agent_1": 967,
+    "agent_2": 967
+  },
+  "distribution_by_n_band": {
+    "FULL": 1862,
+    "RAMP": 72
+  },
+  "distribution_by_n_obs": {
+    "10": 12,
+    "11": 1862,
+    "5": 12,
+    "6": 12,
+    "7": 12,
+    "8": 12,
+    "9": 12
+  },
+  "distribution_by_pkl_file": {
+    "train_vegas2.pkl": 130,
+    "train_vegas3.pkl": 634,
+    "train_vegas4.pkl": 384,
+    "train_vegas5.pkl": 392,
+    "train_vegas6.pkl": 394
+  },
+  "distribution_by_shard": {
+    "A_train_vegas2_0018": 130,
+    "A_train_vegas3_0010": 392,
+    "A_train_vegas3_0014": 242,
+    "A_train_vegas4_0005": 384,
+    "A_train_vegas5_0009": 392,
+    "A_train_vegas6_0019": 394
+  },
+  "distribution_by_signature": {
+    "N": 1693,
+    "U": 21,
+    "Z": 220
+  },
+  "distribution_by_source": {
+    "nuplan": 1934
+  },
+  "distribution_by_split": {
+    "development": 1934
+  },
+  "expected_rows_from_a_class_manifest_rollup": 1934,
+  "l1_status_integrity": {
+    "failure_type": {
+      "SOLVER_FAILURE": 1934
+    },
+    "ipv_log_is_null": {
+      "True": 1934
+    },
+    "k_eff_log_is_null": {
+      "True": 1934
+    },
+    "max_w_log_is_null": {
+      "True": 1934
+    },
+    "mse_spread_is_null": {
+      "True": 1934
+    },
+    "reason_code": {
+      "SOLVER_FAILURE": 1934
+    },
+    "solver_status": {
+      "SOLVER_FAILURE": 1934
+    },
+    "source_attempt_status": {
+      "ATTEMPTED": 1934
+    }
+  },
+  "manifest_failure_shards": [
+    {
+      "non_finite": 0,
+      "pkl_file_list": [
+        "train_vegas2.pkl"
+      ],
+      "reason_counts": {
+        "NEAR_UNIFORM": 2838,
+        "NO_IPV_EFFECT": 119,
+        "SOLVER_FAILURE": 130
+      },
+      "row_key_max": "ipv_008569|128|2",
+      "row_key_min": "ipv_008216|102|1",
+      "rows": 11000,
+      "shard_id": "A_train_vegas2_0018",
+      "solver_failure": 130,
+      "source_dataset": "interhub",
+      "status_counts": {
+        "ABSTAIN": 2957,
+        "OK": 7913,
+        "SOLVER_FAILURE": 130
+      }
+    },
+    {
+      "non_finite": 0,
+      "pkl_file_list": [
+        "train_vegas3.pkl"
+      ],
+      "reason_counts": {
+        "NEAR_UNIFORM": 2925,
+        "NO_IPV_EFFECT": 61,
+        "SOLVER_FAILURE": 392
+      },
+      "row_key_max": "ipv_001132|30|2",
+      "row_key_min": "ipv_000555|30|1",
+      "rows": 11000,
+      "shard_id": "A_train_vegas3_0010",
+      "solver_failure": 392,
+      "source_dataset": "interhub",
+      "status_counts": {
+        "ABSTAIN": 2986,
+        "OK": 7622,
+        "SOLVER_FAILURE": 392
+      }
+    },
+    {
+      "non_finite": 0,
+      "pkl_file_list": [
+        "train_vegas3.pkl"
+      ],
+      "reason_counts": {
+        "NEAR_UNIFORM": 3225,
+        "NO_IPV_EFFECT": 67,
+        "SOLVER_FAILURE": 242
+      },
+      "row_key_max": "ipv_001680|147|2",
+      "row_key_min": "ipv_000112|19|1",
+      "rows": 11000,
+      "shard_id": "A_train_vegas3_0014",
+      "solver_failure": 242,
+      "source_dataset": "interhub",
+      "status_counts": {
+        "ABSTAIN": 3292,
+        "OK": 7466,
+        "SOLVER_FAILURE": 242
+      }
+    },
+    {
+      "non_finite": 0,
+      "pkl_file_list": [
+        "train_vegas4.pkl"
+      ],
+      "reason_counts": {
+        "NEAR_UNIFORM": 2456,
+        "NO_IPV_EFFECT": 475,
+        "SOLVER_FAILURE": 384
+      },
+      "row_key_max": "ipv_009546|81|2",
+      "row_key_min": "ipv_008713|19|1",
+      "rows": 11000,
+      "shard_id": "A_train_vegas4_0005",
+      "solver_failure": 384,
+      "source_dataset": "interhub",
+      "status_counts": {
+        "ABSTAIN": 2931,
+        "OK": 7685,
+        "SOLVER_FAILURE": 384
+      }
+    },
+    {
+      "non_finite": 0,
+      "pkl_file_list": [
+        "train_vegas5.pkl"
+      ],
+      "reason_counts": {
+        "NEAR_UNIFORM": 2823,
+        "NO_IPV_EFFECT": 403,
+        "SOLVER_FAILURE": 392
+      },
+      "row_key_max": "ipv_009805|176|2",
+      "row_key_min": "ipv_011019|21|1",
+      "rows": 11000,
+      "shard_id": "A_train_vegas5_0009",
+      "solver_failure": 392,
+      "source_dataset": "interhub",
+      "status_counts": {
+        "ABSTAIN": 3226,
+        "OK": 7382,
+        "SOLVER_FAILURE": 392
+      }
+    },
+    {
+      "non_finite": 0,
+      "pkl_file_list": [
+        "train_vegas6.pkl"
+      ],
+      "reason_counts": {
+        "NEAR_UNIFORM": 2611,
+        "NO_IPV_EFFECT": 63,
+        "SOLVER_FAILURE": 394
+      },
+      "row_key_max": "ipv_011290|11|2",
+      "row_key_min": "ipv_012152|60|1",
+      "rows": 11000,
+      "shard_id": "A_train_vegas6_0019",
+      "solver_failure": 394,
+      "source_dataset": "interhub",
+      "status_counts": {
+        "ABSTAIN": 2674,
+        "OK": 7932,
+        "SOLVER_FAILURE": 394
+      }
+    }
+  ],
+  "missing_input_metadata_examples": [],
+  "non_finite_rows_from_threshold_file": 0,
+  "rows": 1934,
+  "sample_rows": [
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "1",
+      "anchor_id": "ipv_008344|4|1",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|4|1",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_1",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "4",
+      "frame_index": "4",
+      "interhub_canonical_key": "ipv_008344|4|1",
+      "ipv_error": "0.5769633050869165",
+      "k_eff": "5.587839445627304",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "0.3114706585969947",
+      "legacy_ipv_error": "0.5769633050869165",
+      "measurement_role": "agent_1",
+      "n_band": "RAMP",
+      "n_obs": "5",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=4",
+      "q_eff": "0.7982627779467577",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "8",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "2",
+      "anchor_id": "ipv_008344|4|2",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|4|2",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_2",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "4",
+      "frame_index": "4",
+      "interhub_canonical_key": "ipv_008344|4|2",
+      "ipv_error": "0.5853046716327204",
+      "k_eff": "5.81489281771796",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "-0.2698840712108334",
+      "legacy_ipv_error": "0.5853046716327204",
+      "measurement_role": "agent_2",
+      "n_band": "RAMP",
+      "n_obs": "5",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=4",
+      "q_eff": "0.8306989739597086",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "8",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "1",
+      "anchor_id": "ipv_008344|5|1",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|5|1",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_1",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "5",
+      "frame_index": "5",
+      "interhub_canonical_key": "ipv_008344|5|1",
+      "ipv_error": "0.6157760455792947",
+      "k_eff": "6.773780587772037",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "0.03134356438150226",
+      "legacy_ipv_error": "0.6213925591810194",
+      "measurement_role": "agent_1",
+      "n_band": "RAMP",
+      "n_obs": "6",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=5",
+      "q_eff": "0.967682941110291",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "10",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "2",
+      "anchor_id": "ipv_008344|5|2",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|5|2",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_2",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "5",
+      "frame_index": "5",
+      "interhub_canonical_key": "ipv_008344|5|2",
+      "ipv_error": "0.6215365077561915",
+      "k_eff": "6.9815526105168955",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "-0.06766722288426774",
+      "legacy_ipv_error": "0.6173965707156851",
+      "measurement_role": "agent_2",
+      "n_band": "RAMP",
+      "n_obs": "6",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=5",
+      "q_eff": "0.9973646586452708",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "10",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "1",
+      "anchor_id": "ipv_008344|6|1",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|6|1",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_1",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "6",
+      "frame_index": "6",
+      "interhub_canonical_key": "ipv_008344|6|1",
+      "ipv_error": "0.5987455195356151",
+      "k_eff": "6.210981137784244",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "0.1447541407220398",
+      "legacy_ipv_error": "0.588126787618807",
+      "measurement_role": "agent_1",
+      "n_band": "RAMP",
+      "n_obs": "7",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=6",
+      "q_eff": "0.8872830196834635",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "12",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "2",
+      "anchor_id": "ipv_008344|6|2",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|6|2",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_2",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "6",
+      "frame_index": "6",
+      "interhub_canonical_key": "ipv_008344|6|2",
+      "ipv_error": "0.5919588462698167",
+      "k_eff": "6.006093188598466",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "-0.3462769717750527",
+      "legacy_ipv_error": "0.5742537673195331",
+      "measurement_role": "agent_2",
+      "n_band": "RAMP",
+      "n_obs": "7",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=6",
+      "q_eff": "0.8580133126569237",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "12",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "1",
+      "anchor_id": "ipv_008344|7|1",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|7|1",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_1",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "7",
+      "frame_index": "7",
+      "interhub_canonical_key": "ipv_008344|7|1",
+      "ipv_error": "0.6074986406802165",
+      "k_eff": "6.491090582600495",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "0.2205060425518732",
+      "legacy_ipv_error": "0.5860509576890862",
+      "measurement_role": "agent_1",
+      "n_band": "RAMP",
+      "n_obs": "8",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=7",
+      "q_eff": "0.9272986546572135",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "14",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "2",
+      "anchor_id": "ipv_008344|7|2",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|7|2",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_2",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "7",
+      "frame_index": "7",
+      "interhub_canonical_key": "ipv_008344|7|2",
+      "ipv_error": "0.6184016306329342",
+      "k_eff": "6.8673151715618115",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "-0.3008584611192025",
+      "legacy_ipv_error": "0.5870313773178001",
+      "measurement_role": "agent_2",
+      "n_band": "RAMP",
+      "n_obs": "8",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=7",
+      "q_eff": "0.9810450245088302",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "14",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "1",
+      "anchor_id": "ipv_008344|8|1",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|8|1",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_1",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "8",
+      "frame_index": "8",
+      "interhub_canonical_key": "ipv_008344|8|1",
+      "ipv_error": "0.6000602241500188",
+      "k_eff": "6.251882429806425",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "0.07656245289921243",
+      "legacy_ipv_error": "0.5785626518401834",
+      "measurement_role": "agent_1",
+      "n_band": "RAMP",
+      "n_obs": "9",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=8",
+      "q_eff": "0.8931260614009179",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "16",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    },
+    {
+      "_shard_id": "A_train_vegas2_0018",
+      "agent_slot": "2",
+      "anchor_id": "ipv_008344|8|2",
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "candidate_grid_id": "legacy7_pi_over_8",
+      "canonical_key": "ipv_008344|8|2",
+      "case_id": "ipv_008344",
+      "context_cell_key": "source=nuplan|split=development|n_band=RAMP|signature=N|measurement_role=agent_2",
+      "dataset": "nuplan_train",
+      "folder": "train_vegas2",
+      "frame_id": "8",
+      "frame_index": "8",
+      "interhub_canonical_key": "ipv_008344|8|2",
+      "ipv_error": "0.5687074534079877",
+      "k_eff": "5.375960810484608",
+      "key_agent_1": "6405861579045600.0",
+      "key_agent_2": "f10dfeb8b5195ac8",
+      "key_agents": "6405861579045600.0;f10dfeb8b5195ac8",
+      "legacy_ipv": "-0.5805462306134104",
+      "legacy_ipv_error": "0.5099786637108256",
+      "measurement_role": "agent_2",
+      "n_band": "RAMP",
+      "n_obs": "9",
+      "pkl_available": "True",
+      "pkl_file": "train_vegas2.pkl",
+      "product_row_key": "scene_unique_id=ipv_008344|frame_index=8",
+      "q_eff": "0.7679944014978012",
+      "rq007_split": "development",
+      "scenario_idx": "1583",
+      "scene_unique_id": "ipv_008344",
+      "shard_id": "A_train_vegas2_0018",
+      "signature": "N",
+      "source": "nuplan",
+      "source_attempt_status": "ATTEMPTED",
+      "source_reason_code": "",
+      "split": "development",
+      "timestamp": "16",
+      "track_id": "64058615790456e2;f10dfeb8b5195ac8"
+    }
+  ],
+  "source_collinearity_proxy": {
+    "counts": {
+      "source_collinear_proxy_false_signature_N": 1693,
+      "source_collinear_proxy_true_signature_UZ": 241
+    },
+    "definition": "signature in {U,Z}; J/G evidence treats this as equivalent to zero_postwarm_scope. Direct geometry/collinearity vectors are not present in K2 L1 rows."
+  },
+  "source_files": {
+    "a_failure_thresholds": ".codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/validation/a_failure_thresholds.json",
+    "g_degenerate_anchor_reference": ".codex-fleet/rq015g-hpc-resolve/board/reports/G_leader_adjudication.md section 3.4",
+    "input_solve_csv_dir": ".codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/inputs/solve",
+    "l1_partition": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=interhub_sigma01_hw4_timeseries",
+    "shard_manifest_dir": ".codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/shard_manifests"
+  },
+  "source_ledger_numeric_summaries_for_failure_rows": {
+    "ipv_error": {
+      "count": 1934,
+      "max": 0.6220355269907728,
+      "mean": 0.572745493803813,
+      "median": 0.6159159260528853,
+      "min": 1.881358918986997e-06,
+      "p25": 0.568442661773658,
+      "p75": 0.6219120975024715
+    },
+    "k_eff": {
+      "count": 1934,
+      "max": 7.000000000000002,
+      "mean": 5.968791592305593,
+      "median": 6.778715413654966,
+      "min": 1.0000037627284566,
+      "p25": 5.369367514389744,
+      "p75": 6.995430346467531
+    },
+    "q_eff": {
+      "count": 1934,
+      "max": 1.0,
+      "mean": 0.852684513186514,
+      "median": 0.9683879162364237,
+      "min": 0.1428576803897795,
+      "p25": 0.7670525020556775,
+      "p75": 0.9993471923525045
+    }
+  },
+  "status": "PASS"
+}

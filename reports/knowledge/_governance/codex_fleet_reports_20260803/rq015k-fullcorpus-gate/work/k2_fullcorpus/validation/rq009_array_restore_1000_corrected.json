@@ -1,0 +1,13 @@
+{
+  "array_storage": "B rows store interhub_canonical_key plus gate scalars; arrays are restored from A rows using scalar columns candidate_ipv_0..6, mse_0..6, log_score_0..6, w_log_0..6.",
+  "candidate_order": "[-3,-2,-1,0,1,2,3] * pi/8",
+  "created_utc": "2026-08-02T18:44:19Z",
+  "found_unique_in_A": 500,
+  "missing_examples": [],
+  "missing_rows": 0,
+  "nonfinite_examples": [],
+  "resolved_sample_rows": 1000,
+  "sampled_rows": 1000,
+  "status": "PASS",
+  "unique_interhub_keys": 500
+}

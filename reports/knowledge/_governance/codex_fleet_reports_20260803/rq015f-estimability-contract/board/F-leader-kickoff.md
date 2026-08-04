@@ -1,0 +1,179 @@
+# Track F leader — RQ007 的已接受估计性契约，在下溢发现之后是否仍然成立
+
+你是 track F 的 **leader**，在 `<REPO_ROOT>` 工作。
+
+## 为什么有这一轮（读懂这段，本轮就不会跑偏）
+
+PI 指出了一件正确的事：**IPV 的可估计性本来就依赖交互的存在**。没有实质交互的帧里
+估不出 IPV 是正常物理现象，不同数据集比例不同也正常。
+
+这个解释在代码里可以解析地坐实。`src/sociality_estimation/core/agent.py` 的效用函数是
+`util = cos(ipv)·interior_cost + sin(ipv)·group_cost`，而候选网格
+`[-3..3]·π/8 ⊂ (−π/2, π/2)` 上 `cos(ipv) > 0` 恒成立。所以**当 group_cost 不随本车控制变化
+（= 无交互）时，目标退化为 `cos(ipv)·interior + 常数`，正标量不改变极小点 ⇒ 7 个候选解出
+完全相同的虚拟轨迹 ⇒ MSE 逐位相同**。RQ015D 观测到的 400 行 bit-identical 正是这个签名。
+
+**但 RQ007 早就做过这件事，而且已经 ACCEPTED。** 它的 `decision.md`：
+- `"Estimability" = estimator concentration index` ← 与 RQ015A 的 `q_eff` 同族
+- `Opportunity = cv_cpa_conflict`
+- **RQ007-KC-C1**：Estimability is interaction-conditioned but mostly proximity-driven（gap ≈ **−0.13**）
+- **RQ007-KC-C2**：Estimability ≠ behavioural settling
+- **RQ007-KC-C3**：Episode IPV summary is definition-dependent
+  （all-valid vs interaction-active 均值差 **≈0.26 rad**，**≈22%** 严格变号）
+- Paper handoff：C1–C3 可进手稿（Methods / v4.1 estimability contract）
+
+**所以本轮真正的问题不是"验证 PI 的解释"（RQ007 已经验证过了），而是：**
+
+> **RQ007 的集中度指数，是在含有下溢伪影的存档权重上算出来的。
+> 这三条已接受的、要进手稿的主张，在扣掉下溢之后还成立吗？**
+
+RQ015B/D 已确立：均匀兜底行的 `ipv_error` 恒为 `0.6220355269907728`（= 1−1/√7），
+**可先验识别，无需重解**；这类行的权重被强制摊平，集中度指数被推到最不集中的一端；
+而且它们的 `ipv` 被钉死为精确 `0.0`。
+
+**C3 暴露最大**：它比的是"all-valid 均值"与"interaction-active 均值"。
+all-valid 里混着一大批**精确 0.0 的下溢行**，而 0 正在网格中央——
+这本身就足以制造均值差与变号率。**这条必须先查。**
+
+## 数据全部在本地，不需要重解任何轨迹
+
+```
+RQ007 逐帧（198 MB，主输入）
+  data/derived/interhub/RQ007_interaction_conditioned_ipv_estimability/
+  RQ007_1_ipv_estimability_20260622T155229Z_289d9a99/01_intermediate/replication_frame_metrics.csv
+  列：scene_unique_id, split, frame_index, cv_cpa_conflict, c_pair, c1, c2, low1, low2, g1, g2
+      ↑ cv_cpa_conflict = 交互机会标签；c1/c2 = 两个 agent slot 的集中度指数
+
+RQ007 其他中间件（同目录）
+  opportunity_candidate_case_summary.csv / _episode_summary.csv / phase5_control_case_residuals.csv
+  red_team_low_information_case_probe_summary.csv   ← 他们自己做过 low-information 红队，先读它
+
+RQ015A 台账（q_eff / attempt_status / ipv_error 逐行）
+  reports/studies/RQ015A_ipv_estimability_labelling/
+  RQ015A_1_concentration_audit_20260731T093746Z_e82091ce/concentration_ledger/*.parquet
+
+RQ015B 抽样重解（2,300 锚点，含 log 域修正后的权重）
+  .codex-fleet/rq015b-repair/work/anchor_mse.csv
+  列含 mse_per_candidate[7] / w_legacy[7] / w_log[7] / legacy_fallback_triggered / min_mse / min_rms
+
+RQ007 决策与主张原文
+  reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/decision.md
+  reports/knowledge/RQ007_interaction_conditioned_ipv_estimability/README.md
+```
+
+join 键：`scene_unique_id + frame_index + agent_slot`（c1/c2 的 1/2 对应 agent_slot）。
+冻结事实：`case_id ≡ sigma01.scene_unique_id ≡ feature_matrix.case_key`。
+
+## 要回答的五问（按此顺序，前两问最重）
+
+**Q1 —— C3 是不是伪影？【最高优先级】**
+扣掉下溢行（`|ipv_error − 0.6220355269907728| ≤ 1e-6` 且 `ipv == 0`）后重算：
+all-valid vs interaction-active 的均值差（原 ≈0.26 rad）与严格变号率（原 ≈22%）。
+差值塌掉多少？变号率塌掉多少？**如果大部分来自下溢行，C3 需要重述或撤回。**
+
+**Q2 —— C1 的 −0.13 gap 偏了多少、往哪偏？**
+先算**下溢发生率在 `cv_cpa_conflict = 1 vs 0` 上的差异**——这决定偏差方向：
+下溢把指数推向"最不可估"，若它在机会窗内更常见，则真实 gap **比 −0.13 更大**；
+若在机会窗外更常见，则 −0.13 被**高估**。给出扣除下溢后的 gap 及其 case-clustered CI。
+
+**Q3 —— c1/c2 与 q_eff 是不是同一个量？**
+给出两者的函数关系/相关性。若一致 ⇒ RQ007 与 RQ015A 互证，可合并叙事；
+若不一致 ⇒ 说清差在哪（定义、分母、还是数据版本）。**这是两个 RQ 之间的合同一致性问题。**
+
+**Q4 —— PI 那个解释的直接检验。**
+`cv_cpa_conflict` 与低判别力的对应关系：
+- 无机会帧里，近均匀占比是多少？机会帧里呢？
+- RQ015D 那 400 行 `spread(mse) == 0` 的退化锚点，是否落在 `cv_cpa_conflict = 0`？
+  （若高度吻合 ⇒ **`spread(mse)==0` 可作为"IPV 本帧不可识别"的精确判据，不需要阈值**）
+
+**Q5 —— 分母重报。**
+RQ015A 现在的比例都是对全部 ATTEMPTED 行报的。按 `cv_cpa_conflict` 分组重报：
+**在交互机会窗内，近均匀占比是多少**。这是对科学问题正确的分母。
+
+## 硬边界
+
+```
+□ held_out 绝对不解析。replication_frame_metrics.csv 含 split 列，【先按 split 过滤再做任何统计】
+  RQ007 自己的封条也要守住：Development 19,258 / guard 7,628 only；sealed 11,342 untouched
+  结项报出 held_out_parsed_rows = 0，并给【结构佐证】而非声明
+□ 不得修改 RQ007 的任何冻结产物、decision.md、或 RQ015A/B 的 run 目录
+□ 不得重解任何轨迹（本轮是 join + 统计；如需权重修正，用 anchor_mse.csv 里现成的 w_log）
+□ 不读取 RQ014 致盲相关评分字段
+□ 描述性/敏感性分析，不得写成因果主张
+□ 全文禁用 estimability 之外的禁忌表述：不得写"测出/未测出 IPV"
+  （注意：estimability 一词在 RQ007 语境下是其正式术语，引用 RQ007 主张时可用，
+   但**不得**用于描述 RQ015 侧的新结果）
+□ 【只给证据，不给建议】——"C1/C3 要不要改写或撤回"是 PI 的决定，
+  你的产出是"扛得住 / 需重述 / 需重跑"三选一的判定 + 支撑数字
+```
+
+## 编制
+
+```
+F1 join + 五问统计  ──►  你的一轮自查  ──►  等监督方放行
+```
+
+**一个 codex agent。** 报告写到 `board/reports/F1_contract_recheck.md`。
+198 MB 的 csv 用 pyarrow/pandas 分块读，别整表载入后再过滤。
+## 舰队通用规则（A/B 轮踩出来的，逐条都是事故换来的）
+
+**你的角色**：leader。你自己**不写实现代码、不跑数据管线**——交给 codex CLI。
+你负责：分解、写/派 prompt、判定结果、汇报。上面有监督方（Cowork 的 Claude）通过文件与你异步交互。
+
+**1. 速度原则是最高准则**（见 `AGENTS.md` → Research Velocity Principle）。
+本轮是诊断性/描述性产出：**一个 codex agent，一轮自查，出报告，结束**。
+不做盲审、不做多路复审、不出第二版规格、不加授权闸门。
+**发现自己在写规格 v2 就是跑偏了，停下。**
+反面案例：上一轮一个描述性审计走了 8 个计划版本、7 轮盲审、32 个 agent，科学结论产出为零。
+
+**2. `claude -p` 是单回合的——派完 codex 不要结束回合。**
+A/B 两轨的 leader 都栽在这：派出 codex、写完汇报、进程即退出，子进程随之被杀，
+`STATUS.md` 还停在 `RUNNING`，**没有人在收结果**。
+正确做法：派完在**本回合内**阻塞轮询（`sleep 60` 看日志增长，每 5 分钟写一行 progress.log），
+等 codex 真正结项 → 做那一轮自查 → 写 `WAITING_ON_COMMANDER` → 才结束回合。
+
+**3. 派发必须脱离进程组，macOS 没有 `setsid`。**
+用现成的：`.codex-fleet/rq015a-run/board/detach_launch.py`（双 fork + `os.setsid`）
+```bash
+python3 .codex-fleet/rq015a-run/board/detach_launch.py \
+  --log <你的 board>/reports/<AGENT>.log --pidfile <你的 board>/<AGENT>.pid \
+  -- codex exec --cd "$PWD" --model gpt-5.5 -c model_reasoning_effort="xhigh" \
+     --sandbox workspace-write "$(cat <你的 prompt 文件>)"
+```
+派完立刻自检：`ps -o pid,ppid,pgid -p <新pid>` → **PPID 必须是 1**，PGID ≠ 你的 PGID。
+⚠ `codex exec` **没有** `--ask-for-approval` 参数（0.144.1 起），带上直接报错退出。
+
+**4. 三条 track（C/D/E）并发在同一个工作区。铁律，不可协商：**
+```
+禁止 git checkout -- . / git restore . / git stash / git reset --hard / git clean -fd
+禁止 git checkout 任何历史提交到主工作区（要看旧代码用 git worktree add）
+禁止 git commit（本轮产物由 PI 统一提交）
+工作区非空是【预期状态】——另外两条 track 的 agent 正在同一仓库工作。
+你只对自己创建/修改的文件负责；清洁性检查只查自己的文件清单，不看全仓库 git status。
+```
+
+**5. 四条硬约束（与流程无关，不得放松）**
+```
+1. RQ007 held_out 不得被解析（污染不可恢复）
+2. RQ014 致盲相关的评分字段不得读取
+3. 不得静默覆盖冻结产物或已接受的 decision.md
+4. 描述性结果不得写成因果主张
+```
+另：全文禁用 `estimability` 与"测出/未测出 IPV"。
+可辩护的表述是：**权重近均匀 ⇒ 该 IPV 数值不携带候选间的判别信息**。
+
+**6. 杂项，都是踩过的**
+- 解释器钉死 `<local-rq009-venv>/bin/python`（系统 python3 缺 pytest，会把基线判错）
+- 时间戳一律 `date -u +%Y-%m-%dT%H:%M:%SZ`，**不要前瞻估计**（上一轮 progress.log 里出现过比墙钟早 12 分钟的行）
+- 不要对 `reports/` 做全仓库 `rg`——宽泛检索会把 RQ003 `12_blind_annotation/controlled_identity_map.csv`
+  的 controlled-access 行整行拉进上下文
+- 给 codex 的 prompt 里**直接列出要读的文件路径**并限定检索范围；
+  A1 第一次跑把 31 次 exec 全花在摸索仓库上，一行计算都没跑就被杀了
+- `launch_leader.sh` 会**覆写 STATUS.md**；真正要留存的交接信息写进 `commander_notes.md`（追加式，不会丢）
+
+**7. 你必须维护的三个文件**
+- `board/STATUS.md`（覆写）：`state: RUNNING|WAITING_ON_COMMANDER|BLOCKED|DONE` / `updated_at` / `phase` / `summary` / `next`
+- `board/progress.log`（追加）：`<UTC> | <阶段> | 做了什么 | 结论`
+- `board/commander_notes.md`：监督方写给你的，**每完成一个阶段读一次**
+
+结项后写 `state: WAITING_ON_COMMANDER` 并轮询 `commander_notes.md` 等放行，**不要自行转 DONE**。

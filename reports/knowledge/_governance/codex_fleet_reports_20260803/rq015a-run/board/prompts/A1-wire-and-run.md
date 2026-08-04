@@ -1,0 +1,173 @@
+# A1 — 接出执行路径并跑完审计
+
+> 派发前把 `<REPO_ROOT>` 替换为仓库绝对路径。
+
+## 角色与唯一目标
+
+你是 `implementer`，在独立 git worktree 中工作。唯一目标：
+**把 RQ015A 的审计真正跑出来**——接出执行路径，跑完四个产物，落盘结果。
+
+## 首先明确：本任务的过程强度
+
+这是**描述性数据质量审计**，不是手稿主张。按项目的速度原则（`AGENTS.md` →
+Research Velocity Principle）：**跑出来 → 自查一遍数值健康与覆盖 → 交付。一轮即可。**
+
+不要写新的规格版本、不要加新的授权闸门、不要为这次运行设计多轮验证。
+如果你发现自己在写第二版设计文档——停下，那说明跑偏了。
+**遇到"要不要再加一道保险"的犹豫，默认不加，先把结果跑出来。**
+
+## 现状
+
+授权已开，六道检查全 PASS，`load_execute_permit` 直接放行：
+
+```
+execution_authorized = true
+allowed_operations = ["rq015a_concentration_audit"]
+authorized_package_commit = e11ef71d833d37aaa4bd6772f49773db641d4b09
+   语义为「是 HEAD 的祖先或等于」—— 所以你的新提交不会破坏绑定
+run spec = reports/plans/RQ015A_run_spec_v7_20260731.json
+schema   = reports/plans/RQ015A_ledger_schema_v4_20260731.json
+```
+
+**唯一缺口**在 `<REPO_ROOT>/scripts/rq015a/run_rq015a.py:206-209`：
+
+```python
+    raise ContractViolation(
+        "execution permit unexpectedly succeeded in BUILD_WHILE_DENY; "
+        "refusing to run audit without PI-reviewed post-authorization handoff"
+    )
+```
+
+许可签发成功后就到此为止，没有任何代码把组件接成一次真实审计。
+这是原设计（上一轮范围不含"运行审计"），不是缺陷。本轮就是要把它接出来。
+
+## 可用组件（已实现并测试，**直接复用，不要重写**）
+
+```
+scripts/rq015a/build_ledger.py
+    load_ledger_schema_v2 / load_case_allowlist / resolve_artifact_scope
+    load_execute_permit / open_measurement_reader
+    build_l1_for_artifact / sort_l1_rows
+    assert_l1_conservation / check_l1_conservation_counts
+    product_row_key / derive_aggregation_key
+scripts/rq015a/rq015a_contracts.py
+    q_eff / k_eff_from_error / check_conservation / local_positions
+    assert_single_artifact / aggregate_l2 / aggregate_l3
+    episode_summaries / band_shares / bins_stability
+    c0_route / c0_route_with_sensitivity / ContractViolation
+scripts/rq015a/factor_analysis.py     spearman_rank_correlation 等
+scripts/rq015a/receipt.py             回执构造与校验
+scripts/rq015a/validate_only.py
+```
+
+发现组件有 bug → 修最小的那处并在报告里说明；不要绕过、不要另起炉灶。
+
+## 要做的事
+
+### 第 1 步：先在最小产物上端到端打通
+
+`onsite_dense_timeseries`（70,317 物理行 → 281,268 measurement 行，csv）。
+
+**这条执行路径从未被真正跑过。从未执行过的路径会藏东西**——
+7 月 31 日一天之内，授权链就暴露了两个"开关关着时不可能被测到"的缺陷。
+所以先用最小产物打通，再碰 2.2 GB 的 sigma01 和 138 个 parquet 分片。
+
+### 第 2 步：跑完其余三个
+
+| artifact | 规模 | 预期 measurement 行 |
+|---|---|---|
+| `wod_rq010b_full479_audited` | 906 行 4 列 | 906 |
+| `interhub_sigma01_hw4_timeseries` | 2.2 GB csv | 5,197,072（其中 NOT_ATTEMPTED 215,088） |
+| `rq009_feature_matrix` | 138 parquet parts | 8,994,736 |
+
+纯本地 CPU，不需要 HPC。合计约 1,447 万行。
+
+### 第 3 步：产出
+
+按 run spec v7 的 `produces`：
+
+```
+concentration_ledger*   逐行台账
+portraits.json          逐产物/逐层的 q_eff 分布、bins 与敏感性、episode 摘要
+c0_routing.json         逐下游消费者的四态判定 + 敏感性
+run_receipt.json        机器 PASS/FAIL 与全部必填字段
+```
+
+`bounded_report.md` **不归你**，由下一个 agent 写。
+
+**允许的偏离（已由指挥者裁定）**：1,447 万行落成单个 CSV 不合理。
+台账逐行数据用 **parquet** 落盘（可按 artifact 分文件），另出人读的
+`concentration_ledger_summary.csv`（逐产物 × 逐 status 的计数与 q_eff 分位）。
+在 `run_receipt.json` 里明确记录这一偏离。
+
+### 第 4 步：重签清单并重跑 validate-only
+
+你改了 `run_rq015a.py`，校验清单会失配 → execute 侧的回执校验会拒。
+所以必须重签清单（照现有 `RQ015A_plan_v9_checksums_20260731.sha256` 的格式出新版本），
+重跑 validate-only 拿到新的 validate receipt，再执行。
+
+## 四条硬约束（其余从简）
+
+```
+1. RQ007 held_out 集不得被解析；run_receipt 的 held_out_parsed_rows 必须为 0
+   —— 过滤只能走 case_id 白名单；fold 不是 split（RQ009 的每个 fold 都含约 29% held_out）
+2. 不得读取任何 rating / preference / human-score 字段
+3. 不得静默覆盖已冻结产物或任何 decision.md；新版本另存新文件
+4. 不写因果措辞；不使用 estimability 或"测出/未测出 IPV"表述
+   可辩护的说法是：权重近均匀 ⇒ 该 IPV 数值不携带候选间的判别信息
+```
+
+## 冻结事实（直接用，不要重新推导）
+
+```
+q_eff = 1/((1-e)^2 * K)；K=7；one-hot q=1/7=0.14285714285714285
+warm-up 占位 ipv_error = 1.0（精确值，估计器从未运行）→ NOT_ATTEMPTED（优先于 UNKNOWN）
+均匀回退 K=7 ipv_error = 0.6220355269907728（跑了但权重摊平）→ 与占位是两回事
+K=7 时 q=4/7 ⇔ e=0.5 ；q=0.93 ⇔ e=0.608069099165
+MIN_SUPPORT_L1_PER_L2 = 5；bootstrap B=2000 seed=20260726 按 case_id 聚类
+空串绝不读作 0
+D0 规则：sigma01 用全局 frame_index<4；OnSite 用局部序号（禁止 frame_index-min）；
+        feature matrix 断言 NOT_ATTEMPTED == 0
+```
+
+## 自查清单（你自己跑一遍，够了）
+
+- [ ] 三条守恒恒等式逐产物成立，实测行数与上表吻合
+- [ ] `held_out_parsed_rows == 0`
+- [ ] 台账列名无 rating/preference 命中
+- [ ] warm-up 行落在 `NOT_ATTEMPTED`
+- [ ] 抽 10 行手算 `ipv_error → k_eff → q_eff` 核对
+- [ ] 全量 pytest 不回归（基线 269 passed）
+
+## 结项报告格式（严格照此，不要贴大段代码）
+
+```markdown
+## 状态
+SUCCESS | PARTIAL | FAILED（一行原因）
+
+## 主要数字（这是我最想看的部分）
+| artifact | measurement 行 | ATTEMPTED | NOT_ATTEMPTED | UNKNOWN | q_eff 中位数 | 近均匀占比 |
+（近均匀 = q_eff >= 0.93）
+
+## 守恒
+三条恒等式逐产物 PASS/FAIL；与预期行数是否吻合
+
+## 产出文件
+路径 + 大小 + 行数
+
+## 我改了什么
+run_rq015a.py 的改动要点（≤10 行）；组件里若修了 bug 说明是哪处
+
+## 自查清单
+6 条逐条打勾
+
+## 意外发现
+与冻结事实不符的、或数字看起来不对劲的（有就必须列，没有写"无"）
+
+## 未做 / 需要指挥者裁决
+```
+
+## 禁止
+
+不写新规格版本、不加新授权闸门、不做多轮自审、不翻转任何授权键、
+不读评分字段、不解析 held_out。不确定就先跑出结果再讨论。

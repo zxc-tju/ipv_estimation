@@ -1,0 +1,294 @@
+{
+  "anchor_input_whitelist": [
+    "case_key",
+    "scene_unique_id",
+    "unit_composite_key",
+    "area_id",
+    "team_id",
+    "algorithm_id",
+    "session_id",
+    "task_id",
+    "scenario_id",
+    "competition_case_id",
+    "native_replay_case_id",
+    "frame_index",
+    "anchor_frame_index",
+    "perspective",
+    "ego_key_agent",
+    "counterpart_key_agent",
+    "source_dataset",
+    "target_window_end_frame_index",
+    "history_row_count",
+    "relative_dx_anchor",
+    "relative_dy_anchor",
+    "relative_distance_anchor"
+  ],
+  "checks": {
+    "C1_key_one_to_one": {
+      "anchor_rows": 67861,
+      "anchor_unique_product_row_key": 67861,
+      "dryrun_rows": 67861,
+      "dryrun_unique_product_row_key": 67861,
+      "extra_in_dryrun": 0,
+      "intersection": 67861,
+      "missing_from_dryrun": 0
+    },
+    "C2_C5_role_grain": {
+      "counterpart_key_nonempty": 67861,
+      "ego_key_agent_startswith_AV": 67861,
+      "output_rows": 67861,
+      "perspective_counts": {
+        "onsite_av_primary": 67861
+      },
+      "source_dataset_counts": {
+        "onsite_competition_clean_285": 67861
+      }
+    },
+    "C3_C4_window_contract": {
+      "expected_distribution": {
+        "10": 66289,
+        "4": 267,
+        "5": 265,
+        "6": 264,
+        "7": 261,
+        "8": 258,
+        "9": 257
+      },
+      "failure_count": 0,
+      "failures": [],
+      "history_row_count_distribution": {
+        "10": 66289,
+        "4": 267,
+        "5": 265,
+        "6": 264,
+        "7": 261,
+        "8": 258,
+        "9": 257
+      },
+      "window_expression": "wx_start=max(0,pos-10+1); valid=frame_index[wx_start:pos+1] >= 4; target_pos=pos+6"
+    },
+    "C6_output_frame_fields": {
+      "required_output_fields": [
+        "solve_frame_index",
+        "anchor_frame_index",
+        "target_window_end_frame_index",
+        "history_window_used"
+      ],
+      "solve_frame_index_contract": "solve_frame_index equals the current anchor row frame_index used by the solver"
+    },
+    "C7_input_column_whitelist": {
+      "actual_anchor_read_subset": true,
+      "actual_dryrun_read_subset": true,
+      "actual_timeseries_read_subset": true,
+      "forbidden_columns_read": []
+    },
+    "C8_csv_parquet_equivalence": {
+      "anchor_csv_rows": 67861,
+      "anchor_key_sets_equal": true,
+      "anchor_parquet_rows": 67861,
+      "timeseries_csv_rows": 70317,
+      "timeseries_key_sets_equal": true,
+      "timeseries_parquet_rows": 70317
+    },
+    "coordinate_abnormal_rows": {
+      "case_keys": [
+        "onsite:shanghai:T10:C4:native_case:2311"
+      ],
+      "max_relative_dx_anchor": -570760.8305572734,
+      "max_relative_dy_anchor": -8.03729511530328,
+      "min_relative_dx_anchor": -570761.6343973287,
+      "min_relative_dy_anchor": -8.774386139133625,
+      "product_row_keys": [
+        "case_key=onsite:shanghai:T10:C4:native_case:2311|anchor_frame_index=144|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285",
+        "case_key=onsite:shanghai:T10:C4:native_case:2311|anchor_frame_index=145|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285",
+        "case_key=onsite:shanghai:T10:C4:native_case:2311|anchor_frame_index=146|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285",
+        "case_key=onsite:shanghai:T10:C4:native_case:2311|anchor_frame_index=147|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285",
+        "case_key=onsite:shanghai:T10:C4:native_case:2311|anchor_frame_index=148|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285",
+        "case_key=onsite:shanghai:T10:C4:native_case:2311|anchor_frame_index=149|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285",
+        "case_key=onsite:shanghai:T10:C4:native_case:2311|anchor_frame_index=150|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285"
+      ],
+      "rows": 7,
+      "rows_over_anchor_denominator": "7/67861"
+    },
+    "rq007_held_out_and_interhub_guard": {
+      "rows_from_interhub": 0,
+      "rows_with_held_out_marker_in_read_columns": 0,
+      "run_b2_allowed_splits_guard": "OnSite does not call run_b2_rq015b.solve_anchor_task; that InterHub guard remains untouched"
+    }
+  },
+  "contract": "RQ017 measurement contract preflight",
+  "created_utc": "2026-08-04T07:35:10Z",
+  "forbidden_anchor_columns": [
+    "M4_ONLY_ego_self_anchor_ipv_current",
+    "M4_ONLY_ego_self_anchor_ipv_error_current",
+    "counterpart_ipv_current",
+    "counterpart_ipv_error_current",
+    "counterpart_ipv_history_count",
+    "counterpart_ipv_history_fraction",
+    "counterpart_ipv_slope_pre_anchor",
+    "target_ipv_error_future",
+    "target_ipv_future"
+  ],
+  "key_construction": "case_key={case_key}|anchor_frame_index={int(anchor_frame_index)}|perspective={perspective}|source_dataset={source_dataset}",
+  "local_input_files": {
+    "anchor_csv": {
+      "bytes": 71137488,
+      "columns_read": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "session_id",
+        "task_id",
+        "scenario_id",
+        "competition_case_id",
+        "native_replay_case_id",
+        "frame_index",
+        "anchor_frame_index",
+        "perspective",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "source_dataset",
+        "target_window_end_frame_index",
+        "history_row_count",
+        "relative_dx_anchor",
+        "relative_dy_anchor",
+        "relative_distance_anchor"
+      ],
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.csv",
+      "rows": 67861,
+      "sha256": "4ff857c80d84f5e8aae1cb1bbf4ef0d1f25cf6a9842de0dd36399172658ddd79"
+    },
+    "anchor_parquet": {
+      "columns_read": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "session_id",
+        "task_id",
+        "scenario_id",
+        "competition_case_id",
+        "native_replay_case_id",
+        "frame_index",
+        "anchor_frame_index",
+        "perspective",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "source_dataset",
+        "target_window_end_frame_index",
+        "history_row_count",
+        "relative_dx_anchor",
+        "relative_dy_anchor",
+        "relative_distance_anchor"
+      ],
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+      "rows": 67861
+    },
+    "dryrun": {
+      "columns_read": [
+        "product_row_key",
+        "mechanism2_gate_ok"
+      ],
+      "path": ".codex-fleet/rq016c-human-only-envelope/work/H2/onsite_scoring_dryrun.parquet",
+      "rows": 67861
+    },
+    "timeseries_csv": {
+      "bytes": 52088770,
+      "columns_read": [
+        "case_key",
+        "frame_index",
+        "timestamp_ms",
+        "time_s",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "ego_x",
+        "ego_y",
+        "ego_vx",
+        "ego_vy",
+        "ego_heading",
+        "counterpart_x",
+        "counterpart_y",
+        "counterpart_vx",
+        "counterpart_vy",
+        "counterpart_heading"
+      ],
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.csv",
+      "rows": 70317,
+      "sha256": "e49c226bafb950125a69f8b5dc90df024b4dc37e4fd57ea126ea6782d3fa2201"
+    },
+    "timeseries_parquet": {
+      "columns_read": [
+        "case_key",
+        "frame_index",
+        "timestamp_ms",
+        "time_s",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "ego_x",
+        "ego_y",
+        "ego_vx",
+        "ego_vy",
+        "ego_heading",
+        "counterpart_x",
+        "counterpart_y",
+        "counterpart_vx",
+        "counterpart_vy",
+        "counterpart_heading"
+      ],
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+      "rows": 70317
+    }
+  },
+  "mechanism2_join_whitelist": [
+    "product_row_key",
+    "mechanism2_gate_ok"
+  ],
+  "source_file_schema_probe": {
+    "anchor_csv_forbidden_columns_present_but_not_read": [
+      "M4_ONLY_ego_self_anchor_ipv_current",
+      "M4_ONLY_ego_self_anchor_ipv_error_current",
+      "counterpart_ipv_current",
+      "counterpart_ipv_error_current",
+      "counterpart_ipv_history_count",
+      "counterpart_ipv_history_fraction",
+      "counterpart_ipv_slope_pre_anchor",
+      "target_ipv_error_future",
+      "target_ipv_future"
+    ],
+    "anchor_parquet_forbidden_columns_present_but_not_read": [
+      "M4_ONLY_ego_self_anchor_ipv_current",
+      "M4_ONLY_ego_self_anchor_ipv_error_current",
+      "counterpart_ipv_current",
+      "counterpart_ipv_error_current",
+      "counterpart_ipv_history_count",
+      "counterpart_ipv_history_fraction",
+      "counterpart_ipv_slope_pre_anchor",
+      "target_ipv_error_future",
+      "target_ipv_future"
+    ]
+  },
+  "status": "PASS",
+  "timeseries_input_whitelist": [
+    "case_key",
+    "frame_index",
+    "timestamp_ms",
+    "time_s",
+    "ego_key_agent",
+    "counterpart_key_agent",
+    "ego_x",
+    "ego_y",
+    "ego_vx",
+    "ego_vy",
+    "ego_heading",
+    "counterpart_x",
+    "counterpart_y",
+    "counterpart_vx",
+    "counterpart_vy",
+    "counterpart_heading"
+  ]
+}

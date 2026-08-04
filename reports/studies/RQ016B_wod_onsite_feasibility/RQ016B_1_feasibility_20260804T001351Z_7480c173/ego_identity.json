@@ -1,0 +1,375 @@
+{
+  "task": "RQ016B-F2 ego identity audit",
+  "timestamp_utc": "2026-08-04T00:13:51Z",
+  "inputs": {
+    "feature_matrix_root": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix",
+    "k2_rq009_root": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=rq009_feature_matrix",
+    "primary_data": "data/derived/interhub/20260612_sigma_0_1_full_rerun/00_hpc_outputs/sigma01_ipv_timeseries.csv",
+    "build_features": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/03_features/build_features.py",
+    "finalize_features": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/03_features/finalize_features.py",
+    "feature_dictionary": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/03_features/feature_dictionary.csv",
+    "data_health": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/02_provenance/data_health.json",
+    "agent_type_source": "pipelines/interhub/tools/update_ipv_distribution_report.py"
+  },
+  "method": {
+    "classification_rule": {
+      "E1": "agent_type_pair == \"AV;HV\" and perspective == \"key_agent_1\"",
+      "E2": "agent_type_pair == \"AV;HV\" and perspective == \"key_agent_2\"",
+      "E3": "agent_type_pair == \"HV;HV\""
+    },
+    "b_domain_join_key": "case_key=<case_key>|anchor_frame_index=<anchor_frame_index>|perspective=<perspective>|source_dataset=<source_dataset>",
+    "b_domain_k2_filter": {
+      "artifact_id": "rq009_feature_matrix",
+      "measurement_role": "target_future",
+      "status": "OK"
+    }
+  },
+  "code_evidence": {
+    "target_identity": [
+      "build_features.py:665-674 perspective chooses ego/counterpart prefixes and target ipv_key_agent_1/2",
+      "build_features.py:724-726 writes ego_key_agent and counterpart_key_agent",
+      "build_features.py:774 writes counterpart_ipv_current from prefix_cp",
+      "build_features.py:779 writes target_ipv_future from target_ipv",
+      "feature_dictionary.csv:52 counterpart_ipv_current definition",
+      "feature_dictionary.csv:57 target_ipv_future definition"
+    ],
+    "type_identity": [
+      "build_features.py:741 copies key_agents_type into agent_type_pair",
+      "build_features.py:742 copies vehicle_type into vehicle_type_list",
+      "feature_dictionary.csv:24-25 documents those source columns",
+      "pipelines/interhub/tools/update_ipv_distribution_report.py:665-685 aligns vehicle_type to track_ids, then key_agents order"
+    ]
+  },
+  "source_type_order": {
+    "source_file": "data/derived/interhub/20260612_sigma_0_1_full_rerun/00_hpc_outputs/sigma01_ipv_timeseries.csv",
+    "source_columns": [
+      "scene_unique_id",
+      "key_agents",
+      "key_agents_type",
+      "vehicle_type",
+      "AV_included",
+      "key_agent_1",
+      "key_agent_2"
+    ],
+    "total_source_rows": 3695981,
+    "key_agents_type_counts": {
+      "HV;HV": 2744764,
+      "AV;HV": 951217
+    },
+    "AV_HV_rows": 951217,
+    "AV_HV_first_key_agent_is_ego_rows": 951217,
+    "AV_HV_first_key_agent_not_ego_rows": 0,
+    "AV_HV_key_agent_1_display_not_ego_rows": 0,
+    "examples": [
+      {
+        "scene_unique_id": "ipv_000225",
+        "key_agents": "ego;539b3f58510b5439",
+        "key_agents_type": "AV;HV",
+        "vehicle_type": "['HV', 'HV', 'AV']",
+        "AV_included": "AV",
+        "key_agent_1": "ego",
+        "key_agent_2": "539b3f58510b5439"
+      },
+      {
+        "scene_unique_id": "ipv_000417",
+        "key_agents": "ego;59ea0005faa25d7f",
+        "key_agents_type": "AV;HV",
+        "vehicle_type": "['HV', 'HV', 'AV']",
+        "AV_included": "AV",
+        "key_agent_1": "ego",
+        "key_agent_2": "59ea0005faa25d7f"
+      },
+      {
+        "scene_unique_id": "ipv_000481",
+        "key_agents": "ego;c559a312ace550a2",
+        "key_agents_type": "AV;HV",
+        "vehicle_type": "['HV', 'AV']",
+        "AV_included": "AV",
+        "key_agent_1": "ego",
+        "key_agent_2": "c559a312ace550a2"
+      },
+      {
+        "scene_unique_id": "ipv_000545",
+        "key_agents": "ego;4b8b3fcf4e345d6e",
+        "key_agents_type": "AV;HV",
+        "vehicle_type": "['HV', 'AV']",
+        "AV_included": "AV",
+        "key_agent_1": "ego",
+        "key_agent_2": "4b8b3fcf4e345d6e"
+      },
+      {
+        "scene_unique_id": "ipv_000673",
+        "key_agents": "ego;15fa001a70715e69",
+        "key_agents_type": "AV;HV",
+        "vehicle_type": "['HV', 'HV', 'AV']",
+        "AV_included": "AV",
+        "key_agent_1": "ego",
+        "key_agent_2": "15fa001a70715e69"
+      }
+    ],
+    "bad_examples": [],
+    "interpretation": "For source rows with key_agents_type == AV;HV, the first key agent is the AV ego id in all observed rows."
+  },
+  "feature_matrix": {
+    "groups": {
+      "all": {
+        "name": "entire RQ009 feature matrix",
+        "denominator": 6397266,
+        "filter": "all rows in RQ009 feature matrix",
+        "source_file": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix",
+        "source_columns": [
+          "fold",
+          "agent_type_pair",
+          "perspective",
+          "av_included"
+        ],
+        "counts": {
+          "E1": {
+            "numerator": 829784,
+            "denominator": 6397266,
+            "percent": 12.970916013184382
+          },
+          "E2": {
+            "numerator": 829784,
+            "denominator": 6397266,
+            "percent": 12.970916013184382
+          },
+          "E3": {
+            "numerator": 4737698,
+            "denominator": 6397266,
+            "percent": 74.05816797363124
+          }
+        },
+        "checks": {
+          "E1_plus_E2_plus_E3": 6397266,
+          "unexpected": 0,
+          "AV_HV": 1659568,
+          "HV_HV": 4737698
+        }
+      },
+      "fold=train": {
+        "name": "RQ009 fold=train",
+        "denominator": 2558374,
+        "filter": "fold == train",
+        "source_file": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix/fold=train",
+        "source_columns": [
+          "fold",
+          "agent_type_pair",
+          "perspective",
+          "av_included"
+        ],
+        "counts": {
+          "E1": {
+            "numerator": 343017,
+            "denominator": 2558374,
+            "percent": 13.407617494549273
+          },
+          "E2": {
+            "numerator": 343017,
+            "denominator": 2558374,
+            "percent": 13.407617494549273
+          },
+          "E3": {
+            "numerator": 1872340,
+            "denominator": 2558374,
+            "percent": 73.18476501090146
+          }
+        },
+        "checks": {
+          "E1_plus_E2_plus_E3": 2558374,
+          "unexpected": 0,
+          "AV_HV": 686034,
+          "HV_HV": 1872340
+        }
+      },
+      "fold=calibration": {
+        "name": "RQ009 fold=calibration",
+        "denominator": 1266282,
+        "filter": "fold == calibration",
+        "source_file": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix/fold=calibration",
+        "source_columns": [
+          "fold",
+          "agent_type_pair",
+          "perspective",
+          "av_included"
+        ],
+        "counts": {
+          "E1": {
+            "numerator": 162097,
+            "denominator": 1266282,
+            "percent": 12.80101904631038
+          },
+          "E2": {
+            "numerator": 162097,
+            "denominator": 1266282,
+            "percent": 12.80101904631038
+          },
+          "E3": {
+            "numerator": 942088,
+            "denominator": 1266282,
+            "percent": 74.39796190737924
+          }
+        },
+        "checks": {
+          "E1_plus_E2_plus_E3": 1266282,
+          "unexpected": 0,
+          "AV_HV": 324194,
+          "HV_HV": 942088
+        }
+      },
+      "fold=guard_tune": {
+        "name": "RQ009 fold=guard_tune",
+        "denominator": 1302044,
+        "filter": "fold == guard_tune",
+        "source_file": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix/fold=guard_tune",
+        "source_columns": [
+          "fold",
+          "agent_type_pair",
+          "perspective",
+          "av_included"
+        ],
+        "counts": {
+          "E1": {
+            "numerator": 161755,
+            "denominator": 1302044,
+            "percent": 12.423159278795493
+          },
+          "E2": {
+            "numerator": 161755,
+            "denominator": 1302044,
+            "percent": 12.423159278795493
+          },
+          "E3": {
+            "numerator": 978534,
+            "denominator": 1302044,
+            "percent": 75.15368144240901
+          }
+        },
+        "checks": {
+          "E1_plus_E2_plus_E3": 1302044,
+          "unexpected": 0,
+          "AV_HV": 323510,
+          "HV_HV": 978534
+        }
+      },
+      "fold=test": {
+        "name": "RQ009 fold=test",
+        "denominator": 1270566,
+        "filter": "fold == test",
+        "source_file": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix/fold=test",
+        "source_columns": [
+          "fold",
+          "agent_type_pair",
+          "perspective",
+          "av_included"
+        ],
+        "counts": {
+          "E1": {
+            "numerator": 162915,
+            "denominator": 1270566,
+            "percent": 12.822238278058755
+          },
+          "E2": {
+            "numerator": 162915,
+            "denominator": 1270566,
+            "percent": 12.822238278058755
+          },
+          "E3": {
+            "numerator": 944736,
+            "denominator": 1270566,
+            "percent": 74.35552344388249
+          }
+        },
+        "checks": {
+          "E1_plus_E2_plus_E3": 1270566,
+          "unexpected": 0,
+          "AV_HV": 325830,
+          "HV_HV": 944736
+        }
+      }
+    },
+    "perspective_by_agent_type_pair": {
+      "AV;HV": {
+        "key_agent_1": 829784,
+        "key_agent_2": 829784
+      },
+      "HV;HV": {
+        "key_agent_1": 2368849,
+        "key_agent_2": 2368849
+      }
+    },
+    "av_included_counts": {
+      "all_HV": 4737698,
+      "AV": 1659568
+    }
+  },
+  "b_domain": {
+    "group": {
+      "name": "RQ016 B arm domain",
+      "denominator": 635618,
+      "filter": "feature fold == test; K2 artifact_id == \"rq009_feature_matrix\"; measurement_role == \"target_future\"; status == \"OK\"; product_row_key exact match",
+      "source_file": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix/fold=test joined to data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=rq009_feature_matrix",
+      "source_columns": [
+        "case_key",
+        "anchor_frame_index",
+        "perspective",
+        "source_dataset",
+        "agent_type_pair",
+        "vehicle_type_list",
+        "product_row_key",
+        "measurement_role",
+        "status"
+      ],
+      "counts": {
+        "E1": {
+          "numerator": 69288,
+          "denominator": 635618,
+          "percent": 10.900887010751742
+        },
+        "E2": {
+          "numerator": 79670,
+          "denominator": 635618,
+          "percent": 12.534257997728195
+        },
+        "E3": {
+          "numerator": 486660,
+          "denominator": 635618,
+          "percent": 76.56485499152006
+        }
+      },
+      "checks": {
+        "E1_plus_E2_plus_E3": 635618,
+        "unexpected": 0,
+        "AV_HV": 148958,
+        "HV_HV": 486660
+      }
+    },
+    "feature_test_rows_before_k2_join": 1270566,
+    "k2_ok_target_key_count": 3202646,
+    "joined_rows": 635618,
+    "vehicle_type_list_counts": {
+      "['HV', 'HV']": 430669,
+      "['HV', 'AV']": 117138,
+      "['HV', 'HV', 'HV']": 52892,
+      "['HV', 'HV', 'AV']": 26807,
+      "['HV', 'HV', 'HV', 'HV']": 2973,
+      "['AV', 'HV']": 2120,
+      "['HV', 'HV', 'HV', 'AV']": 2581,
+      "['HV', 'AV', 'HV']": 312,
+      "['HV', 'HV', 'HV', 'HV', 'HV']": 126
+    },
+    "negative_control_wrong_vehicle_type_list_position": {
+      "rule": "Incorrectly treat vehicle_type_list[0]/[1] as key_agent_1/key_agent_2 types.",
+      "counts": {
+        "E1": 64101,
+        "E2": 55469,
+        "E3": 516048,
+        "unclassified": 0,
+        "total": 635618
+      },
+      "observed_E1_plus_E2": 119570,
+      "expected_E1_plus_E2_from_agent_type_pair_AV_HV": 148958,
+      "status": "FAIL_EXPECTED"
+    }
+  }
+}

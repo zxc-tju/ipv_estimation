@@ -1,0 +1,30 @@
+{
+  "bad_alignment_examples": [],
+  "code_sha": "git:38aff43405cb;agent.py:bde0f58258e9;ipv_estimation.py:e2c84e62fe35;reliability_logdomain.py:8f740677eb2c;process_interhub.py:2010433b6ed7;ipv_sigma01_exact.json:3add56c2785c;k2:ec17ab4a970a",
+  "code_sha_refreshed_utc": "2026-08-02T14:35:22Z",
+  "created_utc": "2026-08-02T13:10:57Z",
+  "expected_interhub_solve_units": 4981984,
+  "held_out_parsed_rows": 0,
+  "input_ledger_sha256": "dff359f32dca58d5c4af51f56af27a1e704093b99c2658f3a43703cb4e5dbebe",
+  "interhub_solve_units": 4981984,
+  "pkl_counts": {
+    "av2_motion_forecasting.pkl": 234546,
+    "lyft_train_full.pkl": 785080,
+    "train_boston.pkl": 20046,
+    "train_pittsburgh.pkl": 12774,
+    "train_singapore.pkl": 10496,
+    "train_vegas1.pkl": 30040,
+    "train_vegas2.pkl": 255284,
+    "train_vegas3.pkl": 306300,
+    "train_vegas4.pkl": 176338,
+    "train_vegas5.pkl": 266688,
+    "train_vegas6.pkl": 263422,
+    "waymo_0-299.pkl": 800520,
+    "waymo_300-499.pkl": 562214,
+    "waymo_500-799.pkl": 721266,
+    "waymo_800-999.pkl": 536970
+  },
+  "shard_target": 11000,
+  "solve_shards": 460,
+  "status": "PASS"
+}

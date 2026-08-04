@@ -1,0 +1,88 @@
+{
+  "checks": {
+    "g_anchor_recompute": {
+      "anchor_path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ017/rq017_onsite_materializer_20260804T073517Z/repo_stage/.codex-fleet/rq015g-hpc-resolve/work/anchor_mse_hpc.csv",
+      "anchor_rows": 2300,
+      "baseline_json": {
+        "anchor_rows": 2300,
+        "compared_rows": 2300,
+        "comparison": "float64 numeric equality after canonical key alignment",
+        "first_mismatch": null,
+        "max_abs_diff": 0.0,
+        "status": "PASS"
+      },
+      "baseline_path": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ017/rq017_onsite_materializer_20260804T073517Z/repo_stage/.codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/validation/g_anchor_hpc_baseline.json",
+      "compared_rows": 32,
+      "comparison": "recomputed run_b2_rq015b.solve_anchor_task rows against HPC anchor_mse_hpc.csv",
+      "first_mismatch": null,
+      "max_abs_diff": 0.0,
+      "requested_limit": 32,
+      "sample_hits": 2300,
+      "status": "PASS"
+    },
+    "import_origins": {
+      "assertions": {
+        "ipv_estimation": true,
+        "numpy": true,
+        "pandas": true,
+        "pyarrow": true,
+        "python_executable": true,
+        "scipy": true
+      },
+      "origins": {
+        "numpy": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9/site-packages/numpy/__init__.py",
+        "pandas": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9/site-packages/pandas/__init__.py",
+        "pyarrow": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ017/rq017_onsite_materializer_20260804T073517Z/pydeps/pyarrow/__init__.py",
+        "python_executable": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/bin/python",
+        "scipy": "/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/lib/python3.9/site-packages/scipy/__init__.py",
+        "sociality_estimation.core.ipv_estimation": "/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ017/rq017_onsite_materializer_20260804T073517Z/repo_stage/src/sociality_estimation/core/ipv_estimation.py"
+      }
+    },
+    "protected_sha256": {
+      "actual": {
+        "configs/ipv_sigma01_exact.json": "3add56c2785c4b11cdb5baf75e2505fe3ebb49c407c9f7f7c226652ca1e78522",
+        "pipelines/interhub/process_interhub.py": "2010433b6ed72a85f45d0fdc5ad1e6414e5113605f1e0f65f9cb7d4cf784fe8b",
+        "src/sociality_estimation/core/agent.py": "bde0f58258e915feb90eeb89d716632db95051d5b9d0a98abe9898cacd1da9f7",
+        "src/sociality_estimation/core/ipv_estimation.py": "e2c84e62fe35668912d09f76dc5c076caa2913cb10d95add473ed4def96f30b4",
+        "src/sociality_estimation/core/reliability_logdomain.py": "8f740677eb2c3cfd0cba7e9785db9b1fba5cd4a40c0f6e0584bab5747eb8f830"
+      },
+      "expected": {
+        "configs/ipv_sigma01_exact.json": "3add56c2785c4b11cdb5baf75e2505fe3ebb49c407c9f7f7c226652ca1e78522",
+        "pipelines/interhub/process_interhub.py": "2010433b6ed72a85f45d0fdc5ad1e6414e5113605f1e0f65f9cb7d4cf784fe8b",
+        "src/sociality_estimation/core/agent.py": "bde0f58258e915feb90eeb89d716632db95051d5b9d0a98abe9898cacd1da9f7",
+        "src/sociality_estimation/core/ipv_estimation.py": "e2c84e62fe35668912d09f76dc5c076caa2913cb10d95add473ed4def96f30b4",
+        "src/sociality_estimation/core/reliability_logdomain.py": "8f740677eb2c3cfd0cba7e9785db9b1fba5cd4a40c0f6e0584bab5747eb8f830"
+      }
+    },
+    "remote_input_sha256": {
+      "anchor_csv": {
+        "bytes": 71137488,
+        "path": "/share/home/u25310231/ZXC/rq012b_onsite_ipv_20260627T202508/outputs/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.csv",
+        "sha256": "4ff857c80d84f5e8aae1cb1bbf4ef0d1f25cf6a9842de0dd36399172658ddd79"
+      },
+      "timeseries_csv": {
+        "bytes": 52088770,
+        "path": "/share/home/u25310231/ZXC/rq012b_onsite_ipv_20260627T202508/outputs/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.csv",
+        "sha256": "e49c226bafb950125a69f8b5dc90df024b4dc37e4fd57ea126ea6782d3fa2201"
+      }
+    },
+    "versions": {
+      "actual": {
+        "numpy": "1.21.6",
+        "pandas": "1.4.4",
+        "pyarrow": "12.0.1",
+        "python": "3.9.24",
+        "scipy": "1.7.3"
+      },
+      "expected": {
+        "numpy": "1.21.6",
+        "pandas": "1.4.4",
+        "pyarrow": "12.0.1",
+        "python": "3.9.24",
+        "scipy": "1.7.3"
+      }
+    }
+  },
+  "created_utc": "2026-08-04T07:38:32Z",
+  "status": "PASS"
+}

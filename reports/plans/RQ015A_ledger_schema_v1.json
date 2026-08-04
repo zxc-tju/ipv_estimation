@@ -1,0 +1,169 @@
+{
+  "schema_id": "rq015a-concentration-ledger-v1",
+  "created": "2026-07-26",
+  "status": "FROZEN_CANDIDATE_PENDING_REVIEW",
+  "purpose": "逐行记录 IPV 估计尝试状态与候选权重集中度；无 estimability 断言。",
+
+  "primary_key": ["artifact_id", "product_row_key", "measurement_role"],
+
+  "fields": {
+    "artifact_id":        {"role": "provenance", "type": "string", "nullable": false},
+    "product_row_key":    {"role": "provenance", "type": "string", "nullable": false,
+                           "note": "该产物自身主键的规范化字符串，见 artifacts[].row_key_fields"},
+    "measurement_role":   {"role": "provenance", "type": "string", "nullable": false,
+                           "enum": ["agent_1", "agent_2", "ego_hw4", "ego_hw10",
+                                    "counterpart_hw4", "counterpart_hw10",
+                                    "current", "counterpart", "target", "candidate"]},
+    "case_id":            {"role": "provenance", "type": "string", "nullable": true},
+    "rq007_split":        {"role": "provenance", "type": "string", "nullable": false,
+                           "enum": ["development", "guard", "held_out",
+                                    "RQ007_SPLIT_NOT_APPLICABLE", "unknown"]},
+    "ipv_error":          {"role": "observed", "type": "float64", "nullable": true},
+    "K":                  {"role": "observed", "type": "int32", "nullable": true},
+    "k_eff":              {"role": "derived", "type": "float64", "nullable": true,
+                           "formula": "1.0 / (1.0 - ipv_error) ** 2"},
+    "q_eff":              {"role": "derived", "type": "float64", "nullable": true,
+                           "formula": "k_eff / K", "range": "(0, 1]",
+                           "note": "主量。K 或 ipv_error 缺失时为 null 且 attempt_status=UNKNOWN"},
+    "attempt_status":     {"role": "verdict", "type": "string", "nullable": false,
+                           "enum": ["ATTEMPTED", "NOT_ATTEMPTED", "UNKNOWN"]},
+    "reason_code":        {"role": "verdict", "type": "string", "nullable": true},
+    "recoverability":     {"role": "verdict", "type": "string", "nullable": false,
+                           "enum": ["L1_DIRECT", "L2_PROVENANCE", "L3_PENDING_RQ015B",
+                                    "L4_UNRECOVERABLE", "RECOVERABLE_BY_REPLAY_OUT_OF_SCOPE"]},
+    "ledger_schema_version": {"role": "provenance", "type": "string", "nullable": false}
+  },
+
+  "unknown_sentinel": {"q_eff": null, "k_eff": null, "K": null,
+                       "attempt_status": "UNKNOWN"},
+
+  "row_conservation": {
+    "note": "v2 的 input_rows = Σ terminal_rows 不成立：存在 1→2 / 1→4 展开与 M3 3→1 折叠。",
+    "identity_1_expansion": "measurement_rows = physical_rows * expansion_factor / collapse_factor",
+    "identity_2_partition": "measurement_rows = n(ATTEMPTED) + n(NOT_ATTEMPTED) + n(UNKNOWN)",
+    "identity_3_recoverability": "measurement_rows = Σ_over_recoverability n(recoverability)",
+    "enforcement": "三条恒等式逐 artifact 断言；任一不成立即 fail closed"
+  },
+
+  "artifacts": [
+    {
+      "artifact_id": "interhub_sigma01_hw4_timeseries",
+      "row_key_fields": ["scene_unique_id", "frame_index"],
+      "expansion_factor": 2,
+      "collapse_factor": 1,
+      "measurement_roles": ["agent_1", "agent_2"],
+      "role_source_columns": {"agent_1": ["ipv_key_agent_1", "ipv_key_agent_1_error"],
+                              "agent_2": ["ipv_key_agent_2", "ipv_key_agent_2_error"]},
+      "not_attempted_rule": {"kind": "global_frame_index",
+                             "expr": "frame_index < 4",
+                             "min_observation": 4},
+      "K_source": {"kind": "constant", "value": 7, "grid_id": "legacy7_pi_over_8"},
+      "rq007_split_applicable": true,
+      "recoverability": "L1_DIRECT",
+      "expected": {"physical_rows_dev_guard_post_d0": 2490992,
+                   "measurement_rows_dev_guard_post_d0": 4981984}
+    },
+    {
+      "artifact_id": "rq009_m3_predictions",
+      "row_key_fields": ["case_key", "anchor_frame_index", "perspective", "source_dataset"],
+      "expansion_factor": 1,
+      "collapse_factor": 3,
+      "collapse_note": "每 anchor 有 3 个 nominal/alpha 行（80/90/95），须按 anchor 去重",
+      "measurement_roles": ["current", "counterpart", "target"],
+      "ipv_error_source": {"kind": "join",
+                           "table": "rq009_feature_matrix",
+                           "column": "target_ipv_error_future",
+                           "join_keys": ["case_key", "anchor_frame_index",
+                                         "perspective", "source_dataset"],
+                           "cardinality": "1:1",
+                           "on_violation": "fail_closed"},
+      "not_attempted_rule": {"kind": "role_specific",
+                             "current": "anchor at t*, past D0 by construction",
+                             "target": "target end t*+6, past D0 by construction",
+                             "expr": "NOT_ATTEMPTED count expected 0; assert"},
+      "K_source": {"kind": "constant", "value": 7, "grid_id": "legacy7_pi_over_8"},
+      "rq007_split_applicable": true,
+      "recoverability": "L1_DIRECT",
+      "expected": {"anchors_dev_guard": 1778594, "cases_dev_guard": 10580},
+      "pooling": "FORBIDDEN_DERIVATIVE_OF_sigma01_hw4"
+    },
+    {
+      "artifact_id": "onsite_dense_timeseries",
+      "row_key_fields": ["case_id", "frame_index", "timestamp_ms"],
+      "expansion_factor": 4,
+      "collapse_factor": 1,
+      "measurement_roles": ["ego_hw4", "ego_hw10", "counterpart_hw4", "counterpart_hw10"],
+      "not_attempted_rule": {"kind": "local_position",
+                             "expr": "local_position < 4",
+                             "local_position_algorithm": [
+                               "1. 应用冻结 filtering",
+                               "2. 按 (timestamp_ms, frame_index) 升序稳定排序（每 case 内）",
+                               "3. local_position = row_number - 1（0-based）",
+                               "4. 禁止使用 frame_index - min(frame_index)"],
+                             "rationale": "254/267 cases 首帧非 0；36 cases frame_index 不连续；全局规则只命中 53 行而真值为 1068"},
+      "K_source": {"kind": "provenance", "note": "由运行配置确定；不可确定则 K=null 且 UNKNOWN"},
+      "rq007_split_applicable": false,
+      "rq007_split_value": "RQ007_SPLIT_NOT_APPLICABLE",
+      "recoverability": "L1_DIRECT",
+      "expected": {"physical_rows": 70317, "cases": 267,
+                   "not_attempted_measurement_rows_ego_hw4": 1068}
+    },
+    {
+      "artifact_id": "wod_rq010b_full479_audited",
+      "row_key_fields": ["segment_key", "candidate_index"],
+      "expansion_factor": 1,
+      "collapse_factor": 1,
+      "measurement_roles": ["candidate"],
+      "not_attempted_rule": {"kind": "none_expected", "expr": "assert n(NOT_ATTEMPTED)==0"},
+      "K_source": {"kind": "provenance"},
+      "rq007_split_applicable": false,
+      "rq007_split_value": "RQ007_SPLIT_NOT_APPLICABLE",
+      "recoverability": "L1_DIRECT",
+      "expected": {"rows": 906, "segments": 302, "candidates_per_segment": 3}
+    },
+    {
+      "artifact_id": "wod_phase1_phase1b_10hz_schemeb",
+      "row_key_fields": ["segment_key", "candidate_index", "phase_id"],
+      "expansion_factor": 1,
+      "collapse_factor": 1,
+      "measurement_roles": ["candidate"],
+      "ipv_error_source": {"kind": "absent",
+                           "note": "error 被丢弃，可由 replay 恢复，但本 RQ 禁止 replay"},
+      "not_attempted_rule": {"kind": "not_determinable"},
+      "rq007_split_applicable": false,
+      "rq007_split_value": "RQ007_SPLIT_NOT_APPLICABLE",
+      "recoverability": "RECOVERABLE_BY_REPLAY_OUT_OF_SCOPE",
+      "attempt_status_forced": "UNKNOWN"
+    },
+    {
+      "artifact_id": "rq014_g2r_anchor_scores",
+      "row_key_fields": ["segment_key", "cell_id", "tau_tick"],
+      "expansion_factor": 1,
+      "collapse_factor": 1,
+      "measurement_roles": ["candidate"],
+      "ipv_error_source": {"kind": "absent"},
+      "not_attempted_rule": {"kind": "not_determinable",
+                             "note": "18,516 solver-budget + 3,060 undefined-heading 是 scene-wide fail-closed 终态，不得由此推断逐行状态"},
+      "rq007_split_applicable": false,
+      "rq007_split_value": "RQ007_SPLIT_NOT_APPLICABLE",
+      "recoverability": "L4_UNRECOVERABLE",
+      "attempt_status_forced": "UNKNOWN",
+      "expected": {"unique_candidate_tau_rows": 37242,
+                   "forced_unknown_rows": 21576}
+    }
+  ],
+
+  "cross_artifact_pooling": {
+    "policy": "FORBIDDEN",
+    "reason": "rq009_m3_predictions 与 RQ009 current/target 均为 interhub_sigma01_hw4_timeseries 的复制或 join；pooling 会对同一原始 observation 重复加权",
+    "only_corpus_level_source": "interhub_sigma01_hw4_timeseries"
+  },
+
+  "split_filter": {
+    "order": ["1. 按 case_id 白名单过滤", "2. 才读取任何 measurement 字段"],
+    "allowlist": ["development", "guard"],
+    "forbidden_expression": "split != 'sealed'",
+    "assertions": {"held_out_parsed_rows": 0, "held_out_conclusion_rows": 0},
+    "not_applicable_artifacts_bypass": true
+  }
+}

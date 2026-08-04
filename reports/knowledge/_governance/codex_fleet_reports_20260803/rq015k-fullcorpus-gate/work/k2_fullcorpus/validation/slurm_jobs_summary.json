@@ -1,0 +1,122 @@
+[
+  {
+    "alloc_cpus_values": [
+      "6"
+    ],
+    "elapsed_max": "00:08:08",
+    "elapsed_min": "00:00:00",
+    "job_id": "2069424",
+    "job_names": [
+      "batch",
+      "extern",
+      "zxc-rq015k-k2"
+    ],
+    "partitions": [
+      "fata",
+      "intel",
+      "intel,fata"
+    ],
+    "req_mem_values": [
+      "48G"
+    ],
+    "state_counts": {
+      "CANCELLED by 10451": 330,
+      "COMPLETED": 2,
+      "FAILED": 2
+    },
+    "task_records": 334
+  },
+  {
+    "alloc_cpus_values": [
+      "6"
+    ],
+    "elapsed_max": "00:35:30",
+    "elapsed_min": "00:00:00",
+    "job_id": "2069818",
+    "job_names": [
+      "batch",
+      "extern",
+      "zxc-rq015k-k2"
+    ],
+    "partitions": [
+      "fata",
+      "intel",
+      "intel,fata"
+    ],
+    "req_mem_values": [
+      "48G"
+    ],
+    "state_counts": {
+      "CANCELLED by 10451": 330,
+      "COMPLETED": 73,
+      "FAILED": 4
+    },
+    "task_records": 407
+  },
+  {
+    "alloc_cpus_values": [
+      "6"
+    ],
+    "elapsed_max": "01:23:09",
+    "elapsed_min": "00:01:22",
+    "job_id": "2070433",
+    "job_names": [
+      "batch",
+      "extern",
+      "zxc-rq015k-k2"
+    ],
+    "partitions": [
+      "fata",
+      "intel"
+    ],
+    "req_mem_values": [
+      "48G"
+    ],
+    "state_counts": {
+      "COMPLETED": 460
+    },
+    "task_records": 460
+  },
+  {
+    "alloc_cpus_values": [
+      "6"
+    ],
+    "elapsed_max": "01:12:12",
+    "elapsed_min": "01:12:12",
+    "job_id": "2071368",
+    "job_names": [
+      "zxc-rq015k-k2-finalize"
+    ],
+    "partitions": [
+      "intel"
+    ],
+    "req_mem_values": [
+      "48G"
+    ],
+    "state_counts": {
+      "CANCELLED by 10451": 1
+    },
+    "task_records": 1
+  },
+  {
+    "alloc_cpus_values": [
+      "6"
+    ],
+    "elapsed_max": "00:37:26",
+    "elapsed_min": "00:37:26",
+    "job_id": "2072466",
+    "job_names": [
+      "zxc-rq015k-k2-finalize"
+    ],
+    "partitions": [
+      "intel"
+    ],
+    "req_mem_values": [
+      "48G"
+    ],
+    "state_counts": {
+      "FAILED": 1
+    },
+    "task_records": 1
+  }
+]

@@ -70,3 +70,6 @@ reports/studies/**/venv/
 # Private serialized verifier artifacts are synchronized out-of-band and
 # verified against tracked manifests. Do not publish fitted OOD reference data.
 models/**/*.joblib
+
+# Local Claude tool settings are machine-specific.
+.claude/

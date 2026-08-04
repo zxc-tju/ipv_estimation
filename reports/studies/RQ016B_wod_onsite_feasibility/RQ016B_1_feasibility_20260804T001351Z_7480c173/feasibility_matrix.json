@@ -1,0 +1,1133 @@
+{
+  "generated_at_utc": "2026-08-03T16:28:28Z",
+  "feature_matrix": {
+    "WOD": [
+      {
+        "feature": "elapsed_time_s",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "history_row_count",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "ego_vx_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "ego_vy_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "ego_heading_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "counterpart_vx_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "counterpart_vy_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "counterpart_heading_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_dx_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_dy_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_dvx_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_dvy_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_speed_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_rate_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "heading_difference_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_std_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_speed_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_rate_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_ttc_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "apet_online_proxy",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "geometry_path_category",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "geometry_path_relation",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "turn_pair_label",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "agent_type_pair",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "vehicle_type_list",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "av_included",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "priority_role",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      }
+    ],
+    "OnSite": [
+      {
+        "feature": "elapsed_time_s",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "elapsed_time_s",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "timestamp_ms grouped by case_key; subtract first timestamp and divide by 1000",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "history_row_count",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "history_row_count",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "count rows in the Wx window ending at anchor with frame_index >= 4",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "ego_vx_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "ego_vx_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "ego_vx",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "ego_vy_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "ego_vy_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "ego_vy",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "ego_heading_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "ego_heading_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "ego_heading",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "counterpart_vx_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "counterpart_vx_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_vx",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "counterpart_vy_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "counterpart_vy_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_vy",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "counterpart_heading_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "counterpart_heading_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_heading",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_dx_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_dx_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_x - ego_x",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_dy_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_dy_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_y - ego_y",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "distance_m or sqrt(relative_dx_anchor^2 + relative_dy_anchor^2)",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_dvx_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_dvx_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_vx - ego_vx",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_dvy_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_dvy_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_vy - ego_vy",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_speed_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_speed_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "relative_speed_mps or hypot(relative_dvx_anchor, relative_dvy_anchor)",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_rate_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_rate_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "closing_rate_mps or negative distance derivative from relative pose and velocity",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "heading_difference_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "heading_difference_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "wrapped counterpart_heading - ego_heading",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean relative distance over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_std_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_std_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "standard deviation of relative distance over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_speed_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_speed_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean relative speed over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_rate_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_rate_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean closing rate over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_ttc_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_ttc_anchor",
+          "nonnull": 31740,
+          "total": 67861
+        },
+        "algorithm": "relative_distance_anchor / closing_rate_anchor when closing; otherwise capped/missing per RQ009 helper",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "apet_online_proxy",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "apet_online_proxy",
+          "nonnull": 5364,
+          "total": 67861
+        },
+        "algorithm": "constant-velocity arrival-time difference from anchor pose and velocity",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "geometry_path_category",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "geometry_path_category",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "deterministic heading-difference heuristic documented in onsite_to_m3_categorical_mapping.md",
+        "missing_reason": null,
+        "note": "AVAILABLE as OnSite deterministic heuristic mapping, not the InterHub audited label source."
+      },
+      {
+        "feature": "geometry_path_relation",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "geometry_path_relation",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "deterministic heading/lateral-longitudinal heuristic documented in onsite_to_m3_categorical_mapping.md",
+        "missing_reason": null,
+        "note": "AVAILABLE as OnSite deterministic heuristic mapping, not the InterHub audited label source."
+      },
+      {
+        "feature": "turn_pair_label",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "turn_pair_label",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "latest Wx heading delta per agent with 12 degree threshold",
+        "missing_reason": null,
+        "note": "AVAILABLE as OnSite deterministic heuristic mapping, not the InterHub audited label source."
+      },
+      {
+        "feature": "agent_type_pair",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "agent_type_pair",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "AV;HV from AV-perspective extractor",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "vehicle_type_list",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "vehicle_type_list",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "['AV', 'HV'] from AV-perspective extractor",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "av_included",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "av_included",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "AV constant from AV-perspective extractor",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "priority_role",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "priority_role",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "kinematic lead/yield/equal heuristic documented in onsite_to_m3_categorical_mapping.md",
+        "missing_reason": null,
+        "note": "AVAILABLE as OnSite deterministic heuristic mapping, not the InterHub audited label source."
+      }
+    ]
+  },
+  "gate_distance_numeric_12": {
+    "WOD": [
+      {
+        "feature": "elapsed_time_s",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "history_row_count",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_speed_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_rate_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "heading_difference_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_std_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_speed_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_rate_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_ttc_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "apet_online_proxy",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      }
+    ],
+    "OnSite": [
+      {
+        "feature": "elapsed_time_s",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "elapsed_time_s",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "timestamp_ms grouped by case_key; subtract first timestamp and divide by 1000",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "history_row_count",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "history_row_count",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "count rows in the Wx window ending at anchor with frame_index >= 4",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "distance_m or sqrt(relative_dx_anchor^2 + relative_dy_anchor^2)",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_speed_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_speed_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "relative_speed_mps or hypot(relative_dvx_anchor, relative_dvy_anchor)",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_rate_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_rate_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "closing_rate_mps or negative distance derivative from relative pose and velocity",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "heading_difference_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "heading_difference_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "wrapped counterpart_heading - ego_heading",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean relative distance over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_std_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_std_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "standard deviation of relative distance over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_speed_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_speed_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean relative speed over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_rate_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_rate_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean closing rate over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_ttc_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_ttc_anchor",
+          "nonnull": 31740,
+          "total": 67861
+        },
+        "algorithm": "relative_distance_anchor / closing_rate_anchor when closing; otherwise capped/missing per RQ009 helper",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "apet_online_proxy",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "apet_online_proxy",
+          "nonnull": 5364,
+          "total": 67861
+        },
+        "algorithm": "constant-velocity arrival-time difference from anchor pose and velocity",
+        "missing_reason": null,
+        "note": null
+      }
+    ]
+  },
+  "negative_control": {
+    "rule": "geometry_path_category nonnull must equal all-valid anchor row count",
+    "source_file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+    "column": "geometry_path_category",
+    "actual_nonnull": 67861,
+    "expected_total": 67861,
+    "normal_result": "PASS",
+    "disturbed_expected_total": 67862,
+    "disturbed_result": "FAIL",
+    "disturbed_output": "FAIL: geometry_path_category nonnull 67861 != disturbed expected 67862"
+  },
+  "lodo": {
+    "path": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/05_evaluation/lodo_results.csv",
+    "heldout_sources": [
+      "av2_motion_forecasting",
+      "lyft_train_full",
+      "nuplan_train",
+      "waymo_train"
+    ],
+    "m2_90_coverage_min": 0.748432719518602,
+    "m2_90_coverage_max": 0.9921001954640498,
+    "m2_90_rows": [
+      {
+        "heldout_source": "av2_motion_forecasting",
+        "coverage": 0.9659038732973192,
+        "n": 176413,
+        "total_n": 295826,
+        "abstained_n": 119413,
+        "evaluation_rows": 295826,
+        "fit_sources": "lyft_train_full;nuplan_train;waymo_train"
+      },
+      {
+        "heldout_source": "lyft_train_full",
+        "coverage": 0.748432719518602,
+        "n": 906028,
+        "total_n": 1031454,
+        "abstained_n": 125426,
+        "evaluation_rows": 1031454,
+        "fit_sources": "av2_motion_forecasting;nuplan_train;waymo_train"
+      },
+      {
+        "heldout_source": "nuplan_train",
+        "coverage": 0.9921001954640498,
+        "n": 1452441,
+        "total_n": 1756396,
+        "abstained_n": 303955,
+        "evaluation_rows": 1756396,
+        "fit_sources": "av2_motion_forecasting;lyft_train_full;waymo_train"
+      },
+      {
+        "heldout_source": "waymo_train",
+        "coverage": 0.790245450786637,
+        "n": 3112681,
+        "total_n": 3313590,
+        "abstained_n": 200909,
+        "evaluation_rows": 3313590,
+        "fit_sources": "av2_motion_forecasting;lyft_train_full;nuplan_train"
+      }
+    ],
+    "contains_wod_artifact": false,
+    "contains_waymo_train": true,
+    "contains_onsite": false
+  },
+  "scope": {
+    "wod": {
+      "projection_rows": 906,
+      "projection_columns": [
+        "segment_key",
+        "candidate_index",
+        "ego_ipv",
+        "ego_ipv_error"
+      ],
+      "k2_rows": null,
+      "k2_columns": [
+        "schema_version",
+        "artifact_id",
+        "canonical_key",
+        "interhub_canonical_key",
+        "product_row_key",
+        "measurement_role",
+        "case_id",
+        "rq007_split",
+        "frame_id",
+        "context_cell_key",
+        "candidate_grid_id",
+        "K",
+        "candidate_ipv_0",
+        "candidate_ipv_1",
+        "candidate_ipv_2",
+        "candidate_ipv_3",
+        "candidate_ipv_4",
+        "candidate_ipv_5",
+        "candidate_ipv_6",
+        "mse_0",
+        "mse_1",
+        "mse_2",
+        "mse_3",
+        "mse_4",
+        "mse_5",
+        "mse_6",
+        "log_score_0",
+        "log_score_1",
+        "log_score_2",
+        "log_score_3",
+        "log_score_4",
+        "log_score_5",
+        "log_score_6",
+        "w_log_0",
+        "w_log_1",
+        "w_log_2",
+        "w_log_3",
+        "w_log_4",
+        "w_log_5",
+        "w_log_6",
+        "max_w_log",
+        "mse_spread",
+        "k_eff_log",
+        "status",
+        "reason_code",
+        "ipv_log",
+        "gate_applicable",
+        "source_attempt_status",
+        "source_reason_code",
+        "ipv_error",
+        "k_eff",
+        "q_eff",
+        "solver_status",
+        "failure_type",
+        "out_of_scope_reason",
+        "shard_id",
+        "input_sha256",
+        "code_sha",
+        "created_utc"
+      ],
+      "case_like_columns_present": [
+        "segment_key",
+        "case_id"
+      ],
+      "candidate_index_nonnull": 906,
+      "segment_key_nonnull": 906
+    },
+    "onsite": {
+      "dense": {
+        "physical_rows": 70317,
+        "case_key_nunique": 267,
+        "frame_index_nunique": 1650,
+        "timestamp_ms_delta_counts_top10": {
+          "100": 36258,
+          "99": 8147,
+          "101": 8113,
+          "102": 1888,
+          "98": 1474,
+          "110": 1277,
+          "90": 1084,
+          "109": 897,
+          "103": 695,
+          "108": 684
+        }
+      },
+      "single_coverage": {
+        "path": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/onsite_ipv/coverage.json",
+        "units_requested": 285,
+        "units_with_anchors": 267,
+        "total_av_anchors": 267,
+        "max_anchors_per_unit": 1,
+        "anchor_extraction_mode": "bounded_closest_valid_anchors_per_unit",
+        "ipv_frame_rows": 70317,
+        "ipv_cases_ok": 267,
+        "ipv_cases_failed": 18
+      },
+      "allvalid_coverage": {
+        "path": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/hpc_onsite_ipv/process_allvalid_processpool_amd/coverage.json",
+        "units_requested": 285,
+        "units_with_anchors": 267,
+        "total_av_anchors": 67861,
+        "valid_anchor_candidate_units": 281,
+        "valid_anchor_candidate_total": 68420,
+        "valid_anchor_candidates_after_cap": 68420,
+        "anchor_cap_applied": false,
+        "anchor_cap_per_unit": null,
+        "anchors_excluded_by_cap": 0,
+        "ipv_frame_rows": 70317
+      },
+      "parquet_row_counts": {
+        "single_anchor_rows": 267,
+        "allvalid_anchor_rows": 67861,
+        "anchors_excluded_by_one_per_unit_cap_reconstructed": 67594
+      },
+      "range_options": {
+        "A_all_aligned_frames": {
+          "unit": "physical frame",
+          "rows": 70317,
+          "source_file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+          "filter": "all rows"
+        },
+        "B_all_rq009_timing_valid_anchor_frames_current_materialized": {
+          "unit": "anchor frame",
+          "rows": 67861,
+          "source_file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "filter": "all-valid materialized anchor table rows"
+        },
+        "B_all_rq009_timing_valid_candidates_before_failed_units": {
+          "unit": "candidate anchor",
+          "rows": 68420,
+          "source_file": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/hpc_onsite_ipv/process_allvalid_processpool_amd/coverage.json",
+          "filter": "coverage.json valid_anchor_candidate_total"
+        },
+        "C_one_anchor_per_unit": {
+          "unit": "anchor frame",
+          "rows": 267,
+          "source_file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_m3_av_anchors.parquet",
+          "filter": "default bounded closest valid anchor table rows"
+        }
+      }
+    }
+  }
+}
