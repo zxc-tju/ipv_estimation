@@ -1,0 +1,8 @@
+{
+  "cell_radii_diagnostics": "conformal_radii_by_cell.json",
+  "created_utc": "2026-08-04T00:55:01Z",
+  "model_pickle": "rq016c_h2_envelope.pkl",
+  "primary_scoring_radii": "conformal_radii_global.json",
+  "reference_script": "reports/studies/RQ016_human_envelope_rebuild/RQ016_1_envelope_rebuild_20260803T134808Z_d23fa836/run_rq016_a1_envelope_rebuild.py",
+  "version": "RQ016C-H2-human-only-envelope-v1"
+}

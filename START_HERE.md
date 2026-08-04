@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-08-03.
+Last reviewed: 2026-08-04.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -8,6 +8,39 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
+- **RQ016B / RQ016C 两轮已完成并经监督方独立复算放行（2026-08-04T02:03:12Z）。**
+  这一条替代了 RQ016C-H2 / RQ016C-H1 / RQ016B-F2 / RQ016B-F1 四条 `WAITING_ON_COMMANDER`
+  状态条目，四个 agent 的原始交付内容完整保存在下方执行记录目录里。
+  **背景一句话**：在线验证的判定串联两道弃权机制——机制一判断某一帧的 IPV 数值能否估出
+  （RQ015 已冻结），机制二拿它与人类参照分布（envelope）比。RQ015/RQ016 只用了 InterHub
+  的人类数据，而要判的自动驾驶车在 WOD 与 OnSite 里。这两轮回答「能不能用、怎么用」。
+  **产物落位**：`reports/studies/RQ016B_wod_onsite_feasibility/RQ016B_1_feasibility_20260804T001351Z_7480c173/`
+  与 `reports/studies/RQ016C_human_only_envelope/RQ016C_1_human_only_envelope_20260804T005716Z_7480c173/`；
+  知识层 `reports/knowledge/RQ016B_wod_onsite_feasibility/` 与 `reports/knowledge/RQ016C_human_only_envelope/`。
+  **RQ016B 结论**：直接套用**不可行**——WOD 与 OnSite 一行都没有七候选 MSE
+  （`mse_0..6`/`status`/`reason_code` 非空计数全为 0），机制一判不了。WOD 本地只有 4 列 906 行、
+  29 个 M2 特征全 MISSING，需重做脱敏投影且触及 RQ014 致盲边界，**PI 已裁定本轮放弃 WOD**。
+  OnSite 可行：67,861 行 AV 锚点、29 个 M2 特征一个不缺、类别取值 100% 被 InterHub 覆盖，
+  缺的只有 materializer。**另查实 RQ016 的 envelope 里 10.9009%（69,288/635,618）的目标值
+  是自动驾驶车自己的 IPV**（`target_ipv_future` 取自 ego 一侧，而 `ego` 是 AV 的专属 track id）。
+  **RQ016C 结论**：据 PI 2026-08-04 裁定（envelope 是查询机制，不同目标可建不同 envelope），
+  只用纯人-人 2,442,625 行重建了供 OnSite 使用的参照 envelope。90% 层 coverage 0.898038
+  （414,837/461,937）、平均宽度 1.238468、机制二弃权 5.0801%（24,723/486,660）。
+  特征集较 RQ009 M2 移除 `agent_type_pair` / `av_included` / `vehicle_type_list` 三列——
+  车辆是否为自动驾驶车是被检验对象而非情境，且 OnSite 在这三列的取值在人类训练池中从未出现。
+  **产物已在真实 OnSite 全量 67,861 行上跑通打分（只加载不重拟），支持门通过
+  21,936/67,861 = 32.3249%**，逐格从 `F|priority` 47.03% 到 `CP|equal` 0.00%。
+  ⚠ **该演练只证明管线可运行，不构成对任何一辆自动驾驶车的判定**——OnSite 无机制一判据。
+  **未入库产物**：拟合模型本体 164 MB 在
+  `.codex-fleet/rq016c-human-only-envelope/work/H2/envelope_model/rq016c_h2_envelope.pkl`
+  （sha256 `bc25302b4a7a307e3c73b3429b880e3cfda59074fc80850a732a93a67ef75de2`），可由已入库脚本重生成。
+  **待你拍板（materializer 动工前）**：OnSite 范围选 A 全 aligned frames 70,317 / B 全 timing-valid
+  anchor 67,861 / C 每 unit 一个 267；参考线合同选沿用 observed-trajectory fallback / 要求真实
+  地图或车道（OnSite dense 源表真实 map/lane/route/reference-line 字段为 0/274,022）。
+  **已知边界**：无同源迁移证据（RQ009 LODO 4 个留出源均不含 OnSite 与该 WOD 产物，
+  90% coverage 波动 0.7484–0.9921）；OnSite 有 7 行坐标系异常
+  （`relative_distance_anchor` ≈ 570,762 米）真正分析前须处理；
+  `apet_online_proxy` 填充率 OnSite 7.90% vs InterHub 40.26%。
 - **RQ016 机制二 envelope 重建已完成并经监督方独立复算放行（2026-08-03T15:34Z）。**
   这条替代了同日 13:48Z 那条「等待监督方核数」的状态，A1 原始交付内容仍完整保存在
   执行记录目录里。

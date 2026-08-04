@@ -1,0 +1,3594 @@
+{
+  "generated_at_utc": "2026-08-03T16:28:28Z",
+  "paths": {
+    "wod_projection": "data/derived/wod_e2e/rq015a_full479_projected/rq010b_wod_full479_audited_candidate_ipv_projected.csv",
+    "wod_receipt": "data/derived/wod_e2e/rq015a_full479_projected/sanitization_receipt.json",
+    "wod_placeholder_readme": "data/derived/wod_e2e/RQ010_wod_e2e_tracking_feasibility/RQ010_1_wod_tracking_feasibility_20260623T073830+0800_14f21d3e/README.md",
+    "wod_k2": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=wod_rq010b_full479_audited",
+    "onsite_k2": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=onsite_dense_timeseries",
+    "onsite_dense": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+    "onsite_anchor_single": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_m3_av_anchors.parquet",
+    "onsite_anchor_allvalid": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+    "onsite_timeseries_allvalid": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+    "onsite_ood_single": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/ood_gate/onsite_m3_av_anchors_scored_ood_gate.parquet",
+    "onsite_ood_allvalid": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/ood_gate_multi/onsite_m3_av_anchors_multi_allvalid_scored_ood_gate.parquet",
+    "onsite_mapping_doc": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_to_m3_categorical_mapping.md",
+    "onsite_channel_target": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target.csv",
+    "onsite_channel_exact_hw10": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target_exact_hw10.csv",
+    "onsite_channel_refref": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target_refref.csv",
+    "onsite_channel_summary": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target_summary.json",
+    "onsite_frame_strata": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_frame_ipv_strata.csv",
+    "onsite_anchor_primitives": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/cleanroom/anchor_primitives.parquet",
+    "onsite_coverage_single": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/onsite_ipv/coverage.json",
+    "onsite_coverage_allvalid": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/hpc_onsite_ipv/process_allvalid_processpool_amd/coverage.json",
+    "onsite_provenance_allvalid": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/hpc_onsite_ipv/process_allvalid_processpool_amd/provenance.json",
+    "rq009_lodo": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/05_evaluation/lodo_results.csv"
+  },
+  "inspected_tables": {
+    "wod_projection": {
+      "path": "data/derived/wod_e2e/rq015a_full479_projected/rq010b_wod_full479_audited_candidate_ipv_projected.csv",
+      "exists": true,
+      "columns": [
+        "segment_key",
+        "candidate_index",
+        "ego_ipv",
+        "ego_ipv_error"
+      ],
+      "wod_forbidden_guard": {
+        "path": "data/derived/wod_e2e/rq015a_full479_projected/rq010b_wod_full479_audited_candidate_ipv_projected.csv",
+        "matched_columns": [],
+        "match_count": 0,
+        "safe_to_read_content": true
+      },
+      "content_read": true,
+      "row_count": 906,
+      "nonnull": {
+        "segment_key": 906,
+        "candidate_index": 906,
+        "ego_ipv": 906,
+        "ego_ipv_error": 906
+      },
+      "unique_counts": {
+        "segment_key": 302,
+        "candidate_index": 3,
+        "ego_ipv": 518,
+        "ego_ipv_error": 595
+      },
+      "small_value_counts": {}
+    },
+    "wod_k2": {
+      "path": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=wod_rq010b_full479_audited",
+      "exists": true,
+      "columns": [
+        "schema_version",
+        "artifact_id",
+        "canonical_key",
+        "interhub_canonical_key",
+        "product_row_key",
+        "measurement_role",
+        "case_id",
+        "rq007_split",
+        "frame_id",
+        "context_cell_key",
+        "candidate_grid_id",
+        "K",
+        "candidate_ipv_0",
+        "candidate_ipv_1",
+        "candidate_ipv_2",
+        "candidate_ipv_3",
+        "candidate_ipv_4",
+        "candidate_ipv_5",
+        "candidate_ipv_6",
+        "mse_0",
+        "mse_1",
+        "mse_2",
+        "mse_3",
+        "mse_4",
+        "mse_5",
+        "mse_6",
+        "log_score_0",
+        "log_score_1",
+        "log_score_2",
+        "log_score_3",
+        "log_score_4",
+        "log_score_5",
+        "log_score_6",
+        "w_log_0",
+        "w_log_1",
+        "w_log_2",
+        "w_log_3",
+        "w_log_4",
+        "w_log_5",
+        "w_log_6",
+        "max_w_log",
+        "mse_spread",
+        "k_eff_log",
+        "status",
+        "reason_code",
+        "ipv_log",
+        "gate_applicable",
+        "source_attempt_status",
+        "source_reason_code",
+        "ipv_error",
+        "k_eff",
+        "q_eff",
+        "solver_status",
+        "failure_type",
+        "out_of_scope_reason",
+        "shard_id",
+        "input_sha256",
+        "code_sha",
+        "created_utc"
+      ],
+      "wod_forbidden_guard": {
+        "path": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=wod_rq010b_full479_audited",
+        "matched_columns": [
+          "log_score_0",
+          "log_score_1",
+          "log_score_2",
+          "log_score_3",
+          "log_score_4",
+          "log_score_5",
+          "log_score_6"
+        ],
+        "match_count": 7,
+        "safe_to_read_content": false
+      },
+      "content_read": false,
+      "row_count": null,
+      "nonnull": {}
+    },
+    "onsite_k2": {
+      "path": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=onsite_dense_timeseries",
+      "exists": true,
+      "columns": [
+        "schema_version",
+        "artifact_id",
+        "canonical_key",
+        "interhub_canonical_key",
+        "product_row_key",
+        "measurement_role",
+        "case_id",
+        "rq007_split",
+        "frame_id",
+        "context_cell_key",
+        "candidate_grid_id",
+        "K",
+        "candidate_ipv_0",
+        "candidate_ipv_1",
+        "candidate_ipv_2",
+        "candidate_ipv_3",
+        "candidate_ipv_4",
+        "candidate_ipv_5",
+        "candidate_ipv_6",
+        "mse_0",
+        "mse_1",
+        "mse_2",
+        "mse_3",
+        "mse_4",
+        "mse_5",
+        "mse_6",
+        "log_score_0",
+        "log_score_1",
+        "log_score_2",
+        "log_score_3",
+        "log_score_4",
+        "log_score_5",
+        "log_score_6",
+        "w_log_0",
+        "w_log_1",
+        "w_log_2",
+        "w_log_3",
+        "w_log_4",
+        "w_log_5",
+        "w_log_6",
+        "max_w_log",
+        "mse_spread",
+        "k_eff_log",
+        "status",
+        "reason_code",
+        "ipv_log",
+        "gate_applicable",
+        "source_attempt_status",
+        "source_reason_code",
+        "ipv_error",
+        "k_eff",
+        "q_eff",
+        "solver_status",
+        "failure_type",
+        "out_of_scope_reason",
+        "shard_id",
+        "input_sha256",
+        "code_sha",
+        "created_utc"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 281268,
+      "nonnull": {
+        "artifact_id": 281268,
+        "product_row_key": 281268,
+        "measurement_role": 281268,
+        "source_attempt_status": 281268,
+        "out_of_scope_reason": 281268,
+        "source_reason_code": 278294,
+        "gate_applicable": 281268,
+        "canonical_key": 281268,
+        "case_id": 0,
+        "frame_id": 281268,
+        "ipv_error": 3160,
+        "q_eff": 2974,
+        "candidate_grid_id": 281268,
+        "K": 281268,
+        "context_cell_key": 0
+      },
+      "unique_counts": {
+        "artifact_id": 1,
+        "product_row_key": 70317,
+        "measurement_role": 4,
+        "source_attempt_status": 3,
+        "out_of_scope_reason": 3,
+        "source_reason_code": 2,
+        "gate_applicable": 1,
+        "canonical_key": 281268,
+        "case_id": 0,
+        "frame_id": 1650,
+        "ipv_error": 2597,
+        "q_eff": 2596,
+        "candidate_grid_id": 1,
+        "K": 1,
+        "context_cell_key": 0
+      },
+      "small_value_counts": {
+        "artifact_id": {
+          "onsite_dense_timeseries": 281268
+        },
+        "measurement_role": {
+          "ego_hw4": 70317,
+          "ego_hw10": 70317,
+          "counterpart_hw4": 70317,
+          "counterpart_hw10": 70317
+        },
+        "source_attempt_status": {
+          "UNKNOWN": 274022,
+          "NOT_ATTEMPTED": 4272,
+          "ATTEMPTED": 2974
+        },
+        "out_of_scope_reason": {
+          "SOURCE_UNKNOWN": 274022,
+          "SOURCE_NOT_ATTEMPTED": 4272,
+          "NO_MATERIALIZER_IN_SCOPE": 2974
+        },
+        "source_reason_code": {
+          "EMPTY_CELL_UNEXPLAINED": 274022,
+          "D0_WARMUP": 4272,
+          "<NA>": 2974
+        },
+        "gate_applicable": {
+          "False": 281268
+        },
+        "case_id": {
+          "<NA>": 281268
+        },
+        "candidate_grid_id": {
+          "legacy7_pi_over_8": 281268
+        },
+        "context_cell_key": {
+          "<NA>": 281268
+        }
+      }
+    },
+    "onsite_dense": {
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+      "exists": true,
+      "columns": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "session_id",
+        "scenario_id",
+        "competition_case_id",
+        "native_replay_case_id",
+        "frame_index",
+        "timestamp_ms",
+        "time_s",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "counterpart_name",
+        "counterpart_selection",
+        "ego_x",
+        "ego_y",
+        "ego_vx",
+        "ego_vy",
+        "ego_heading",
+        "counterpart_x",
+        "counterpart_y",
+        "counterpart_vx",
+        "counterpart_vy",
+        "counterpart_heading",
+        "distance_m",
+        "closing_rate_mps",
+        "relative_speed_mps",
+        "ipv_ego_hw10",
+        "ipv_ego_hw10_error",
+        "ipv_counterpart_hw10",
+        "ipv_counterpart_hw10_error",
+        "ipv_ego_hw4",
+        "ipv_ego_hw4_error",
+        "ipv_counterpart_hw4",
+        "ipv_counterpart_hw4_error"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 70317,
+      "nonnull": {
+        "case_key": 70317,
+        "frame_index": 70317,
+        "timestamp_ms": 70317,
+        "ego_key_agent": 70317,
+        "counterpart_key_agent": 70317,
+        "ego_x": 70317,
+        "ego_y": 70317,
+        "ego_vx": 70317,
+        "ego_vy": 70317,
+        "ego_heading": 70317,
+        "counterpart_x": 70317,
+        "counterpart_y": 70317,
+        "counterpart_vx": 70317,
+        "counterpart_vy": 70317,
+        "counterpart_heading": 70317,
+        "distance_m": 70317,
+        "closing_rate_mps": 70317,
+        "relative_speed_mps": 70317
+      },
+      "unique_counts": {
+        "case_key": 267,
+        "frame_index": 1650,
+        "timestamp_ms": 70272,
+        "ego_key_agent": 19,
+        "counterpart_key_agent": 108,
+        "ego_x": 64987,
+        "ego_y": 65021,
+        "ego_vx": 65120,
+        "ego_vy": 64949,
+        "ego_heading": 61890,
+        "counterpart_x": 53916,
+        "counterpart_y": 53916,
+        "counterpart_vx": 53652,
+        "counterpart_vy": 47872,
+        "counterpart_heading": 48838,
+        "distance_m": 67959,
+        "closing_rate_mps": 68219,
+        "relative_speed_mps": 68026
+      },
+      "small_value_counts": {
+        "ego_key_agent": {
+          "AV:T2": 4840,
+          "AV:T4": 4747,
+          "AV:T18": 4597,
+          "AV:T3": 4465,
+          "AV:T7": 4148,
+          "AV:T9": 4138,
+          "AV:T1": 4115,
+          "AV:T10": 4031,
+          "AV:T6": 3942,
+          "AV:T15": 3853,
+          "AV:T12": 3840,
+          "AV:T5": 3565,
+          "AV:T21": 3501,
+          "AV:T17": 3495,
+          "AV:T16": 3317,
+          "AV:T14": 3104,
+          "AV:T20": 3004,
+          "AV:T11": 2735,
+          "AV:T8": 880
+        }
+      }
+    },
+    "onsite_anchor_single": {
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_m3_av_anchors.parquet",
+      "exists": true,
+      "columns": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "session_id",
+        "task_id",
+        "scenario_id",
+        "competition_case_id",
+        "native_replay_case_id",
+        "frame_index",
+        "anchor_frame_index",
+        "anchor_timestamp",
+        "perspective",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "source_dataset",
+        "scenario_idx",
+        "track_id",
+        "key_agents",
+        "counterpart_name",
+        "counterpart_selection",
+        "target_window_start_frame_index",
+        "target_window_end_frame_index",
+        "target_window_start_timestamp",
+        "target_window_end_timestamp",
+        "elapsed_time_s",
+        "history_row_count",
+        "ego_vx_anchor",
+        "ego_vy_anchor",
+        "ego_heading_anchor",
+        "counterpart_vx_anchor",
+        "counterpart_vy_anchor",
+        "counterpart_heading_anchor",
+        "relative_dx_anchor",
+        "relative_dy_anchor",
+        "relative_distance_anchor",
+        "relative_dvx_anchor",
+        "relative_dvy_anchor",
+        "relative_speed_anchor",
+        "closing_rate_anchor",
+        "heading_difference_anchor",
+        "relative_distance_mean_wx",
+        "relative_distance_std_wx",
+        "relative_speed_mean_wx",
+        "closing_rate_mean_wx",
+        "closing_ttc_anchor",
+        "apet_online_proxy",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "geometry_path_category",
+        "geometry_path_relation",
+        "turn_pair_label",
+        "agent_type_pair",
+        "vehicle_type_list",
+        "av_included",
+        "priority_role",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "geometry_mapping_status"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 267,
+      "nonnull": {
+        "elapsed_time_s": 267,
+        "history_row_count": 267,
+        "ego_vx_anchor": 267,
+        "ego_vy_anchor": 267,
+        "ego_heading_anchor": 267,
+        "counterpart_vx_anchor": 267,
+        "counterpart_vy_anchor": 267,
+        "counterpart_heading_anchor": 267,
+        "relative_dx_anchor": 267,
+        "relative_dy_anchor": 267,
+        "relative_distance_anchor": 267,
+        "relative_dvx_anchor": 267,
+        "relative_dvy_anchor": 267,
+        "relative_speed_anchor": 267,
+        "closing_rate_anchor": 267,
+        "heading_difference_anchor": 267,
+        "relative_distance_mean_wx": 267,
+        "relative_distance_std_wx": 267,
+        "relative_speed_mean_wx": 267,
+        "closing_rate_mean_wx": 267,
+        "closing_ttc_anchor": 216,
+        "apet_online_proxy": 33,
+        "geometry_path_category": 267,
+        "geometry_path_relation": 267,
+        "turn_pair_label": 267,
+        "agent_type_pair": 267,
+        "vehicle_type_list": 267,
+        "av_included": 267,
+        "priority_role": 267,
+        "case_key": 267,
+        "frame_index": 267,
+        "ego_key_agent": 267,
+        "counterpart_key_agent": 267,
+        "geometry_mapping_status": 267
+      },
+      "unique_counts": {
+        "elapsed_time_s": 244,
+        "history_row_count": 6,
+        "ego_vx_anchor": 259,
+        "ego_vy_anchor": 259,
+        "ego_heading_anchor": 266,
+        "counterpart_vx_anchor": 217,
+        "counterpart_vy_anchor": 215,
+        "counterpart_heading_anchor": 264,
+        "relative_dx_anchor": 267,
+        "relative_dy_anchor": 267,
+        "relative_distance_anchor": 267,
+        "relative_dvx_anchor": 267,
+        "relative_dvy_anchor": 267,
+        "relative_speed_anchor": 267,
+        "closing_rate_anchor": 267,
+        "heading_difference_anchor": 267,
+        "relative_distance_mean_wx": 267,
+        "relative_distance_std_wx": 267,
+        "relative_speed_mean_wx": 267,
+        "closing_rate_mean_wx": 267,
+        "closing_ttc_anchor": 104,
+        "apet_online_proxy": 33,
+        "geometry_path_category": 3,
+        "geometry_path_relation": 5,
+        "turn_pair_label": 6,
+        "agent_type_pair": 1,
+        "vehicle_type_list": 1,
+        "av_included": 1,
+        "priority_role": 3,
+        "case_key": 267,
+        "frame_index": 184,
+        "ego_key_agent": 19,
+        "counterpart_key_agent": 108,
+        "geometry_mapping_status": 3
+      },
+      "small_value_counts": {
+        "geometry_path_category": {
+          "F": 182,
+          "MP": 62,
+          "CP": 23
+        },
+        "geometry_path_relation": {
+          "F": 182,
+          "P-M": 46,
+          "P-P": 16,
+          "C-C": 14,
+          "O-C": 9
+        },
+        "turn_pair_label": {
+          "S-S": 236,
+          "S-R": 12,
+          "S-L": 9,
+          "L-S": 6,
+          "L-L": 3,
+          "R-R": 1
+        },
+        "agent_type_pair": {
+          "AV;HV": 267
+        },
+        "vehicle_type_list": {
+          "['AV', 'HV']": 267
+        },
+        "av_included": {
+          "AV": 267
+        },
+        "priority_role": {
+          "priority": 118,
+          "equal": 82,
+          "yield": 67
+        },
+        "ego_key_agent": {
+          "AV:T17": 15,
+          "AV:T14": 15,
+          "AV:T2": 15,
+          "AV:T4": 15,
+          "AV:T3": 15,
+          "AV:T1": 15,
+          "AV:T9": 15,
+          "AV:T7": 15,
+          "AV:T5": 15,
+          "AV:T6": 15,
+          "AV:T11": 15,
+          "AV:T18": 15,
+          "AV:T15": 15,
+          "AV:T16": 15,
+          "AV:T21": 14,
+          "AV:T20": 14,
+          "AV:T10": 14,
+          "AV:T12": 13,
+          "AV:T8": 2
+        },
+        "geometry_mapping_status": {
+          "heuristic_same_direction_following": 182,
+          "heuristic_mixed_path_no_map": 62,
+          "heuristic_opposing_or_crossing": 23
+        }
+      }
+    },
+    "onsite_anchor_allvalid": {
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+      "exists": true,
+      "columns": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "session_id",
+        "task_id",
+        "scenario_id",
+        "competition_case_id",
+        "native_replay_case_id",
+        "frame_index",
+        "anchor_frame_index",
+        "anchor_timestamp",
+        "perspective",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "source_dataset",
+        "scenario_idx",
+        "track_id",
+        "key_agents",
+        "counterpart_name",
+        "counterpart_selection",
+        "target_window_start_frame_index",
+        "target_window_end_frame_index",
+        "target_window_start_timestamp",
+        "target_window_end_timestamp",
+        "elapsed_time_s",
+        "history_row_count",
+        "ego_vx_anchor",
+        "ego_vy_anchor",
+        "ego_heading_anchor",
+        "counterpart_vx_anchor",
+        "counterpart_vy_anchor",
+        "counterpart_heading_anchor",
+        "relative_dx_anchor",
+        "relative_dy_anchor",
+        "relative_distance_anchor",
+        "relative_dvx_anchor",
+        "relative_dvy_anchor",
+        "relative_speed_anchor",
+        "closing_rate_anchor",
+        "heading_difference_anchor",
+        "relative_distance_mean_wx",
+        "relative_distance_std_wx",
+        "relative_speed_mean_wx",
+        "closing_rate_mean_wx",
+        "closing_ttc_anchor",
+        "apet_online_proxy",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "geometry_path_category",
+        "geometry_path_relation",
+        "turn_pair_label",
+        "agent_type_pair",
+        "vehicle_type_list",
+        "av_included",
+        "priority_role",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "geometry_mapping_status"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 67861,
+      "nonnull": {
+        "elapsed_time_s": 67861,
+        "history_row_count": 67861,
+        "ego_vx_anchor": 67861,
+        "ego_vy_anchor": 67861,
+        "ego_heading_anchor": 67861,
+        "counterpart_vx_anchor": 67861,
+        "counterpart_vy_anchor": 67861,
+        "counterpart_heading_anchor": 67861,
+        "relative_dx_anchor": 67861,
+        "relative_dy_anchor": 67861,
+        "relative_distance_anchor": 67861,
+        "relative_dvx_anchor": 67861,
+        "relative_dvy_anchor": 67861,
+        "relative_speed_anchor": 67861,
+        "closing_rate_anchor": 67861,
+        "heading_difference_anchor": 67861,
+        "relative_distance_mean_wx": 67861,
+        "relative_distance_std_wx": 67861,
+        "relative_speed_mean_wx": 67861,
+        "closing_rate_mean_wx": 67861,
+        "closing_ttc_anchor": 31740,
+        "apet_online_proxy": 5364,
+        "geometry_path_category": 67861,
+        "geometry_path_relation": 67861,
+        "turn_pair_label": 67861,
+        "agent_type_pair": 67861,
+        "vehicle_type_list": 67861,
+        "av_included": 67861,
+        "priority_role": 67861,
+        "case_key": 67861,
+        "frame_index": 67861,
+        "ego_key_agent": 67861,
+        "counterpart_key_agent": 67861,
+        "geometry_mapping_status": 67861
+      },
+      "unique_counts": {
+        "elapsed_time_s": 28833,
+        "history_row_count": 7,
+        "ego_vx_anchor": 62762,
+        "ego_vy_anchor": 62599,
+        "ego_heading_anchor": 59702,
+        "counterpart_vx_anchor": 51581,
+        "counterpart_vy_anchor": 46051,
+        "counterpart_heading_anchor": 47025,
+        "relative_dx_anchor": 65421,
+        "relative_dy_anchor": 65430,
+        "relative_distance_anchor": 65532,
+        "relative_dvx_anchor": 65460,
+        "relative_dvy_anchor": 65475,
+        "relative_speed_anchor": 65598,
+        "closing_rate_anchor": 65791,
+        "heading_difference_anchor": 62225,
+        "relative_distance_mean_wx": 67301,
+        "relative_distance_std_wx": 67211,
+        "relative_speed_mean_wx": 66557,
+        "closing_rate_mean_wx": 66581,
+        "closing_ttc_anchor": 16156,
+        "apet_online_proxy": 5364,
+        "geometry_path_category": 3,
+        "geometry_path_relation": 5,
+        "turn_pair_label": 9,
+        "agent_type_pair": 1,
+        "vehicle_type_list": 1,
+        "av_included": 1,
+        "priority_role": 3,
+        "case_key": 267,
+        "frame_index": 1628,
+        "ego_key_agent": 19,
+        "counterpart_key_agent": 108,
+        "geometry_mapping_status": 3
+      },
+      "small_value_counts": {}
+    },
+    "onsite_timeseries_allvalid": {
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+      "exists": true,
+      "columns": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "session_id",
+        "scenario_id",
+        "competition_case_id",
+        "native_replay_case_id",
+        "frame_index",
+        "timestamp_ms",
+        "time_s",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "counterpart_name",
+        "counterpart_selection",
+        "ego_x",
+        "ego_y",
+        "ego_vx",
+        "ego_vy",
+        "ego_heading",
+        "counterpart_x",
+        "counterpart_y",
+        "counterpart_vx",
+        "counterpart_vy",
+        "counterpart_heading",
+        "distance_m",
+        "closing_rate_mps",
+        "relative_speed_mps",
+        "ipv_ego_hw10",
+        "ipv_ego_hw10_error",
+        "ipv_counterpart_hw10",
+        "ipv_counterpart_hw10_error",
+        "ipv_ego_hw4",
+        "ipv_ego_hw4_error",
+        "ipv_counterpart_hw4",
+        "ipv_counterpart_hw4_error"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 70317,
+      "nonnull": {
+        "case_key": 70317,
+        "frame_index": 70317,
+        "timestamp_ms": 70317,
+        "ego_key_agent": 70317,
+        "counterpart_key_agent": 70317,
+        "ego_x": 70317,
+        "ego_y": 70317,
+        "ego_vx": 70317,
+        "ego_vy": 70317,
+        "ego_heading": 70317,
+        "counterpart_x": 70317,
+        "counterpart_y": 70317,
+        "counterpart_vx": 70317,
+        "counterpart_vy": 70317,
+        "counterpart_heading": 70317,
+        "distance_m": 70317,
+        "closing_rate_mps": 70317,
+        "relative_speed_mps": 70317
+      },
+      "unique_counts": {
+        "case_key": 267,
+        "frame_index": 1650,
+        "timestamp_ms": 70272,
+        "ego_key_agent": 19,
+        "counterpart_key_agent": 108,
+        "ego_x": 64987,
+        "ego_y": 65021,
+        "ego_vx": 65119,
+        "ego_vy": 64949,
+        "ego_heading": 61890,
+        "counterpart_x": 53916,
+        "counterpart_y": 53916,
+        "counterpart_vx": 53649,
+        "counterpart_vy": 47872,
+        "counterpart_heading": 48838,
+        "distance_m": 67959,
+        "closing_rate_mps": 68219,
+        "relative_speed_mps": 68026
+      },
+      "small_value_counts": {}
+    },
+    "onsite_ood_single": {
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/ood_gate/onsite_m3_av_anchors_scored_ood_gate.parquet",
+      "exists": true,
+      "columns": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "session_id",
+        "task_id",
+        "scenario_id",
+        "competition_case_id",
+        "native_replay_case_id",
+        "frame_index",
+        "anchor_frame_index",
+        "anchor_timestamp",
+        "perspective",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "source_dataset",
+        "scenario_idx",
+        "track_id",
+        "key_agents",
+        "counterpart_name",
+        "counterpart_selection",
+        "target_window_start_frame_index",
+        "target_window_end_frame_index",
+        "target_window_start_timestamp",
+        "target_window_end_timestamp",
+        "elapsed_time_s",
+        "history_row_count",
+        "ego_vx_anchor",
+        "ego_vy_anchor",
+        "ego_heading_anchor",
+        "counterpart_vx_anchor",
+        "counterpart_vy_anchor",
+        "counterpart_heading_anchor",
+        "relative_dx_anchor",
+        "relative_dy_anchor",
+        "relative_distance_anchor",
+        "relative_dvx_anchor",
+        "relative_dvy_anchor",
+        "relative_speed_anchor",
+        "closing_rate_anchor",
+        "heading_difference_anchor",
+        "relative_distance_mean_wx",
+        "relative_distance_std_wx",
+        "relative_speed_mean_wx",
+        "closing_rate_mean_wx",
+        "closing_ttc_anchor",
+        "apet_online_proxy",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "geometry_path_category",
+        "geometry_path_relation",
+        "turn_pair_label",
+        "agent_type_pair",
+        "vehicle_type_list",
+        "av_included",
+        "priority_role",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "geometry_mapping_status",
+        "q_0p025",
+        "q_0p05",
+        "q_0p1",
+        "q_0p5",
+        "q_0p9",
+        "q_0p95",
+        "q_0p975",
+        "pred_human_ipv_point",
+        "lo_80",
+        "hi_80",
+        "width_80",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "lo_95",
+        "hi_95",
+        "width_95",
+        "support_gate_pass",
+        "ood_abstain",
+        "gate_category_pass",
+        "gate_distance_k25_mean",
+        "gate_distance_threshold",
+        "gate_distance_over_threshold",
+        "gate_unsupported_level",
+        "gate_unsupported_level__geometry_path_category",
+        "gate_unsupported_level__priority_role",
+        "gate_unsupported_level__agent_type_pair",
+        "gate_unsupported_level_columns",
+        "gate_unsupported_level_values",
+        "gate_joint_cell",
+        "gate_unsupported_joint_cell",
+        "gate_distance_feature_nan",
+        "gate_distance_nan_features",
+        "gate_distance_nan__elapsed_time_s",
+        "gate_distance_nan__history_row_count",
+        "gate_distance_nan__relative_distance_anchor",
+        "gate_distance_nan__relative_speed_anchor",
+        "gate_distance_nan__closing_rate_anchor",
+        "gate_distance_nan__heading_difference_anchor",
+        "gate_distance_nan__relative_distance_mean_wx",
+        "gate_distance_nan__relative_distance_std_wx",
+        "gate_distance_nan__relative_speed_mean_wx",
+        "gate_distance_nan__closing_rate_mean_wx",
+        "gate_distance_nan__closing_ttc_anchor",
+        "gate_distance_nan__apet_online_proxy",
+        "gate_distance_nan__counterpart_ipv_current",
+        "gate_distance_nan__counterpart_ipv_error_current",
+        "gate_distance_nan__counterpart_ipv_slope_pre_anchor",
+        "gate_distance_nan__other",
+        "abstention_reasons",
+        "deviation_usable",
+        "deviation_signed_exceedance_90",
+        "deviation_abs_exceedance_90",
+        "deviation_outside_90",
+        "deviation_upper_tail_90",
+        "deviation_lower_tail_90"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 267,
+      "nonnull": {
+        "elapsed_time_s": 267,
+        "history_row_count": 267,
+        "ego_vx_anchor": 267,
+        "ego_vy_anchor": 267,
+        "ego_heading_anchor": 267,
+        "counterpart_vx_anchor": 267,
+        "counterpart_vy_anchor": 267,
+        "counterpart_heading_anchor": 267,
+        "relative_dx_anchor": 267,
+        "relative_dy_anchor": 267,
+        "relative_distance_anchor": 267,
+        "relative_dvx_anchor": 267,
+        "relative_dvy_anchor": 267,
+        "relative_speed_anchor": 267,
+        "closing_rate_anchor": 267,
+        "heading_difference_anchor": 267,
+        "relative_distance_mean_wx": 267,
+        "relative_distance_std_wx": 267,
+        "relative_speed_mean_wx": 267,
+        "closing_rate_mean_wx": 267,
+        "closing_ttc_anchor": 216,
+        "apet_online_proxy": 33,
+        "geometry_path_category": 267,
+        "geometry_path_relation": 267,
+        "turn_pair_label": 267,
+        "agent_type_pair": 267,
+        "vehicle_type_list": 267,
+        "av_included": 267,
+        "priority_role": 267,
+        "case_key": 267,
+        "frame_index": 267,
+        "ego_key_agent": 267,
+        "counterpart_key_agent": 267,
+        "geometry_mapping_status": 267
+      },
+      "unique_counts": {
+        "elapsed_time_s": 244,
+        "history_row_count": 6,
+        "ego_vx_anchor": 259,
+        "ego_vy_anchor": 259,
+        "ego_heading_anchor": 266,
+        "counterpart_vx_anchor": 217,
+        "counterpart_vy_anchor": 215,
+        "counterpart_heading_anchor": 264,
+        "relative_dx_anchor": 267,
+        "relative_dy_anchor": 267,
+        "relative_distance_anchor": 267,
+        "relative_dvx_anchor": 267,
+        "relative_dvy_anchor": 267,
+        "relative_speed_anchor": 267,
+        "closing_rate_anchor": 267,
+        "heading_difference_anchor": 267,
+        "relative_distance_mean_wx": 267,
+        "relative_distance_std_wx": 267,
+        "relative_speed_mean_wx": 267,
+        "closing_rate_mean_wx": 267,
+        "closing_ttc_anchor": 104,
+        "apet_online_proxy": 33,
+        "geometry_path_category": 3,
+        "geometry_path_relation": 5,
+        "turn_pair_label": 6,
+        "agent_type_pair": 1,
+        "vehicle_type_list": 1,
+        "av_included": 1,
+        "priority_role": 3,
+        "case_key": 267,
+        "frame_index": 184,
+        "ego_key_agent": 19,
+        "counterpart_key_agent": 108,
+        "geometry_mapping_status": 3
+      },
+      "small_value_counts": {
+        "geometry_path_category": {
+          "F": 182,
+          "MP": 62,
+          "CP": 23
+        },
+        "geometry_path_relation": {
+          "F": 182,
+          "P-M": 46,
+          "P-P": 16,
+          "C-C": 14,
+          "O-C": 9
+        },
+        "turn_pair_label": {
+          "S-S": 236,
+          "S-R": 12,
+          "S-L": 9,
+          "L-S": 6,
+          "L-L": 3,
+          "R-R": 1
+        },
+        "agent_type_pair": {
+          "AV;HV": 267
+        },
+        "vehicle_type_list": {
+          "['AV', 'HV']": 267
+        },
+        "av_included": {
+          "AV": 267
+        },
+        "priority_role": {
+          "priority": 118,
+          "equal": 82,
+          "yield": 67
+        },
+        "ego_key_agent": {
+          "AV:T17": 15,
+          "AV:T14": 15,
+          "AV:T2": 15,
+          "AV:T4": 15,
+          "AV:T3": 15,
+          "AV:T1": 15,
+          "AV:T9": 15,
+          "AV:T7": 15,
+          "AV:T5": 15,
+          "AV:T6": 15,
+          "AV:T11": 15,
+          "AV:T18": 15,
+          "AV:T15": 15,
+          "AV:T16": 15,
+          "AV:T21": 14,
+          "AV:T20": 14,
+          "AV:T10": 14,
+          "AV:T12": 13,
+          "AV:T8": 2
+        },
+        "geometry_mapping_status": {
+          "heuristic_same_direction_following": 182,
+          "heuristic_mixed_path_no_map": 62,
+          "heuristic_opposing_or_crossing": 23
+        }
+      }
+    },
+    "onsite_ood_allvalid": {
+      "path": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/ood_gate_multi/onsite_m3_av_anchors_multi_allvalid_scored_ood_gate.parquet",
+      "exists": true,
+      "columns": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "session_id",
+        "task_id",
+        "scenario_id",
+        "competition_case_id",
+        "native_replay_case_id",
+        "frame_index",
+        "anchor_frame_index",
+        "anchor_timestamp",
+        "perspective",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "source_dataset",
+        "scenario_idx",
+        "track_id",
+        "key_agents",
+        "counterpart_name",
+        "counterpart_selection",
+        "target_window_start_frame_index",
+        "target_window_end_frame_index",
+        "target_window_start_timestamp",
+        "target_window_end_timestamp",
+        "elapsed_time_s",
+        "history_row_count",
+        "ego_vx_anchor",
+        "ego_vy_anchor",
+        "ego_heading_anchor",
+        "counterpart_vx_anchor",
+        "counterpart_vy_anchor",
+        "counterpart_heading_anchor",
+        "relative_dx_anchor",
+        "relative_dy_anchor",
+        "relative_distance_anchor",
+        "relative_dvx_anchor",
+        "relative_dvy_anchor",
+        "relative_speed_anchor",
+        "closing_rate_anchor",
+        "heading_difference_anchor",
+        "relative_distance_mean_wx",
+        "relative_distance_std_wx",
+        "relative_speed_mean_wx",
+        "closing_rate_mean_wx",
+        "closing_ttc_anchor",
+        "apet_online_proxy",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "geometry_path_category",
+        "geometry_path_relation",
+        "turn_pair_label",
+        "agent_type_pair",
+        "vehicle_type_list",
+        "av_included",
+        "priority_role",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "geometry_mapping_status",
+        "q_0p025",
+        "q_0p05",
+        "q_0p1",
+        "q_0p5",
+        "q_0p9",
+        "q_0p95",
+        "q_0p975",
+        "pred_human_ipv_point",
+        "lo_80",
+        "hi_80",
+        "width_80",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "lo_95",
+        "hi_95",
+        "width_95",
+        "support_gate_pass",
+        "ood_abstain",
+        "gate_category_pass",
+        "gate_distance_k25_mean",
+        "gate_distance_threshold",
+        "gate_distance_over_threshold",
+        "gate_unsupported_level",
+        "gate_unsupported_level__geometry_path_category",
+        "gate_unsupported_level__priority_role",
+        "gate_unsupported_level__agent_type_pair",
+        "gate_unsupported_level_columns",
+        "gate_unsupported_level_values",
+        "gate_joint_cell",
+        "gate_unsupported_joint_cell",
+        "gate_distance_feature_nan",
+        "gate_distance_nan_features",
+        "gate_distance_nan__elapsed_time_s",
+        "gate_distance_nan__history_row_count",
+        "gate_distance_nan__relative_distance_anchor",
+        "gate_distance_nan__relative_speed_anchor",
+        "gate_distance_nan__closing_rate_anchor",
+        "gate_distance_nan__heading_difference_anchor",
+        "gate_distance_nan__relative_distance_mean_wx",
+        "gate_distance_nan__relative_distance_std_wx",
+        "gate_distance_nan__relative_speed_mean_wx",
+        "gate_distance_nan__closing_rate_mean_wx",
+        "gate_distance_nan__closing_ttc_anchor",
+        "gate_distance_nan__apet_online_proxy",
+        "gate_distance_nan__counterpart_ipv_current",
+        "gate_distance_nan__counterpart_ipv_error_current",
+        "gate_distance_nan__counterpart_ipv_slope_pre_anchor",
+        "gate_distance_nan__other",
+        "abstention_reasons",
+        "deviation_usable_80",
+        "deviation_signed_exceedance_80",
+        "deviation_abs_exceedance_80",
+        "deviation_outside_80",
+        "deviation_upper_tail_80",
+        "deviation_lower_tail_80",
+        "deviation_usable_90",
+        "deviation_signed_exceedance_90",
+        "deviation_abs_exceedance_90",
+        "deviation_outside_90",
+        "deviation_upper_tail_90",
+        "deviation_lower_tail_90",
+        "deviation_usable_95",
+        "deviation_signed_exceedance_95",
+        "deviation_abs_exceedance_95",
+        "deviation_outside_95",
+        "deviation_upper_tail_95",
+        "deviation_lower_tail_95"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 67861,
+      "nonnull": {
+        "elapsed_time_s": 67861,
+        "history_row_count": 67861,
+        "ego_vx_anchor": 67861,
+        "ego_vy_anchor": 67861,
+        "ego_heading_anchor": 67861,
+        "counterpart_vx_anchor": 67861,
+        "counterpart_vy_anchor": 67861,
+        "counterpart_heading_anchor": 67861,
+        "relative_dx_anchor": 67861,
+        "relative_dy_anchor": 67861,
+        "relative_distance_anchor": 67861,
+        "relative_dvx_anchor": 67861,
+        "relative_dvy_anchor": 67861,
+        "relative_speed_anchor": 67861,
+        "closing_rate_anchor": 67861,
+        "heading_difference_anchor": 67861,
+        "relative_distance_mean_wx": 67861,
+        "relative_distance_std_wx": 67861,
+        "relative_speed_mean_wx": 67861,
+        "closing_rate_mean_wx": 67861,
+        "closing_ttc_anchor": 31740,
+        "apet_online_proxy": 5364,
+        "geometry_path_category": 67861,
+        "geometry_path_relation": 67861,
+        "turn_pair_label": 67861,
+        "agent_type_pair": 67861,
+        "vehicle_type_list": 67861,
+        "av_included": 67861,
+        "priority_role": 67861,
+        "case_key": 67861,
+        "frame_index": 67861,
+        "ego_key_agent": 67861,
+        "counterpart_key_agent": 67861,
+        "geometry_mapping_status": 67861
+      },
+      "unique_counts": {
+        "elapsed_time_s": 28833,
+        "history_row_count": 7,
+        "ego_vx_anchor": 62762,
+        "ego_vy_anchor": 62599,
+        "ego_heading_anchor": 59702,
+        "counterpart_vx_anchor": 51581,
+        "counterpart_vy_anchor": 46051,
+        "counterpart_heading_anchor": 47025,
+        "relative_dx_anchor": 65421,
+        "relative_dy_anchor": 65430,
+        "relative_distance_anchor": 65532,
+        "relative_dvx_anchor": 65460,
+        "relative_dvy_anchor": 65475,
+        "relative_speed_anchor": 65598,
+        "closing_rate_anchor": 65791,
+        "heading_difference_anchor": 62225,
+        "relative_distance_mean_wx": 67301,
+        "relative_distance_std_wx": 67211,
+        "relative_speed_mean_wx": 66557,
+        "closing_rate_mean_wx": 66581,
+        "closing_ttc_anchor": 16156,
+        "apet_online_proxy": 5364,
+        "geometry_path_category": 3,
+        "geometry_path_relation": 5,
+        "turn_pair_label": 9,
+        "agent_type_pair": 1,
+        "vehicle_type_list": 1,
+        "av_included": 1,
+        "priority_role": 3,
+        "case_key": 267,
+        "frame_index": 1628,
+        "ego_key_agent": 19,
+        "counterpart_key_agent": 108,
+        "geometry_mapping_status": 3
+      },
+      "small_value_counts": {}
+    },
+    "onsite_channel_target": {
+      "path": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target.csv",
+      "exists": true,
+      "columns": [
+        "cell_key",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "scenario_id",
+        "case_id",
+        "session_id",
+        "rq012_status",
+        "rq012_error_class",
+        "structural_available",
+        "native_task_group",
+        "native_scenario_label",
+        "native_geometry_label",
+        "priority_role_native",
+        "anchor_t_ms",
+        "anchor_t_ms_recomputed",
+        "anchor_row_index",
+        "anchor_row_index_recomputed",
+        "target_row_index",
+        "target_row_index_recomputed",
+        "counterpart_id",
+        "counterpart_name",
+        "counterpart_distance_m",
+        "current_history_window",
+        "target_history_window",
+        "min_observation",
+        "current_prefix_pair_rows",
+        "current_estimator_pair_rows",
+        "target_estimator_pair_rows",
+        "target_offset_rows",
+        "target_guard_rows_skipped",
+        "reference_basis",
+        "solver_preset",
+        "candidate_grid",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_concentration_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "counterpart_ipv_slope_status",
+        "counterpart_ipv_slope_finite_count",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "M4_ONLY_ego_self_anchor_ipv_concentration_current",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "target_ipv_concentration_future",
+        "target_counterpart_ipv_future_audit",
+        "target_counterpart_ipv_error_future_audit",
+        "target_window_start_t_ms",
+        "target_window_end_t_ms",
+        "native_ego_ipv_deviation_from_current",
+        "estimable",
+        "abstain_flag",
+        "abstain_reason",
+        "ipv_compute_error"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 285,
+      "nonnull": {
+        "case_id": 285,
+        "current_history_window": 278,
+        "target_history_window": 278,
+        "min_observation": 278,
+        "target_offset_rows": 278,
+        "target_guard_rows_skipped": 278,
+        "reference_basis": 278,
+        "solver_preset": 278,
+        "candidate_grid": 278
+      },
+      "unique_counts": {
+        "case_id": 15,
+        "current_history_window": 1,
+        "target_history_window": 1,
+        "min_observation": 1,
+        "target_offset_rows": 1,
+        "target_guard_rows_skipped": 1,
+        "reference_basis": 1,
+        "solver_preset": 1,
+        "candidate_grid": 1
+      },
+      "small_value_counts": {
+        "case_id": {
+          "A1": 19,
+          "A2": 19,
+          "A3": 19,
+          "A4": 19,
+          "A5": 19,
+          "A6": 19,
+          "A7": 19,
+          "B1": 19,
+          "B2": 19,
+          "B3": 19,
+          "B4": 19,
+          "C1": 19,
+          "C2": 19,
+          "C3": 19,
+          "C4": 19
+        },
+        "reference_basis": {
+          "native_straight_reference_from_window_initial_state": 278,
+          "<NA>": 7
+        },
+        "solver_preset": {
+          "accurate": 278,
+          "<NA>": 7
+        },
+        "candidate_grid": {
+          "legacy_seven_point_-3pi/8_to_3pi/8": 278,
+          "<NA>": 7
+        }
+      }
+    },
+    "onsite_channel_exact_hw10": {
+      "path": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target_exact_hw10.csv",
+      "exists": true,
+      "columns": [
+        "cell_key",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "scenario_id",
+        "case_id",
+        "session_id",
+        "rq012_status",
+        "rq012_error_class",
+        "structural_available",
+        "native_task_group",
+        "native_scenario_label",
+        "native_geometry_label",
+        "priority_role_native",
+        "anchor_t_ms",
+        "anchor_t_ms_recomputed",
+        "anchor_row_index",
+        "anchor_row_index_recomputed",
+        "target_row_index",
+        "target_row_index_recomputed",
+        "counterpart_id",
+        "counterpart_name",
+        "counterpart_distance_m",
+        "current_history_window",
+        "target_history_window",
+        "min_observation",
+        "current_prefix_pair_rows",
+        "current_estimator_pair_rows",
+        "target_estimator_pair_rows",
+        "target_offset_rows",
+        "target_guard_rows_skipped",
+        "reference_kind",
+        "lane_geometry_available",
+        "current_reference_kind",
+        "target_reference_kind",
+        "current_reference_basis",
+        "target_reference_basis",
+        "current_reference_causal",
+        "target_reference_post_anchor_label",
+        "current_ego_reference_len",
+        "current_counterpart_reference_len",
+        "target_ego_reference_len",
+        "target_counterpart_reference_len",
+        "reference_basis",
+        "solver_mode",
+        "candidate_grid",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_concentration_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "counterpart_ipv_slope_status",
+        "counterpart_ipv_slope_finite_count",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "M4_ONLY_ego_self_anchor_ipv_concentration_current",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "target_ipv_concentration_future",
+        "target_counterpart_ipv_future_audit",
+        "target_counterpart_ipv_error_future_audit",
+        "target_window_start_t_ms",
+        "target_window_end_t_ms",
+        "native_ego_ipv_deviation_from_current",
+        "estimable",
+        "abstain_flag",
+        "abstain_reason",
+        "ipv_compute_error"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 285,
+      "nonnull": {
+        "case_id": 285,
+        "current_history_window": 278,
+        "target_history_window": 278,
+        "min_observation": 278,
+        "target_offset_rows": 278,
+        "target_guard_rows_skipped": 278,
+        "reference_basis": 278,
+        "candidate_grid": 278
+      },
+      "unique_counts": {
+        "case_id": 15,
+        "current_history_window": 1,
+        "target_history_window": 1,
+        "min_observation": 1,
+        "target_offset_rows": 1,
+        "target_guard_rows_skipped": 1,
+        "reference_basis": 1,
+        "candidate_grid": 1
+      },
+      "small_value_counts": {
+        "case_id": {
+          "A1": 19,
+          "A2": 19,
+          "A3": 19,
+          "A4": 19,
+          "A5": 19,
+          "A6": 19,
+          "A7": 19,
+          "B1": 19,
+          "B2": 19,
+          "B3": 19,
+          "B4": 19,
+          "C1": 19,
+          "C2": 19,
+          "C3": 19,
+          "C4": 19
+        },
+        "reference_basis": {
+          "lane_if_available_else_real_trajectory_pseudo_reference": 278,
+          "<NA>": 7
+        },
+        "candidate_grid": {
+          "legacy_seven_point_-3pi/8_to_3pi/8": 278,
+          "<NA>": 7
+        }
+      }
+    },
+    "onsite_channel_refref": {
+      "path": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target_refref.csv",
+      "exists": true,
+      "columns": [
+        "cell_key",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "scenario_id",
+        "case_id",
+        "session_id",
+        "rq012_status",
+        "rq012_error_class",
+        "structural_available",
+        "native_task_group",
+        "native_scenario_label",
+        "native_geometry_label",
+        "priority_role_native",
+        "anchor_t_ms",
+        "anchor_t_ms_recomputed",
+        "anchor_row_index",
+        "anchor_row_index_recomputed",
+        "target_row_index",
+        "target_row_index_recomputed",
+        "counterpart_id",
+        "counterpart_name",
+        "counterpart_distance_m",
+        "current_history_window",
+        "target_history_window",
+        "min_observation",
+        "current_prefix_pair_rows",
+        "current_estimator_pair_rows",
+        "target_estimator_pair_rows",
+        "target_offset_rows",
+        "target_guard_rows_skipped",
+        "reference_kind",
+        "lane_geometry_available",
+        "current_reference_kind",
+        "target_reference_kind",
+        "current_reference_basis",
+        "target_reference_basis",
+        "current_reference_causal",
+        "target_reference_post_anchor_label",
+        "current_ego_reference_len",
+        "current_counterpart_reference_len",
+        "target_ego_reference_len",
+        "target_counterpart_reference_len",
+        "reference_basis",
+        "solver_preset",
+        "candidate_grid",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_concentration_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "counterpart_ipv_slope_status",
+        "counterpart_ipv_slope_finite_count",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "M4_ONLY_ego_self_anchor_ipv_concentration_current",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "target_ipv_concentration_future",
+        "target_counterpart_ipv_future_audit",
+        "target_counterpart_ipv_error_future_audit",
+        "target_window_start_t_ms",
+        "target_window_end_t_ms",
+        "native_ego_ipv_deviation_from_current",
+        "estimable",
+        "abstain_flag",
+        "abstain_reason",
+        "ipv_compute_error"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 285,
+      "nonnull": {
+        "case_id": 285,
+        "current_history_window": 278,
+        "target_history_window": 278,
+        "min_observation": 278,
+        "target_offset_rows": 278,
+        "target_guard_rows_skipped": 278,
+        "reference_basis": 278,
+        "solver_preset": 278,
+        "candidate_grid": 278
+      },
+      "unique_counts": {
+        "case_id": 15,
+        "current_history_window": 1,
+        "target_history_window": 1,
+        "min_observation": 1,
+        "target_offset_rows": 1,
+        "target_guard_rows_skipped": 1,
+        "reference_basis": 1,
+        "solver_preset": 1,
+        "candidate_grid": 1
+      },
+      "small_value_counts": {
+        "case_id": {
+          "A1": 19,
+          "A2": 19,
+          "A3": 19,
+          "A4": 19,
+          "A5": 19,
+          "A6": 19,
+          "A7": 19,
+          "B1": 19,
+          "B2": 19,
+          "B3": 19,
+          "B4": 19,
+          "C1": 19,
+          "C2": 19,
+          "C3": 19,
+          "C4": 19
+        },
+        "reference_basis": {
+          "lane_if_available_else_real_trajectory_pseudo_reference": 278,
+          "<NA>": 7
+        },
+        "solver_preset": {
+          "accurate": 278,
+          "<NA>": 7
+        },
+        "candidate_grid": {
+          "legacy_seven_point_-3pi/8_to_3pi/8": 278,
+          "<NA>": 7
+        }
+      }
+    },
+    "onsite_frame_strata": {
+      "path": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_frame_ipv_strata.csv",
+      "exists": true,
+      "columns": [
+        "stratum_type",
+        "stratum_label",
+        "condition_description",
+        "dense_frame_count",
+        "dense_frame_fraction",
+        "dense_unit_count",
+        "finite_ipv_frame_count",
+        "finite_ipv_fraction_of_dense",
+        "finite_ipv_unit_count",
+        "ego_zero_atom_count_abs_le_1e_12",
+        "ego_zero_atom_fraction_abs_le_1e_12",
+        "ego_zero_atom_delta_vs_prior_baseline",
+        "ego_nonzero_fraction_abs_gt_1e_12",
+        "counterpart_zero_atom_count_abs_le_1e_12",
+        "counterpart_zero_atom_fraction_abs_le_1e_12",
+        "mean_ego_concentration_1_minus_error",
+        "median_ego_concentration_1_minus_error",
+        "mean_counterpart_concentration_1_minus_error",
+        "mean_abs_ipv_ego_hw10",
+        "median_abs_ipv_ego_hw10",
+        "mean_abs_ipv_counterpart_hw10",
+        "median_distance_m_dense",
+        "mean_distance_m_finite_ipv",
+        "mean_closing_rate_mps_finite_ipv",
+        "counterpart_soft_decel_dense_fraction",
+        "counterpart_hard_decel_dense_fraction"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 25,
+      "nonnull": {},
+      "unique_counts": {},
+      "small_value_counts": {}
+    },
+    "onsite_anchor_primitives": {
+      "path": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/cleanroom/anchor_primitives.parquet",
+      "exists": true,
+      "columns": [
+        "case_key",
+        "scene_unique_id",
+        "unit_composite_key",
+        "team_id",
+        "algorithm_id",
+        "scenario_id",
+        "anchor_frame_index",
+        "anchor_timestamp",
+        "ego_key_agent",
+        "counterpart_key_agent",
+        "support_valid_allvalid_anchor",
+        "closing_rate_anchor",
+        "relative_distance_anchor",
+        "relative_speed_anchor",
+        "counterpart_accel_mps2",
+        "ego_accel_mps2",
+        "ttc_anchor_s",
+        "ttc_s",
+        "E02_active_at_anchor",
+        "E09_active_at_anchor",
+        "m3_lo_90",
+        "m3_hi_90",
+        "m3_exceedance_90",
+        "m3_signed_exceedance_90",
+        "m2_lo_90",
+        "m2_hi_90",
+        "m2_exceedance_90",
+        "m2_signed_exceedance_90"
+      ],
+      "wod_forbidden_guard": null,
+      "content_read": true,
+      "row_count": 67861,
+      "nonnull": {
+        "relative_distance_anchor": 67861,
+        "relative_speed_anchor": 67861,
+        "closing_rate_anchor": 67861,
+        "case_key": 67861,
+        "ego_key_agent": 67861,
+        "counterpart_key_agent": 67861
+      },
+      "unique_counts": {
+        "relative_distance_anchor": 65532,
+        "relative_speed_anchor": 65598,
+        "closing_rate_anchor": 65791,
+        "case_key": 267,
+        "ego_key_agent": 19,
+        "counterpart_key_agent": 108
+      },
+      "small_value_counts": {}
+    }
+  },
+  "wod_receipt": {
+    "column_whitelist": [
+      "segment_key",
+      "candidate_index",
+      "ego_ipv",
+      "ego_ipv_error"
+    ],
+    "columns_dropped": [
+      "accel_rms",
+      "context_name",
+      "counterpart_future_method",
+      "counterpart_history_coverage_fraction",
+      "curvature_mean_abs",
+      "driven_ade_m",
+      "driven_fde_m",
+      "ego_ipv_driven",
+      "ego_ipv_driven_error",
+      "gate_pass_counts",
+      "gate_rejection_counts",
+      "intent_name",
+      "ipv_minus_driven",
+      "jerk_rms",
+      "min_gap_m",
+      "min_ttc_s",
+      "path_length",
+      "rating",
+      "scene_id",
+      "selected_conflict_angle_deg",
+      "selected_conflict_candidate_index",
+      "selected_conflict_geometry",
+      "selected_conflict_lateral_m",
+      "selected_conflict_longitudinal_m",
+      "selected_conflict_source",
+      "selected_conflict_time_s",
+      "selected_current_distance_m",
+      "selected_min_predicted_gap_m",
+      "selected_min_ttc_s",
+      "selected_track_avg_score",
+      "selected_track_class",
+      "selected_track_displacement_m",
+      "selected_track_hits",
+      "selected_track_id",
+      "selected_track_span_s",
+      "selection_rule",
+      "track_avg_score",
+      "track_class",
+      "track_count",
+      "track_displacement_m",
+      "track_effective_speed_mps",
+      "track_effective_vx",
+      "track_effective_vy",
+      "track_first_obs_time_s",
+      "track_hits",
+      "track_jitter_ratio",
+      "track_last_obs_time_s",
+      "track_lateral_rms_from_best_line_m",
+      "track_max_observation_gap_s",
+      "track_max_step_m",
+      "track_mean_speed_mps",
+      "track_median_kalman_speed_mps",
+      "track_net_speed_mps",
+      "track_observed_points",
+      "track_path_length_m",
+      "track_span_s",
+      "track_stale_s_at_tstar",
+      "track_step_median_m",
+      "track_step_p95_m",
+      "tstar_context_step",
+      "usable_track_count"
+    ],
+    "forbidden_column_scan": {
+      "match_count": 0,
+      "matched_columns": [],
+      "pattern": "(?i)(rating|preference|human|score)",
+      "required_match_count": 0
+    },
+    "generated_at": "2026-07-30T23:51:06Z",
+    "host": "logini02",
+    "projected_path": "/share/home/u25310231/ZXC/RQ015A_wod_readonly_retrieval/staging/rq015a_wod_full479_projected_20260731T_W33_codex_retrieval_v1/rq010b_wod_full479_audited_candidate_ipv_projected.csv",
+    "projected_row_count": 906,
+    "projected_sha256": "d10c3a6f903dae19bf14de6b895c72f6c4ffc92688d97baa9a7c26684930b7d1",
+    "schema_version": "rq015a-wod-full479-sanitization-receipt-v1",
+    "source_forbidden_columns_observed": [
+      "rating",
+      "selected_track_avg_score",
+      "track_avg_score"
+    ],
+    "source_path": "/share/home/u25310231/ZXC/RQ010B_wod_e2e/results/rq010b_wod_e2e_multiframe_tracking_ipv_full479_scored_audited_20260630T063600/rq010b_wod_e2e_multiframe_tracking_ipv_full479_audited_candidate_ipv_rating.csv",
+    "source_row_count": 906,
+    "source_sha256": "290ef593460d613491cac9a9d8e3de67f10384091869db5401a2ea608039653c",
+    "tool_version": "rq015a-hpc-project-wod-full479-v2",
+    "transfer_performed": false
+  },
+  "feature_matrix": {
+    "WOD": [
+      {
+        "feature": "elapsed_time_s",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "history_row_count",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "ego_vx_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "ego_vy_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "ego_heading_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "counterpart_vx_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "counterpart_vy_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "counterpart_heading_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_dx_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_dy_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_dvx_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_dvy_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_speed_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_rate_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "heading_difference_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_std_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_speed_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_rate_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_ttc_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "apet_online_proxy",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "geometry_path_category",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "geometry_path_relation",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "turn_pair_label",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "agent_type_pair",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "vehicle_type_list",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "av_included",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "priority_role",
+        "kind": "categorical",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      }
+    ],
+    "OnSite": [
+      {
+        "feature": "elapsed_time_s",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "elapsed_time_s",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "timestamp_ms grouped by case_key; subtract first timestamp and divide by 1000",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "history_row_count",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "history_row_count",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "count rows in the Wx window ending at anchor with frame_index >= 4",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "ego_vx_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "ego_vx_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "ego_vx",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "ego_vy_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "ego_vy_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "ego_vy",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "ego_heading_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "ego_heading_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "ego_heading",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "counterpart_vx_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "counterpart_vx_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_vx",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "counterpart_vy_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "counterpart_vy_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_vy",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "counterpart_heading_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "counterpart_heading_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_heading",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_dx_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_dx_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_x - ego_x",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_dy_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_dy_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_y - ego_y",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "distance_m or sqrt(relative_dx_anchor^2 + relative_dy_anchor^2)",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_dvx_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_dvx_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_vx - ego_vx",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_dvy_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_dvy_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "counterpart_vy - ego_vy",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_speed_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_speed_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "relative_speed_mps or hypot(relative_dvx_anchor, relative_dvy_anchor)",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_rate_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_rate_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "closing_rate_mps or negative distance derivative from relative pose and velocity",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "heading_difference_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "heading_difference_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "wrapped counterpart_heading - ego_heading",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean relative distance over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_std_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_std_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "standard deviation of relative distance over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_speed_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_speed_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean relative speed over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_rate_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_rate_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean closing rate over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_ttc_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_ttc_anchor",
+          "nonnull": 31740,
+          "total": 67861
+        },
+        "algorithm": "relative_distance_anchor / closing_rate_anchor when closing; otherwise capped/missing per RQ009 helper",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "apet_online_proxy",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "apet_online_proxy",
+          "nonnull": 5364,
+          "total": 67861
+        },
+        "algorithm": "constant-velocity arrival-time difference from anchor pose and velocity",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "geometry_path_category",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "geometry_path_category",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "deterministic heading-difference heuristic documented in onsite_to_m3_categorical_mapping.md",
+        "missing_reason": null,
+        "note": "AVAILABLE as OnSite deterministic heuristic mapping, not the InterHub audited label source."
+      },
+      {
+        "feature": "geometry_path_relation",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "geometry_path_relation",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "deterministic heading/lateral-longitudinal heuristic documented in onsite_to_m3_categorical_mapping.md",
+        "missing_reason": null,
+        "note": "AVAILABLE as OnSite deterministic heuristic mapping, not the InterHub audited label source."
+      },
+      {
+        "feature": "turn_pair_label",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "turn_pair_label",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "latest Wx heading delta per agent with 12 degree threshold",
+        "missing_reason": null,
+        "note": "AVAILABLE as OnSite deterministic heuristic mapping, not the InterHub audited label source."
+      },
+      {
+        "feature": "agent_type_pair",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "agent_type_pair",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "AV;HV from AV-perspective extractor",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "vehicle_type_list",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "vehicle_type_list",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "['AV', 'HV'] from AV-perspective extractor",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "av_included",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "av_included",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "AV constant from AV-perspective extractor",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "priority_role",
+        "kind": "categorical",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "priority_role",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "kinematic lead/yield/equal heuristic documented in onsite_to_m3_categorical_mapping.md",
+        "missing_reason": null,
+        "note": "AVAILABLE as OnSite deterministic heuristic mapping, not the InterHub audited label source."
+      }
+    ]
+  },
+  "gate_distance_numeric_12": {
+    "WOD": [
+      {
+        "feature": "elapsed_time_s",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "history_row_count",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_speed_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_rate_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "heading_difference_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_distance_std_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "relative_speed_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_rate_mean_wx",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "closing_ttc_anchor",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      },
+      {
+        "feature": "apet_online_proxy",
+        "kind": "numeric",
+        "status": "MISSING",
+        "evidence": null,
+        "algorithm": null,
+        "missing_reason": "Local WOD package has only segment_key, candidate_index, ego_ipv, ego_ipv_error plus K2 bookkeeping; no paired trajectory, timing window, map/reference-line, or RQ009 context columns."
+      }
+    ],
+    "OnSite": [
+      {
+        "feature": "elapsed_time_s",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "elapsed_time_s",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "timestamp_ms grouped by case_key; subtract first timestamp and divide by 1000",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "history_row_count",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "history_row_count",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "count rows in the Wx window ending at anchor with frame_index >= 4",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "distance_m or sqrt(relative_dx_anchor^2 + relative_dy_anchor^2)",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_speed_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_speed_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "relative_speed_mps or hypot(relative_dvx_anchor, relative_dvy_anchor)",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_rate_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_rate_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "closing_rate_mps or negative distance derivative from relative pose and velocity",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "heading_difference_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "heading_difference_anchor",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "wrapped counterpart_heading - ego_heading",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean relative distance over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_distance_std_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_distance_std_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "standard deviation of relative distance over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "relative_speed_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "relative_speed_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean relative speed over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_rate_mean_wx",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_rate_mean_wx",
+          "nonnull": 67861,
+          "total": 67861
+        },
+        "algorithm": "mean closing rate over Wx rows",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "closing_ttc_anchor",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "closing_ttc_anchor",
+          "nonnull": 31740,
+          "total": 67861
+        },
+        "algorithm": "relative_distance_anchor / closing_rate_anchor when closing; otherwise capped/missing per RQ009 helper",
+        "missing_reason": null,
+        "note": null
+      },
+      {
+        "feature": "apet_online_proxy",
+        "kind": "numeric",
+        "status": "AVAILABLE",
+        "evidence": {
+          "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "column": "apet_online_proxy",
+          "nonnull": 5364,
+          "total": 67861
+        },
+        "algorithm": "constant-velocity arrival-time difference from anchor pose and velocity",
+        "missing_reason": null,
+        "note": null
+      }
+    ]
+  },
+  "scope": {
+    "wod": {
+      "projection_rows": 906,
+      "projection_columns": [
+        "segment_key",
+        "candidate_index",
+        "ego_ipv",
+        "ego_ipv_error"
+      ],
+      "k2_rows": null,
+      "k2_columns": [
+        "schema_version",
+        "artifact_id",
+        "canonical_key",
+        "interhub_canonical_key",
+        "product_row_key",
+        "measurement_role",
+        "case_id",
+        "rq007_split",
+        "frame_id",
+        "context_cell_key",
+        "candidate_grid_id",
+        "K",
+        "candidate_ipv_0",
+        "candidate_ipv_1",
+        "candidate_ipv_2",
+        "candidate_ipv_3",
+        "candidate_ipv_4",
+        "candidate_ipv_5",
+        "candidate_ipv_6",
+        "mse_0",
+        "mse_1",
+        "mse_2",
+        "mse_3",
+        "mse_4",
+        "mse_5",
+        "mse_6",
+        "log_score_0",
+        "log_score_1",
+        "log_score_2",
+        "log_score_3",
+        "log_score_4",
+        "log_score_5",
+        "log_score_6",
+        "w_log_0",
+        "w_log_1",
+        "w_log_2",
+        "w_log_3",
+        "w_log_4",
+        "w_log_5",
+        "w_log_6",
+        "max_w_log",
+        "mse_spread",
+        "k_eff_log",
+        "status",
+        "reason_code",
+        "ipv_log",
+        "gate_applicable",
+        "source_attempt_status",
+        "source_reason_code",
+        "ipv_error",
+        "k_eff",
+        "q_eff",
+        "solver_status",
+        "failure_type",
+        "out_of_scope_reason",
+        "shard_id",
+        "input_sha256",
+        "code_sha",
+        "created_utc"
+      ],
+      "case_like_columns_present": [
+        "segment_key",
+        "case_id"
+      ],
+      "candidate_index_nonnull": 906,
+      "segment_key_nonnull": 906
+    },
+    "onsite": {
+      "dense": {
+        "physical_rows": 70317,
+        "case_key_nunique": 267,
+        "frame_index_nunique": 1650,
+        "timestamp_ms_delta_counts_top10": {
+          "100": 36258,
+          "99": 8147,
+          "101": 8113,
+          "102": 1888,
+          "98": 1474,
+          "110": 1277,
+          "90": 1084,
+          "109": 897,
+          "103": 695,
+          "108": 684
+        }
+      },
+      "single_coverage": {
+        "path": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/onsite_ipv/coverage.json",
+        "units_requested": 285,
+        "units_with_anchors": 267,
+        "total_av_anchors": 267,
+        "max_anchors_per_unit": 1,
+        "anchor_extraction_mode": "bounded_closest_valid_anchors_per_unit",
+        "ipv_frame_rows": 70317,
+        "ipv_cases_ok": 267,
+        "ipv_cases_failed": 18
+      },
+      "allvalid_coverage": {
+        "path": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/hpc_onsite_ipv/process_allvalid_processpool_amd/coverage.json",
+        "units_requested": 285,
+        "units_with_anchors": 267,
+        "total_av_anchors": 67861,
+        "valid_anchor_candidate_units": 281,
+        "valid_anchor_candidate_total": 68420,
+        "valid_anchor_candidates_after_cap": 68420,
+        "anchor_cap_applied": false,
+        "anchor_cap_per_unit": null,
+        "anchors_excluded_by_cap": 0,
+        "ipv_frame_rows": 70317
+      },
+      "parquet_row_counts": {
+        "single_anchor_rows": 267,
+        "allvalid_anchor_rows": 67861,
+        "anchors_excluded_by_one_per_unit_cap_reconstructed": 67594
+      },
+      "range_options": {
+        "A_all_aligned_frames": {
+          "unit": "physical frame",
+          "rows": 70317,
+          "source_file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+          "filter": "all rows"
+        },
+        "B_all_rq009_timing_valid_anchor_frames_current_materialized": {
+          "unit": "anchor frame",
+          "rows": 67861,
+          "source_file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+          "filter": "all-valid materialized anchor table rows"
+        },
+        "B_all_rq009_timing_valid_candidates_before_failed_units": {
+          "unit": "candidate anchor",
+          "rows": 68420,
+          "source_file": "reports/studies/RQ012_onsite_event_annotation_readiness/RQ012B_2_harm_association_20260627T095847+0800_8454ad93/02_process/03_event_deviation/hpc_onsite_ipv/process_allvalid_processpool_amd/coverage.json",
+          "filter": "coverage.json valid_anchor_candidate_total"
+        },
+        "C_one_anchor_per_unit": {
+          "unit": "anchor frame",
+          "rows": 267,
+          "source_file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_m3_av_anchors.parquet",
+          "filter": "default bounded closest valid anchor table rows"
+        }
+      }
+    }
+  },
+  "onsite_inputs": {
+    "dense_raw_evidence": {
+      "case_key": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "case_key",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "frame_index": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "frame_index",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "timestamp_ms": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "timestamp_ms",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "ego_key_agent": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "ego_key_agent",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "counterpart_key_agent": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "counterpart_key_agent",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "ego_x": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "ego_x",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "ego_y": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "ego_y",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "ego_vx": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "ego_vx",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "ego_vy": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "ego_vy",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "ego_heading": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "ego_heading",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "counterpart_x": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "counterpart_x",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "counterpart_y": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "counterpart_y",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "counterpart_vx": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "counterpart_vx",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "counterpart_vy": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "counterpart_vy",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "counterpart_heading": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "counterpart_heading",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "distance_m": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "distance_m",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "closing_rate_mps": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "closing_rate_mps",
+        "nonnull": 70317,
+        "total": 70317
+      },
+      "relative_speed_mps": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors/onsite_ipv_timeseries.parquet",
+        "column": "relative_speed_mps",
+        "nonnull": 70317,
+        "total": 70317
+      }
+    },
+    "true_map_or_reference_columns": [],
+    "anchor_contract_columns": {
+      "geometry_mapping_status": {
+        "file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+        "column": "geometry_mapping_status",
+        "nonnull": 67861,
+        "total": 67861
+      }
+    }
+  },
+  "onsite_channel_values": {
+    "onsite_channel_target": {
+      "path": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target.csv",
+      "row_count": 285,
+      "columns": [
+        "cell_key",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "scenario_id",
+        "case_id",
+        "session_id",
+        "rq012_status",
+        "rq012_error_class",
+        "structural_available",
+        "native_task_group",
+        "native_scenario_label",
+        "native_geometry_label",
+        "priority_role_native",
+        "anchor_t_ms",
+        "anchor_t_ms_recomputed",
+        "anchor_row_index",
+        "anchor_row_index_recomputed",
+        "target_row_index",
+        "target_row_index_recomputed",
+        "counterpart_id",
+        "counterpart_name",
+        "counterpart_distance_m",
+        "current_history_window",
+        "target_history_window",
+        "min_observation",
+        "current_prefix_pair_rows",
+        "current_estimator_pair_rows",
+        "target_estimator_pair_rows",
+        "target_offset_rows",
+        "target_guard_rows_skipped",
+        "reference_basis",
+        "solver_preset",
+        "candidate_grid",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_concentration_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "counterpart_ipv_slope_status",
+        "counterpart_ipv_slope_finite_count",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "M4_ONLY_ego_self_anchor_ipv_concentration_current",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "target_ipv_concentration_future",
+        "target_counterpart_ipv_future_audit",
+        "target_counterpart_ipv_error_future_audit",
+        "target_window_start_t_ms",
+        "target_window_end_t_ms",
+        "native_ego_ipv_deviation_from_current",
+        "estimable",
+        "abstain_flag",
+        "abstain_reason",
+        "ipv_compute_error"
+      ],
+      "current_history_window": {
+        "nonnull": 278,
+        "unique_values": [
+          "4.0"
+        ]
+      },
+      "target_history_window": {
+        "nonnull": 278,
+        "unique_values": [
+          "4.0"
+        ]
+      },
+      "min_observation": {
+        "nonnull": 278,
+        "unique_values": [
+          "4.0"
+        ]
+      },
+      "target_offset_rows": {
+        "nonnull": 278,
+        "unique_values": [
+          "6.0"
+        ]
+      },
+      "target_guard_rows_skipped": {
+        "nonnull": 278,
+        "unique_values": [
+          "1.0"
+        ]
+      },
+      "reference_basis": {
+        "nonnull": 278,
+        "unique_values": [
+          "native_straight_reference_from_window_initial_state"
+        ]
+      },
+      "solver_preset": {
+        "nonnull": 278,
+        "unique_values": [
+          "accurate"
+        ]
+      },
+      "candidate_grid": {
+        "nonnull": 278,
+        "unique_values": [
+          "legacy_seven_point_-3pi/8_to_3pi/8"
+        ]
+      }
+    },
+    "onsite_channel_exact_hw10": {
+      "path": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target_exact_hw10.csv",
+      "row_count": 285,
+      "columns": [
+        "cell_key",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "scenario_id",
+        "case_id",
+        "session_id",
+        "rq012_status",
+        "rq012_error_class",
+        "structural_available",
+        "native_task_group",
+        "native_scenario_label",
+        "native_geometry_label",
+        "priority_role_native",
+        "anchor_t_ms",
+        "anchor_t_ms_recomputed",
+        "anchor_row_index",
+        "anchor_row_index_recomputed",
+        "target_row_index",
+        "target_row_index_recomputed",
+        "counterpart_id",
+        "counterpart_name",
+        "counterpart_distance_m",
+        "current_history_window",
+        "target_history_window",
+        "min_observation",
+        "current_prefix_pair_rows",
+        "current_estimator_pair_rows",
+        "target_estimator_pair_rows",
+        "target_offset_rows",
+        "target_guard_rows_skipped",
+        "reference_kind",
+        "lane_geometry_available",
+        "current_reference_kind",
+        "target_reference_kind",
+        "current_reference_basis",
+        "target_reference_basis",
+        "current_reference_causal",
+        "target_reference_post_anchor_label",
+        "current_ego_reference_len",
+        "current_counterpart_reference_len",
+        "target_ego_reference_len",
+        "target_counterpart_reference_len",
+        "reference_basis",
+        "solver_mode",
+        "candidate_grid",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_concentration_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "counterpart_ipv_slope_status",
+        "counterpart_ipv_slope_finite_count",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "M4_ONLY_ego_self_anchor_ipv_concentration_current",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "target_ipv_concentration_future",
+        "target_counterpart_ipv_future_audit",
+        "target_counterpart_ipv_error_future_audit",
+        "target_window_start_t_ms",
+        "target_window_end_t_ms",
+        "native_ego_ipv_deviation_from_current",
+        "estimable",
+        "abstain_flag",
+        "abstain_reason",
+        "ipv_compute_error"
+      ],
+      "current_history_window": {
+        "nonnull": 278,
+        "unique_values": [
+          "10.0"
+        ]
+      },
+      "target_history_window": {
+        "nonnull": 278,
+        "unique_values": [
+          "10.0"
+        ]
+      },
+      "min_observation": {
+        "nonnull": 278,
+        "unique_values": [
+          "4.0"
+        ]
+      },
+      "target_offset_rows": {
+        "nonnull": 278,
+        "unique_values": [
+          "6.0"
+        ]
+      },
+      "target_guard_rows_skipped": {
+        "nonnull": 278,
+        "unique_values": [
+          "1.0"
+        ]
+      },
+      "reference_basis": {
+        "nonnull": 278,
+        "unique_values": [
+          "lane_if_available_else_real_trajectory_pseudo_reference"
+        ]
+      },
+      "candidate_grid": {
+        "nonnull": 278,
+        "unique_values": [
+          "legacy_seven_point_-3pi/8_to_3pi/8"
+        ]
+      }
+    },
+    "onsite_channel_refref": {
+      "path": "data/derived/onsite_competition/RQ011B_matched_scenario/RQ011B_1_matched_scenario_20260625T202454_8331bd49/onsite_ipv_channel_target_refref.csv",
+      "row_count": 285,
+      "columns": [
+        "cell_key",
+        "unit_composite_key",
+        "area_id",
+        "team_id",
+        "algorithm_id",
+        "scenario_id",
+        "case_id",
+        "session_id",
+        "rq012_status",
+        "rq012_error_class",
+        "structural_available",
+        "native_task_group",
+        "native_scenario_label",
+        "native_geometry_label",
+        "priority_role_native",
+        "anchor_t_ms",
+        "anchor_t_ms_recomputed",
+        "anchor_row_index",
+        "anchor_row_index_recomputed",
+        "target_row_index",
+        "target_row_index_recomputed",
+        "counterpart_id",
+        "counterpart_name",
+        "counterpart_distance_m",
+        "current_history_window",
+        "target_history_window",
+        "min_observation",
+        "current_prefix_pair_rows",
+        "current_estimator_pair_rows",
+        "target_estimator_pair_rows",
+        "target_offset_rows",
+        "target_guard_rows_skipped",
+        "reference_kind",
+        "lane_geometry_available",
+        "current_reference_kind",
+        "target_reference_kind",
+        "current_reference_basis",
+        "target_reference_basis",
+        "current_reference_causal",
+        "target_reference_post_anchor_label",
+        "current_ego_reference_len",
+        "current_counterpart_reference_len",
+        "target_ego_reference_len",
+        "target_counterpart_reference_len",
+        "reference_basis",
+        "solver_preset",
+        "candidate_grid",
+        "counterpart_ipv_current",
+        "counterpart_ipv_error_current",
+        "counterpart_ipv_concentration_current",
+        "counterpart_ipv_slope_pre_anchor",
+        "counterpart_ipv_slope_status",
+        "counterpart_ipv_slope_finite_count",
+        "counterpart_ipv_history_count",
+        "counterpart_ipv_history_fraction",
+        "M4_ONLY_ego_self_anchor_ipv_current",
+        "M4_ONLY_ego_self_anchor_ipv_error_current",
+        "M4_ONLY_ego_self_anchor_ipv_concentration_current",
+        "target_ipv_future",
+        "target_ipv_error_future",
+        "target_ipv_concentration_future",
+        "target_counterpart_ipv_future_audit",
+        "target_counterpart_ipv_error_future_audit",
+        "target_window_start_t_ms",
+        "target_window_end_t_ms",
+        "native_ego_ipv_deviation_from_current",
+        "estimable",
+        "abstain_flag",
+        "abstain_reason",
+        "ipv_compute_error"
+      ],
+      "current_history_window": {
+        "nonnull": 278,
+        "unique_values": [
+          "4.0"
+        ]
+      },
+      "target_history_window": {
+        "nonnull": 278,
+        "unique_values": [
+          "4.0"
+        ]
+      },
+      "min_observation": {
+        "nonnull": 278,
+        "unique_values": [
+          "4.0"
+        ]
+      },
+      "target_offset_rows": {
+        "nonnull": 278,
+        "unique_values": [
+          "6.0"
+        ]
+      },
+      "target_guard_rows_skipped": {
+        "nonnull": 278,
+        "unique_values": [
+          "1.0"
+        ]
+      },
+      "reference_basis": {
+        "nonnull": 278,
+        "unique_values": [
+          "lane_if_available_else_real_trajectory_pseudo_reference"
+        ]
+      },
+      "solver_preset": {
+        "nonnull": 278,
+        "unique_values": [
+          "accurate"
+        ]
+      },
+      "candidate_grid": {
+        "nonnull": 278,
+        "unique_values": [
+          "legacy_seven_point_-3pi/8_to_3pi/8"
+        ]
+      }
+    }
+  },
+  "gate_facts": {
+    "wod_k2": {
+      "path": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=wod_rq010b_full479_audited",
+      "row_count": 906,
+      "nonnull": {
+        "canonical_key": 906,
+        "product_row_key": 906,
+        "measurement_role": 906,
+        "case_id": 0,
+        "frame_id": 0,
+        "gate_applicable": 906,
+        "source_attempt_status": 906,
+        "out_of_scope_reason": 906,
+        "source_reason_code": 0,
+        "ipv_error": 906,
+        "q_eff": 906,
+        "candidate_grid_id": 906,
+        "K": 906,
+        "context_cell_key": 0
+      },
+      "measurement_role_value_counts": {
+        "candidate": 906
+      },
+      "case_id_value_counts": {
+        "<NA>": 906
+      },
+      "frame_id_value_counts": {
+        "<NA>": 906
+      },
+      "gate_applicable_value_counts": {
+        "False": 906
+      },
+      "source_attempt_status_value_counts": {
+        "ATTEMPTED": 906
+      },
+      "out_of_scope_reason_value_counts": {
+        "NO_MATERIALIZER_IN_SCOPE": 906
+      },
+      "source_reason_code_value_counts": {
+        "<NA>": 906
+      },
+      "candidate_grid_id_value_counts": {
+        "legacy7_pi_over_8": 906
+      },
+      "K_value_counts": {
+        "7": 906
+      },
+      "context_cell_key_value_counts": {
+        "<NA>": 906
+      }
+    },
+    "onsite_k2": {
+      "path": "data/derived/rq015k_logdomain_gate/l1_v1/artifact_id=onsite_dense_timeseries",
+      "row_count": 281268,
+      "nonnull": {
+        "canonical_key": 281268,
+        "product_row_key": 281268,
+        "measurement_role": 281268,
+        "case_id": 0,
+        "frame_id": 281268,
+        "gate_applicable": 281268,
+        "source_attempt_status": 281268,
+        "out_of_scope_reason": 281268,
+        "source_reason_code": 278294,
+        "ipv_error": 3160,
+        "q_eff": 2974,
+        "candidate_grid_id": 281268,
+        "K": 281268,
+        "context_cell_key": 0
+      },
+      "measurement_role_value_counts": {
+        "ego_hw4": 70317,
+        "ego_hw10": 70317,
+        "counterpart_hw4": 70317,
+        "counterpart_hw10": 70317
+      },
+      "case_id_value_counts": {
+        "<NA>": 281268
+      },
+      "gate_applicable_value_counts": {
+        "False": 281268
+      },
+      "source_attempt_status_value_counts": {
+        "UNKNOWN": 274022,
+        "NOT_ATTEMPTED": 4272,
+        "ATTEMPTED": 2974
+      },
+      "out_of_scope_reason_value_counts": {
+        "SOURCE_UNKNOWN": 274022,
+        "SOURCE_NOT_ATTEMPTED": 4272,
+        "NO_MATERIALIZER_IN_SCOPE": 2974
+      },
+      "source_reason_code_value_counts": {
+        "EMPTY_CELL_UNEXPLAINED": 274022,
+        "D0_WARMUP": 4272,
+        "<NA>": 2974
+      },
+      "candidate_grid_id_value_counts": {
+        "legacy7_pi_over_8": 281268
+      },
+      "K_value_counts": {
+        "7": 281268
+      },
+      "context_cell_key_value_counts": {
+        "<NA>": 281268
+      }
+    }
+  },
+  "lodo": {
+    "path": "reports/studies/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/02_process/05_evaluation/lodo_results.csv",
+    "heldout_sources": [
+      "av2_motion_forecasting",
+      "lyft_train_full",
+      "nuplan_train",
+      "waymo_train"
+    ],
+    "m2_90_coverage_min": 0.748432719518602,
+    "m2_90_coverage_max": 0.9921001954640498,
+    "m2_90_rows": [
+      {
+        "heldout_source": "av2_motion_forecasting",
+        "coverage": 0.9659038732973192,
+        "n": 176413,
+        "total_n": 295826,
+        "abstained_n": 119413,
+        "evaluation_rows": 295826,
+        "fit_sources": "lyft_train_full;nuplan_train;waymo_train"
+      },
+      {
+        "heldout_source": "lyft_train_full",
+        "coverage": 0.748432719518602,
+        "n": 906028,
+        "total_n": 1031454,
+        "abstained_n": 125426,
+        "evaluation_rows": 1031454,
+        "fit_sources": "av2_motion_forecasting;nuplan_train;waymo_train"
+      },
+      {
+        "heldout_source": "nuplan_train",
+        "coverage": 0.9921001954640498,
+        "n": 1452441,
+        "total_n": 1756396,
+        "abstained_n": 303955,
+        "evaluation_rows": 1756396,
+        "fit_sources": "av2_motion_forecasting;lyft_train_full;waymo_train"
+      },
+      {
+        "heldout_source": "waymo_train",
+        "coverage": 0.790245450786637,
+        "n": 3112681,
+        "total_n": 3313590,
+        "abstained_n": 200909,
+        "evaluation_rows": 3313590,
+        "fit_sources": "av2_motion_forecasting;lyft_train_full;nuplan_train"
+      }
+    ],
+    "contains_wod_artifact": false,
+    "contains_waymo_train": true,
+    "contains_onsite": false
+  },
+  "negative_control": {
+    "rule": "geometry_path_category nonnull must equal all-valid anchor row count",
+    "source_file": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+    "column": "geometry_path_category",
+    "actual_nonnull": 67861,
+    "expected_total": 67861,
+    "normal_result": "PASS",
+    "disturbed_expected_total": 67862,
+    "disturbed_result": "FAIL",
+    "disturbed_output": "FAIL: geometry_path_category nonnull 67861 != disturbed expected 67862"
+  }
+}
