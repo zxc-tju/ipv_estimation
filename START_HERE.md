@@ -1404,7 +1404,7 @@ question index in `STUDIES.md`.
 - `.git` 已做过一次 `git gc`：5.0 GB → 19 MB，`git fsck` 无错，六条分支与工作区
   逐一核对无损。**未做任何历史改写。** 44 个 `tmp_obj_*` 垃圾文件已手动清除。
 - `.codex-fleet/` 已清理大块中间数据：**6.5 GB → 384 MB**。删除项、引用检查依据与再生方式
-  见 `archived/report_process/CLEANUP_codex_fleet_20260804/`。
+  见 `reports/knowledge/_governance/codex_fleet_cleanup_20260804/`。
   **承重产物全部保留**，其中 RQ017 依赖的
   `.codex-fleet/rq016c-human-only-envelope/work/H2/envelope_model/rq016c_h2_envelope.pkl`
   与 `H2/onsite_scoring_dryrun.parquet` 清理后已功能性复验

@@ -1,0 +1,12 @@
+# .codex-fleet 大块中间数据清理清单
+# 生成时间: 2026-08-04T15:28:10Z
+# 基线提交: 102b094
+# 说明: 以下路径全部为 .gitignore 覆盖的中间产物，删除前已逐个做引用检查。
+
+## 删除项（路径 | 大小 | 文件数 | 再生方式）
+.codex-fleet/rq015b-repair/work/sample_candidates.sqlite | 2.6G | 1 files
+.codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/inputs | 2.4G | 460 files
+.codex-fleet/rq015b-repair/work/frame_index.csv | 634M | 1 files
+.codex-fleet/rq015b-repair/work/anchor_meta.csv | 356M | 1 files
+.codex-fleet/rq016c-human-only-envelope/work/H1/envelope_model | 164M | 8 files
+.codex-fleet/rq015b-repair/work/pycache |  27M | 1269 files

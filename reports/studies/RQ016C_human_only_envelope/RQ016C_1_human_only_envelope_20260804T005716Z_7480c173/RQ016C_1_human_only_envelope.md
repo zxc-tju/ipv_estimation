@@ -95,7 +95,7 @@ OnSite 只做 context 落格，不打分，因为 OnSite 还没有机制一判�
 > （见同目录 `RQ016C_2_human_only_envelope_fixed.md`）。当前可用的持久化模型是
 > `.codex-fleet/rq016c-human-only-envelope/work/H2/envelope_model/rq016c_h2_envelope.pkl`。
 > H1 的脚本、`key_numbers.json` 与 selftest parquet 均已保留，错误历史的证据链完整。
-> 清理清单见 `archived/report_process/CLEANUP_codex_fleet_20260804/`。
+> 清理清单见 `reports/knowledge/_governance/codex_fleet_cleanup_20260804/`。
 
 ## 自查
 
