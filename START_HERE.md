@@ -1,6 +1,6 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-08-04.
+Last reviewed: 2026-08-05.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -8,6 +8,42 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
+- **RQ018 已完成并经监督方独立复算（2026-08-04T22:44:27Z）。这条替代了 A1 那条
+  「等待 commander 复核」；A1 原始交付完整保存在执行记录目录里。
+  监督方复算后改写了 A1 的结论——引用本轮务必以本条为准。**
+  **背景一句话**：在线验证串联两道弃权机制——机制一判断某一帧的 IPV（Interaction
+  Preference Value，表示交互倾向的标量）数值是否携带七个候选间的判别信息，机制二用
+  人类参照分布判断当前情境是否有足够人类样本可比。RQ015 冻结机制一、RQ016C 建纯人-人
+  参照、RQ017 在自动驾驶车上算出机制一判据后，**本轮问：IPV 超出人类范围时行为有没有劣化。**
+  分析集为机制一 `status == OK` 且机制二 `mechanism2_gate_ok == True` 的
+  **14,099/67,861 = 20.7763%**（来源 `data/derived/rq017_onsite_gate/l1_v1/` 的
+  `status,ipv_log` 与 `.codex-fleet/rq016c-human-only-envelope/work/H2/onsite_scoring_dryrun.parquet`
+  的 `mechanism2_gate_ok,lo_90,hi_90,width_90`，连接列 `product_row_key`），
+  覆盖 231 个 case、19 个 team；上侧/下侧/区间内 = 2,700/1,998/9,401。
+  **结论：未观察到「异常 IPV 对应更高风险」，且危险端方向相反。**
+  IPV 低于该情境人类参照下界（**比人类更激进**）的帧，后续最小 TTC 中位更短
+  （7.51 s 对区间内 8.81 s），**但危险阈值以下的帧占比一致更低**——
+  TTC<2 s 为 5.28%(96/1,819) 对 9.85%(861/8,739)，TTC<3 s 为 12.53%(228/1,819) 对
+  16.90%(1,477/8,739)；case 层 bootstrap 1,000 次，TTC<2 s 占比差 −0.0457、
+  95% CI [−0.0696, −0.0227] 不含 0。**中位数下降来自安全端长 TTC 的减少，不是危险端的增加**
+  （25% 分位两组几乎相同，4.105 对 4.089）。上侧越界（更合作让行）无任何劣化对应
+  （系数 −0.0146、p_case=0.8564）。unit 级四个非安全子分数无一致模式；
+  事故类结果功效不足（全 267 unit 中 `official_safety < 100` 21 个、碰撞/接管扣分非零 18 个）。
+  **IPV 符号语义（极易读反）**：`agent.py:1193` 为
+  `util = cos(ipv)×自身代价 + sin(ipv)×交互代价`，**IPV 越负 = 越竞争激进**，
+  故下侧越界是「比人类更激进」**不是「更消极」**；且**下侧越界 ≠ `IPV<0`**
+  （区间内另有 3,611/9,401 = 38.41% 的行也是负 IPV，因为人类在那些情境下同样取负值）。
+  **引用红线**：禁用「导致」等因果表述；**不得把「TTC 中位更短」读成「更危险」**；
+  主口径无结果（原始 `future_min_ttc_s` 全部不显著 p_case 0.31–0.37，`log1p` 是事后变换）；
+  TTC 缺失与曝露相关（上侧 13.70%/下侧 8.96%/区间内 7.04%）；结果变量互相矛盾
+  （最小距离方向相反且显著 +1.0396、p_case=0.0064）；共 288 个 p 值，
+  标签置换 p=0.0149 承受不了多重校正；与 RQ012B 冻结结论 `RQ012-KC-HARM-NULL`
+  是不同曝露定义与分析单元，**不构成推翻**且方向不矛盾。**尚无 `decision.md`。**
+  **产物**：`reports/studies/RQ018_abnormal_ipv_degradation/RQ018_1_association_20260804T224427Z_276cf4c/`
+  （报告前半 A1 原文、后半监督方附录 A–E；含监督方独立复核脚本与 JSON）。
+  **设计要点（后续复用）**：锚点时刻的 TTC、PET proxy、相对距离、接近率**全部是 envelope 的
+  22 项 `numeric_context` 与 12 项支持门距离特征**，用作同期结果变量构成循环论证；
+  帧级结果必须取锚点之后的未来窗口。
 - **RQ017 已完成并经监督方独立复算放行（2026-08-04T13:12:45Z）。这条替代了 M1 那条「等待 commander 复核」，M1 原始交付完整保存在执行记录目录里。**
   **背景一句话**：在线验证串联两道弃权机制——机制一判断某一帧的 IPV（表示交互倾向的标量）
   数值是否携带七个候选间的判别信息，机制二用人类参照分布判断当前情境是否有足够人类样本可比。

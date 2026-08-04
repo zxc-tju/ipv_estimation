@@ -1,0 +1,1964 @@
+{
+  "generated_at_utc": "2026-08-04T16:35:46Z",
+  "case_label_permutation": {
+    "draws": 200,
+    "base_seed": 20260805,
+    "alpha": 90,
+    "models": {
+      "contract": {
+        "future_min_distance_m": {
+          "signed": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20261805,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_exceedance_90": {
+                "observed_case_cluster_coefficient": 0.30509398896572915,
+                "observed_case_cluster_t": 1.302384291996949,
+                "empirical_two_sided_p": 0.2835820895522388,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.25532912880626546,
+                  "p90": 0.6802195759450477,
+                  "p95": 0.7693352987245973,
+                  "p99": 1.0082193186655966
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.7769827926458588,
+                  "p90": 2.0129842934512534,
+                  "p95": 2.4534151271861697,
+                  "p99": 3.5438610993587347
+                }
+              }
+            }
+          },
+          "directional_joint": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20262805,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_upper_90": {
+                "observed_case_cluster_coefficient": 1.1289604081068432,
+                "observed_case_cluster_t": 2.588310133444856,
+                "empirical_two_sided_p": 0.14427860696517414,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.5344485928574295,
+                  "p90": 1.0324304833771765,
+                  "p95": 1.2148717591956837,
+                  "p99": 1.39724875691163
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 1.1084018666545985,
+                  "p90": 2.9537169975519593,
+                  "p95": 3.3810672797768406,
+                  "p99": 4.995111142424296
+                }
+              },
+              "norm_lower_magnitude_90": {
+                "observed_case_cluster_coefficient": 0.6524871498115073,
+                "observed_case_cluster_t": 1.7325658185612771,
+                "empirical_two_sided_p": 0.3383084577114428,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.4648414006313504,
+                  "p90": 1.0449260231692383,
+                  "p95": 1.1726226136297928,
+                  "p99": 1.3973225832352054
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 1.165204832325835,
+                  "p90": 3.5195501917541345,
+                  "p95": 4.04311274888107,
+                  "p99": 5.17096904101154
+                }
+              }
+            }
+          }
+        },
+        "future_min_ttc_s": {
+          "signed": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20261806,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_exceedance_90": {
+                "observed_case_cluster_coefficient": 116443.95147552267,
+                "observed_case_cluster_t": 0.9300115172178971,
+                "empirical_two_sided_p": 0.13930348258706468,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 72442.98637105682,
+                  "p90": 242604.45913417303,
+                  "p95": 386039.56140633806,
+                  "p99": 5304531.382558426
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.7539711244124706,
+                  "p90": 0.9411926722789316,
+                  "p95": 0.9612363071303125,
+                  "p99": 1.0030614913882756
+                }
+              }
+            }
+          },
+          "directional_joint": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20262806,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_upper_90": {
+                "observed_case_cluster_coefficient": 647801.2560648593,
+                "observed_case_cluster_t": 0.9667709452017379,
+                "empirical_two_sided_p": 0.23880597014925373,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 290050.7660583799,
+                  "p90": 485524.7003925715,
+                  "p95": 549222.1198453091,
+                  "p99": 1060261.9418386265
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.9384102359279611,
+                  "p90": 0.9813894908583493,
+                  "p95": 0.9866486336850689,
+                  "p99": 1.0000721208738506
+                }
+              },
+              "norm_lower_magnitude_90": {
+                "observed_case_cluster_coefficient": 346405.35601818835,
+                "observed_case_cluster_t": 0.9069168586911915,
+                "empirical_two_sided_p": 0.5174129353233831,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 228839.6346896052,
+                  "p90": 496621.52081458044,
+                  "p95": 597709.9696763654,
+                  "p99": 2259663.8554240186
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.9113828943766977,
+                  "p90": 0.9769994827059979,
+                  "p95": 0.9895291033834412,
+                  "p99": 0.9976737333035492
+                }
+              }
+            }
+          }
+        },
+        "future_max_closing_rate_mps": {
+          "signed": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20261807,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_exceedance_90": {
+                "observed_case_cluster_coefficient": -0.27065209594708906,
+                "observed_case_cluster_t": -4.3211798270110915,
+                "empirical_two_sided_p": 0.004975124378109453,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.0666575290297094,
+                  "p90": 0.16610717701701255,
+                  "p95": 0.20781731364853154,
+                  "p99": 0.3201340613931299
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.7887866059335993,
+                  "p90": 1.8674967237628746,
+                  "p95": 2.480272830594345,
+                  "p99": 3.356150663058841
+                }
+              }
+            }
+          },
+          "directional_joint": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20262807,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_upper_90": {
+                "observed_case_cluster_coefficient": -0.558939155792501,
+                "observed_case_cluster_t": -4.64826435135217,
+                "empirical_two_sided_p": 0.03980099502487562,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.18108143264195936,
+                  "p90": 0.32584974620950924,
+                  "p95": 0.34501533788132405,
+                  "p99": 0.44137278677807923
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 1.400996658229868,
+                  "p90": 3.718451718931213,
+                  "p95": 4.291263736027736,
+                  "p99": 5.129127132347826
+                }
+              },
+              "norm_lower_magnitude_90": {
+                "observed_case_cluster_coefficient": -0.06442437354814556,
+                "observed_case_cluster_t": -0.5717901670937039,
+                "empirical_two_sided_p": 0.6766169154228856,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.12265681357274041,
+                  "p90": 0.2744170451660444,
+                  "p95": 0.29662499450364405,
+                  "p99": 0.363874524091136
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 1.0055782454915394,
+                  "p90": 3.441244047694264,
+                  "p95": 3.998448822658478,
+                  "p99": 5.059253705246391
+                }
+              }
+            }
+          }
+        },
+        "future_log1p_min_ttc": {
+          "signed": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20261808,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_exceedance_90": {
+                "observed_case_cluster_coefficient": 0.11670550466618086,
+                "observed_case_cluster_t": 3.085071389628834,
+                "empirical_two_sided_p": 0.01990049751243781,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.04429593397503369,
+                  "p90": 0.12840072527612292,
+                  "p95": 0.1641813605726007,
+                  "p99": 0.2588469555961015
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.9686228557823736,
+                  "p90": 2.0245784541065754,
+                  "p95": 2.54456616809924,
+                  "p99": 3.1871054358083066
+                }
+              }
+            }
+          },
+          "directional_joint": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20262808,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_upper_90": {
+                "observed_case_cluster_coefficient": -0.01458102920037933,
+                "observed_case_cluster_t": -0.18111472052757027,
+                "empirical_two_sided_p": 0.8905472636815921,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.06526515107048875,
+                  "p90": 0.211715162198218,
+                  "p95": 0.2589227695145943,
+                  "p99": 0.3219105264859198
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.8603734377071937,
+                  "p90": 2.034345774319311,
+                  "p95": 2.4995746561794734,
+                  "p99": 2.9893505060619696
+                }
+              },
+              "norm_lower_magnitude_90": {
+                "observed_case_cluster_coefficient": -0.23106524105928006,
+                "observed_case_cluster_t": -3.8436352490474244,
+                "empirical_two_sided_p": 0.014925373134328358,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.06081269853948071,
+                  "p90": 0.1569048203219482,
+                  "p95": 0.23186404924574477,
+                  "p99": 0.5558850937458228
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 1.0081606144602733,
+                  "p90": 2.065643253010283,
+                  "p95": 2.7352784193813915,
+                  "p99": 3.7609928291245263
+                }
+              }
+            }
+          }
+        }
+      },
+      "fixed_3s": {
+        "future_min_distance_m": {
+          "signed": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20261809,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_exceedance_90": {
+                "observed_case_cluster_coefficient": 0.5212526447923435,
+                "observed_case_cluster_t": 2.088299232550453,
+                "empirical_two_sided_p": 0.0845771144278607,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.22131618543695963,
+                  "p90": 0.617710782077298,
+                  "p95": 0.6910015427706201,
+                  "p99": 0.8621546897837301
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.7556218635131593,
+                  "p90": 1.8779382189894271,
+                  "p95": 2.191654551198156,
+                  "p99": 2.591350216487138
+                }
+              }
+            }
+          },
+          "directional_joint": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20262809,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_upper_90": {
+                "observed_case_cluster_coefficient": 1.8641912788182544,
+                "observed_case_cluster_t": 4.055243811413345,
+                "empirical_two_sided_p": 0.004975124378109453,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.3965503850030937,
+                  "p90": 0.8370374837244692,
+                  "p95": 0.9370530048681827,
+                  "p99": 1.1071674586920888
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.9434707457012045,
+                  "p90": 2.17845888059394,
+                  "p95": 2.667442138681999,
+                  "p99": 3.3026726802489015
+                }
+              },
+              "norm_lower_magnitude_90": {
+                "observed_case_cluster_coefficient": 1.0396468852784395,
+                "observed_case_cluster_t": 2.752340441340614,
+                "empirical_two_sided_p": 0.08955223880597014,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.4330086848936297,
+                  "p90": 1.0543182591588423,
+                  "p95": 1.1789668845606278,
+                  "p99": 1.4014071619514668
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 1.1470553660481142,
+                  "p90": 2.5878608576124473,
+                  "p95": 3.098096025350914,
+                  "p99": 3.657638902966667
+                }
+              }
+            }
+          }
+        },
+        "future_min_ttc_s": {
+          "signed": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20261810,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_exceedance_90": {
+                "observed_case_cluster_coefficient": -415.8668837610019,
+                "observed_case_cluster_t": -0.9065219149819332,
+                "empirical_two_sided_p": 0.4228855721393035,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 558.3408551699279,
+                  "p90": 2442.278764364781,
+                  "p95": 3629.9012672023096,
+                  "p99": 7752.456491495789
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.8648428537794983,
+                  "p90": 1.0105676339675664,
+                  "p95": 1.0367374883048845,
+                  "p99": 1.1400353312652058
+                }
+              }
+            }
+          },
+          "directional_joint": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20262810,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_upper_90": {
+                "observed_case_cluster_coefficient": -3343.1371988597557,
+                "observed_case_cluster_t": -1.0222434971272982,
+                "empirical_two_sided_p": 0.1890547263681592,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 1681.6379850553703,
+                  "p90": 2716.9502842072957,
+                  "p95": 5755.044622520047,
+                  "p99": 14358.336136704336
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.9836860059770587,
+                  "p90": 1.0354036193680234,
+                  "p95": 1.0644990377312338,
+                  "p99": 1.2475550939465634
+                }
+              },
+              "norm_lower_magnitude_90": {
+                "observed_case_cluster_coefficient": -2795.5106563775166,
+                "observed_case_cluster_t": -1.0241046876936772,
+                "empirical_two_sided_p": 0.15920398009950248,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 1325.9115062218539,
+                  "p90": 2277.308323653757,
+                  "p95": 6780.164690162757,
+                  "p99": 39008.07804974382
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.9681851285120107,
+                  "p90": 1.0317643991899774,
+                  "p95": 1.0670116172608322,
+                  "p99": 1.8697595525761341
+                }
+              }
+            }
+          }
+        },
+        "future_max_closing_rate_mps": {
+          "signed": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20261811,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_exceedance_90": {
+                "observed_case_cluster_coefficient": -0.20372484885298053,
+                "observed_case_cluster_t": -3.001695883069684,
+                "empirical_two_sided_p": 0.024875621890547265,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.11290519632764023,
+                  "p90": 0.24457238762668232,
+                  "p95": 0.28060895525768276,
+                  "p99": 0.40148064750426704
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.8732001311490316,
+                  "p90": 2.0427648800624048,
+                  "p95": 2.3872635007832095,
+                  "p99": 3.2577607324755644
+                }
+              }
+            }
+          },
+          "directional_joint": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20262811,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_upper_90": {
+                "observed_case_cluster_coefficient": -0.46155678821521234,
+                "observed_case_cluster_t": -3.431582230632113,
+                "empirical_two_sided_p": 0.15422885572139303,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.26406451547955007,
+                  "p90": 0.4919201405277722,
+                  "p95": 0.5378943551648689,
+                  "p99": 0.5885319825424568
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 1.4906363033028887,
+                  "p90": 3.928788319932662,
+                  "p95": 4.562189331143594,
+                  "p99": 5.610462879238914
+                }
+              },
+              "norm_lower_magnitude_90": {
+                "observed_case_cluster_coefficient": -0.09595358975237987,
+                "observed_case_cluster_t": -0.7368728376090408,
+                "empirical_two_sided_p": 0.6766169154228856,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.2030101311367113,
+                  "p90": 0.4368067292100255,
+                  "p95": 0.4909775639672634,
+                  "p99": 0.6367672871383249
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 1.1085578776476872,
+                  "p90": 3.130148786726347,
+                  "p95": 4.014065617596386,
+                  "p99": 6.885048696122486
+                }
+              }
+            }
+          }
+        },
+        "future_log1p_min_ttc": {
+          "signed": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20261812,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_exceedance_90": {
+                "observed_case_cluster_coefficient": 0.0846556039794484,
+                "observed_case_cluster_t": 2.8244932162390155,
+                "empirical_two_sided_p": 0.024875621890547265,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.05015139667790518,
+                  "p90": 0.12795536354871745,
+                  "p95": 0.1686363467390657,
+                  "p99": 0.3684142272573414
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.9886179915362312,
+                  "p90": 1.9969964366559312,
+                  "p95": 2.345544962657073,
+                  "p99": 3.012768495628648
+                }
+              }
+            }
+          },
+          "directional_joint": {
+            "case_count": 231,
+            "draws": 200,
+            "seed": 20262812,
+            "method": "Shuffle whole case exposure trajectories against recipient case outcomes. Cases are sorted by anchor_frame_index; when donor and recipient lengths differ, donor values are mapped by nearest relative-anchor position. Refit the original frame model with recipient context_cell fixed effects and case-clustered inference.",
+            "comparison_statistic": "absolute case-clustered t statistic",
+            "parameters": {
+              "norm_upper_90": {
+                "observed_case_cluster_coefficient": -0.02196190009751756,
+                "observed_case_cluster_t": -0.26154421705067776,
+                "empirical_two_sided_p": 0.8208955223880597,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.05828825626569707,
+                  "p90": 0.17457551862132506,
+                  "p95": 0.2438133869251459,
+                  "p99": 0.43182277014905524
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.7105219580136979,
+                  "p90": 1.7410820942380385,
+                  "p95": 2.1394778826922534,
+                  "p99": 2.8660298870047285
+                }
+              },
+              "norm_lower_magnitude_90": {
+                "observed_case_cluster_coefficient": -0.20162090650458028,
+                "observed_case_cluster_t": -2.7845250310183434,
+                "empirical_two_sided_p": 0.024875621890547265,
+                "permutation_abs_coefficient_quantiles": {
+                  "p50": 0.05957010045189461,
+                  "p90": 0.14451817534746245,
+                  "p95": 0.18912684209246758,
+                  "p99": 0.2972324078710611
+                },
+                "permutation_abs_t_quantiles": {
+                  "p50": 0.9124776635181197,
+                  "p90": 1.8994836153471173,
+                  "p95": 2.2259662193986043,
+                  "p99": 3.422434653263757
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "placebo_exposure": {
+    "construction": "For each frame draw fake IPV uniformly on [lo_90-width_90, hi_90+width_90], then apply the same signed and normalized exceedance formula.",
+    "seed": 20263805,
+    "seeded_example": {
+      "outside_count": 9492,
+      "upper_count": 4785,
+      "lower_count": 4707,
+      "inside_count": 4607,
+      "models": {
+        "contract": {
+          "future_min_distance_m": {
+            "signed": {
+              "n": 14099,
+              "rank": 9,
+              "df_resid": 14090,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_norm"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_norm": {
+                  "naive": {
+                    "coefficient": 0.1505790924377936,
+                    "standard_error": 0.14855509961226085,
+                    "t": 1.0136245260567662,
+                    "df": 14090,
+                    "p_value": 0.31077935533280177,
+                    "ci95_low": -0.14060856620186202,
+                    "ci95_high": 0.4417667510774492
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.1505790924377936,
+                    "standard_error": 0.15914473535574386,
+                    "t": 0.9461770262220547,
+                    "df": 230,
+                    "p_value": 0.3450512704451032,
+                    "ci95_low": -0.1629888361829,
+                    "ci95_high": 0.4641470210584872
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.1505790924377936,
+                    "standard_error": 0.19487885737833546,
+                    "t": 0.7726804973279434,
+                    "df": 18,
+                    "p_value": 0.44973917783431605,
+                    "ci95_low": -0.258846194205326,
+                    "ci95_high": 0.5600043790809133
+                  }
+                }
+              }
+            },
+            "directional_joint": {
+              "n": 14099,
+              "rank": 10,
+              "df_resid": 14089,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_upper",
+                "placebo_lower_magnitude"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_upper": {
+                  "naive": {
+                    "coefficient": 0.24459492936037217,
+                    "standard_error": 0.25547930893452775,
+                    "t": 0.9573962383899162,
+                    "df": 14089,
+                    "p_value": 0.3383837241321618,
+                    "ci95_low": -0.2561783355582291,
+                    "ci95_high": 0.7453681942789735
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.24459492936037217,
+                    "standard_error": 0.23527203424903995,
+                    "t": 1.039626023301451,
+                    "df": 230,
+                    "p_value": 0.2996053294722538,
+                    "ci95_low": -0.21896903508330426,
+                    "ci95_high": 0.7081588938040486
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.24459492936037217,
+                    "standard_error": 0.25155792123938026,
+                    "t": 0.9723205222689761,
+                    "df": 18,
+                    "p_value": 0.3437770685999252,
+                    "ci95_low": -0.28390865176864133,
+                    "ci95_high": 0.7730985104893857
+                  }
+                },
+                "placebo_lower_magnitude": {
+                  "naive": {
+                    "coefficient": -0.05296743148810317,
+                    "standard_error": 0.261987400961839,
+                    "t": -0.2021754912398188,
+                    "df": 14089,
+                    "p_value": 0.8397824517293564,
+                    "ci95_low": -0.5664974182974098,
+                    "ci95_high": 0.46056255532120355
+                  },
+                  "case_cluster": {
+                    "coefficient": -0.05296743148810317,
+                    "standard_error": 0.27285178605673116,
+                    "t": -0.19412528777469765,
+                    "df": 230,
+                    "p_value": 0.8462491270160526,
+                    "ci95_low": -0.5905759749502221,
+                    "ci95_high": 0.48464111197401577
+                  },
+                  "team_cluster": {
+                    "coefficient": -0.05296743148810317,
+                    "standard_error": 0.30855335482866014,
+                    "t": -0.1716637679000963,
+                    "df": 18,
+                    "p_value": 0.8656170435994552,
+                    "ci95_low": -0.7012139752379247,
+                    "ci95_high": 0.5952791122617185
+                  }
+                }
+              }
+            }
+          },
+          "future_min_ttc_s": {
+            "signed": {
+              "n": 12888,
+              "rank": 8,
+              "df_resid": 12880,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_norm"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_norm": {
+                  "naive": {
+                    "coefficient": 945466.7641122827,
+                    "standard_error": 941553.401287469,
+                    "t": 1.0041562834561084,
+                    "df": 12880,
+                    "p_value": 0.3153221540811197,
+                    "ci95_low": -900117.4256583069,
+                    "ci95_high": 2791050.953882872
+                  },
+                  "case_cluster": {
+                    "coefficient": 945466.7641122827,
+                    "standard_error": 947900.9511189903,
+                    "t": 0.9974320238798853,
+                    "df": 224,
+                    "p_value": 0.3196311011792019,
+                    "ci95_low": -922477.2402009187,
+                    "ci95_high": 2813410.768425484
+                  },
+                  "team_cluster": {
+                    "coefficient": 945466.7641122827,
+                    "standard_error": 959930.2099299396,
+                    "t": 0.9849328152525666,
+                    "df": 18,
+                    "p_value": 0.33771210136795593,
+                    "ci95_low": -1071271.7710226593,
+                    "ci95_high": 2962205.2992472243
+                  }
+                }
+              }
+            },
+            "directional_joint": {
+              "n": 12888,
+              "rank": 9,
+              "df_resid": 12879,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_upper",
+                "placebo_lower_magnitude"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_upper": {
+                  "naive": {
+                    "coefficient": 512429.29332551686,
+                    "standard_error": 1618676.047194825,
+                    "t": 0.3165730994868058,
+                    "df": 12879,
+                    "p_value": 0.7515726809678049,
+                    "ci95_low": -2660415.644389041,
+                    "ci95_high": 3685274.2310400745
+                  },
+                  "case_cluster": {
+                    "coefficient": 512429.29332551686,
+                    "standard_error": 510110.22812595445,
+                    "t": 1.0045462040784443,
+                    "df": 224,
+                    "p_value": 0.31619932284089247,
+                    "ci95_low": -492799.5135892506,
+                    "ci95_high": 1517658.1002402843
+                  },
+                  "team_cluster": {
+                    "coefficient": 512429.29332551686,
+                    "standard_error": 519444.87346224295,
+                    "t": 0.9864940814797818,
+                    "df": 18,
+                    "p_value": 0.3369665412020769,
+                    "ci95_low": -578883.890021486,
+                    "ci95_high": 1603742.4766725197
+                  }
+                },
+                "placebo_lower_magnitude": {
+                  "naive": {
+                    "coefficient": -1394471.3729708148,
+                    "standard_error": 1658405.1788137455,
+                    "t": -0.8408508311390331,
+                    "df": 12879,
+                    "p_value": 0.400447117175578,
+                    "ci95_low": -4645191.2964525,
+                    "ci95_high": 1856248.5505108703
+                  },
+                  "case_cluster": {
+                    "coefficient": -1394471.3729708148,
+                    "standard_error": 1403744.3336709111,
+                    "t": -0.993394124216447,
+                    "df": 224,
+                    "p_value": 0.3215897979431045,
+                    "ci95_low": -4160705.3434862145,
+                    "ci95_high": 1371762.597544585
+                  },
+                  "team_cluster": {
+                    "coefficient": -1394471.3729708148,
+                    "standard_error": 1415994.1690195648,
+                    "t": -0.9848002226847782,
+                    "df": 18,
+                    "p_value": 0.3377754719758179,
+                    "ci95_low": -4369364.731516702,
+                    "ci95_high": 1580421.985575072
+                  }
+                }
+              }
+            }
+          },
+          "future_max_closing_rate_mps": {
+            "signed": {
+              "n": 14099,
+              "rank": 9,
+              "df_resid": 14090,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_norm"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_norm": {
+                  "naive": {
+                    "coefficient": -0.05777756720458235,
+                    "standard_error": 0.05814789938871944,
+                    "t": -0.9936312027084346,
+                    "df": 14090,
+                    "p_value": 0.320419510705345,
+                    "ci95_low": -0.17175514671554526,
+                    "ci95_high": 0.05620001230638055
+                  },
+                  "case_cluster": {
+                    "coefficient": -0.05777756720458235,
+                    "standard_error": 0.061396388702233795,
+                    "t": -0.9410580724022327,
+                    "df": 230,
+                    "p_value": 0.3476624243849351,
+                    "ci95_low": -0.17874882262887035,
+                    "ci95_high": 0.06319368821970564
+                  },
+                  "team_cluster": {
+                    "coefficient": -0.05777756720458235,
+                    "standard_error": 0.060430250878756295,
+                    "t": -0.9561033814091533,
+                    "df": 18,
+                    "p_value": 0.35168582235286705,
+                    "ci95_low": -0.1847368131730521,
+                    "ci95_high": 0.0691816787638874
+                  }
+                }
+              }
+            },
+            "directional_joint": {
+              "n": 14099,
+              "rank": 10,
+              "df_resid": 14089,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_upper",
+                "placebo_lower_magnitude"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_upper": {
+                  "naive": {
+                    "coefficient": -0.1030251123302091,
+                    "standard_error": 0.10000013451217564,
+                    "t": -1.0302497374907547,
+                    "df": 14089,
+                    "p_value": 0.30291047247373276,
+                    "ci95_low": -0.29903861362238204,
+                    "ci95_high": 0.09298838896196383
+                  },
+                  "case_cluster": {
+                    "coefficient": -0.1030251123302091,
+                    "standard_error": 0.10389966022257341,
+                    "t": -0.9915827646549482,
+                    "df": 230,
+                    "p_value": 0.3224431265033558,
+                    "ci95_low": -0.3077419140991113,
+                    "ci95_high": 0.1016916894386931
+                  },
+                  "team_cluster": {
+                    "coefficient": -0.1030251123302091,
+                    "standard_error": 0.11033406210995389,
+                    "t": -0.9337561797329548,
+                    "df": 18,
+                    "p_value": 0.3627874818150314,
+                    "ci95_low": -0.33482837520632625,
+                    "ci95_high": 0.12877815054590802
+                  }
+                },
+                "placebo_lower_magnitude": {
+                  "naive": {
+                    "coefficient": 0.010799439070287381,
+                    "standard_error": 0.10254754267944731,
+                    "t": 0.10531153441721443,
+                    "df": 14089,
+                    "p_value": 0.9161301099099046,
+                    "ci95_low": -0.19020731944621858,
+                    "ci95_high": 0.21180619758679334
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.010799439070287381,
+                    "standard_error": 0.10304535157719305,
+                    "t": 0.1048027776604492,
+                    "df": 230,
+                    "p_value": 0.9166236425572496,
+                    "ci95_low": -0.19223409123043927,
+                    "ci95_high": 0.21383296937101404
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.010799439070287381,
+                    "standard_error": 0.099256382131832,
+                    "t": 0.10880347276756071,
+                    "df": 18,
+                    "p_value": 0.9145621143741334,
+                    "ci95_low": -0.19773048178505748,
+                    "ci95_high": 0.21932935992563224
+                  }
+                }
+              }
+            }
+          },
+          "future_log1p_min_ttc": {
+            "signed": {
+              "n": 12888,
+              "rank": 8,
+              "df_resid": 12880,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_norm"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_norm": {
+                  "naive": {
+                    "coefficient": 0.007642398561981853,
+                    "standard_error": 0.03012753530223944,
+                    "t": 0.25366823025226953,
+                    "df": 12880,
+                    "p_value": 0.7997559288643068,
+                    "ci95_low": -0.05141203505223234,
+                    "ci95_high": 0.06669683217619604
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.007642398561981853,
+                    "standard_error": 0.033294876524208906,
+                    "t": 0.22953677441707943,
+                    "df": 224,
+                    "p_value": 0.8186611960502945,
+                    "ci95_low": -0.05796885006513055,
+                    "ci95_high": 0.07325364718909426
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.007642398561981853,
+                    "standard_error": 0.032469092889209454,
+                    "t": 0.2353745633750573,
+                    "df": 18,
+                    "p_value": 0.8165751003340955,
+                    "ci95_low": -0.060572634315589326,
+                    "ci95_high": 0.07585743143955304
+                  }
+                }
+              }
+            },
+            "directional_joint": {
+              "n": 12888,
+              "rank": 9,
+              "df_resid": 12879,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_upper",
+                "placebo_lower_magnitude"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_upper": {
+                  "naive": {
+                    "coefficient": 0.02225555698312823,
+                    "standard_error": 0.05179387244576989,
+                    "t": 0.4296947868964736,
+                    "df": 12879,
+                    "p_value": 0.6674248646831713,
+                    "ci95_low": -0.07926810878000341,
+                    "ci95_high": 0.12377922274625987
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.02225555698312823,
+                    "standard_error": 0.041122162566865364,
+                    "t": 0.541205899542377,
+                    "df": 224,
+                    "p_value": 0.5889035010893535,
+                    "ci95_low": -0.05878022731531632,
+                    "ci95_high": 0.10329134128157277
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.02225555698312823,
+                    "standard_error": 0.04475830498773884,
+                    "t": 0.4972386016232061,
+                    "df": 18,
+                    "p_value": 0.6250398649009155,
+                    "ci95_low": -0.07177815244943919,
+                    "ci95_high": 0.11628926641569565
+                  }
+                },
+                "placebo_lower_magnitude": {
+                  "naive": {
+                    "coefficient": 0.007509582325846697,
+                    "standard_error": 0.053065112345203516,
+                    "t": 0.14151637476982518,
+                    "df": 12879,
+                    "p_value": 0.8874642384428693,
+                    "ci95_low": -0.09650590203590369,
+                    "ci95_high": 0.11152506668759708
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.007509582325846697,
+                    "standard_error": 0.05791933304687908,
+                    "t": 0.12965588398209882,
+                    "df": 224,
+                    "p_value": 0.8969550376060715,
+                    "ci95_low": -0.10662689023599602,
+                    "ci95_high": 0.12164605488768941
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.007509582325846697,
+                    "standard_error": 0.05893465257811891,
+                    "t": 0.12742218707224268,
+                    "df": 18,
+                    "p_value": 0.9000189784585195,
+                    "ci95_low": -0.11630752820946705,
+                    "ci95_high": 0.13132669286116044
+                  }
+                }
+              }
+            }
+          }
+        },
+        "fixed_3s": {
+          "future_min_distance_m": {
+            "signed": {
+              "n": 14099,
+              "rank": 9,
+              "df_resid": 14090,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_norm"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_norm": {
+                  "naive": {
+                    "coefficient": 0.18027207889183403,
+                    "standard_error": 0.1494203468340818,
+                    "t": 1.2064761105929593,
+                    "df": 14090,
+                    "p_value": 0.22765422112896383,
+                    "ci95_low": -0.11261157883047926,
+                    "ci95_high": 0.47315573661414734
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.18027207889183403,
+                    "standard_error": 0.14871334249497856,
+                    "t": 1.2122118692740773,
+                    "df": 230,
+                    "p_value": 0.226675045203227,
+                    "ci95_low": -0.1127425449357908,
+                    "ci95_high": 0.47328670271945883
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.18027207889183403,
+                    "standard_error": 0.18964755933777253,
+                    "t": 0.950563664100521,
+                    "df": 18,
+                    "p_value": 0.35441586993792473,
+                    "ci95_low": -0.2181626583987976,
+                    "ci95_high": 0.5787068161824657
+                  }
+                }
+              }
+            },
+            "directional_joint": {
+              "n": 14099,
+              "rank": 10,
+              "df_resid": 14089,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_upper",
+                "placebo_lower_magnitude"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_upper": {
+                  "naive": {
+                    "coefficient": 0.2748700598856762,
+                    "standard_error": 0.2569673262442108,
+                    "t": 1.069669299607575,
+                    "df": 14089,
+                    "p_value": 0.2847865149909691,
+                    "ci95_low": -0.22881991593813727,
+                    "ci95_high": 0.7785600357094897
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.2748700598856762,
+                    "standard_error": 0.24002906873667276,
+                    "t": 1.145153215535016,
+                    "df": 230,
+                    "p_value": 0.2533358932814587,
+                    "ci95_low": -0.19806684075554304,
+                    "ci95_high": 0.7478069605268954
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.2748700598856762,
+                    "standard_error": 0.2858412388036235,
+                    "t": 0.9616179283161985,
+                    "df": 18,
+                    "p_value": 0.3489825673391177,
+                    "ci95_low": -0.325660098726636,
+                    "ci95_high": 0.8754002184979883
+                  }
+                },
+                "placebo_lower_magnitude": {
+                  "naive": {
+                    "coefficient": -0.0820560086046861,
+                    "standard_error": 0.2635133240950114,
+                    "t": -0.3113922564883296,
+                    "df": 14089,
+                    "p_value": 0.7555070471613364,
+                    "ci95_low": -0.5985770067510768,
+                    "ci95_high": 0.43446498954170465
+                  },
+                  "case_cluster": {
+                    "coefficient": -0.0820560086046861,
+                    "standard_error": 0.24227491478409938,
+                    "t": -0.338689660371192,
+                    "df": 230,
+                    "p_value": 0.7351525228656606,
+                    "ci95_low": -0.5594179710710316,
+                    "ci95_high": 0.39530595386165945
+                  },
+                  "team_cluster": {
+                    "coefficient": -0.0820560086046861,
+                    "standard_error": 0.24835510021332605,
+                    "t": -0.3303979202931755,
+                    "df": 18,
+                    "p_value": 0.7449139024600324,
+                    "ci95_low": -0.6038307124491151,
+                    "ci95_high": 0.43971869523974294
+                  }
+                }
+              }
+            }
+          },
+          "future_min_ttc_s": {
+            "signed": {
+              "n": 13638,
+              "rank": 9,
+              "df_resid": 13629,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_norm"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_norm": {
+                  "naive": {
+                    "coefficient": -1120.6629963489859,
+                    "standard_error": 1032.3648773831926,
+                    "t": -1.0855299525392694,
+                    "df": 13629,
+                    "p_value": 0.27770620502989013,
+                    "ci95_low": -3144.240684610091,
+                    "ci95_high": 902.9146919121192
+                  },
+                  "case_cluster": {
+                    "coefficient": -1120.6629963489859,
+                    "standard_error": 1172.249109191338,
+                    "t": -0.9559938988753524,
+                    "df": 226,
+                    "p_value": 0.3400967954084023,
+                    "ci95_low": -3430.5989064799196,
+                    "ci95_high": 1189.2729137819479
+                  },
+                  "team_cluster": {
+                    "coefficient": -1120.6629963489859,
+                    "standard_error": 1128.6004690081509,
+                    "t": -0.9929669773519227,
+                    "df": 18,
+                    "p_value": 0.33388775862571385,
+                    "ci95_low": -3491.7645963144946,
+                    "ci95_high": 1250.4386036165229
+                  }
+                }
+              }
+            },
+            "directional_joint": {
+              "n": 13638,
+              "rank": 10,
+              "df_resid": 13628,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_upper",
+                "placebo_lower_magnitude"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_upper": {
+                  "naive": {
+                    "coefficient": -1794.6245691171864,
+                    "standard_error": 1774.5092710829267,
+                    "t": -1.0113356962186983,
+                    "df": 13628,
+                    "p_value": 0.3118737418907786,
+                    "ci95_low": -5272.907752365365,
+                    "ci95_high": 1683.658614130992
+                  },
+                  "case_cluster": {
+                    "coefficient": -1794.6245691171864,
+                    "standard_error": 1823.3052125551105,
+                    "t": -0.9842699712366136,
+                    "df": 226,
+                    "p_value": 0.3260353316574809,
+                    "ci95_low": -5387.477105823627,
+                    "ci95_high": 1798.2279675892548
+                  },
+                  "team_cluster": {
+                    "coefficient": -1794.6245691171864,
+                    "standard_error": 1810.5172982374738,
+                    "t": -0.9912219954287325,
+                    "df": 18,
+                    "p_value": 0.33471580179639837,
+                    "ci95_low": -5598.380265221811,
+                    "ci95_high": 2009.131126987438
+                  }
+                },
+                "placebo_lower_magnitude": {
+                  "naive": {
+                    "coefficient": 421.091386667028,
+                    "standard_error": 1819.3952965869207,
+                    "t": 0.23144579270759402,
+                    "df": 13628,
+                    "p_value": 0.8169719680382148,
+                    "ci95_low": -3145.1746041198858,
+                    "ci95_high": 3987.357377453942
+                  },
+                  "case_cluster": {
+                    "coefficient": 421.091386667028,
+                    "standard_error": 542.1250685181002,
+                    "t": 0.7767421414731513,
+                    "df": 226,
+                    "p_value": 0.43812312081917126,
+                    "ci95_low": -647.1748664129329,
+                    "ci95_high": 1489.357639746989
+                  },
+                  "team_cluster": {
+                    "coefficient": 421.091386667028,
+                    "standard_error": 468.64336923903846,
+                    "t": 0.8985326888349596,
+                    "df": 18,
+                    "p_value": 0.3807642353572571,
+                    "ci95_low": -563.4917967800502,
+                    "ci95_high": 1405.6745701141062
+                  }
+                }
+              }
+            }
+          },
+          "future_max_closing_rate_mps": {
+            "signed": {
+              "n": 14099,
+              "rank": 9,
+              "df_resid": 14090,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_norm"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_norm": {
+                  "naive": {
+                    "coefficient": 0.008572194352331888,
+                    "standard_error": 0.06958379808079457,
+                    "t": 0.12319238944644285,
+                    "df": 14090,
+                    "p_value": 0.9019565091003554,
+                    "ci95_low": -0.127821260300428,
+                    "ci95_high": 0.1449656490050918
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.008572194352331888,
+                    "standard_error": 0.08151782613790819,
+                    "t": 0.10515729820652768,
+                    "df": 230,
+                    "p_value": 0.9163426428123826,
+                    "ci95_low": -0.15204496857540892,
+                    "ci95_high": 0.1691893572800727
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.008572194352331888,
+                    "standard_error": 0.08192164353410825,
+                    "t": 0.10463894500313384,
+                    "df": 18,
+                    "p_value": 0.917819483431431,
+                    "ci95_low": -0.16353879212123945,
+                    "ci95_high": 0.18068318082590323
+                  }
+                }
+              }
+            },
+            "directional_joint": {
+              "n": 14099,
+              "rank": 10,
+              "df_resid": 14089,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_upper",
+                "placebo_lower_magnitude"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_upper": {
+                  "naive": {
+                    "coefficient": -0.10238486819618203,
+                    "standard_error": 0.1196628744480837,
+                    "t": -0.8556109709749802,
+                    "df": 14089,
+                    "p_value": 0.39222754967855145,
+                    "ci95_low": -0.3369399426435941,
+                    "ci95_high": 0.13217020625123005
+                  },
+                  "case_cluster": {
+                    "coefficient": -0.10238486819618203,
+                    "standard_error": 0.13295670887737798,
+                    "t": -0.7700616919647775,
+                    "df": 230,
+                    "p_value": 0.4420535017360159,
+                    "ci95_low": -0.3643536961672123,
+                    "ci95_high": 0.15958395977484824
+                  },
+                  "team_cluster": {
+                    "coefficient": -0.10238486819618203,
+                    "standard_error": 0.13190177250095927,
+                    "t": -0.7762205636428231,
+                    "df": 18,
+                    "p_value": 0.4476989031040711,
+                    "ci95_low": -0.37950020919029637,
+                    "ci95_high": 0.1747304727979323
+                  }
+                },
+                "placebo_lower_magnitude": {
+                  "naive": {
+                    "coefficient": -0.12377303204060962,
+                    "standard_error": 0.12271117218463463,
+                    "t": -1.0086533266455746,
+                    "df": 14089,
+                    "p_value": 0.31315824508349316,
+                    "ci95_low": -0.3643031735740525,
+                    "ci95_high": 0.11675710949283329
+                  },
+                  "case_cluster": {
+                    "coefficient": -0.12377303204060962,
+                    "standard_error": 0.11914632036577745,
+                    "t": -1.0388321826526261,
+                    "df": 230,
+                    "p_value": 0.2999736403724409,
+                    "ci95_low": -0.35853081272597603,
+                    "ci95_high": 0.11098474864475681
+                  },
+                  "team_cluster": {
+                    "coefficient": -0.12377303204060962,
+                    "standard_error": 0.11781377480618592,
+                    "t": -1.0505820074454553,
+                    "df": 18,
+                    "p_value": 0.3073516470707052,
+                    "ci95_low": -0.3712905881749108,
+                    "ci95_high": 0.12374452409369154
+                  }
+                }
+              }
+            }
+          },
+          "future_log1p_min_ttc": {
+            "signed": {
+              "n": 13638,
+              "rank": 9,
+              "df_resid": 13629,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_norm"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_norm": {
+                  "naive": {
+                    "coefficient": -0.010393827065388642,
+                    "standard_error": 0.03124895677139625,
+                    "t": -0.3326135698361181,
+                    "df": 13629,
+                    "p_value": 0.7394311144558716,
+                    "ci95_low": -0.0716460965772289,
+                    "ci95_high": 0.050858442446451615
+                  },
+                  "case_cluster": {
+                    "coefficient": -0.010393827065388642,
+                    "standard_error": 0.03986973947317915,
+                    "t": -0.26069463213775684,
+                    "df": 226,
+                    "p_value": 0.7945653878046675,
+                    "ci95_low": -0.08895779628878434,
+                    "ci95_high": 0.06817014215800704
+                  },
+                  "team_cluster": {
+                    "coefficient": -0.010393827065388642,
+                    "standard_error": 0.03954712156636501,
+                    "t": -0.26282132943472264,
+                    "df": 18,
+                    "p_value": 0.7956729423359439,
+                    "ci95_low": -0.0934792463922535,
+                    "ci95_high": 0.0726915922614762
+                  }
+                }
+              }
+            },
+            "directional_joint": {
+              "n": 13638,
+              "rank": 10,
+              "df_resid": 13628,
+              "context_fixed_effects": true,
+              "exposures": [
+                "placebo_upper",
+                "placebo_lower_magnitude"
+              ],
+              "extra_controls": [],
+              "parameters_reported": {
+                "placebo_upper": {
+                  "naive": {
+                    "coefficient": 0.005916692592190556,
+                    "standard_error": 0.05371329920657413,
+                    "t": 0.11015321493166433,
+                    "df": 13628,
+                    "p_value": 0.9122894874530582,
+                    "ci95_low": -0.0993687902122966,
+                    "ci95_high": 0.11120217539667772
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.005916692592190556,
+                    "standard_error": 0.0490440198104306,
+                    "t": 0.12064044943828613,
+                    "df": 226,
+                    "p_value": 0.9040830141346646,
+                    "ci95_low": -0.0907253450506764,
+                    "ci95_high": 0.10255873023505753
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.005916692592190556,
+                    "standard_error": 0.05719104935192448,
+                    "t": 0.1034548702854227,
+                    "df": 18,
+                    "p_value": 0.9187459072876083,
+                    "ci95_low": -0.11423724349577606,
+                    "ci95_high": 0.12607062868015717
+                  }
+                },
+                "placebo_lower_magnitude": {
+                  "naive": {
+                    "coefficient": 0.027324134300471894,
+                    "standard_error": 0.05507197146452102,
+                    "t": 0.4961531896143377,
+                    "df": 13628,
+                    "p_value": 0.6197943361376412,
+                    "ci95_low": -0.0806245337256278,
+                    "ci95_high": 0.1352728023265716
+                  },
+                  "case_cluster": {
+                    "coefficient": 0.027324134300471894,
+                    "standard_error": 0.052683919833495456,
+                    "t": 0.5186427734843625,
+                    "df": 226,
+                    "p_value": 0.6045173146433728,
+                    "ci95_low": -0.07649038545958263,
+                    "ci95_high": 0.1311386540605264
+                  },
+                  "team_cluster": {
+                    "coefficient": 0.027324134300471894,
+                    "standard_error": 0.053523600910650115,
+                    "t": 0.5105062782693857,
+                    "df": 18,
+                    "p_value": 0.615900487358366,
+                    "ci95_low": -0.08512477852577405,
+                    "ci95_high": 0.13977304712671784
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "real_vs_placebo": {
+      "contract": {
+        "future_min_distance_m": {
+          "signed": {
+            "real_case_cluster_coefficient": 0.30509398896572737,
+            "real_case_cluster_t": 1.3023842919969513,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.20398009950248755,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.7091145141130601,
+              "p90": 1.6250858283697966,
+              "p95": 1.8744686729863043,
+              "p99": 2.2712069221917597
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.2540751757475793,
+              "p50": 0.0020460769237566315,
+              "p95": 0.22347996492639263
+            }
+          },
+          "upper": {
+            "real_case_cluster_coefficient": 1.1289604081068554,
+            "real_case_cluster_t": 2.5883101334448706,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.009950248756218905,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6612045638063087,
+              "p90": 1.5995411883870048,
+              "p95": 1.8184771574141172,
+              "p99": 2.402928405646068
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.46761647336304074,
+              "p50": 0.01260143835167634,
+              "p95": 0.3598774931859134
+            }
+          },
+          "lower": {
+            "real_case_cluster_coefficient": 0.6524871498114804,
+            "real_case_cluster_t": 1.7325658185611996,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.0945273631840796,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6842929948820574,
+              "p90": 1.69113115214051,
+              "p95": 1.9482471029444859,
+              "p99": 2.6494906455961935
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.42815612314315715,
+              "p50": -0.010563122123373108,
+              "p95": 0.4037354272918099
+            }
+          }
+        },
+        "future_min_ttc_s": {
+          "signed": {
+            "real_case_cluster_coefficient": 116443.95147552303,
+            "real_case_cluster_t": 0.930011517217899,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.8756218905472637,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.9959169360161457,
+              "p90": 1.0044158916980943,
+              "p95": 1.0069634097767328,
+              "p99": 1.011762974971944
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -1758874.0765488571,
+              "p50": 21426.935781190332,
+              "p95": 1725942.3041229437
+            }
+          },
+          "upper": {
+            "real_case_cluster_coefficient": 647801.2560648847,
+            "real_case_cluster_t": 0.9667709452017728,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.9502487562189055,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.9980690323088914,
+              "p90": 1.0066083415596307,
+              "p95": 1.0126674849091764,
+              "p99": 1.0249565418289603
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -2262211.74001798,
+              "p50": -90760.76735005407,
+              "p95": 3439197.155581323
+            }
+          },
+          "lower": {
+            "real_case_cluster_coefficient": 346405.35601817933,
+            "real_case_cluster_t": 0.9069168586911674,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.9751243781094527,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.9975047552641177,
+              "p90": 1.0047247571670508,
+              "p95": 1.0072569303140297,
+              "p99": 1.0306280476986571
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -2268087.937028965,
+              "p50": -167031.96925452235,
+              "p95": 3515936.087223671
+            }
+          }
+        },
+        "future_max_closing_rate_mps": {
+          "signed": {
+            "real_case_cluster_coefficient": -0.27065209594709494,
+            "real_case_cluster_t": -4.321179827011148,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.004975124378109453,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6820129899523844,
+              "p90": 1.6245871561539877,
+              "p95": 1.84875993625178,
+              "p99": 2.58041597998375
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.09123219526000131,
+              "p50": 0.0026931157150059826,
+              "p95": 0.09403435867933899
+            }
+          },
+          "upper": {
+            "real_case_cluster_coefficient": -0.5589391557924962,
+            "real_case_cluster_t": -4.648264351352148,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.004975124378109453,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6461140594980694,
+              "p90": 1.5848147404052246,
+              "p95": 2.1126043028197223,
+              "p99": 2.487223386010874
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.15838926290123811,
+              "p50": -0.0005794449381491956,
+              "p95": 0.15148873640803456
+            }
+          },
+          "lower": {
+            "real_case_cluster_coefficient": -0.0644243735481554,
+            "real_case_cluster_t": -0.571790167093787,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.6069651741293532,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.7399457942227465,
+              "p90": 1.796817373043693,
+              "p95": 2.156262492971407,
+              "p99": 2.8704983908694914
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.1787385661091165,
+              "p50": -0.014050700615561513,
+              "p95": 0.17086189478612251
+            }
+          }
+        },
+        "future_log1p_min_ttc": {
+          "signed": {
+            "real_case_cluster_coefficient": 0.11670550466618121,
+            "real_case_cluster_t": 3.08507138962884,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.009950248756218905,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.7105641225135291,
+              "p90": 1.8426023238359603,
+              "p95": 1.9979863654507146,
+              "p99": 2.730217654691119
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.05529084626807456,
+              "p50": -0.0004396674398191564,
+              "p95": 0.05096822569723316
+            }
+          },
+          "upper": {
+            "real_case_cluster_coefficient": -0.014581029200379835,
+            "real_case_cluster_t": -0.18111472052757677,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.9054726368159204,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6868630934442244,
+              "p90": 1.7145557162798788,
+              "p95": 1.9475128939454913,
+              "p99": 2.573965585078886
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.09244864314333896,
+              "p50": -0.003444371062524331,
+              "p95": 0.09196294661223893
+            }
+          },
+          "lower": {
+            "real_case_cluster_coefficient": -0.23106524105927365,
+            "real_case_cluster_t": -3.843635249047346,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.004975124378109453,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.7020489020842378,
+              "p90": 1.7594785376361686,
+              "p95": 2.030478672909559,
+              "p99": 2.543125169719141
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.0868337384558769,
+              "p50": 0.0019506387418606053,
+              "p95": 0.09135606868554683
+            }
+          }
+        }
+      },
+      "fixed_3s": {
+        "future_min_distance_m": {
+          "signed": {
+            "real_case_cluster_coefficient": 0.5212526447923499,
+            "real_case_cluster_t": 2.088299232550484,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.03482587064676617,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.7701785127163254,
+              "p90": 1.5953215218769254,
+              "p95": 1.8606476129764093,
+              "p99": 2.4233856900196926
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.23309997436550572,
+              "p50": 0.005705723118323396,
+              "p95": 0.2249791766096632
+            }
+          },
+          "upper": {
+            "real_case_cluster_coefficient": 1.8641912788182662,
+            "real_case_cluster_t": 4.055243811413388,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.004975124378109453,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6944714303361914,
+              "p90": 1.743783253726715,
+              "p95": 2.031980899767843,
+              "p99": 2.378853510630951
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.4743792167840136,
+              "p50": 0.012353568582991562,
+              "p95": 0.39288864001449747
+            }
+          },
+          "lower": {
+            "real_case_cluster_coefficient": 1.0396468852784022,
+            "real_case_cluster_t": 2.7523404413405084,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.01990049751243781,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.8329466583275527,
+              "p90": 1.742832799114539,
+              "p95": 1.887112452078314,
+              "p99": 3.0483829401523197
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.4279256838519155,
+              "p50": 0.022930232249235377,
+              "p95": 0.4579816512108224
+            }
+          }
+        },
+        "future_min_ttc_s": {
+          "signed": {
+            "real_case_cluster_coefficient": -415.86688376099886,
+            "real_case_cluster_t": -0.9065219149821171,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.8009950248756219,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.9915081460829355,
+              "p90": 1.0647686807119012,
+              "p95": 1.094673663054624,
+              "p99": 1.1409101995387583
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -1705.6365550568305,
+              "p50": 42.70345055940548,
+              "p95": 1530.528818019108
+            }
+          },
+          "upper": {
+            "real_case_cluster_coefficient": -3343.1371988598144,
+            "real_case_cluster_t": -1.022243497127322,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.2935323383084577,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.9972305017311835,
+              "p90": 1.0530982412359018,
+              "p95": 1.0779786671221352,
+              "p99": 1.1166729739341823
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -2928.9576274883284,
+              "p50": -368.0094998127822,
+              "p95": 2945.4802836923277
+            }
+          },
+          "lower": {
+            "real_case_cluster_coefficient": -2795.510656377521,
+            "real_case_cluster_t": -1.0241046876936784,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.31840796019900497,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.994049818534452,
+              "p90": 1.0668056278172537,
+              "p95": 1.0944867258149207,
+              "p99": 1.1989991048219066
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -2892.356118452954,
+              "p50": -286.3005914139277,
+              "p95": 2959.9436361767857
+            }
+          }
+        },
+        "future_max_closing_rate_mps": {
+          "signed": {
+            "real_case_cluster_coefficient": -0.20372484885298836,
+            "real_case_cluster_t": -3.001695883069814,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.009950248756218905,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6449034435354116,
+              "p90": 1.7056391994267879,
+              "p95": 1.9431489906869102,
+              "p99": 2.427930045259097
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.10964913263800295,
+              "p50": -0.0016776894527400458,
+              "p95": 0.1282944026757631
+            }
+          },
+          "upper": {
+            "real_case_cluster_coefficient": -0.461556788215205,
+            "real_case_cluster_t": -3.4315822306320367,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.004975124378109453,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.5638904853536766,
+              "p90": 1.558716349874835,
+              "p95": 1.8566218099769363,
+              "p99": 2.8125275635089335
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.18833305246394713,
+              "p50": -0.008757597774022855,
+              "p95": 0.1819226147862029
+            }
+          },
+          "lower": {
+            "real_case_cluster_coefficient": -0.09595358975238905,
+            "real_case_cluster_t": -0.7368728376091062,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.4527363184079602,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6282663375423304,
+              "p90": 1.7130747336011392,
+              "p95": 2.0183300178953933,
+              "p99": 2.7832669617614045
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.19790073302134345,
+              "p50": -0.01209799110893715,
+              "p95": 0.21272471859338318
+            }
+          }
+        },
+        "future_log1p_min_ttc": {
+          "signed": {
+            "real_case_cluster_coefficient": 0.0846556039794443,
+            "real_case_cluster_t": 2.824493216239654,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.004975124378109453,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6385481084053064,
+              "p90": 1.7887693957662887,
+              "p95": 1.9761527489435406,
+              "p99": 2.6803052007167114
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.04963762792992144,
+              "p50": -0.0024228388832166856,
+              "p95": 0.0514061247957371
+            }
+          },
+          "upper": {
+            "real_case_cluster_coefficient": -0.021961900097517313,
+            "real_case_cluster_t": -0.2615442170506901,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.8159203980099502,
+            "distinguishable_at_0_05": false,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.6678794931235607,
+              "p90": 1.5681306415106646,
+              "p95": 1.7735050004885629,
+              "p99": 2.2008485386664924
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.0869300979664535,
+              "p50": -0.004159256200659938,
+              "p95": 0.06880487209179743
+            }
+          },
+          "lower": {
+            "real_case_cluster_coefficient": -0.2016209065045778,
+            "real_case_cluster_t": -2.784525031018298,
+            "placebo_draws": 200,
+            "empirical_p_real_not_stronger_than_placebo_abs_t": 0.009950248756218905,
+            "distinguishable_at_0_05": true,
+            "placebo_abs_t_quantiles": {
+              "p50": 0.7115786485138892,
+              "p90": 1.6155521396002814,
+              "p95": 1.938306678615373,
+              "p99": 2.534459839154581
+            },
+            "placebo_coefficient_quantiles": {
+              "p05": -0.0878887049130582,
+              "p50": 0.002208994558367442,
+              "p95": 0.09132186751623407
+            }
+          }
+        }
+      }
+    }
+  }
+}
