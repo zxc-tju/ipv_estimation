@@ -1,0 +1,61 @@
+{
+  "c1_mechanism2_key_join": {
+    "dryrun_rows": 67861,
+    "dryrun_unique_product_row_key": 67861,
+    "extra_in_dryrun": 0,
+    "intersection": 67861,
+    "missing_from_dryrun": 0,
+    "natural_rows": 67861,
+    "natural_unique_product_row_key": 67861
+  },
+  "canary_checks": {},
+  "created_utc": "2026-08-04T07:50:50Z",
+  "engineering_failure_science_reason_rows": 0,
+  "gate_recompute_mismatches": 0,
+  "mechanism2_cross_count": {
+    "denominator": 67861,
+    "mechanism1_ok_and_mechanism2_gate_ok_rows": 14099,
+    "mechanism2_columns_read": [
+      "product_row_key",
+      "mechanism2_gate_ok"
+    ],
+    "mechanism2_source": ".codex-fleet/rq016c-human-only-envelope/work/H2/onsite_scoring_dryrun.parquet"
+  },
+  "mode": "full",
+  "natural_rows": 67861,
+  "negative_controls": {
+    "isclose_atol_1e_12": {
+      "mutant_reason": "NO_IPV_EFFECT",
+      "mutant_status": "ABSTAIN",
+      "result": "FAIL",
+      "true_reason": "NEAR_UNIFORM",
+      "true_status": "ABSTAIN"
+    },
+    "theta_0_22": {
+      "mutant_reason": "NEAR_UNIFORM",
+      "mutant_status": "ABSTAIN",
+      "result": "FAIL",
+      "true_max_w_log": 0.2100275316859058,
+      "true_reason": null,
+      "true_status": "OK"
+    }
+  },
+  "numeric_health_bad_rows": 0,
+  "ok_identity_failures": 0,
+  "reason_counts": {
+    "NEAR_UNIFORM": 30341
+  },
+  "rows": 67861,
+  "sentinel_included_in_validation_dataset": false,
+  "status": "PASS",
+  "status_conservation": {
+    "abstain_rows": 30341,
+    "near_uniform_plus_no_ipv_effect": 30341,
+    "ok_plus_abstain_plus_engineering": 67861,
+    "total_rows": 67861
+  },
+  "status_counts": {
+    "ABSTAIN": 30341,
+    "OK": 37520
+  }
+}

@@ -1,0 +1,92 @@
+{
+ "unit": "case",
+ "denominator_cases": 267,
+ "denominator_frames": 67861,
+ "cases_with_any_judgeable_frame": 231,
+ "cases_with_zero_judgeable_frame": 36,
+ "cases_zero_because_mechanism_one": 0,
+ "cases_zero_because_mechanism_two_only": 36,
+ "dead_case_frames": 2897,
+ "dead_case_mechanism_one_pass_rate": 0.5377977217811529,
+ "dead_case_mechanism_two_pass_rate": 0.0006903693476009665,
+ "overall_mechanism_one_pass_rate": 0.5528948880800459,
+ "overall_mechanism_two_pass_rate": 0.32324899426769427,
+ "judgeable_frames_per_usable_case": {
+  "min": 1,
+  "p25": 20.0,
+  "median": 50.0,
+  "p75": 90.0,
+  "max": 222
+ },
+ "context_cells": [
+  {
+   "cell": "CP|equal",
+   "onsite_frames": 116,
+   "human_support_rows": 2209,
+   "mechanism_two_pass_rate": 0.0,
+   "both_gate_pass_rate": 0.0
+  },
+  {
+   "cell": "CP|priority",
+   "onsite_frames": 2336,
+   "human_support_rows": 57461,
+   "mechanism_two_pass_rate": 0.021404,
+   "both_gate_pass_rate": 0.005993
+  },
+  {
+   "cell": "CP|yield",
+   "onsite_frames": 1488,
+   "human_support_rows": 57373,
+   "mechanism_two_pass_rate": 0.184812,
+   "both_gate_pass_rate": 0.182124
+  },
+  {
+   "cell": "F|equal",
+   "onsite_frames": 1535,
+   "human_support_rows": 3029,
+   "mechanism_two_pass_rate": 0.239739,
+   "both_gate_pass_rate": 0.148534
+  },
+  {
+   "cell": "F|priority",
+   "onsite_frames": 29677,
+   "human_support_rows": 45283,
+   "mechanism_two_pass_rate": 0.470331,
+   "both_gate_pass_rate": 0.30094
+  },
+  {
+   "cell": "F|yield",
+   "onsite_frames": 14537,
+   "human_support_rows": 46530,
+   "mechanism_two_pass_rate": 0.329022,
+   "both_gate_pass_rate": 0.203618
+  },
+  {
+   "cell": "MP|equal",
+   "onsite_frames": 291,
+   "human_support_rows": 23424,
+   "mechanism_two_pass_rate": 0.027491,
+   "both_gate_pass_rate": 0.027491
+  },
+  {
+   "cell": "MP|priority",
+   "onsite_frames": 10291,
+   "human_support_rows": 1044964,
+   "mechanism_two_pass_rate": 0.134778,
+   "both_gate_pass_rate": 0.088718
+  },
+  {
+   "cell": "MP|yield",
+   "onsite_frames": 7590,
+   "human_support_rows": 1148133,
+   "mechanism_two_pass_rate": 0.14585,
+   "both_gate_pass_rate": 0.101976
+  }
+ ],
+ "sources": {
+  "product": "data/derived/rq017_onsite_gate/l1_v1",
+  "anchors": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+  "dryrun": ".codex-fleet/rq016c-human-only-envelope/work/H2/onsite_scoring_dryrun.parquet",
+  "human_support": "RQ016C envelope_model/support_counts_by_cell.csv"
+ }
+}

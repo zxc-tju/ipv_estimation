@@ -8,6 +8,35 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
+- **RQ017 已完成并经监督方独立复算放行（2026-08-04T13:12:45Z）。这条替代了 M1 那条「等待 commander 复核」，M1 原始交付完整保存在执行记录目录里。**
+  **背景一句话**：在线验证串联两道弃权机制——机制一判断某一帧的 IPV（表示交互倾向的标量）
+  数值是否携带七个候选间的判别信息，机制二用人类参照分布判断当前情境是否有足够人类样本可比。
+  RQ015 冻结机制一、RQ016C 建好纯人类参照，**但在 RQ017 之前这套方法从未真正对准过一辆
+  自动驾驶车**（OnSite 台账 281,268 行的机制一判据非空计数为 0）。RQ017 补上了这一块。
+  **产物落位**：`reports/studies/RQ017_onsite_mechanism_one/RQ017_1_onsite_gate_20260804T075311Z_406e7a65/`；
+  知识层 `reports/knowledge/RQ017_onsite_mechanism_one/`；
+  正式台账 `data/derived/rq017_onsite_gate/l1_v1/`（约 19 MB、67,861 行，**未入库**，
+  `data/derived/` 整体被 gitignore）。轨道原始工作区 `.codex-fleet/rq017-onsite-materializer/`。
+  **venue = 同济 HPC**（分区 intel,fata，未用 amd），理由是产物来源一致性而非速度：
+  Mac 与 HPC 的求解结果在 1,867/2,300 = 81.17% 的锚点上不同。同源已验证：G 锚点重算
+  **max_abs_diff = 0.0**。
+  **帧级结果**（分母 67,861）：`OK` 37,520 = 55.2971%、`ABSTAIN` 30,341 = 44.7029%
+  （**全部 `NEAR_UNIFORM`**）、`NO_IPV_EFFECT` 0、工程失败 0；与 RQ016C 支持门交叉后
+  **两门都过 14,099 = 20.7763%**。
+  **Case 级结果**（分母 267 个 case）：至少 1 帧可判的 **231 个 = 86.5169%**；全程不可判 36 个，
+  **其中因机制一全程无解的为 0 个 = 0.0000%**——**没有任何一个 case 是全程无法估计 IPV 的**，
+  36 个全部死于机制二无参照。**真正的约束是人类参照覆盖，不是可估计性。**
+  **必须一并引用的边界**：(1) `NO_IPV_EFFECT` 在 OnSite 上**实际不可达**
+  （0/67,861，最小非零 `mse_spread` 2.32e-08 对 InterHub 的 4.77e-15），
+  **弃权理由构成不可与 InterHub 对比，只能比总弃权率**；(2) 机制二比的是运动学邻域
+  （12 项距离特征）**不是 IPV 数值**，「机制二不通过」**只意味着无法判定，不得解读为
+  「该车不像人」**；(3) 机制二缺口是**重叠不是数量**——`MP` 两格逾百万行人类支撑而通过率
+  仅 13–15%，`F|priority` 仅 45,283 行却 47.03%；(4) **本轮不对任何车辆作出判断**；
+  (5) 未解释观察：短历史行（1,572 行）机制一通过率 73.92%，高于满历史行 54.85%。
+  **一次公开失败的预测**：监督方预注册（时间戳 2026-08-04T06:22:47Z，早于派发）预测机制一
+  通过率 ≈ 80%（区间 65–85%），**实测 55.2971%，落在区间外，预测失败**。原因是校准样本来自
+  `max_anchors_per_unit=1` 年代、锚点是被选出来的，选择效应把预测整体抬高——该弱点在预注册时
+  已写明。**下次从「被挑选的子集」外推到全集时须先处理选择效应。**
 - **RQ016B / RQ016C 两轮已完成并经监督方独立复算放行（2026-08-04T02:03:12Z）。**
   这一条替代了 RQ016C-H2 / RQ016C-H1 / RQ016B-F2 / RQ016B-F1 四条 `WAITING_ON_COMMANDER`
   状态条目，四个 agent 的原始交付内容完整保存在下方执行记录目录里。
@@ -34,9 +63,9 @@ question index in `STUDIES.md`.
   **未入库产物**：拟合模型本体 164 MB 在
   `.codex-fleet/rq016c-human-only-envelope/work/H2/envelope_model/rq016c_h2_envelope.pkl`
   （sha256 `bc25302b4a7a307e3c73b3429b880e3cfda59074fc80850a732a93a67ef75de2`），可由已入库脚本重生成。
-  **待你拍板（materializer 动工前）**：OnSite 范围选 A 全 aligned frames 70,317 / B 全 timing-valid
-  anchor 67,861 / C 每 unit 一个 267；参考线合同选沿用 observed-trajectory fallback / 要求真实
-  地图或车道（OnSite dense 源表真实 map/lane/route/reference-line 字段为 0/274,022）。
+  **后续状态更新**：materializer 动工前的范围与参考线合同已由 RQ017 v4 裁定并执行：
+  范围选 B 全 timing-valid anchor 67,861，参考线合同沿用 observed-trajectory fallback
+  （OnSite dense 源表真实 map/lane/route/reference-line 字段为 0/274,022）。
   **已知边界**：无同源迁移证据（RQ009 LODO 4 个留出源均不含 OnSite 与该 WOD 产物，
   90% coverage 波动 0.7484–0.9921）；OnSite 有 7 行坐标系异常
   （`relative_distance_anchor` ≈ 570,762 米）真正分析前须处理；

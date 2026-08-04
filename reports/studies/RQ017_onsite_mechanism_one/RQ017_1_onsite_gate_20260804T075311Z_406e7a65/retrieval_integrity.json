@@ -1,0 +1,1232 @@
+{
+  "bad": [],
+  "bad_count": 0,
+  "checked_shards": 136,
+  "shards": [
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0001/part-0.parquet",
+      "local_sha256": "754510e0f6e43f7d1f47cc6d69ed9514b338764efe5e709d1efa0c3140e78ccb",
+      "ok": true,
+      "remote_manifest_sha256": "754510e0f6e43f7d1f47cc6d69ed9514b338764efe5e709d1efa0c3140e78ccb",
+      "rows": 500,
+      "shard_id": "full_0001"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0002/part-0.parquet",
+      "local_sha256": "15147ce508602fb4c909639adc33cd8e67ee431456af42dd7cf0a1ef478f8021",
+      "ok": true,
+      "remote_manifest_sha256": "15147ce508602fb4c909639adc33cd8e67ee431456af42dd7cf0a1ef478f8021",
+      "rows": 500,
+      "shard_id": "full_0002"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0003/part-0.parquet",
+      "local_sha256": "cba872601c3679f58b5e9aadac28afd9647b157862f999c324944abc27695153",
+      "ok": true,
+      "remote_manifest_sha256": "cba872601c3679f58b5e9aadac28afd9647b157862f999c324944abc27695153",
+      "rows": 500,
+      "shard_id": "full_0003"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0004/part-0.parquet",
+      "local_sha256": "e9f36f414722b5ec8d364ad9e26234a227ecd05f51887867ec202141d1b56f55",
+      "ok": true,
+      "remote_manifest_sha256": "e9f36f414722b5ec8d364ad9e26234a227ecd05f51887867ec202141d1b56f55",
+      "rows": 500,
+      "shard_id": "full_0004"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0005/part-0.parquet",
+      "local_sha256": "8e51ddbe6cf390f29ba9e75e0beef15a418c354cd94f283a0bed644b0fcbacdb",
+      "ok": true,
+      "remote_manifest_sha256": "8e51ddbe6cf390f29ba9e75e0beef15a418c354cd94f283a0bed644b0fcbacdb",
+      "rows": 500,
+      "shard_id": "full_0005"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0006/part-0.parquet",
+      "local_sha256": "8873aaca21fc3d19fb62230ae4d146a61e87cfa581564ca1428ae9befbbb2709",
+      "ok": true,
+      "remote_manifest_sha256": "8873aaca21fc3d19fb62230ae4d146a61e87cfa581564ca1428ae9befbbb2709",
+      "rows": 500,
+      "shard_id": "full_0006"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0007/part-0.parquet",
+      "local_sha256": "05bb3f9a8b248ab779249af224b6c89807eeae730ee4e75f1c88a6518993372b",
+      "ok": true,
+      "remote_manifest_sha256": "05bb3f9a8b248ab779249af224b6c89807eeae730ee4e75f1c88a6518993372b",
+      "rows": 500,
+      "shard_id": "full_0007"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0008/part-0.parquet",
+      "local_sha256": "b7c7c3544a31a48963ff2b872439a105a31f6a32ffb8c5417b6a009a5718f60d",
+      "ok": true,
+      "remote_manifest_sha256": "b7c7c3544a31a48963ff2b872439a105a31f6a32ffb8c5417b6a009a5718f60d",
+      "rows": 500,
+      "shard_id": "full_0008"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0009/part-0.parquet",
+      "local_sha256": "4dcaf954665a38246e9a6c0e120b867f1ca556397d695738b5348a9edb682478",
+      "ok": true,
+      "remote_manifest_sha256": "4dcaf954665a38246e9a6c0e120b867f1ca556397d695738b5348a9edb682478",
+      "rows": 500,
+      "shard_id": "full_0009"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0010/part-0.parquet",
+      "local_sha256": "11e9a1aaa90cea401eedaf73254584a186abec9b2185359e212415ebc49a3ef1",
+      "ok": true,
+      "remote_manifest_sha256": "11e9a1aaa90cea401eedaf73254584a186abec9b2185359e212415ebc49a3ef1",
+      "rows": 500,
+      "shard_id": "full_0010"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0011/part-0.parquet",
+      "local_sha256": "1f8e2d8eae949137f6a35c9ef962bc285028941260cd832d519618697aa28613",
+      "ok": true,
+      "remote_manifest_sha256": "1f8e2d8eae949137f6a35c9ef962bc285028941260cd832d519618697aa28613",
+      "rows": 500,
+      "shard_id": "full_0011"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0012/part-0.parquet",
+      "local_sha256": "fc0f63f586f0970e8ecf45fabe29299ba6364483ba2e10c92c58e6d26459e74b",
+      "ok": true,
+      "remote_manifest_sha256": "fc0f63f586f0970e8ecf45fabe29299ba6364483ba2e10c92c58e6d26459e74b",
+      "rows": 500,
+      "shard_id": "full_0012"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0013/part-0.parquet",
+      "local_sha256": "4c9ed00c01fdeec11d8031e8aad238f2188b9d5b8223c4fa52048674bc1879a9",
+      "ok": true,
+      "remote_manifest_sha256": "4c9ed00c01fdeec11d8031e8aad238f2188b9d5b8223c4fa52048674bc1879a9",
+      "rows": 500,
+      "shard_id": "full_0013"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0014/part-0.parquet",
+      "local_sha256": "d1b91631d8d93020c02a4aa14d332c9ee16b74e51e2cd9c5b5c667a8ba2341cf",
+      "ok": true,
+      "remote_manifest_sha256": "d1b91631d8d93020c02a4aa14d332c9ee16b74e51e2cd9c5b5c667a8ba2341cf",
+      "rows": 500,
+      "shard_id": "full_0014"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0015/part-0.parquet",
+      "local_sha256": "1eb32ed246ff3ae788a7e412ea03c7bb144ba1eafefc9b1860986d0cb3236c1e",
+      "ok": true,
+      "remote_manifest_sha256": "1eb32ed246ff3ae788a7e412ea03c7bb144ba1eafefc9b1860986d0cb3236c1e",
+      "rows": 500,
+      "shard_id": "full_0015"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0016/part-0.parquet",
+      "local_sha256": "83b67d6a223ddf23cb19bb800b53901896ce79c59f81d9d2e98da257bdcb73a6",
+      "ok": true,
+      "remote_manifest_sha256": "83b67d6a223ddf23cb19bb800b53901896ce79c59f81d9d2e98da257bdcb73a6",
+      "rows": 500,
+      "shard_id": "full_0016"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0017/part-0.parquet",
+      "local_sha256": "6fb910a633364326d40e1c2c6f6a1a6619eeb7050ffe8c2571e62f056f257980",
+      "ok": true,
+      "remote_manifest_sha256": "6fb910a633364326d40e1c2c6f6a1a6619eeb7050ffe8c2571e62f056f257980",
+      "rows": 500,
+      "shard_id": "full_0017"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0018/part-0.parquet",
+      "local_sha256": "74e14353f0633377ea9707e263100f30c0962790e714a267ccb9a82867c7823f",
+      "ok": true,
+      "remote_manifest_sha256": "74e14353f0633377ea9707e263100f30c0962790e714a267ccb9a82867c7823f",
+      "rows": 500,
+      "shard_id": "full_0018"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0019/part-0.parquet",
+      "local_sha256": "3474ff675280f8f294c2d53e45eaf768ba33231699d9cf38eeb5956e88eae3cb",
+      "ok": true,
+      "remote_manifest_sha256": "3474ff675280f8f294c2d53e45eaf768ba33231699d9cf38eeb5956e88eae3cb",
+      "rows": 500,
+      "shard_id": "full_0019"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0020/part-0.parquet",
+      "local_sha256": "61e1c6c0eccd8702d7c237f0987c9a5e55d3864c01640f034d7d446f54095c4a",
+      "ok": true,
+      "remote_manifest_sha256": "61e1c6c0eccd8702d7c237f0987c9a5e55d3864c01640f034d7d446f54095c4a",
+      "rows": 500,
+      "shard_id": "full_0020"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0021/part-0.parquet",
+      "local_sha256": "a116e131f051c452fe3390b08b004444c1f438fab42fdd6a707ae4ade330cd7d",
+      "ok": true,
+      "remote_manifest_sha256": "a116e131f051c452fe3390b08b004444c1f438fab42fdd6a707ae4ade330cd7d",
+      "rows": 500,
+      "shard_id": "full_0021"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0022/part-0.parquet",
+      "local_sha256": "26296f4ecde59022ba5c1f86fbec1bb638a1e7f4e0afe0fe735decdf50535bde",
+      "ok": true,
+      "remote_manifest_sha256": "26296f4ecde59022ba5c1f86fbec1bb638a1e7f4e0afe0fe735decdf50535bde",
+      "rows": 500,
+      "shard_id": "full_0022"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0023/part-0.parquet",
+      "local_sha256": "370d27690322b85207431357a2c02cf2cd0aad20b18c0212ece14554abe70c6f",
+      "ok": true,
+      "remote_manifest_sha256": "370d27690322b85207431357a2c02cf2cd0aad20b18c0212ece14554abe70c6f",
+      "rows": 500,
+      "shard_id": "full_0023"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0024/part-0.parquet",
+      "local_sha256": "637b676ab6f840a662964e970bbe321b6ee904c6037e26fa2d5f741b594cf8d0",
+      "ok": true,
+      "remote_manifest_sha256": "637b676ab6f840a662964e970bbe321b6ee904c6037e26fa2d5f741b594cf8d0",
+      "rows": 500,
+      "shard_id": "full_0024"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0025/part-0.parquet",
+      "local_sha256": "57cce07a5ce63530c86ad7b97e8762201c290a16a5aad586c9733b1b657ae45d",
+      "ok": true,
+      "remote_manifest_sha256": "57cce07a5ce63530c86ad7b97e8762201c290a16a5aad586c9733b1b657ae45d",
+      "rows": 500,
+      "shard_id": "full_0025"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0026/part-0.parquet",
+      "local_sha256": "e031c5648aa22bf758a9200d6816bf36954ab9086403b403bdef80d03324400d",
+      "ok": true,
+      "remote_manifest_sha256": "e031c5648aa22bf758a9200d6816bf36954ab9086403b403bdef80d03324400d",
+      "rows": 500,
+      "shard_id": "full_0026"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0027/part-0.parquet",
+      "local_sha256": "258901734acdee8a7dd0ca59f4977d8f98fed4074c4af20aa1680cde5d4ea0ed",
+      "ok": true,
+      "remote_manifest_sha256": "258901734acdee8a7dd0ca59f4977d8f98fed4074c4af20aa1680cde5d4ea0ed",
+      "rows": 500,
+      "shard_id": "full_0027"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0028/part-0.parquet",
+      "local_sha256": "e2f3a24e8ce73f8f6fa2bf50a1b7c4d2d5f14c957af79fc0e3341f46e0ed72dc",
+      "ok": true,
+      "remote_manifest_sha256": "e2f3a24e8ce73f8f6fa2bf50a1b7c4d2d5f14c957af79fc0e3341f46e0ed72dc",
+      "rows": 500,
+      "shard_id": "full_0028"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0029/part-0.parquet",
+      "local_sha256": "fad5704bff86809eda963e7a5a6f01855bd795c041191432972ec7b65fc080de",
+      "ok": true,
+      "remote_manifest_sha256": "fad5704bff86809eda963e7a5a6f01855bd795c041191432972ec7b65fc080de",
+      "rows": 500,
+      "shard_id": "full_0029"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0030/part-0.parquet",
+      "local_sha256": "d437fb1a837a5bc6929c953fb89db58012937da72fd5380cc092423703c8a4d0",
+      "ok": true,
+      "remote_manifest_sha256": "d437fb1a837a5bc6929c953fb89db58012937da72fd5380cc092423703c8a4d0",
+      "rows": 500,
+      "shard_id": "full_0030"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0031/part-0.parquet",
+      "local_sha256": "2cb49d188ace7e539853e52f5d27e49ad5c00acf565f11b0e82a01168b47f8a2",
+      "ok": true,
+      "remote_manifest_sha256": "2cb49d188ace7e539853e52f5d27e49ad5c00acf565f11b0e82a01168b47f8a2",
+      "rows": 500,
+      "shard_id": "full_0031"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0032/part-0.parquet",
+      "local_sha256": "ca12b8e054c92db058d65d446703a6f0e06fbcab2da8cd061dd4a6bc367539a8",
+      "ok": true,
+      "remote_manifest_sha256": "ca12b8e054c92db058d65d446703a6f0e06fbcab2da8cd061dd4a6bc367539a8",
+      "rows": 500,
+      "shard_id": "full_0032"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0033/part-0.parquet",
+      "local_sha256": "48613d9fb1bd9b78e4cd8feace4b78031dd2190eac479ff0f375907ac35581eb",
+      "ok": true,
+      "remote_manifest_sha256": "48613d9fb1bd9b78e4cd8feace4b78031dd2190eac479ff0f375907ac35581eb",
+      "rows": 500,
+      "shard_id": "full_0033"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0034/part-0.parquet",
+      "local_sha256": "c04a593809b7468e32a7988a060ff0bc4b177eb28ddb469259aa684e14db37b3",
+      "ok": true,
+      "remote_manifest_sha256": "c04a593809b7468e32a7988a060ff0bc4b177eb28ddb469259aa684e14db37b3",
+      "rows": 500,
+      "shard_id": "full_0034"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0035/part-0.parquet",
+      "local_sha256": "ff0e36c093880c5a4ab0146d05a828f25288c6d35cfc16fd6ba457b890554361",
+      "ok": true,
+      "remote_manifest_sha256": "ff0e36c093880c5a4ab0146d05a828f25288c6d35cfc16fd6ba457b890554361",
+      "rows": 500,
+      "shard_id": "full_0035"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0036/part-0.parquet",
+      "local_sha256": "da4ec2adf556fce8a48ef778fb3147b64d31dbbd2b4e4d36d9e593b629897a66",
+      "ok": true,
+      "remote_manifest_sha256": "da4ec2adf556fce8a48ef778fb3147b64d31dbbd2b4e4d36d9e593b629897a66",
+      "rows": 500,
+      "shard_id": "full_0036"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0037/part-0.parquet",
+      "local_sha256": "617e3c714a38391493a839680eaa9e31a437cf51576a458d7ec45b64d95dfda6",
+      "ok": true,
+      "remote_manifest_sha256": "617e3c714a38391493a839680eaa9e31a437cf51576a458d7ec45b64d95dfda6",
+      "rows": 500,
+      "shard_id": "full_0037"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0038/part-0.parquet",
+      "local_sha256": "6742bf2dba8ab5d014610a80a0a043ab3d06ab03bcd0e1a76e87915b6f26b2dd",
+      "ok": true,
+      "remote_manifest_sha256": "6742bf2dba8ab5d014610a80a0a043ab3d06ab03bcd0e1a76e87915b6f26b2dd",
+      "rows": 500,
+      "shard_id": "full_0038"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0039/part-0.parquet",
+      "local_sha256": "592a31afee7e4e4340c7abba966fe708590f523714666c94db70c517d3758b4a",
+      "ok": true,
+      "remote_manifest_sha256": "592a31afee7e4e4340c7abba966fe708590f523714666c94db70c517d3758b4a",
+      "rows": 500,
+      "shard_id": "full_0039"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0040/part-0.parquet",
+      "local_sha256": "55e7eb093c4485b5db1588e94873a0c6ba692c701da44b6dd08a0ea2932df397",
+      "ok": true,
+      "remote_manifest_sha256": "55e7eb093c4485b5db1588e94873a0c6ba692c701da44b6dd08a0ea2932df397",
+      "rows": 500,
+      "shard_id": "full_0040"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0041/part-0.parquet",
+      "local_sha256": "8742ebdeb2d64d09d0e0f1dd48d5963a7d297af074846c05f2f4bc5bc13e095a",
+      "ok": true,
+      "remote_manifest_sha256": "8742ebdeb2d64d09d0e0f1dd48d5963a7d297af074846c05f2f4bc5bc13e095a",
+      "rows": 500,
+      "shard_id": "full_0041"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0042/part-0.parquet",
+      "local_sha256": "a306ef42a09076490de7ce2a182042dcff63f8a53b336b196a1f6213d4e6c105",
+      "ok": true,
+      "remote_manifest_sha256": "a306ef42a09076490de7ce2a182042dcff63f8a53b336b196a1f6213d4e6c105",
+      "rows": 500,
+      "shard_id": "full_0042"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0043/part-0.parquet",
+      "local_sha256": "b3cc0ff1b5425271938c019e687bfc050cbb72b2f7c7e28f4a178fc0d89d0a2b",
+      "ok": true,
+      "remote_manifest_sha256": "b3cc0ff1b5425271938c019e687bfc050cbb72b2f7c7e28f4a178fc0d89d0a2b",
+      "rows": 500,
+      "shard_id": "full_0043"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0044/part-0.parquet",
+      "local_sha256": "15e1522148fb6c3412850979381ff6da5517272738817f8c00c44df6cb8bb07a",
+      "ok": true,
+      "remote_manifest_sha256": "15e1522148fb6c3412850979381ff6da5517272738817f8c00c44df6cb8bb07a",
+      "rows": 500,
+      "shard_id": "full_0044"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0045/part-0.parquet",
+      "local_sha256": "1424ee6197ad71d80046cf6982510d73a51318bbcd4b9e1728c132935b26a902",
+      "ok": true,
+      "remote_manifest_sha256": "1424ee6197ad71d80046cf6982510d73a51318bbcd4b9e1728c132935b26a902",
+      "rows": 500,
+      "shard_id": "full_0045"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0046/part-0.parquet",
+      "local_sha256": "a63938183526fd9367c53c1aa89a3d2fe8af75f72dc0378af37854474cc6ad3b",
+      "ok": true,
+      "remote_manifest_sha256": "a63938183526fd9367c53c1aa89a3d2fe8af75f72dc0378af37854474cc6ad3b",
+      "rows": 500,
+      "shard_id": "full_0046"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0047/part-0.parquet",
+      "local_sha256": "f891d87c8c5e3f5874e69b73e51b0bc60a4d61cc0fe08eaf187a6a9f54b375bc",
+      "ok": true,
+      "remote_manifest_sha256": "f891d87c8c5e3f5874e69b73e51b0bc60a4d61cc0fe08eaf187a6a9f54b375bc",
+      "rows": 500,
+      "shard_id": "full_0047"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0048/part-0.parquet",
+      "local_sha256": "ecfc8d40b72e3987af9cf35e85d77a941eadc832266e6e7f4465ea20f7be96e1",
+      "ok": true,
+      "remote_manifest_sha256": "ecfc8d40b72e3987af9cf35e85d77a941eadc832266e6e7f4465ea20f7be96e1",
+      "rows": 500,
+      "shard_id": "full_0048"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0049/part-0.parquet",
+      "local_sha256": "a02579004cf830108de02cd2f08357d46f309fce124720ef7ea45afdc331de13",
+      "ok": true,
+      "remote_manifest_sha256": "a02579004cf830108de02cd2f08357d46f309fce124720ef7ea45afdc331de13",
+      "rows": 500,
+      "shard_id": "full_0049"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0050/part-0.parquet",
+      "local_sha256": "8f8e46dc3168dbb0b1c2a8ee75c598025de88943787d94dae6752b8f36dc87fc",
+      "ok": true,
+      "remote_manifest_sha256": "8f8e46dc3168dbb0b1c2a8ee75c598025de88943787d94dae6752b8f36dc87fc",
+      "rows": 500,
+      "shard_id": "full_0050"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0051/part-0.parquet",
+      "local_sha256": "655b228ed033c5c6d541dbe0e854b590187272c2bb72dff0f53917b0b8ea47d4",
+      "ok": true,
+      "remote_manifest_sha256": "655b228ed033c5c6d541dbe0e854b590187272c2bb72dff0f53917b0b8ea47d4",
+      "rows": 500,
+      "shard_id": "full_0051"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0052/part-0.parquet",
+      "local_sha256": "231c6fa533b7e624c8a467c5dfa687c314df4463c54f0be34700a6cf03760146",
+      "ok": true,
+      "remote_manifest_sha256": "231c6fa533b7e624c8a467c5dfa687c314df4463c54f0be34700a6cf03760146",
+      "rows": 500,
+      "shard_id": "full_0052"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0053/part-0.parquet",
+      "local_sha256": "012825188320a177c81eed369b0f2221038f763cecf13079736d004bdc59eefa",
+      "ok": true,
+      "remote_manifest_sha256": "012825188320a177c81eed369b0f2221038f763cecf13079736d004bdc59eefa",
+      "rows": 500,
+      "shard_id": "full_0053"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0054/part-0.parquet",
+      "local_sha256": "59a78c968e8b397ce72fcd13029bd999eeadcb9428a0f1595f79b2337107dcd5",
+      "ok": true,
+      "remote_manifest_sha256": "59a78c968e8b397ce72fcd13029bd999eeadcb9428a0f1595f79b2337107dcd5",
+      "rows": 500,
+      "shard_id": "full_0054"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0055/part-0.parquet",
+      "local_sha256": "040aa9fd40a5b25cd0dab58563934c3fbaf77ccf046bc9619c97008206c8d584",
+      "ok": true,
+      "remote_manifest_sha256": "040aa9fd40a5b25cd0dab58563934c3fbaf77ccf046bc9619c97008206c8d584",
+      "rows": 500,
+      "shard_id": "full_0055"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0056/part-0.parquet",
+      "local_sha256": "0530ec55d8d8f85c0eece3af5c5a05db648c025c7c12af9e08675043d761f27c",
+      "ok": true,
+      "remote_manifest_sha256": "0530ec55d8d8f85c0eece3af5c5a05db648c025c7c12af9e08675043d761f27c",
+      "rows": 500,
+      "shard_id": "full_0056"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0057/part-0.parquet",
+      "local_sha256": "c4be3de2cc4d1550cbe5d84c08113fe3792ae5225ad5b1b0b8c04e2b8df8b8ca",
+      "ok": true,
+      "remote_manifest_sha256": "c4be3de2cc4d1550cbe5d84c08113fe3792ae5225ad5b1b0b8c04e2b8df8b8ca",
+      "rows": 500,
+      "shard_id": "full_0057"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0058/part-0.parquet",
+      "local_sha256": "ad2ffd75e3b89fc9601b66e1dc3f5365d0725c55f481f251decd838f40115363",
+      "ok": true,
+      "remote_manifest_sha256": "ad2ffd75e3b89fc9601b66e1dc3f5365d0725c55f481f251decd838f40115363",
+      "rows": 500,
+      "shard_id": "full_0058"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0059/part-0.parquet",
+      "local_sha256": "af8f7c6d75ef8ab66267d4527aec7fa882f950dcebe378d9b2bc1934d2ab9820",
+      "ok": true,
+      "remote_manifest_sha256": "af8f7c6d75ef8ab66267d4527aec7fa882f950dcebe378d9b2bc1934d2ab9820",
+      "rows": 500,
+      "shard_id": "full_0059"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0060/part-0.parquet",
+      "local_sha256": "89da69dda2dbfcdbb798d7756222406d1f10132d634245c554b197645bb11639",
+      "ok": true,
+      "remote_manifest_sha256": "89da69dda2dbfcdbb798d7756222406d1f10132d634245c554b197645bb11639",
+      "rows": 500,
+      "shard_id": "full_0060"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0061/part-0.parquet",
+      "local_sha256": "b7cf60a225ccbe4df108d7c334da40d4d85a0cdd3358095daa0bbbc31bdcde2c",
+      "ok": true,
+      "remote_manifest_sha256": "b7cf60a225ccbe4df108d7c334da40d4d85a0cdd3358095daa0bbbc31bdcde2c",
+      "rows": 500,
+      "shard_id": "full_0061"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0062/part-0.parquet",
+      "local_sha256": "0ef0a880fe070a3bec8fe20a3dce3db94a3384a9907a6dbf6d1b52627332a447",
+      "ok": true,
+      "remote_manifest_sha256": "0ef0a880fe070a3bec8fe20a3dce3db94a3384a9907a6dbf6d1b52627332a447",
+      "rows": 500,
+      "shard_id": "full_0062"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0063/part-0.parquet",
+      "local_sha256": "121070d62685222545ef33e444770a46c203f2df3e25e7fba3201b28e76f37bf",
+      "ok": true,
+      "remote_manifest_sha256": "121070d62685222545ef33e444770a46c203f2df3e25e7fba3201b28e76f37bf",
+      "rows": 500,
+      "shard_id": "full_0063"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0064/part-0.parquet",
+      "local_sha256": "d0ccb2b4e85f38b7e292f1aec2d5e80b3f094a02048953db8d5417296cc74e83",
+      "ok": true,
+      "remote_manifest_sha256": "d0ccb2b4e85f38b7e292f1aec2d5e80b3f094a02048953db8d5417296cc74e83",
+      "rows": 500,
+      "shard_id": "full_0064"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0065/part-0.parquet",
+      "local_sha256": "3ecaaac19bcee6cc270b18ce32f014952697087c4d1dfb833904d22d1a068833",
+      "ok": true,
+      "remote_manifest_sha256": "3ecaaac19bcee6cc270b18ce32f014952697087c4d1dfb833904d22d1a068833",
+      "rows": 500,
+      "shard_id": "full_0065"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0066/part-0.parquet",
+      "local_sha256": "08301cc2c2e59729809763fb0b48f99d887344c824ad802032e43d18919a2142",
+      "ok": true,
+      "remote_manifest_sha256": "08301cc2c2e59729809763fb0b48f99d887344c824ad802032e43d18919a2142",
+      "rows": 500,
+      "shard_id": "full_0066"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0067/part-0.parquet",
+      "local_sha256": "fe51fb10daa14aea8f32074ae861fad449fc61ff98d6fa4c1189fe361f4af6a3",
+      "ok": true,
+      "remote_manifest_sha256": "fe51fb10daa14aea8f32074ae861fad449fc61ff98d6fa4c1189fe361f4af6a3",
+      "rows": 500,
+      "shard_id": "full_0067"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0068/part-0.parquet",
+      "local_sha256": "100b93cb2935af3ef1e72027952813a49912b28574b8f2fdcc088530dd609791",
+      "ok": true,
+      "remote_manifest_sha256": "100b93cb2935af3ef1e72027952813a49912b28574b8f2fdcc088530dd609791",
+      "rows": 500,
+      "shard_id": "full_0068"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0069/part-0.parquet",
+      "local_sha256": "cc690da2ab8ff69c80e17d499d1398b0d1656fccb6f1b52e13116a726e4e6e36",
+      "ok": true,
+      "remote_manifest_sha256": "cc690da2ab8ff69c80e17d499d1398b0d1656fccb6f1b52e13116a726e4e6e36",
+      "rows": 500,
+      "shard_id": "full_0069"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0070/part-0.parquet",
+      "local_sha256": "aa9dbc9b26f865011cec0f94121a4704727fc57202aa1a68221f7ccb536877ae",
+      "ok": true,
+      "remote_manifest_sha256": "aa9dbc9b26f865011cec0f94121a4704727fc57202aa1a68221f7ccb536877ae",
+      "rows": 500,
+      "shard_id": "full_0070"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0071/part-0.parquet",
+      "local_sha256": "39d5a2db668330966f9f0c8d717c5f1d269f9aa286ec1e55407d3ccfb7567a8d",
+      "ok": true,
+      "remote_manifest_sha256": "39d5a2db668330966f9f0c8d717c5f1d269f9aa286ec1e55407d3ccfb7567a8d",
+      "rows": 500,
+      "shard_id": "full_0071"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0072/part-0.parquet",
+      "local_sha256": "1a9cd5e3ddcdc2c857da1e04eb40c3288aca22880b3485544f4531a573408973",
+      "ok": true,
+      "remote_manifest_sha256": "1a9cd5e3ddcdc2c857da1e04eb40c3288aca22880b3485544f4531a573408973",
+      "rows": 500,
+      "shard_id": "full_0072"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0073/part-0.parquet",
+      "local_sha256": "ca2442da0b573fd590519dbcbbb86b70f6896e5a7d29336631a313fb5fda34c4",
+      "ok": true,
+      "remote_manifest_sha256": "ca2442da0b573fd590519dbcbbb86b70f6896e5a7d29336631a313fb5fda34c4",
+      "rows": 500,
+      "shard_id": "full_0073"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0074/part-0.parquet",
+      "local_sha256": "d389dbbf845c05598818b28027f84bcdbd20f4ca52b8d5d55435af8727ff79c6",
+      "ok": true,
+      "remote_manifest_sha256": "d389dbbf845c05598818b28027f84bcdbd20f4ca52b8d5d55435af8727ff79c6",
+      "rows": 500,
+      "shard_id": "full_0074"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0075/part-0.parquet",
+      "local_sha256": "af9baa59b9178a43e41915a525bb35ecdebc379413e86fcbf051eefc277cd48a",
+      "ok": true,
+      "remote_manifest_sha256": "af9baa59b9178a43e41915a525bb35ecdebc379413e86fcbf051eefc277cd48a",
+      "rows": 500,
+      "shard_id": "full_0075"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0076/part-0.parquet",
+      "local_sha256": "ca1b1c1cb5ad7dd653409f398bb149f52cbefb61056b3d2cb1488768b43fada9",
+      "ok": true,
+      "remote_manifest_sha256": "ca1b1c1cb5ad7dd653409f398bb149f52cbefb61056b3d2cb1488768b43fada9",
+      "rows": 500,
+      "shard_id": "full_0076"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0077/part-0.parquet",
+      "local_sha256": "b164738a9e0f4c16c86c4b403d9bbcc1de1da4bc001dfbf2ec4144e40d0eb808",
+      "ok": true,
+      "remote_manifest_sha256": "b164738a9e0f4c16c86c4b403d9bbcc1de1da4bc001dfbf2ec4144e40d0eb808",
+      "rows": 500,
+      "shard_id": "full_0077"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0078/part-0.parquet",
+      "local_sha256": "bd5c22112250d129cc149df37e423acfd4f47d6891f64251454f941b69463cf6",
+      "ok": true,
+      "remote_manifest_sha256": "bd5c22112250d129cc149df37e423acfd4f47d6891f64251454f941b69463cf6",
+      "rows": 500,
+      "shard_id": "full_0078"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0079/part-0.parquet",
+      "local_sha256": "4d0d5b4b3ec08b41a2a770c4a33477417cb9daa92405cfe32c2217754d63c99d",
+      "ok": true,
+      "remote_manifest_sha256": "4d0d5b4b3ec08b41a2a770c4a33477417cb9daa92405cfe32c2217754d63c99d",
+      "rows": 500,
+      "shard_id": "full_0079"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0080/part-0.parquet",
+      "local_sha256": "71f453f3402e8a48b2c2530f1c43339bbe540c592b4c777639a0c9ad3884f8c1",
+      "ok": true,
+      "remote_manifest_sha256": "71f453f3402e8a48b2c2530f1c43339bbe540c592b4c777639a0c9ad3884f8c1",
+      "rows": 500,
+      "shard_id": "full_0080"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0081/part-0.parquet",
+      "local_sha256": "4d6bc1dc9d0051aad6059120ffa5c7f113e3995c37de45a1415f2c3b6cce29b1",
+      "ok": true,
+      "remote_manifest_sha256": "4d6bc1dc9d0051aad6059120ffa5c7f113e3995c37de45a1415f2c3b6cce29b1",
+      "rows": 500,
+      "shard_id": "full_0081"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0082/part-0.parquet",
+      "local_sha256": "34a60fc654597887459d4bfe664d356d2427995913663939c169a3c2dce5f280",
+      "ok": true,
+      "remote_manifest_sha256": "34a60fc654597887459d4bfe664d356d2427995913663939c169a3c2dce5f280",
+      "rows": 500,
+      "shard_id": "full_0082"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0083/part-0.parquet",
+      "local_sha256": "32eb3f3388a116e159e34fec3b1f3ea116ce4a56c39883ac7ce4d32d56e7557e",
+      "ok": true,
+      "remote_manifest_sha256": "32eb3f3388a116e159e34fec3b1f3ea116ce4a56c39883ac7ce4d32d56e7557e",
+      "rows": 500,
+      "shard_id": "full_0083"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0084/part-0.parquet",
+      "local_sha256": "e961b1dc6c8cc9498aa7c4124272c3a420a5fcec13c088f4093deb6dbcedb3d0",
+      "ok": true,
+      "remote_manifest_sha256": "e961b1dc6c8cc9498aa7c4124272c3a420a5fcec13c088f4093deb6dbcedb3d0",
+      "rows": 500,
+      "shard_id": "full_0084"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0085/part-0.parquet",
+      "local_sha256": "71d9931636b2498776152d5b7691327da87b21bb2c4ad2e63a79f3efb2b88d5d",
+      "ok": true,
+      "remote_manifest_sha256": "71d9931636b2498776152d5b7691327da87b21bb2c4ad2e63a79f3efb2b88d5d",
+      "rows": 500,
+      "shard_id": "full_0085"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0086/part-0.parquet",
+      "local_sha256": "cdcb3c970f223419ed6aeaa60733afd754bbf8d68dd043933836ca3b772c8360",
+      "ok": true,
+      "remote_manifest_sha256": "cdcb3c970f223419ed6aeaa60733afd754bbf8d68dd043933836ca3b772c8360",
+      "rows": 500,
+      "shard_id": "full_0086"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0087/part-0.parquet",
+      "local_sha256": "d7b155dbfd8bcc4e3a4c173a8cded3ad064eab1d29056111b87c968789fe1c8a",
+      "ok": true,
+      "remote_manifest_sha256": "d7b155dbfd8bcc4e3a4c173a8cded3ad064eab1d29056111b87c968789fe1c8a",
+      "rows": 500,
+      "shard_id": "full_0087"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0088/part-0.parquet",
+      "local_sha256": "609e49de9c0cd2db354c9487395aece62deaaeb9a75d6125f5b01e84cc8368ce",
+      "ok": true,
+      "remote_manifest_sha256": "609e49de9c0cd2db354c9487395aece62deaaeb9a75d6125f5b01e84cc8368ce",
+      "rows": 500,
+      "shard_id": "full_0088"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0089/part-0.parquet",
+      "local_sha256": "1628d509a67464af846c976fb7a851f8609b21a5bea2a2d49ae5f7e12d8251a8",
+      "ok": true,
+      "remote_manifest_sha256": "1628d509a67464af846c976fb7a851f8609b21a5bea2a2d49ae5f7e12d8251a8",
+      "rows": 500,
+      "shard_id": "full_0089"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0090/part-0.parquet",
+      "local_sha256": "d44c0ded7f05c85b02f51c0464a5228154858773cbd4fa96f73e8756828fd5e2",
+      "ok": true,
+      "remote_manifest_sha256": "d44c0ded7f05c85b02f51c0464a5228154858773cbd4fa96f73e8756828fd5e2",
+      "rows": 500,
+      "shard_id": "full_0090"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0091/part-0.parquet",
+      "local_sha256": "60eb4994d3a83c7ab673bbb93201b156b3c992149e7460eddb9b9383759fefe4",
+      "ok": true,
+      "remote_manifest_sha256": "60eb4994d3a83c7ab673bbb93201b156b3c992149e7460eddb9b9383759fefe4",
+      "rows": 500,
+      "shard_id": "full_0091"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0092/part-0.parquet",
+      "local_sha256": "1d045ff1eead0fbdac7fbe938205acc2433f425372433941bd1dd05a761126b2",
+      "ok": true,
+      "remote_manifest_sha256": "1d045ff1eead0fbdac7fbe938205acc2433f425372433941bd1dd05a761126b2",
+      "rows": 500,
+      "shard_id": "full_0092"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0093/part-0.parquet",
+      "local_sha256": "26a8aee413bc84c85a254c45c154e70060cd043ec829dfce3337ebc0270c687a",
+      "ok": true,
+      "remote_manifest_sha256": "26a8aee413bc84c85a254c45c154e70060cd043ec829dfce3337ebc0270c687a",
+      "rows": 500,
+      "shard_id": "full_0093"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0094/part-0.parquet",
+      "local_sha256": "3c6f9518a811a1f299c334e63fb50696551375a98172f2ec8710666f0b737137",
+      "ok": true,
+      "remote_manifest_sha256": "3c6f9518a811a1f299c334e63fb50696551375a98172f2ec8710666f0b737137",
+      "rows": 500,
+      "shard_id": "full_0094"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0095/part-0.parquet",
+      "local_sha256": "2c1fc06f21b0f1756ff99eb38241ae3dd210b7380aa725a90688e2c0d23115ff",
+      "ok": true,
+      "remote_manifest_sha256": "2c1fc06f21b0f1756ff99eb38241ae3dd210b7380aa725a90688e2c0d23115ff",
+      "rows": 500,
+      "shard_id": "full_0095"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0096/part-0.parquet",
+      "local_sha256": "1cd237018b64afccdc529914cb0bb0e9389bea0d6e9c77995f9a2dd03ab311fd",
+      "ok": true,
+      "remote_manifest_sha256": "1cd237018b64afccdc529914cb0bb0e9389bea0d6e9c77995f9a2dd03ab311fd",
+      "rows": 500,
+      "shard_id": "full_0096"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0097/part-0.parquet",
+      "local_sha256": "8378304a6e05fc9527d94f8887e206edcb9bf0578dabea7100c60380ce58fb14",
+      "ok": true,
+      "remote_manifest_sha256": "8378304a6e05fc9527d94f8887e206edcb9bf0578dabea7100c60380ce58fb14",
+      "rows": 500,
+      "shard_id": "full_0097"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0098/part-0.parquet",
+      "local_sha256": "0f29665ed0f6b4c5dc739318ab658a205e1fb94434d1c772f4b6b632efed5ea9",
+      "ok": true,
+      "remote_manifest_sha256": "0f29665ed0f6b4c5dc739318ab658a205e1fb94434d1c772f4b6b632efed5ea9",
+      "rows": 500,
+      "shard_id": "full_0098"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0099/part-0.parquet",
+      "local_sha256": "e3122a42a6181053d82b8bac38ce2bf637a692ace8f0eee04b11dee643a71c50",
+      "ok": true,
+      "remote_manifest_sha256": "e3122a42a6181053d82b8bac38ce2bf637a692ace8f0eee04b11dee643a71c50",
+      "rows": 500,
+      "shard_id": "full_0099"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0100/part-0.parquet",
+      "local_sha256": "f1e4e89277d4f20b7661b3a386467462252d400a8bc4dbd483166ec23223da1e",
+      "ok": true,
+      "remote_manifest_sha256": "f1e4e89277d4f20b7661b3a386467462252d400a8bc4dbd483166ec23223da1e",
+      "rows": 500,
+      "shard_id": "full_0100"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0101/part-0.parquet",
+      "local_sha256": "5e1fda1706e862f7dc91639590a1ceadcbb4ed1aabb5513aab5b44d89ee570a2",
+      "ok": true,
+      "remote_manifest_sha256": "5e1fda1706e862f7dc91639590a1ceadcbb4ed1aabb5513aab5b44d89ee570a2",
+      "rows": 500,
+      "shard_id": "full_0101"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0102/part-0.parquet",
+      "local_sha256": "9e98484bf40a25dec4e5e4ce0d86604c6a970c1b6b9d3f87388f4f9903b548be",
+      "ok": true,
+      "remote_manifest_sha256": "9e98484bf40a25dec4e5e4ce0d86604c6a970c1b6b9d3f87388f4f9903b548be",
+      "rows": 500,
+      "shard_id": "full_0102"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0103/part-0.parquet",
+      "local_sha256": "904e9043e9e762fbcaf0460118cb87cfb69468db80bd2e106749d2f3738a9a0b",
+      "ok": true,
+      "remote_manifest_sha256": "904e9043e9e762fbcaf0460118cb87cfb69468db80bd2e106749d2f3738a9a0b",
+      "rows": 500,
+      "shard_id": "full_0103"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0104/part-0.parquet",
+      "local_sha256": "c5dcd8168ff883b0acdfcf4519187ad5574c9f892ea7ef09257b0b4d1c1b9df7",
+      "ok": true,
+      "remote_manifest_sha256": "c5dcd8168ff883b0acdfcf4519187ad5574c9f892ea7ef09257b0b4d1c1b9df7",
+      "rows": 500,
+      "shard_id": "full_0104"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0105/part-0.parquet",
+      "local_sha256": "64fea5ad7a72882c8420704d40796e5b193b6b277bca1cc3c55288252867ceb8",
+      "ok": true,
+      "remote_manifest_sha256": "64fea5ad7a72882c8420704d40796e5b193b6b277bca1cc3c55288252867ceb8",
+      "rows": 500,
+      "shard_id": "full_0105"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0106/part-0.parquet",
+      "local_sha256": "b4d1f23f7e7bfe0c2a215c6f479feca5172b49e9f6239708691de375a40efa80",
+      "ok": true,
+      "remote_manifest_sha256": "b4d1f23f7e7bfe0c2a215c6f479feca5172b49e9f6239708691de375a40efa80",
+      "rows": 500,
+      "shard_id": "full_0106"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0107/part-0.parquet",
+      "local_sha256": "96503ce6670802edeac0c59bccd07288fc11dd7c720ccd82a7586ff5beaf81bd",
+      "ok": true,
+      "remote_manifest_sha256": "96503ce6670802edeac0c59bccd07288fc11dd7c720ccd82a7586ff5beaf81bd",
+      "rows": 500,
+      "shard_id": "full_0107"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0108/part-0.parquet",
+      "local_sha256": "54cebd1a0574dd8f6a9f88957ec4ba7b6d47b074f4bb3a3c320835ea1e584cca",
+      "ok": true,
+      "remote_manifest_sha256": "54cebd1a0574dd8f6a9f88957ec4ba7b6d47b074f4bb3a3c320835ea1e584cca",
+      "rows": 500,
+      "shard_id": "full_0108"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0109/part-0.parquet",
+      "local_sha256": "47b3be2d94a8ef20946d8fa98751e8f267ba97934e04a1b7f1b50830f0ed5110",
+      "ok": true,
+      "remote_manifest_sha256": "47b3be2d94a8ef20946d8fa98751e8f267ba97934e04a1b7f1b50830f0ed5110",
+      "rows": 500,
+      "shard_id": "full_0109"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0110/part-0.parquet",
+      "local_sha256": "cafdf5fcbf8fb2d32be0200fcece9dfaa3f58bf80f4a779ea44aafa32a11be0a",
+      "ok": true,
+      "remote_manifest_sha256": "cafdf5fcbf8fb2d32be0200fcece9dfaa3f58bf80f4a779ea44aafa32a11be0a",
+      "rows": 500,
+      "shard_id": "full_0110"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0111/part-0.parquet",
+      "local_sha256": "40b0a5b5a08bde2f4e44a6c158112b6619384b97b1001b62dcbf9dd0c2ef4dd8",
+      "ok": true,
+      "remote_manifest_sha256": "40b0a5b5a08bde2f4e44a6c158112b6619384b97b1001b62dcbf9dd0c2ef4dd8",
+      "rows": 500,
+      "shard_id": "full_0111"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0112/part-0.parquet",
+      "local_sha256": "b2f992a71993d9e6533992c753322be0d794519be54fcefee53de98572852f0c",
+      "ok": true,
+      "remote_manifest_sha256": "b2f992a71993d9e6533992c753322be0d794519be54fcefee53de98572852f0c",
+      "rows": 500,
+      "shard_id": "full_0112"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0113/part-0.parquet",
+      "local_sha256": "1c4aab0c2060677657ef94ba8e012b2099f2854c47a4583d5dac648f6d7def74",
+      "ok": true,
+      "remote_manifest_sha256": "1c4aab0c2060677657ef94ba8e012b2099f2854c47a4583d5dac648f6d7def74",
+      "rows": 500,
+      "shard_id": "full_0113"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0114/part-0.parquet",
+      "local_sha256": "58d8fc550091327a443314c1ff35637e83eb8e3d456522312472cc85e9c7b9bd",
+      "ok": true,
+      "remote_manifest_sha256": "58d8fc550091327a443314c1ff35637e83eb8e3d456522312472cc85e9c7b9bd",
+      "rows": 500,
+      "shard_id": "full_0114"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0115/part-0.parquet",
+      "local_sha256": "fb78557c109fa82f01a5f51d5cf5ca8afae01c03d126bd7586f5788066bd4391",
+      "ok": true,
+      "remote_manifest_sha256": "fb78557c109fa82f01a5f51d5cf5ca8afae01c03d126bd7586f5788066bd4391",
+      "rows": 500,
+      "shard_id": "full_0115"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0116/part-0.parquet",
+      "local_sha256": "b4b21836fb7c60974cab920f4e3a01018c3f4df7b4aad6222162278e442867fe",
+      "ok": true,
+      "remote_manifest_sha256": "b4b21836fb7c60974cab920f4e3a01018c3f4df7b4aad6222162278e442867fe",
+      "rows": 500,
+      "shard_id": "full_0116"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0117/part-0.parquet",
+      "local_sha256": "8d2a62b41f8d10c7e5bcd661be057c3f7f1d421641cc9fa0d1bdcf216ffc1a04",
+      "ok": true,
+      "remote_manifest_sha256": "8d2a62b41f8d10c7e5bcd661be057c3f7f1d421641cc9fa0d1bdcf216ffc1a04",
+      "rows": 500,
+      "shard_id": "full_0117"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0118/part-0.parquet",
+      "local_sha256": "3aa59472070a50dc36377995760a7bdcd89b4fc7087e500d177aaee2b3a361f6",
+      "ok": true,
+      "remote_manifest_sha256": "3aa59472070a50dc36377995760a7bdcd89b4fc7087e500d177aaee2b3a361f6",
+      "rows": 500,
+      "shard_id": "full_0118"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0119/part-0.parquet",
+      "local_sha256": "81117b126fddba5e9e548b1ef73b4bb1726c5fb1ed59ad64b31d4bfc901d1c47",
+      "ok": true,
+      "remote_manifest_sha256": "81117b126fddba5e9e548b1ef73b4bb1726c5fb1ed59ad64b31d4bfc901d1c47",
+      "rows": 500,
+      "shard_id": "full_0119"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0120/part-0.parquet",
+      "local_sha256": "309050bd46e47c96247f295da3bc5883f78307b5b8e8917ef7183fafb41f6bcc",
+      "ok": true,
+      "remote_manifest_sha256": "309050bd46e47c96247f295da3bc5883f78307b5b8e8917ef7183fafb41f6bcc",
+      "rows": 500,
+      "shard_id": "full_0120"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0121/part-0.parquet",
+      "local_sha256": "2cacb48201a6c88e4e1b5bcc3ec892441027caf8b38c8b1e3d055e993ac34ccb",
+      "ok": true,
+      "remote_manifest_sha256": "2cacb48201a6c88e4e1b5bcc3ec892441027caf8b38c8b1e3d055e993ac34ccb",
+      "rows": 500,
+      "shard_id": "full_0121"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0122/part-0.parquet",
+      "local_sha256": "9eb4c26af6b1bdd2bd1cef0f04eb6efe930cc51a676d14b2dd89535852e15076",
+      "ok": true,
+      "remote_manifest_sha256": "9eb4c26af6b1bdd2bd1cef0f04eb6efe930cc51a676d14b2dd89535852e15076",
+      "rows": 500,
+      "shard_id": "full_0122"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0123/part-0.parquet",
+      "local_sha256": "0958983aaf32cc0a6335b449ccf3ac5b80d6ca4ed7a32b239dd2162f73080938",
+      "ok": true,
+      "remote_manifest_sha256": "0958983aaf32cc0a6335b449ccf3ac5b80d6ca4ed7a32b239dd2162f73080938",
+      "rows": 500,
+      "shard_id": "full_0123"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0124/part-0.parquet",
+      "local_sha256": "f3b7736b72e30595c062a6e33f0d2d75cc307e3f16ba0c29c688d12a394afa32",
+      "ok": true,
+      "remote_manifest_sha256": "f3b7736b72e30595c062a6e33f0d2d75cc307e3f16ba0c29c688d12a394afa32",
+      "rows": 500,
+      "shard_id": "full_0124"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0125/part-0.parquet",
+      "local_sha256": "c87234c43cde3aed0bc7b1ddc66fc465188c2c8b84a883cee5ebb3c3ca7326c2",
+      "ok": true,
+      "remote_manifest_sha256": "c87234c43cde3aed0bc7b1ddc66fc465188c2c8b84a883cee5ebb3c3ca7326c2",
+      "rows": 500,
+      "shard_id": "full_0125"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0126/part-0.parquet",
+      "local_sha256": "dda59eba3896853777577c43e8ecd24551b4c0fd0798aa8d839d25d019304c7d",
+      "ok": true,
+      "remote_manifest_sha256": "dda59eba3896853777577c43e8ecd24551b4c0fd0798aa8d839d25d019304c7d",
+      "rows": 500,
+      "shard_id": "full_0126"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0127/part-0.parquet",
+      "local_sha256": "934c0dfce2fea3fb9f44711495a756139748b733871e3132b9917c01bd1316e9",
+      "ok": true,
+      "remote_manifest_sha256": "934c0dfce2fea3fb9f44711495a756139748b733871e3132b9917c01bd1316e9",
+      "rows": 500,
+      "shard_id": "full_0127"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0128/part-0.parquet",
+      "local_sha256": "f8206d50ce0fc3769c00144b9bf05ee036cb53f0ec75ee24cbc396436b914bfb",
+      "ok": true,
+      "remote_manifest_sha256": "f8206d50ce0fc3769c00144b9bf05ee036cb53f0ec75ee24cbc396436b914bfb",
+      "rows": 500,
+      "shard_id": "full_0128"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0129/part-0.parquet",
+      "local_sha256": "555391e645a7dd68eac092f19bd20094203c2eaa232c597dfbef43ec2553b115",
+      "ok": true,
+      "remote_manifest_sha256": "555391e645a7dd68eac092f19bd20094203c2eaa232c597dfbef43ec2553b115",
+      "rows": 500,
+      "shard_id": "full_0129"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0130/part-0.parquet",
+      "local_sha256": "1b7e239fcc2da0babf970685d8e71baaf2ec3f9d88eec89e776a2552f36b1ef9",
+      "ok": true,
+      "remote_manifest_sha256": "1b7e239fcc2da0babf970685d8e71baaf2ec3f9d88eec89e776a2552f36b1ef9",
+      "rows": 500,
+      "shard_id": "full_0130"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0131/part-0.parquet",
+      "local_sha256": "cfaee196217a4a8ece628f964461ab234693fe68592eef9b0dac2baca4a88b21",
+      "ok": true,
+      "remote_manifest_sha256": "cfaee196217a4a8ece628f964461ab234693fe68592eef9b0dac2baca4a88b21",
+      "rows": 500,
+      "shard_id": "full_0131"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0132/part-0.parquet",
+      "local_sha256": "19f756c4a39dc719575ead1434f8a9e51dcfeea23fb06a774221e661969d04b3",
+      "ok": true,
+      "remote_manifest_sha256": "19f756c4a39dc719575ead1434f8a9e51dcfeea23fb06a774221e661969d04b3",
+      "rows": 500,
+      "shard_id": "full_0132"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0133/part-0.parquet",
+      "local_sha256": "a43ddfc55bcf53c07f8c7613d533493e0ad8b939f8af287a9031208e71a2d53b",
+      "ok": true,
+      "remote_manifest_sha256": "a43ddfc55bcf53c07f8c7613d533493e0ad8b939f8af287a9031208e71a2d53b",
+      "rows": 500,
+      "shard_id": "full_0133"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0134/part-0.parquet",
+      "local_sha256": "396358ab9650cee4136a6df2441bd40ff5bfabf1bdd10cbb1e206ac61b4b0d8e",
+      "ok": true,
+      "remote_manifest_sha256": "396358ab9650cee4136a6df2441bd40ff5bfabf1bdd10cbb1e206ac61b4b0d8e",
+      "rows": 500,
+      "shard_id": "full_0134"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0135/part-0.parquet",
+      "local_sha256": "68e7a797ee5e46c25c68177aa8d89ef36a71c068aac9a37b5db0dbf52bbfdb6a",
+      "ok": true,
+      "remote_manifest_sha256": "68e7a797ee5e46c25c68177aa8d89ef36a71c068aac9a37b5db0dbf52bbfdb6a",
+      "rows": 500,
+      "shard_id": "full_0135"
+    },
+    {
+      "local_exists": true,
+      "local_path": "data/derived/rq017_onsite_gate/l1_v1/artifact_id=onsite_dense_timeseries/shard_id=full_0136/part-0.parquet",
+      "local_sha256": "81fb8dd0f63c247c6af06661e51bd5761d00debfe5c23e98222ae7d14ce26f0d",
+      "ok": true,
+      "remote_manifest_sha256": "81fb8dd0f63c247c6af06661e51bd5761d00debfe5c23e98222ae7d14ce26f0d",
+      "rows": 361,
+      "shard_id": "full_0136"
+    }
+  ],
+  "status": "PASS"
+}
