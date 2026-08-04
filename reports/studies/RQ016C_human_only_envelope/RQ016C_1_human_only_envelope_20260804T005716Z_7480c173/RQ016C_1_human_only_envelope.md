@@ -88,6 +88,15 @@ OnSite 只做 context 落格，不打分，因为 OnSite 还没有机制一判�
 
 已拟合 envelope 保存在 `.codex-fleet/rq016c-human-only-envelope/work/H1/envelope_model`。其中 `rq016c_h1_envelope.pkl` 含条件分位数模型、数值 imputer、类别 encoder、支持门 scaler/encoder/kNN tree、全局 conformal 半径和逐格 calibration 半径；`feature_contract.json` 固化列清单；`support_gate.json` 固化支持门规则与逐格支撑量；`HOWTO_score_external_rows.md` 说明如何给外部行打分。打分接口自测从 test fold 取 256 行，只加载持久化产物、不重新拟合，区间边界逐位一致为 `True`，支持门一致为 `True`，判定一致为 `True`，最大边界差 0.0e+00。
 
+> **2026-08-04 追加（不修改上文原文）**：H1 的 `envelope_model/` 目录（164 MB）已在
+> `.codex-fleet/` 清理中删除，**上面这段描述的路径现在不存在**。删除理由是 H1 已被 H2 取代且
+> 判定为不可用——H1 把 `vehicle_type_list` 留在类别 context 中，而纯人-人参照池没有 `AV` 取值、
+> 真实 OnSite 行全部带 `['AV','HV']`，所以 H1 的持久化产物无法用于它唯一的外部打分用途
+> （见同目录 `RQ016C_2_human_only_envelope_fixed.md`）。当前可用的持久化模型是
+> `.codex-fleet/rq016c-human-only-envelope/work/H2/envelope_model/rq016c_h2_envelope.pkl`。
+> H1 的脚本、`key_numbers.json` 与 selftest parquet 均已保留，错误历史的证据链完整。
+> 清理清单见 `archived/report_process/CLEANUP_codex_fleet_20260804/`。
+
 ## 自查
 
 held_out 断言：参与计算行中 `rq007_split` 不在 `{development, guard}` 的计数为 0；来源列为 `data/derived/rq015k_logdomain_gate/l1_v1` 的 `rq007_split`。本轮没有打开受保护 confirmation 划分文件。

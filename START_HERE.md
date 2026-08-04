@@ -1401,8 +1401,15 @@ question index in `STUDIES.md`.
   与两条归档分支），1 个 worktree。
 - `reports/` 的三个一级目录 `plans/` / `studies/` / `knowledge/` 为治理层，
   `AGENTS.md`、`STUDIES.md`、本文件三处表述已一致（2026-08-04 PI 裁定保留 `plans/`）。
-- `.git` 已做过一次 `git gc`：5.0 GB → 21 MB，`git fsck` 无错，六条分支与工作区
-  逐一核对无损。**未做任何历史改写。**
+- `.git` 已做过一次 `git gc`：5.0 GB → 19 MB，`git fsck` 无错，六条分支与工作区
+  逐一核对无损。**未做任何历史改写。** 44 个 `tmp_obj_*` 垃圾文件已手动清除。
+- `.codex-fleet/` 已清理大块中间数据：**6.5 GB → 384 MB**。删除项、引用检查依据与再生方式
+  见 `archived/report_process/CLEANUP_codex_fleet_20260804/`。
+  **承重产物全部保留**，其中 RQ017 依赖的
+  `.codex-fleet/rq016c-human-only-envelope/work/H2/envelope_model/rq016c_h2_envelope.pkl`
+  与 `H2/onsite_scoring_dryrun.parquet` 清理后已功能性复验
+  （67,861 行 / 67,861 唯一键 / `mechanism2_gate_ok` 为真 21,936，与记录一致）。
+  RQ016C 的 H1 产物（已被 H2 取代且判定不可用）已删除，H1 报告内已加注。
 - 受保护文件基线校验清单：`.codex-fleet/git_cleanup_protected_sha_before.txt`
   （`shasum -a 256 -c` 应全部 `OK`）。
 
