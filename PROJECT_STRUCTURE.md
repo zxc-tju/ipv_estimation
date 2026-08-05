@@ -54,7 +54,7 @@
 
 论文/Overleaf 工作区已拆分为独立仓库，不再是本项目的 `paper/` 子目录：
 
-- 本地 clean clone：`../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`
+- 本地 clean clone：`../../2_PaperWriting/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`
 - 远端：`https://github.com/zxc-tju/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`
 
 主项目只保留数据、代码、报告和分析管线；不要重新创建顶层 `paper/` 作为活跃论文入口。

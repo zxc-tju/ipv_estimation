@@ -1482,7 +1482,7 @@ question index in `STUDIES.md`.
 - Report-linked process archives and local agent state:
   `archived/report_process/` and `archived/report_local_state/`.
 - Manuscript drafting lives in the standalone paper repository:
-  `../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`.
+  `../../2_PaperWriting/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`.
   Do not recreate a top-level `paper/` directory here.
 
 ## Repository State
