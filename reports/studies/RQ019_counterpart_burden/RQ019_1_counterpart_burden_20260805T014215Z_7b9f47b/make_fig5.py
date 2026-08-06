@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# ⚠ SUPERSEDED 2026-08-06 —— 本脚本产出的是**旧**分组下的 Figure 5，不要再跑它来出图。
+# 手稿现行的 Figure 5 由 RQ021 的同期 envelope 重建，脚本与输入在
+# reports/studies/RQ021_contemporaneous_envelope/RQ021_1_contemporaneous_envelope_20260805T160425Z_43b4bff/
+# 本目录的输出路径指向已不存在的 9_overleaf/，跑起来会失败——这是刻意保留的失败，
+# 不要"修好"它。见 reports/knowledge/RQ021_contemporaneous_envelope/decision.md。
 """手稿 Figure 5：From atypicality to interaction consequences.
 
 核心结论（图必须为其辩护）：

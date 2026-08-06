@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
-"""手稿 Figure 3：Human reference ranges enable online atypicality monitoring.
+"""⚠ SUPERSEDED 2026-08-06 —— 本脚本产出的是**旧** Figure 3，不要再跑它来出图。
 
-核心结论（图必须为其辩护）：
-    把人类参照范围条件化到当前观测情境，区间显著变窄而校准不丢；
-    情境无支撑时监控器弃权，而不是猜。
+手稿现行的 Figure 3 由 RQ021 的同期 envelope 重建，脚本在
+`reports/studies/RQ021_contemporaneous_envelope/RQ021_1_contemporaneous_envelope_20260805T160425Z_43b4bff/make_fig3.py`。
 
-面板：
-    (a) hero —— 区间宽度：全局参照 vs 情境条件化，三个名义层
-    (b)      —— 校准：实际覆盖 vs 名义覆盖，双侧尾部平衡
-    (c)      —— 迁移边界：留一源交叉验证的逐源覆盖，如实呈现散布
+本脚本读的是 RQ009 的 `calibration_gate.json`，其 envelope 的目标量是锚点之后 [t+3,t+6] 的
+IPV，而机制二在线时比较的是锚点当下 [t-9,t] 的读数——不是同一个量
+（见 `reports/knowledge/RQ021_contemporaneous_envelope/decision.md`）。
 
-只使用已接受主张 RQ009-KC-R3 支撑的内容。
-**不画 IPV 通道消融（M3/M4）**——RQ009 decision 明令该 null 不得对外 feature。
-
-archetype: quantitative grid（hero + 从属）。全部绘图与导出均为 Python/matplotlib。
+输出路径已改为本目录，**不再写入论文仓库**，以免静默覆盖现行 Figure 3。
+保留本文件是为了让旧图可复现，作为证据链的一部分。
 """
 from __future__ import annotations
 
@@ -30,10 +26,8 @@ REPO = HERE.parents[2]
 RUN = HERE / "RQ009_1_dynamic_envelope_20260625T121905Z_98c433de"
 GATE = RUN / "02_process/04_calibration/calibration_gate.json"
 LODO = RUN / "02_process/05_evaluation/lodo_results.csv"
-PAPER_FIGS = (
-    REPO.parent.parent / "2_PaperWriting"
-    / "NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle/figures"
-)
+# SUPERSEDED：不再写入论文仓库，只在本目录留存旧图，见文件顶部说明。
+PAPER_FIGS = HERE / "superseded_fig3_rq009_envelope"
 
 mpl.rcParams.update({
     "font.family": "sans-serif",
