@@ -8,26 +8,64 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
-- **【已接受主张】RQ017 / RQ018 / RQ019 三份 `decision.md` 已由 PI 于 2026-08-05 裁定接受。
-  这是本项目第一批可进入手稿的在线验证主张。**
+- **【当前在用的人类参照区间是 RQ021 的，不是 RQ016C 的。】** PI 于 2026-08-05 裁定：
+  envelope 不做预测性，改用同期目标量。原因是 RQ016C-H2 的目标列是锚点之后
+  `[t+3,t+6]` 的 `target_ipv_future`，而机制二在线时实际比较的是锚点当下 `[t-9,t]` 的
+  `ipv_log`——两者在纯人-人 test fold 486,660 行上相关仅 r=0.3488，不是同一个量。
+  **凡是要给外部行打分，一律用 RQ021 的产物，不要再用 RQ016C-H2 的。**
+  - 现行 envelope（元数据）：`reports/studies/RQ021_contemporaneous_envelope/RQ021_1_contemporaneous_envelope_20260805T160425Z_43b4bff/envelope_model/`
+  - 现行 pkl（172 MB，未入库）：`.codex-fleet/rq021-contemporaneous-envelope/work/E1/envelope_model/rq016c_h2_envelope.pkl`
+    ——**文件名是历史遗留，以 `manifest.json` 的 `version = RQ021-E1-contemporaneous-human-only-envelope-v1` 为准**
+  - 现行 OnSite 打分：`.codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet`
+  - 决定文档：`reports/knowledge/RQ021_contemporaneous_envelope/decision.md`（已接受 C1–C4）
+
+  关键数字：行集完全不变（`ipv_log` 非空 ⟺ 机制一 `status==OK`，8,994,736 行中两种不匹配各 0）；
+  90% coverage 0.898272 → 0.902798，mean width 1.242394 → **1.865128**（变宽不是塌缩）；
+  循环性诊断事前阈值均未触发（宽度比 0.795 对停止线 <0.25；out-of-fold R² 0.209 对停止线 ≥0.60）。
+  **支持门与目标列无关**：OnSite 支持门 21,936/67,861、两门交集 14,099/67,861 新旧精确相同。
+  α=90 下侧/区间内/上侧由 1,998/9,401/2,700 → **519/12,711/869**（case 175/223/182 → 120/229/129）。
+
+- **【WOD 数据集已暂时放弃，不要重开】** PI 于 2026-08-05 裁定终止 RQ020，
+  并暂时放弃 WOD 数据集。终止记录：`reports/knowledge/RQ020_wod_preference/decision.md`。
+  **核心事实**：「候选轨迹的 IPV 越界程度能否预测人类评分」这个检验，
+  RQ010B 已于 2026-07-03 用预注册、评分盲、独立复审加红队的方式做过，结果是**有界 null**——
+  方案①（候选未来窗 × 真实对手未来，段内 3 候选排序）n=75，ρ=**+0.148**（符号与假设相反）、
+  p=0.10、max-statistic permutation **p=1.0**（一个对照都没打赢）。
+  **样本量有物理上限 ≈75–98**：WOD 只有前向相机弧，拿不到对手车 t* 之后的轨迹时
+  三条候选的 IPV 塌成完全相同；只有 360° 相机能突破（未做）。换估计器或换 envelope 都动不了。
+  **重开条件**：360° 相机覆盖 **且** 一批未被本项目任何配置筛查看过的人类评分——两个门都要过。
+  **`RQ014 致盲相关的评分字段不得读取` 继续有效，不解盲。**
+  手稿处置：社会判断阶梯第三级「人类不偏好」**不作为主张写进手稿**；
+  **禁止**把该 null 写成「IPV 与人类偏好无关」（n=75–98 欠功效，|ρ|≲0.28 的效应可能被藏住）。
+
+- **【已接受主张】RQ017 / RQ018 / RQ019 / RQ021 四份 `decision.md` 已由 PI 于 2026-08-05 裁定接受。
+  RQ018 与 RQ019 的数字已于同日按 RQ021 的同期 envelope 全部重述——
+  下面列的就是现行数字，旧数字只保留在各自的原始执行层目录里。**
   **背景一句话**：在线验证串联两道弃权机制——机制一判断某一帧的 IPV（Interaction Preference
   Value，表示交互倾向的标量）是否携带七个候选间的判别信息，机制二用人类参照分布判断当前情境
   是否有足够人类样本可比。IPV 越负 = 越竞争激进（`agent.py:1193`：
   `util = cos(ipv)×自身代价 + sin(ipv)×交互代价`）。
-  **已接受主张七条**：
+  **已接受主张十一条（现行数字）**：
   - `RQ017-KC-C1/C2/C3` —— 方法能在真车上开口（两门都过 14,099/67,861 = 20.7763%；
     case 级 231/267 = 86.5169%），瓶颈是人类参照覆盖而非可估计性（因机制一全程无解的 case
-    **0 个 = 0.0000%**）。
-  - `RQ018-KC-C1/C2/C3` —— 自车侧安全裕度分布被压缩（TTC 中位 −14.8%、75% 分位 −43.0%），
-    但危险端不恶化（TTC<2 s：5.28% 对 9.85%）；判据是情境条件化的，**不等于 `IPV<0`**
-    （区间内另有 38.41% 也是负 IPV）。
-  - `RQ019-KC-C1/C2/C3` —— 对手方承担约两倍常规运动调整（锚点降速 2.33×、速度极差 1.74×），
-    但紧急制动更少（<−3 m/s²：2.83% 对 7.02%）；**C3 为跨 RQ 联合主张**：
+    **0 个 = 0.0000%**）。**不受 RQ021 影响**（支持门与目标列无关，已实测精确相同）。
+  - `RQ018-KC-C1/C2/C3` —— 自车侧安全裕度分布被压缩（TTC 中位 **−24.9%**、75% 分位 **−47.4%**），
+    但危险端不恶化（TTC<2 s：**4.66% 对 8.84%**）；判据是情境条件化的，**不等于 `IPV<0`**
+    （区间内另有 **40.04%** 也是负 IPV；全部负 IPV 时刻中仅 **9.25%** 构成越界）。
+  - `RQ019-KC-C1/C2/C3` —— 对手方承担约两倍常规运动调整（锚点降速 **2.06×**、速度极差 **1.89×**），
+    但紧急制动更少（<−3 m/s²：**2.91% 对 6.31%**）；**C3 为跨 RQ 联合主张**：
     压缩在交互双方都可测、形态一致，且两侧数据源与测量对象均独立。
-  **引用红线（三份 decision.md 共同）**：禁用「导致」等因果表述；
+  - `RQ021-KC-C1/C2/C3/C4` —— 参照区间改用同期目标量后定义一致；循环性顾虑不成立且方向相反；
+    支持门不受影响；**同期口径下 OnSite 越界频率 9.845% 与人类自身 9.720% 无差别**。
+  **PI 的叙事定性（2026-08-05）**：**越界稀有但更锐利**。本方法不是「自动驾驶车整体比人类差」的
+  群体检测器，而是逐时刻定位——被挑出的那一小部分时刻伴随更大的交互代价。
+  **引用红线（四份 decision.md 共同）**：禁用「导致」等因果表述；
   **C1 与 C2 必须成对引用**，单独引用 C1 会被读成「更危险」；**转向类主张一律不成立**；
+  **RQ018/RQ019 全部为帧层面陈述，措辞须带「在被判为越界的时刻」**（事件层面的同类检验为 null，
+  见 RQ019 `decision.md` 的 B8）；**RQ018 的 TTC<3 s、RQ019 的 case 等权 p 值不得再作证据引用**；
   所有主张须带「在人类参照存在的情境下」这一条件（分析集为选定子集 20.7763%）；
   不对任何车辆或队伍作判断。
+  **手稿待办**：`main.tex` 的 `−14.8%` 须改为 `−24.9%`；Figure 5 四个面板全部须按新分组重制。
   **单数据集限制**：三份 decision 均为单一仿真数据集。**PI 明确豁免跨数据集复现**；
   监督方曾建议等待复现后再冻结，该建议未被采纳，已如实记录在各 decision 的 Boundaries 中——
   跨数据集复现仍是移除该限制的唯一途径。
@@ -1482,7 +1520,7 @@ question index in `STUDIES.md`.
 - Report-linked process archives and local agent state:
   `archived/report_process/` and `archived/report_local_state/`.
 - Manuscript drafting lives in the standalone paper repository:
-  `../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`.
+  `../../2_PaperWriting/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`.
   Do not recreate a top-level `paper/` directory here.
 
 ## Repository State

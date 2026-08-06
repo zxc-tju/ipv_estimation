@@ -1,0 +1,209 @@
+{
+  "k": 25,
+  "support_counts": {
+    "all_rows": {
+      "cells": 12,
+      "counts": [
+        {
+          "cases": 34,
+          "context_cell": "CP|equal",
+          "rows": 2209
+        },
+        {
+          "cases": 1150,
+          "context_cell": "CP|priority",
+          "rows": 57461
+        },
+        {
+          "cases": 1152,
+          "context_cell": "CP|yield",
+          "rows": 57373
+        },
+        {
+          "cases": 36,
+          "context_cell": "F|equal",
+          "rows": 3029
+        },
+        {
+          "cases": 687,
+          "context_cell": "F|priority",
+          "rows": 45283
+        },
+        {
+          "cases": 690,
+          "context_cell": "F|yield",
+          "rows": 46530
+        },
+        {
+          "cases": 88,
+          "context_cell": "HO|equal",
+          "rows": 4817
+        },
+        {
+          "cases": 147,
+          "context_cell": "HO|priority",
+          "rows": 4674
+        },
+        {
+          "cases": 147,
+          "context_cell": "HO|yield",
+          "rows": 4728
+        },
+        {
+          "cases": 288,
+          "context_cell": "MP|equal",
+          "rows": 23424
+        },
+        {
+          "cases": 17882,
+          "context_cell": "MP|priority",
+          "rows": 1044964
+        },
+        {
+          "cases": 17883,
+          "context_cell": "MP|yield",
+          "rows": 1148133
+        }
+      ],
+      "min_rows": 2209
+    },
+    "context_columns": [
+      "geometry_path_category",
+      "priority_role"
+    ],
+    "train_rows_for_gate_fit": {
+      "cells": 12,
+      "counts": [
+        {
+          "cases": 15,
+          "context_cell": "CP|equal",
+          "rows": 988
+        },
+        {
+          "cases": 463,
+          "context_cell": "CP|priority",
+          "rows": 23764
+        },
+        {
+          "cases": 465,
+          "context_cell": "CP|yield",
+          "rows": 23672
+        },
+        {
+          "cases": 18,
+          "context_cell": "F|equal",
+          "rows": 1614
+        },
+        {
+          "cases": 290,
+          "context_cell": "F|priority",
+          "rows": 19037
+        },
+        {
+          "cases": 291,
+          "context_cell": "F|yield",
+          "rows": 19303
+        },
+        {
+          "cases": 34,
+          "context_cell": "HO|equal",
+          "rows": 1914
+        },
+        {
+          "cases": 61,
+          "context_cell": "HO|priority",
+          "rows": 1965
+        },
+        {
+          "cases": 61,
+          "context_cell": "HO|yield",
+          "rows": 1998
+        },
+        {
+          "cases": 127,
+          "context_cell": "MP|equal",
+          "rows": 10093
+        },
+        {
+          "cases": 7078,
+          "context_cell": "MP|priority",
+          "rows": 415397
+        },
+        {
+          "cases": 7077,
+          "context_cell": "MP|yield",
+          "rows": 455239
+        }
+      ],
+      "min_rows": 988
+    }
+  },
+  "support_gate_categorical": [
+    "geometry_path_category",
+    "priority_role"
+  ],
+  "support_gate_distance_numeric": [
+    "elapsed_time_s",
+    "history_row_count",
+    "relative_distance_anchor",
+    "relative_speed_anchor",
+    "closing_rate_anchor",
+    "heading_difference_anchor",
+    "relative_distance_mean_wx",
+    "relative_distance_std_wx",
+    "relative_speed_mean_wx",
+    "closing_rate_mean_wx",
+    "closing_ttc_anchor",
+    "apet_online_proxy"
+  ],
+  "support_levels": {
+    "geometry_path_category": {
+      "CP": {
+        "anchors": 48424,
+        "cases": 480
+      },
+      "F": {
+        "anchors": 39954,
+        "cases": 310
+      },
+      "HO": {
+        "anchors": 5877,
+        "cases": 95
+      },
+      "MP": {
+        "anchors": 880729,
+        "cases": 7210
+      }
+    },
+    "priority_role": {
+      "equal": {
+        "anchors": 14609,
+        "cases": 194
+      },
+      "priority": {
+        "anchors": 460163,
+        "cases": 7892
+      },
+      "yield": {
+        "anchors": 500212,
+        "cases": 7894
+      }
+    }
+  },
+  "supported_joint_cells": [
+    "CP|equal",
+    "CP|priority",
+    "CP|yield",
+    "F|equal",
+    "F|priority",
+    "F|yield",
+    "HO|equal",
+    "HO|priority",
+    "HO|yield",
+    "MP|equal",
+    "MP|priority",
+    "MP|yield"
+  ],
+  "threshold": 1.0810215473175049,
+  "unsupported_joint_cells": []
+}

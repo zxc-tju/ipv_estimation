@@ -6,7 +6,7 @@ The manuscript/Overleaf workspace no longer lives in this repository.
 
 Use the standalone paper repository for manuscript drafting:
 
-- local clean clone: `../9_overleaf/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`
+- local clean clone: `../../2_PaperWriting/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`
 - remote: `https://github.com/zxc-tju/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle`
 
 Do not recreate or edit a top-level `paper/` directory in this project. Keep this repository focused on code, data manifests, reports, analysis pipelines, and the research knowledge base.

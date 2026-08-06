@@ -1,0 +1,13 @@
+context_cell,rows,cases
+CP|equal,2209,34
+CP|priority,57461,1150
+CP|yield,57373,1152
+F|equal,3029,36
+F|priority,45283,687
+F|yield,46530,690
+HO|equal,4817,88
+HO|priority,4674,147
+HO|yield,4728,147
+MP|equal,23424,288
+MP|priority,1044964,17882
+MP|yield,1148133,17883

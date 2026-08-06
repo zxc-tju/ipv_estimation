@@ -1,0 +1,326 @@
+{
+  "CP|equal": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": 0.12580490112304688,
+      "calibration_n": 197,
+      "nominal": 0.8,
+      "rank": 159,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": 0.06689637899398804,
+      "calibration_n": 197,
+      "nominal": 0.9,
+      "rank": 179,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": 0.00020575523376464844,
+      "calibration_n": 197,
+      "nominal": 0.95,
+      "rank": 189,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 197
+  },
+  "CP|priority": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": -0.011594295501708984,
+      "calibration_n": 7549,
+      "nominal": 0.8,
+      "rank": 6040,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": -0.0003762245178222656,
+      "calibration_n": 7549,
+      "nominal": 0.9,
+      "rank": 6795,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": -0.0007562637329101562,
+      "calibration_n": 7549,
+      "nominal": 0.95,
+      "rank": 7173,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 7549
+  },
+  "CP|yield": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": -0.00018835067749023438,
+      "calibration_n": 7486,
+      "nominal": 0.8,
+      "rank": 5990,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": -0.001401066780090332,
+      "calibration_n": 7486,
+      "nominal": 0.9,
+      "rank": 6739,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": -0.0001895427703857422,
+      "calibration_n": 7486,
+      "nominal": 0.95,
+      "rank": 7113,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 7486
+  },
+  "F|equal": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": 0.016257107257843018,
+      "calibration_n": 451,
+      "nominal": 0.8,
+      "rank": 362,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": 0.028521299362182617,
+      "calibration_n": 451,
+      "nominal": 0.9,
+      "rank": 407,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": -0.0002771615982055664,
+      "calibration_n": 451,
+      "nominal": 0.95,
+      "rank": 430,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 451
+  },
+  "F|priority": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": -0.001603245735168457,
+      "calibration_n": 8060,
+      "nominal": 0.8,
+      "rank": 6449,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": -0.0028810501098632812,
+      "calibration_n": 8060,
+      "nominal": 0.9,
+      "rank": 7255,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": -0.00440371036529541,
+      "calibration_n": 8060,
+      "nominal": 0.95,
+      "rank": 7658,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 8060
+  },
+  "F|yield": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": 0.010555565357208252,
+      "calibration_n": 8524,
+      "nominal": 0.8,
+      "rank": 6820,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": -1.7881393432617188e-06,
+      "calibration_n": 8524,
+      "nominal": 0.9,
+      "rank": 7673,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": -8.475780487060547e-05,
+      "calibration_n": 8524,
+      "nominal": 0.95,
+      "rank": 8099,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 8524
+  },
+  "HO|equal": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": 0.11759942770004272,
+      "calibration_n": 946,
+      "nominal": 0.8,
+      "rank": 758,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": 0.05939769744873047,
+      "calibration_n": 946,
+      "nominal": 0.9,
+      "rank": 853,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": 9.322166442871094e-05,
+      "calibration_n": 946,
+      "nominal": 0.95,
+      "rank": 900,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 946
+  },
+  "HO|priority": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": 0.03254580497741699,
+      "calibration_n": 657,
+      "nominal": 0.8,
+      "rank": 527,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": 0.04810589551925659,
+      "calibration_n": 657,
+      "nominal": 0.9,
+      "rank": 593,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": 0.001076340675354004,
+      "calibration_n": 657,
+      "nominal": 0.95,
+      "rank": 626,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 657
+  },
+  "HO|yield": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": -0.050916075706481934,
+      "calibration_n": 648,
+      "nominal": 0.8,
+      "rank": 520,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": -0.002010822296142578,
+      "calibration_n": 648,
+      "nominal": 0.9,
+      "rank": 585,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": 2.86102294921875e-05,
+      "calibration_n": 648,
+      "nominal": 0.95,
+      "rank": 617,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 648
+  },
+  "MP|equal": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": 0.07640796899795532,
+      "calibration_n": 3735,
+      "nominal": 0.8,
+      "rank": 2989,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": 0.04259026050567627,
+      "calibration_n": 3735,
+      "nominal": 0.9,
+      "rank": 3363,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": 0.0002416372299194336,
+      "calibration_n": 3735,
+      "nominal": 0.95,
+      "rank": 3550,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 3735
+  },
+  "MP|priority": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": -0.0030673742294311523,
+      "calibration_n": 198213,
+      "nominal": 0.8,
+      "rank": 158572,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": -0.0004506111145019531,
+      "calibration_n": 198213,
+      "nominal": 0.9,
+      "rank": 178393,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": -0.0003132820129394531,
+      "calibration_n": 198213,
+      "nominal": 0.95,
+      "rank": 188304,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 198213
+  },
+  "MP|yield": {
+    "80": {
+      "alpha": 0.2,
+      "c_alpha": 0.0014435052871704102,
+      "calibration_n": 219257,
+      "nominal": 0.8,
+      "rank": 175407,
+      "used_for_primary_scoring": false
+    },
+    "90": {
+      "alpha": 0.1,
+      "c_alpha": 1.1920928955078125e-06,
+      "calibration_n": 219257,
+      "nominal": 0.9,
+      "rank": 197333,
+      "used_for_primary_scoring": false
+    },
+    "95": {
+      "alpha": 0.05,
+      "c_alpha": 0.0,
+      "calibration_n": 219257,
+      "nominal": 0.95,
+      "rank": 208296,
+      "used_for_primary_scoring": false
+    },
+    "calibration_gate_passing_rows": 219257
+  }
+}

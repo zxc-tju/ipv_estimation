@@ -1,0 +1,63 @@
+{
+  "categorical_context": [
+    "geometry_path_category",
+    "geometry_path_relation",
+    "turn_pair_label",
+    "priority_role"
+  ],
+  "excluded_old_ipv_channels": [
+    "M4_ONLY_ego_self_anchor_ipv_current",
+    "M4_ONLY_ego_self_anchor_ipv_error_current",
+    "counterpart_ipv_current",
+    "counterpart_ipv_error_current",
+    "counterpart_ipv_slope_pre_anchor"
+  ],
+  "excluded_predictors": [
+    "agent_type_pair",
+    "av_included",
+    "source_dataset"
+  ],
+  "numeric_context": [
+    "elapsed_time_s",
+    "history_row_count",
+    "ego_vx_anchor",
+    "ego_vy_anchor",
+    "ego_heading_anchor",
+    "counterpart_vx_anchor",
+    "counterpart_vy_anchor",
+    "counterpart_heading_anchor",
+    "relative_dx_anchor",
+    "relative_dy_anchor",
+    "relative_distance_anchor",
+    "relative_dvx_anchor",
+    "relative_dvy_anchor",
+    "relative_speed_anchor",
+    "closing_rate_anchor",
+    "heading_difference_anchor",
+    "relative_distance_mean_wx",
+    "relative_distance_std_wx",
+    "relative_speed_mean_wx",
+    "closing_rate_mean_wx",
+    "closing_ttc_anchor",
+    "apet_online_proxy"
+  ],
+  "support_gate_categorical": [
+    "geometry_path_category",
+    "priority_role"
+  ],
+  "support_gate_distance_numeric": [
+    "elapsed_time_s",
+    "history_row_count",
+    "relative_distance_anchor",
+    "relative_speed_anchor",
+    "closing_rate_anchor",
+    "heading_difference_anchor",
+    "relative_distance_mean_wx",
+    "relative_distance_std_wx",
+    "relative_speed_mean_wx",
+    "closing_rate_mean_wx",
+    "closing_ttc_anchor",
+    "apet_online_proxy"
+  ],
+  "target_column": "ipv_log"
+}

@@ -1,0 +1,1848 @@
+{
+  "contract": "Every entry carries numerator, denominator or supporting sample count, selection, source files, and source columns. Quantile values and all secondary table cells are in distribution_results.json with valid_n.",
+  "items": [
+    {
+      "columns": [
+        "product_row_key",
+        "status",
+        "mechanism2_gate_ok"
+      ],
+      "denominator": 67861,
+      "key": "analysis_rows",
+      "numerator": 14099,
+      "selection": "status == OK and mechanism2_gate_ok == True",
+      "source_files": [
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "unit": "count",
+      "value": 14099
+    },
+    {
+      "columns": [
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 14099,
+      "key": "alpha90_lower_rows",
+      "numerator": 519,
+      "selection": "analysis set and group_90 == lower",
+      "source_files": [
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "count",
+      "value": 519
+    },
+    {
+      "columns": [
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 14099,
+      "key": "alpha90_inside_rows",
+      "numerator": 12711,
+      "selection": "analysis set and group_90 == inside",
+      "source_files": [
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "count",
+      "value": 12711
+    },
+    {
+      "columns": [
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 14099,
+      "key": "alpha90_upper_rows",
+      "numerator": 869,
+      "selection": "analysis set and group_90 == upper",
+      "source_files": [
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "count",
+      "value": 869
+    },
+    {
+      "columns": [
+        "counterpart_selection",
+        "case_key"
+      ],
+      "denominator": 14099,
+      "key": "non_scripted_rows",
+      "numerator": 13024,
+      "selection": "analysis set and stratum == non_scripted",
+      "source_files": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "unit": "count",
+      "value": 13024
+    },
+    {
+      "columns": [
+        "counterpart_selection",
+        "case_key"
+      ],
+      "denominator": 231,
+      "key": "non_scripted_cases",
+      "numerator": 204,
+      "selection": "unique case_key where stratum == non_scripted",
+      "source_files": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "unit": "count",
+      "value": 204
+    },
+    {
+      "columns": [
+        "counterpart_selection",
+        "case_key"
+      ],
+      "denominator": 14099,
+      "key": "scripted_rows",
+      "numerator": 1075,
+      "selection": "analysis set and stratum == scripted",
+      "source_files": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "unit": "count",
+      "value": 1075
+    },
+    {
+      "columns": [
+        "counterpart_selection",
+        "case_key"
+      ],
+      "denominator": 231,
+      "key": "scripted_cases",
+      "numerator": 27,
+      "selection": "unique case_key where stratum == scripted",
+      "source_files": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "unit": "count",
+      "value": 27
+    },
+    {
+      "columns": [
+        "session_id"
+      ],
+      "denominator": 22,
+      "key": "raw_analysis_logs",
+      "numerator": 19,
+      "selection": "logs whose session_id occurs in the analysis set",
+      "source_files": [
+        "data/onsite_competition/all_teams_dataset/teams/*/sessions/<session_id>/simulation_trajectory.log"
+      ],
+      "unit": "count",
+      "value": 19
+    },
+    {
+      "columns": [
+        "counterpart_key_agent",
+        "id",
+        "timestamp_ms",
+        "globalTimeStamp"
+      ],
+      "denominator": 14099,
+      "key": "raw_anchor_match_share",
+      "numerator": 12750,
+      "selection": "nearest raw record with numeric-equal counterpart id for every analysis anchor",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.9043194552805164
+    },
+    {
+      "columns": [
+        "globalTimeStamp",
+        "timestamp_ms"
+      ],
+      "denominator": 12750,
+      "key": "nearest_timestamp_abs_diff_p95_ms",
+      "numerator": 48.0,
+      "selection": "95th percentile among matched analysis anchors",
+      "source_files": [
+        "simulation_trajectory.log",
+        "onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "unit": "ms",
+      "value": 48.0
+    },
+    {
+      "columns": [
+        "x",
+        "y",
+        "counterpart_x",
+        "counterpart_y",
+        "case_key"
+      ],
+      "denominator": 12750,
+      "key": "position_residual_median_m",
+      "numerator": 0.09916581334911007,
+      "selection": "median Euclidean residual after subtracting each case's median x/y translation",
+      "source_files": [
+        "simulation_trajectory.log",
+        "onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "unit": "m",
+      "value": 0.09916581334911007
+    },
+    {
+      "columns": [
+        "acceleration"
+      ],
+      "denominator": 2280356,
+      "key": "raw_acceleration_abs_gt_10_share",
+      "numerator": 361,
+      "selection": "all finite acceleration fields in the analysis-session raw trajectory logs",
+      "source_files": [
+        "simulation_trajectory.log"
+      ],
+      "unit": "proportion",
+      "value": 0.00015830861497064493
+    },
+    {
+      "columns": [
+        "id",
+        "name",
+        "frameId",
+        "globalTimeStamp",
+        "x",
+        "y",
+        "speed",
+        "acceleration",
+        "courseAngle"
+      ],
+      "denominator": 20761119,
+      "key": "raw_required_field_null_slot_share",
+      "numerator": 188712,
+      "selection": "all nine required field slots across raw vehicle records in analysis sessions",
+      "source_files": [
+        "simulation_trajectory.log"
+      ],
+      "unit": "proportion",
+      "value": 0.009089683460703636
+    },
+    {
+      "columns": [
+        "anchor_frame_index",
+        "target_window_end_frame_index",
+        "frame_index",
+        "timestamp_ms"
+      ],
+      "denominator": 14099,
+      "key": "contract_window_past_case_end_share",
+      "numerator": 0,
+      "selection": "analysis rows where contract nominal end exceeds the case end; metrics clipped to case end",
+      "source_files": [
+        "onsite_m3_av_anchors_multi_allvalid.parquet",
+        "onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.0
+    },
+    {
+      "columns": [
+        "anchor_frame_index",
+        "target_window_end_frame_index",
+        "frame_index",
+        "timestamp_ms"
+      ],
+      "denominator": 14099,
+      "key": "fixed3_window_past_case_end_share",
+      "numerator": 734,
+      "selection": "analysis rows where fixed3 nominal end exceeds the case end; metrics clipped to case end",
+      "source_files": [
+        "onsite_m3_av_anchors_multi_allvalid.parquet",
+        "onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.052060429817717566
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 2815,
+      "key": "non_scripted_contract_lower_minus_inside_brake_2_share_difference",
+      "numerator": 108,
+      "selection": "non_scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": -0.03215169677102348
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 2815,
+      "key": "non_scripted_contract_lower_minus_inside_brake_3_share_difference",
+      "numerator": 78,
+      "selection": "non_scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": -0.025650823867415344
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 2815,
+      "key": "non_scripted_contract_lower_minus_inside_brake_4_share_difference",
+      "numerator": 64,
+      "selection": "non_scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": -0.027265445795709633
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 4334,
+      "key": "non_scripted_contract_upper_minus_inside_brake_2_share_difference",
+      "numerator": 318,
+      "selection": "non_scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.002855733428948487
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 4334,
+      "key": "non_scripted_contract_upper_minus_inside_brake_3_share_difference",
+      "numerator": 258,
+      "selection": "non_scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.006169775941932201
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 4334,
+      "key": "non_scripted_contract_upper_minus_inside_brake_4_share_difference",
+      "numerator": 253,
+      "selection": "non_scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.008374842363264683
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 13800,
+      "key": "non_scripted_fixed3_lower_minus_inside_brake_2_share_difference",
+      "numerator": 570,
+      "selection": "non_scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": -0.04427935027155169
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 13800,
+      "key": "non_scripted_fixed3_lower_minus_inside_brake_3_share_difference",
+      "numerator": 402,
+      "selection": "non_scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": -0.033987220239535015
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 13800,
+      "key": "non_scripted_fixed3_lower_minus_inside_brake_4_share_difference",
+      "numerator": 363,
+      "selection": "non_scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": -0.03132089150012514
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 21025,
+      "key": "non_scripted_fixed3_upper_minus_inside_brake_2_share_difference",
+      "numerator": 1666,
+      "selection": "non_scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": -0.006344696908578001
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 21025,
+      "key": "non_scripted_fixed3_upper_minus_inside_brake_3_share_difference",
+      "numerator": 1342,
+      "selection": "non_scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.0007111202453949361
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 21025,
+      "key": "non_scripted_fixed3_upper_minus_inside_brake_4_share_difference",
+      "numerator": 1291,
+      "selection": "non_scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.0037778522314573376
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 241,
+      "key": "scripted_contract_lower_minus_inside_brake_2_share_difference",
+      "numerator": 76,
+      "selection": "scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.19584006495065875
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 241,
+      "key": "scripted_contract_lower_minus_inside_brake_3_share_difference",
+      "numerator": 74,
+      "selection": "scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.19596273961521793
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 241,
+      "key": "scripted_contract_lower_minus_inside_brake_4_share_difference",
+      "numerator": 70,
+      "selection": "scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.18527814807352452
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 891,
+      "key": "scripted_contract_upper_minus_inside_brake_2_share_difference",
+      "numerator": 140,
+      "selection": "scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.037614191648713546
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 891,
+      "key": "scripted_contract_upper_minus_inside_brake_3_share_difference",
+      "numerator": 117,
+      "selection": "scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.020221929019635543
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 891,
+      "key": "scripted_contract_upper_minus_inside_brake_4_share_difference",
+      "numerator": 98,
+      "selection": "scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.004810493193698112
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 1168,
+      "key": "scripted_fixed3_lower_minus_inside_brake_2_share_difference",
+      "numerator": 355,
+      "selection": "scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.17919070827652314
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 1168,
+      "key": "scripted_fixed3_lower_minus_inside_brake_3_share_difference",
+      "numerator": 347,
+      "selection": "scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.18243547769361257
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 1168,
+      "key": "scripted_fixed3_lower_minus_inside_brake_4_share_difference",
+      "numerator": 340,
+      "selection": "scripted alpha-90 lower_minus_inside raw acceleration frame share minus inside share; threshold -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.18371768601527078
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 4344,
+      "key": "scripted_fixed3_upper_minus_inside_brake_2_share_difference",
+      "numerator": 631,
+      "selection": "scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.020510178999800704
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 4344,
+      "key": "scripted_fixed3_upper_minus_inside_brake_3_share_difference",
+      "numerator": 549,
+      "selection": "scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.01172765206733542
+    },
+    {
+      "columns": [
+        "acceleration",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90",
+        "case_key"
+      ],
+      "denominator": 4344,
+      "key": "scripted_fixed3_upper_minus_inside_brake_4_share_difference",
+      "numerator": 479,
+      "selection": "scripted alpha-90 upper_minus_inside raw acceleration frame share minus inside share; threshold -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion_difference",
+      "value": 0.0028888305951037807
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 1065,
+      "key": "alpha80_non_scripted_fixed3_lower_cp_min_acceleration_median",
+      "numerator": -0.7010494409157455,
+      "selection": "non-scripted, alpha=80, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "m/s^2",
+      "value": -0.7010494409157455
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 1065,
+      "key": "alpha80_non_scripted_fixed3_lower_cp_speed_drop_kmh_median",
+      "numerator": 4.970395623725864,
+      "selection": "non-scripted, alpha=80, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 4.970395623725864
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 1065,
+      "key": "alpha80_non_scripted_fixed3_lower_cp_anchor_speed_drop_kmh_median",
+      "numerator": 2.681668122422887,
+      "selection": "non-scripted, alpha=80, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 2.681668122422887
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 1065,
+      "key": "alpha80_non_scripted_fixed3_lower_cp_max_abs_yaw_rate_median",
+      "numerator": 7.715734534870629,
+      "selection": "non-scripted, alpha=80, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree/s",
+      "value": 7.715734534870629
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 1065,
+      "key": "alpha80_non_scripted_fixed3_lower_cp_total_heading_change_median",
+      "numerator": 2.5254222378503877,
+      "selection": "non-scripted, alpha=80, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree",
+      "value": 2.5254222378503877
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 31380,
+      "key": "alpha80_non_scripted_fixed3_lower_brake_2_share",
+      "numerator": 1577,
+      "selection": "non-scripted, alpha=80, group=lower, fixed 3 s; post-anchor acceleration < -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.05025493945188018
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 31380,
+      "key": "alpha80_non_scripted_fixed3_lower_brake_3_share",
+      "numerator": 1012,
+      "selection": "non-scripted, alpha=80, group=lower, fixed 3 s; post-anchor acceleration < -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.032249840662842574
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 31380,
+      "key": "alpha80_non_scripted_fixed3_lower_brake_4_share",
+      "numerator": 907,
+      "selection": "non-scripted, alpha=80, group=lower, fixed 3 s; post-anchor acceleration < -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.028903760356915234
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 9259,
+      "key": "alpha80_non_scripted_fixed3_inside_cp_min_acceleration_median",
+      "numerator": -0.5832114903668131,
+      "selection": "non-scripted, alpha=80, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "m/s^2",
+      "value": -0.5832114903668131
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 9259,
+      "key": "alpha80_non_scripted_fixed3_inside_cp_speed_drop_kmh_median",
+      "numerator": 2.8101941414293368,
+      "selection": "non-scripted, alpha=80, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 2.8101941414293368
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 9259,
+      "key": "alpha80_non_scripted_fixed3_inside_cp_anchor_speed_drop_kmh_median",
+      "numerator": 1.2067718012289168,
+      "selection": "non-scripted, alpha=80, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 1.2067718012289168
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 9257,
+      "key": "alpha80_non_scripted_fixed3_inside_cp_max_abs_yaw_rate_median",
+      "numerator": 3.588654452529103,
+      "selection": "non-scripted, alpha=80, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree/s",
+      "value": 3.588654452529103
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 9257,
+      "key": "alpha80_non_scripted_fixed3_inside_cp_total_heading_change_median",
+      "numerator": 1.2753664974035055,
+      "selection": "non-scripted, alpha=80, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree",
+      "value": 1.2753664974035055
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 274194,
+      "key": "alpha80_non_scripted_fixed3_inside_brake_2_share",
+      "numerator": 23851,
+      "selection": "non-scripted, alpha=80, group=inside, fixed 3 s; post-anchor acceleration < -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.08698585672917715
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 274194,
+      "key": "alpha80_non_scripted_fixed3_inside_brake_3_share",
+      "numerator": 17644,
+      "selection": "non-scripted, alpha=80, group=inside, fixed 3 s; post-anchor acceleration < -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.0643485998964237
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ],
+      "denominator": 274194,
+      "key": "alpha80_non_scripted_fixed3_inside_brake_4_share",
+      "numerator": 16076,
+      "selection": "non-scripted, alpha=80, group=inside, fixed 3 s; post-anchor acceleration < -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.05863002107996528
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 469,
+      "key": "alpha90_non_scripted_fixed3_lower_cp_min_acceleration_median",
+      "numerator": -0.7010494409157455,
+      "selection": "non-scripted, alpha=90, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "m/s^2",
+      "value": -0.7010494409157455
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 469,
+      "key": "alpha90_non_scripted_fixed3_lower_cp_speed_drop_kmh_median",
+      "numerator": 5.526770094256223,
+      "selection": "non-scripted, alpha=90, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 5.526770094256223
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 469,
+      "key": "alpha90_non_scripted_fixed3_lower_cp_anchor_speed_drop_kmh_median",
+      "numerator": 2.637028574469909,
+      "selection": "non-scripted, alpha=90, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 2.637028574469909
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 469,
+      "key": "alpha90_non_scripted_fixed3_lower_cp_max_abs_yaw_rate_median",
+      "numerator": 8.14469920143362,
+      "selection": "non-scripted, alpha=90, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree/s",
+      "value": 8.14469920143362
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 469,
+      "key": "alpha90_non_scripted_fixed3_lower_cp_total_heading_change_median",
+      "numerator": 3.551889782801569,
+      "selection": "non-scripted, alpha=90, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree",
+      "value": 3.551889782801569
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 13800,
+      "key": "alpha90_non_scripted_fixed3_lower_brake_2_share",
+      "numerator": 570,
+      "selection": "non-scripted, alpha=90, group=lower, fixed 3 s; post-anchor acceleration < -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.041304347826086954
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 13800,
+      "key": "alpha90_non_scripted_fixed3_lower_brake_3_share",
+      "numerator": 402,
+      "selection": "non-scripted, alpha=90, group=lower, fixed 3 s; post-anchor acceleration < -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.029130434782608697
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 13800,
+      "key": "alpha90_non_scripted_fixed3_lower_brake_4_share",
+      "numerator": 363,
+      "selection": "non-scripted, alpha=90, group=lower, fixed 3 s; post-anchor acceleration < -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.026304347826086958
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 10485,
+      "key": "alpha90_non_scripted_fixed3_inside_cp_min_acceleration_median",
+      "numerator": -0.6022584196054661,
+      "selection": "non-scripted, alpha=90, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "m/s^2",
+      "value": -0.6022584196054661
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 10485,
+      "key": "alpha90_non_scripted_fixed3_inside_cp_speed_drop_kmh_median",
+      "numerator": 2.9308417822315427,
+      "selection": "non-scripted, alpha=90, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 2.9308417822315427
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 10485,
+      "key": "alpha90_non_scripted_fixed3_inside_cp_anchor_speed_drop_kmh_median",
+      "numerator": 1.2896786209831355,
+      "selection": "non-scripted, alpha=90, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 1.2896786209831355
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 10483,
+      "key": "alpha90_non_scripted_fixed3_inside_cp_max_abs_yaw_rate_median",
+      "numerator": 3.9886095740201757,
+      "selection": "non-scripted, alpha=90, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree/s",
+      "value": 3.9886095740201757
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 10483,
+      "key": "alpha90_non_scripted_fixed3_inside_cp_total_heading_change_median",
+      "numerator": 1.374869424839291,
+      "selection": "non-scripted, alpha=90, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree",
+      "value": 1.374869424839291
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 310246,
+      "key": "alpha90_non_scripted_fixed3_inside_brake_2_share",
+      "numerator": 26552,
+      "selection": "non-scripted, alpha=90, group=inside, fixed 3 s; post-anchor acceleration < -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.08558369809763865
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 310246,
+      "key": "alpha90_non_scripted_fixed3_inside_brake_3_share",
+      "numerator": 19582,
+      "selection": "non-scripted, alpha=90, group=inside, fixed 3 s; post-anchor acceleration < -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.06311765502214371
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ],
+      "denominator": 310246,
+      "key": "alpha90_non_scripted_fixed3_inside_brake_4_share",
+      "numerator": 17878,
+      "selection": "non-scripted, alpha=90, group=inside, fixed 3 s; post-anchor acceleration < -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.0576252393262121
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 278,
+      "key": "alpha95_non_scripted_fixed3_lower_cp_min_acceleration_median",
+      "numerator": -0.7094465604083453,
+      "selection": "non-scripted, alpha=95, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "m/s^2",
+      "value": -0.7094465604083453
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 278,
+      "key": "alpha95_non_scripted_fixed3_lower_cp_speed_drop_kmh_median",
+      "numerator": 5.807169145940471,
+      "selection": "non-scripted, alpha=95, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 5.807169145940471
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 278,
+      "key": "alpha95_non_scripted_fixed3_lower_cp_anchor_speed_drop_kmh_median",
+      "numerator": 4.1312591037064506,
+      "selection": "non-scripted, alpha=95, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 4.1312591037064506
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 278,
+      "key": "alpha95_non_scripted_fixed3_lower_cp_max_abs_yaw_rate_median",
+      "numerator": 7.54385765360772,
+      "selection": "non-scripted, alpha=95, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree/s",
+      "value": 7.54385765360772
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 278,
+      "key": "alpha95_non_scripted_fixed3_lower_cp_total_heading_change_median",
+      "numerator": 1.8211788925146308,
+      "selection": "non-scripted, alpha=95, group=lower, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree",
+      "value": 1.8211788925146308
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 8253,
+      "key": "alpha95_non_scripted_fixed3_lower_brake_2_share",
+      "numerator": 297,
+      "selection": "non-scripted, alpha=95, group=lower, fixed 3 s; post-anchor acceleration < -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.03598691384950927
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 8253,
+      "key": "alpha95_non_scripted_fixed3_lower_brake_3_share",
+      "numerator": 228,
+      "selection": "non-scripted, alpha=95, group=lower, fixed 3 s; post-anchor acceleration < -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.027626317702653582
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 8253,
+      "key": "alpha95_non_scripted_fixed3_lower_brake_4_share",
+      "numerator": 210,
+      "selection": "non-scripted, alpha=95, group=lower, fixed 3 s; post-anchor acceleration < -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.02544529262086514
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 11129,
+      "key": "alpha95_non_scripted_fixed3_inside_cp_min_acceleration_median",
+      "numerator": -0.6118870040152762,
+      "selection": "non-scripted, alpha=95, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "m/s^2",
+      "value": -0.6118870040152762
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 11129,
+      "key": "alpha95_non_scripted_fixed3_inside_cp_speed_drop_kmh_median",
+      "numerator": 2.9345513919198236,
+      "selection": "non-scripted, alpha=95, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 2.9345513919198236
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 11129,
+      "key": "alpha95_non_scripted_fixed3_inside_cp_anchor_speed_drop_kmh_median",
+      "numerator": 1.269349097474116,
+      "selection": "non-scripted, alpha=95, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "km/h",
+      "value": 1.269349097474116
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 11127,
+      "key": "alpha95_non_scripted_fixed3_inside_cp_max_abs_yaw_rate_median",
+      "numerator": 3.9995208437399157,
+      "selection": "non-scripted, alpha=95, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree/s",
+      "value": 3.9995208437399157
+    },
+    {
+      "columns": [
+        "acceleration",
+        "speed",
+        "courseAngle",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 11127,
+      "key": "alpha95_non_scripted_fixed3_inside_cp_total_heading_change_median",
+      "numerator": 1.374869424839291,
+      "selection": "non-scripted, alpha=95, group=inside, fixed 3 s, post-anchor valid outcome; statistic is median",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "degree",
+      "value": 1.374869424839291
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 329004,
+      "key": "alpha95_non_scripted_fixed3_inside_brake_2_share",
+      "numerator": 27901,
+      "selection": "non-scripted, alpha=95, group=inside, fixed 3 s; post-anchor acceleration < -2 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.08480444006759796
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 329004,
+      "key": "alpha95_non_scripted_fixed3_inside_brake_3_share",
+      "numerator": 20624,
+      "selection": "non-scripted, alpha=95, group=inside, fixed 3 s; post-anchor acceleration < -3 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.06268616794932584
+    },
+    {
+      "columns": [
+        "acceleration",
+        "globalTimeStamp",
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ],
+      "denominator": 329004,
+      "key": "alpha95_non_scripted_fixed3_inside_brake_4_share",
+      "numerator": 18871,
+      "selection": "non-scripted, alpha=95, group=inside, fixed 3 s; post-anchor acceleration < -4 m/s^2",
+      "source_files": [
+        "simulation_trajectory.log",
+        "data/derived/rq017_onsite_gate/l1_v1/",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "unit": "proportion",
+      "value": 0.05735796525270209
+    }
+  ]
+}

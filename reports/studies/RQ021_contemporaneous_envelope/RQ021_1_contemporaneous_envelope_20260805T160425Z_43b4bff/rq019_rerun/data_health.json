@@ -1,0 +1,1705 @@
+{
+  "alignment_summary": {
+    "analysis_rows": 14099,
+    "assertions": {
+      "nearest_timestamp_abs_diff_p95_ms": 48.0,
+      "nearest_timestamp_assertion_pass": true,
+      "nearest_timestamp_assertion_threshold_ms": 150.0,
+      "position_residual_assertion_pass": true,
+      "position_residual_assertion_threshold_m": 0.5,
+      "position_residual_median_m": 0.09916581334911007,
+      "position_residual_x_median_abs_m": 0.027336472948888968,
+      "position_residual_y_median_abs_m": 0.06536055415360664,
+      "raw_acceleration_abs_gt_10_share": 0.00015830861497064493,
+      "raw_acceleration_assertion_pass": true,
+      "raw_acceleration_assertion_threshold": 0.01
+    },
+    "case_translation_dx_quantiles_m": {
+      "0.0": -758.5212774813467,
+      "0.5": -576.8348249837588,
+      "1.0": 74.1398611305849
+    },
+    "case_translation_dy_quantiles_m": {
+      "0.0": -370.5947962792758,
+      "0.5": -37.32791670303352,
+      "1.0": 451.24553705034396
+    },
+    "counterpart_series_found_rows": 12769,
+    "counterpart_series_not_found_rows": 1330,
+    "matched_anchor_rows": 12750,
+    "matched_anchor_share": 0.9043194552805164,
+    "nearest_time_diff_ge_150ms_rows": 19,
+    "nearest_timestamp_abs_diff_quantiles_ms": {
+      "0.5": 26.0,
+      "0.9": 46.0,
+      "0.95": 48.0,
+      "0.99": 50.0,
+      "1.0": 1065.0
+    },
+    "position_comparable_rows": 12750,
+    "position_comparable_share": 0.9043194552805164,
+    "position_residual_quantiles_m": {
+      "0.5": 0.09916581334911007,
+      "0.9": 0.5444279668128128,
+      "0.95": 0.808308534002955,
+      "0.99": 2.113199317269728,
+      "1.0": 14.79884490800175
+    },
+    "series_diagnostics": {
+      "6921-1766196941::10500224": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 127,
+        "unique_timestamps": 127
+      },
+      "6921-1766196941::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 159,
+        "unique_timestamps": 159
+      },
+      "6921-1766196941::1200012": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 42,
+        "unique_timestamps": 42
+      },
+      "6921-1766196941::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 182,
+        "unique_timestamps": 182
+      },
+      "6921-1766196941::14700328": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 276,
+        "unique_timestamps": 276
+      },
+      "6921-1766196941::16300347": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 220,
+        "unique_timestamps": 220
+      },
+      "6921-1766196941::17800400": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 887,
+        "unique_timestamps": 887
+      },
+      "6921-1766196941::18400451": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 128,
+        "unique_timestamps": 128
+      },
+      "6921-1766196941::2400025": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 142,
+        "unique_timestamps": 142
+      },
+      "6921-1766196941::3700075": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 448,
+        "unique_timestamps": 448
+      },
+      "6921-1766196941::7000144": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 608,
+        "unique_timestamps": 608
+      },
+      "6921-1766196941::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 68,
+        "unique_timestamps": 68
+      },
+      "6921-1766196941::9400194": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6922-1766197115::10600302": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 184,
+        "unique_timestamps": 184
+      },
+      "6922-1766197115::12200306": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 315,
+        "unique_timestamps": 315
+      },
+      "6922-1766197115::13100340": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 227,
+        "unique_timestamps": 227
+      },
+      "6922-1766197115::13400349": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 159,
+        "unique_timestamps": 159
+      },
+      "6922-1766197115::13900357": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 303,
+        "unique_timestamps": 303
+      },
+      "6922-1766197115::1900031": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 194,
+        "unique_timestamps": 194
+      },
+      "6922-1766197115::3700112": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 321,
+        "unique_timestamps": 321
+      },
+      "6922-1766197115::500002": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 129,
+        "unique_timestamps": 129
+      },
+      "6922-1766197115::7300213": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 488,
+        "unique_timestamps": 488
+      },
+      "6922-1766197115::9200270": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 176,
+        "unique_timestamps": 176
+      },
+      "6922-1766197115::9900293": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 423,
+        "unique_timestamps": 423
+      },
+      "6923-1766197775::10500230": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 105,
+        "unique_timestamps": 105
+      },
+      "6923-1766197775::11700259": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 169,
+        "unique_timestamps": 169
+      },
+      "6923-1766197775::1200002": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 146,
+        "unique_timestamps": 146
+      },
+      "6923-1766197775::12600290": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 176,
+        "unique_timestamps": 176
+      },
+      "6923-1766197775::13200308": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 172,
+        "unique_timestamps": 172
+      },
+      "6923-1766197775::14700321": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 88,
+        "unique_timestamps": 88
+      },
+      "6923-1766197775::16300349": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 68,
+        "unique_timestamps": 68
+      },
+      "6923-1766197775::17800415": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 386,
+        "unique_timestamps": 386
+      },
+      "6923-1766197775::18400450": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 132,
+        "unique_timestamps": 132
+      },
+      "6923-1766197775::2400041": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6923-1766197775::3700075": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 443,
+        "unique_timestamps": 443
+      },
+      "6923-1766197775::4800123": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 173,
+        "unique_timestamps": 173
+      },
+      "6923-1766197775::7000165": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 604,
+        "unique_timestamps": 604
+      },
+      "6923-1766197775::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 85,
+        "unique_timestamps": 85
+      },
+      "6924-1766198444::10600302": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 255,
+        "unique_timestamps": 255
+      },
+      "6924-1766198444::12200306": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 313,
+        "unique_timestamps": 313
+      },
+      "6924-1766198444::13100340": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 239,
+        "unique_timestamps": 239
+      },
+      "6924-1766198444::13400349": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 202,
+        "unique_timestamps": 202
+      },
+      "6924-1766198444::13900357": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 303,
+        "unique_timestamps": 303
+      },
+      "6924-1766198444::1900036": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 194,
+        "unique_timestamps": 194
+      },
+      "6924-1766198444::2600090": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 107,
+        "unique_timestamps": 107
+      },
+      "6924-1766198444::3700112": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 321,
+        "unique_timestamps": 321
+      },
+      "6924-1766198444::4200151": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 542,
+        "unique_timestamps": 542
+      },
+      "6924-1766198444::500002": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 157,
+        "unique_timestamps": 157
+      },
+      "6924-1766198444::7300213": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 519,
+        "unique_timestamps": 519
+      },
+      "6924-1766198444::9200270": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 223,
+        "unique_timestamps": 223
+      },
+      "6924-1766198444::9900293": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 383,
+        "unique_timestamps": 383
+      },
+      "6925-1766198568::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 200,
+        "unique_timestamps": 200
+      },
+      "6925-1766198568::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 180,
+        "unique_timestamps": 180
+      },
+      "6925-1766198568::16300347": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 189,
+        "unique_timestamps": 189
+      },
+      "6925-1766198568::17800408": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 893,
+        "unique_timestamps": 893
+      },
+      "6925-1766198568::2400040": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 200,
+        "unique_timestamps": 200
+      },
+      "6925-1766198568::4800120": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 605,
+        "unique_timestamps": 605
+      },
+      "6925-1766198568::7000144": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 642,
+        "unique_timestamps": 642
+      },
+      "6925-1766198568::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 90,
+        "unique_timestamps": 90
+      },
+      "6925-1766198568::9400194": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6926-1766199712::10600302": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 246,
+        "unique_timestamps": 246
+      },
+      "6926-1766199712::12200306": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 310,
+        "unique_timestamps": 310
+      },
+      "6926-1766199712::13100340": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 208,
+        "unique_timestamps": 208
+      },
+      "6926-1766199712::13400349": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 179,
+        "unique_timestamps": 179
+      },
+      "6926-1766199712::13900357": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 303,
+        "unique_timestamps": 303
+      },
+      "6926-1766199712::1900036": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 194,
+        "unique_timestamps": 194
+      },
+      "6926-1766199712::2600090": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 115,
+        "unique_timestamps": 115
+      },
+      "6926-1766199712::3700112": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 387,
+        "unique_timestamps": 387
+      },
+      "6926-1766199712::500002": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 151,
+        "unique_timestamps": 151
+      },
+      "6926-1766199712::7300213": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 493,
+        "unique_timestamps": 493
+      },
+      "6926-1766199712::9200270": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 203,
+        "unique_timestamps": 203
+      },
+      "6926-1766199712::9900293": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 432,
+        "unique_timestamps": 432
+      },
+      "6928-1766201641::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 289,
+        "unique_timestamps": 289
+      },
+      "6928-1766201641::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 266,
+        "unique_timestamps": 266
+      },
+      "6928-1766201641::16300347": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 192,
+        "unique_timestamps": 192
+      },
+      "6928-1766201641::17800408": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 927,
+        "unique_timestamps": 927
+      },
+      "6928-1766201641::2400040": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 290,
+        "unique_timestamps": 290
+      },
+      "6928-1766201641::4800121": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 730,
+        "unique_timestamps": 730
+      },
+      "6928-1766201641::7000144": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 658,
+        "unique_timestamps": 658
+      },
+      "6928-1766201641::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 100,
+        "unique_timestamps": 100
+      },
+      "6928-1766201641::9400195": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6930-1766202635::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 150,
+        "unique_timestamps": 150
+      },
+      "6930-1766202635::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 223,
+        "unique_timestamps": 223
+      },
+      "6930-1766202635::14700328": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 628,
+        "unique_timestamps": 628
+      },
+      "6930-1766202635::16300347": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 200,
+        "unique_timestamps": 200
+      },
+      "6930-1766202635::17800408": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 493,
+        "unique_timestamps": 493
+      },
+      "6930-1766202635::2400040": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 235,
+        "unique_timestamps": 235
+      },
+      "6930-1766202635::3700076": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 505,
+        "unique_timestamps": 505
+      },
+      "6930-1766202635::4800121": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 851,
+        "unique_timestamps": 851
+      },
+      "6930-1766202635::7000144": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 636,
+        "unique_timestamps": 636
+      },
+      "6930-1766202635::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 96,
+        "unique_timestamps": 96
+      },
+      "6930-1766202635::9400195": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6931-1766206339::10600302": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 190,
+        "unique_timestamps": 190
+      },
+      "6931-1766206339::13100340": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 208,
+        "unique_timestamps": 208
+      },
+      "6931-1766206339::13400349": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 173,
+        "unique_timestamps": 173
+      },
+      "6931-1766206339::13900357": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 303,
+        "unique_timestamps": 303
+      },
+      "6931-1766206339::1900041": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 194,
+        "unique_timestamps": 194
+      },
+      "6931-1766206339::2600090": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 107,
+        "unique_timestamps": 107
+      },
+      "6931-1766206339::3700112": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 301,
+        "unique_timestamps": 301
+      },
+      "6931-1766206339::4200151": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 493,
+        "unique_timestamps": 493
+      },
+      "6931-1766206339::4900190": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 429,
+        "unique_timestamps": 429
+      },
+      "6931-1766206339::500002": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6931-1766206339::7300213": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 508,
+        "unique_timestamps": 508
+      },
+      "6931-1766206339::9200270": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 189,
+        "unique_timestamps": 189
+      },
+      "6931-1766206339::9900293": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 422,
+        "unique_timestamps": 422
+      },
+      "6932-1766206403::1200012": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 122,
+        "unique_timestamps": 122
+      },
+      "6932-1766206403::4800121": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 758,
+        "unique_timestamps": 758
+      },
+      "6934-1766207726::10600302": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 467,
+        "unique_timestamps": 467
+      },
+      "6934-1766207726::1900036": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 530,
+        "unique_timestamps": 530
+      },
+      "6934-1766207726::2600090": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 113,
+        "unique_timestamps": 113
+      },
+      "6934-1766207726::3700110": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 205,
+        "unique_timestamps": 205
+      },
+      "6934-1766207726::500002": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 326,
+        "unique_timestamps": 326
+      },
+      "6934-1766207726::7300213": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 598,
+        "unique_timestamps": 598
+      },
+      "6934-1766207726::9200270": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 373,
+        "unique_timestamps": 373
+      },
+      "6934-1766207726::9900293": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 422,
+        "unique_timestamps": 422
+      },
+      "6937-1766209673::10600302": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 467,
+        "unique_timestamps": 467
+      },
+      "6937-1766209673::12200306": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 288,
+        "unique_timestamps": 288
+      },
+      "6937-1766209673::13100340": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 174,
+        "unique_timestamps": 174
+      },
+      "6937-1766209673::13400349": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 406,
+        "unique_timestamps": 406
+      },
+      "6937-1766209673::13900357": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 303,
+        "unique_timestamps": 303
+      },
+      "6937-1766209673::1900036": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 271,
+        "unique_timestamps": 271
+      },
+      "6937-1766209673::2600090": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 106,
+        "unique_timestamps": 106
+      },
+      "6937-1766209673::3700110": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 171,
+        "unique_timestamps": 171
+      },
+      "6937-1766209673::4200147": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 529,
+        "unique_timestamps": 529
+      },
+      "6937-1766209673::500002": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 318,
+        "unique_timestamps": 318
+      },
+      "6937-1766209673::7300213": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 672,
+        "unique_timestamps": 672
+      },
+      "6937-1766209673::9200270": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 355,
+        "unique_timestamps": 355
+      },
+      "6937-1766209673::9900293": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 422,
+        "unique_timestamps": 422
+      },
+      "6938-1766210823::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 184,
+        "unique_timestamps": 184
+      },
+      "6938-1766210823::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 154,
+        "unique_timestamps": 154
+      },
+      "6938-1766210823::14700328": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 602,
+        "unique_timestamps": 602
+      },
+      "6938-1766210823::16300347": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 184,
+        "unique_timestamps": 184
+      },
+      "6938-1766210823::17800408": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 933,
+        "unique_timestamps": 933
+      },
+      "6938-1766210823::2400040": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 202,
+        "unique_timestamps": 202
+      },
+      "6938-1766210823::3700076": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 505,
+        "unique_timestamps": 505
+      },
+      "6938-1766210823::4800121": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 594,
+        "unique_timestamps": 594
+      },
+      "6938-1766210823::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 85,
+        "unique_timestamps": 85
+      },
+      "6938-1766210823::9400195": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6940-1766211847::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 209,
+        "unique_timestamps": 209
+      },
+      "6940-1766211847::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 240,
+        "unique_timestamps": 240
+      },
+      "6940-1766211847::16300347": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 206,
+        "unique_timestamps": 206
+      },
+      "6940-1766211847::17800408": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 1093,
+        "unique_timestamps": 1093
+      },
+      "6940-1766211847::18400451": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 156,
+        "unique_timestamps": 156
+      },
+      "6940-1766211847::2400040": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 214,
+        "unique_timestamps": 214
+      },
+      "6940-1766211847::4800121": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 677,
+        "unique_timestamps": 677
+      },
+      "6940-1766211847::7000144": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 660,
+        "unique_timestamps": 660
+      },
+      "6940-1766211847::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 85,
+        "unique_timestamps": 85
+      },
+      "6941-1766212682::10600302": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 231,
+        "unique_timestamps": 231
+      },
+      "6941-1766212682::12200306": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 295,
+        "unique_timestamps": 295
+      },
+      "6941-1766212682::13100340": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 215,
+        "unique_timestamps": 215
+      },
+      "6941-1766212682::13400349": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 192,
+        "unique_timestamps": 192
+      },
+      "6941-1766212682::1900043": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 194,
+        "unique_timestamps": 194
+      },
+      "6941-1766212682::2600090": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 105,
+        "unique_timestamps": 105
+      },
+      "6941-1766212682::3700112": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 301,
+        "unique_timestamps": 301
+      },
+      "6941-1766212682::4200150": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 523,
+        "unique_timestamps": 523
+      },
+      "6941-1766212682::500002": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 171,
+        "unique_timestamps": 171
+      },
+      "6941-1766212682::7300213": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 487,
+        "unique_timestamps": 487
+      },
+      "6941-1766212682::9200270": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 239,
+        "unique_timestamps": 239
+      },
+      "6944-1766214451::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 150,
+        "unique_timestamps": 150
+      },
+      "6944-1766214451::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 167,
+        "unique_timestamps": 167
+      },
+      "6944-1766214451::14700328": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 602,
+        "unique_timestamps": 602
+      },
+      "6944-1766214451::16300347": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 255,
+        "unique_timestamps": 255
+      },
+      "6944-1766214451::17800408": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 899,
+        "unique_timestamps": 899
+      },
+      "6944-1766214451::2400040": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 204,
+        "unique_timestamps": 204
+      },
+      "6944-1766214451::3700076": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 509,
+        "unique_timestamps": 509
+      },
+      "6944-1766214451::4800121": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 599,
+        "unique_timestamps": 599
+      },
+      "6944-1766214451::7000144": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 656,
+        "unique_timestamps": 656
+      },
+      "6944-1766214451::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 85,
+        "unique_timestamps": 85
+      },
+      "6944-1766214451::9400195": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6947-1766215908::10500230": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 772,
+        "unique_timestamps": 772
+      },
+      "6947-1766215908::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 238,
+        "unique_timestamps": 238
+      },
+      "6947-1766215908::12600290": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 236,
+        "unique_timestamps": 236
+      },
+      "6947-1766215908::13200308": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 291,
+        "unique_timestamps": 291
+      },
+      "6947-1766215908::14700321": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 125,
+        "unique_timestamps": 125
+      },
+      "6947-1766215908::16300349": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 68,
+        "unique_timestamps": 68
+      },
+      "6947-1766215908::17800417": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 947,
+        "unique_timestamps": 947
+      },
+      "6947-1766215908::18400451": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 155,
+        "unique_timestamps": 155
+      },
+      "6947-1766215908::2400045": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 148,
+        "unique_timestamps": 148
+      },
+      "6947-1766215908::3700076": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 509,
+        "unique_timestamps": 509
+      },
+      "6947-1766215908::4800125": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 168,
+        "unique_timestamps": 168
+      },
+      "6947-1766215908::7000165": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 667,
+        "unique_timestamps": 667
+      },
+      "6947-1766215908::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 87,
+        "unique_timestamps": 87
+      },
+      "6948-1766217297::10500224": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 127,
+        "unique_timestamps": 127
+      },
+      "6948-1766217297::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 459,
+        "unique_timestamps": 459
+      },
+      "6948-1766217297::1200012": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 122,
+        "unique_timestamps": 122
+      },
+      "6948-1766217297::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 174,
+        "unique_timestamps": 174
+      },
+      "6948-1766217297::13200305": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 233,
+        "unique_timestamps": 233
+      },
+      "6948-1766217297::14700319": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 1133,
+        "unique_timestamps": 1133
+      },
+      "6948-1766217297::14700328": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 602,
+        "unique_timestamps": 602
+      },
+      "6948-1766217297::2400040": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 197,
+        "unique_timestamps": 197
+      },
+      "6948-1766217297::3700076": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 509,
+        "unique_timestamps": 509
+      },
+      "6948-1766217297::4800121": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 534,
+        "unique_timestamps": 534
+      },
+      "6948-1766217297::7000144": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 760,
+        "unique_timestamps": 760
+      },
+      "6948-1766217297::7900187": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 85,
+        "unique_timestamps": 85
+      },
+      "6948-1766217297::9400195": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 134,
+        "unique_timestamps": 134
+      },
+      "6953-1766219816::11700263": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 341,
+        "unique_timestamps": 341
+      },
+      "6953-1766219816::12600289": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 393,
+        "unique_timestamps": 393
+      },
+      "6953-1766219816::16300347": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 213,
+        "unique_timestamps": 213
+      },
+      "6953-1766219816::2400040": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 536,
+        "unique_timestamps": 536
+      },
+      "6953-1766219816::4800121": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 644,
+        "unique_timestamps": 644
+      },
+      "6953-1766219816::7000144": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 433,
+        "unique_timestamps": 433
+      },
+      "6953-1766219816::7900180": {
+        "conflicting_duplicate_timestamps": 0,
+        "duplicate_timestamps": 0,
+        "input_records": 164,
+        "unique_timestamps": 164
+      }
+    }
+  },
+  "analysis_set": {
+    "case_frame_count_quantiles": {
+      "0.0": 1.0,
+      "0.01": 1.0,
+      "0.25": 20.0,
+      "0.5": 50.0,
+      "0.75": 90.0,
+      "0.99": 175.7,
+      "1.0": 222.0
+    },
+    "cases": 231,
+    "contract_window_past_case_end_count": 0,
+    "exposure_counts": {
+      "80": {
+        "inside": 11351,
+        "lower": 1174,
+        "upper": 1574
+      },
+      "90": {
+        "inside": 12711,
+        "lower": 519,
+        "upper": 869
+      },
+      "95": {
+        "inside": 13398,
+        "lower": 314,
+        "upper": 387
+      }
+    },
+    "fixed3_window_past_case_end_count": 734,
+    "rows": 14099,
+    "sessions": 19,
+    "strata": {
+      "non_scripted": {
+        "cases": 204,
+        "rows": 13024,
+        "teams": 17
+      },
+      "scripted": {
+        "cases": 27,
+        "rows": 1075,
+        "teams": 2
+      }
+    },
+    "teams": 19
+  },
+  "coordinate_anomaly_check": {
+    "analysis_case_count": 0,
+    "analysis_row_count": 0,
+    "case_keys": [],
+    "definition": "relative_distance_anchor between 570,000 and 571,000 m",
+    "impact": "No coordinate-anomaly row entered the gate-defined analysis set."
+  },
+  "generated_at_utc": "2026-08-05T15:53:23Z",
+  "load_contract": {
+    "all_anchor_counterpart_selection_counts": {
+      "online_first_conflict_nearest_timing_eligible_prefer_scripted_from_vehicle": {
+        "cases": 30,
+        "rows": 7305
+      },
+      "online_first_conflict_nearest_timing_eligible_vehicle": {
+        "cases": 237,
+        "rows": 60556
+      }
+    },
+    "alpha_90_counts": {
+      "inside": 12711,
+      "lower": 519,
+      "upper": 869
+    },
+    "analysis_cases": 231,
+    "analysis_rows": 14099,
+    "analysis_sessions": 19,
+    "analysis_teams": 19,
+    "join_recipe": "product_row_key parsed to case_key + anchor_frame_index + perspective; then joined one-to-one to the anchor natural key",
+    "source_rows": {
+      "anchors": 67861,
+      "mechanism_one": 67861,
+      "mechanism_two": 67861,
+      "timeseries": 70317
+    }
+  },
+  "outcome_health": {
+    "contract__cp_anchor_speed_drop_kmh": {
+      "max": 42.718992946770605,
+      "min": -1.9800000000000004,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "contract__cp_brake_share_2": {
+      "max": 1.0,
+      "min": 0.0,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "contract__cp_brake_share_3": {
+      "max": 1.0,
+      "min": 0.0,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "contract__cp_brake_share_4": {
+      "max": 1.0,
+      "min": 0.0,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "contract__cp_max_abs_yaw_rate": {
+      "max": 229.84668757324772,
+      "min": 0.0,
+      "nan_n": 1353,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12746
+    },
+    "contract__cp_min_acceleration": {
+      "max": 5.491555340252874,
+      "min": -7.5,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "contract__cp_speed_drop_kmh": {
+      "max": 42.067923746294824,
+      "min": 0.0,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "contract__cp_total_heading_change": {
+      "max": 53.74197322971844,
+      "min": 0.0,
+      "nan_n": 1353,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12746
+    },
+    "fixed3__cp_anchor_speed_drop_kmh": {
+      "max": 49.44709683553582,
+      "min": -1.9800000000000004,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "fixed3__cp_brake_share_2": {
+      "max": 1.0,
+      "min": 0.0,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "fixed3__cp_brake_share_3": {
+      "max": 1.0,
+      "min": 0.0,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "fixed3__cp_brake_share_4": {
+      "max": 1.0,
+      "min": 0.0,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "fixed3__cp_max_abs_yaw_rate": {
+      "max": 321.15805331398894,
+      "min": 0.0,
+      "nan_n": 1353,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12746
+    },
+    "fixed3__cp_min_acceleration": {
+      "max": 1.3321860012600886,
+      "min": -7.5,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "fixed3__cp_speed_drop_kmh": {
+      "max": 49.44709683553582,
+      "min": 0.0,
+      "nan_n": 1351,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12748
+    },
+    "fixed3__cp_total_heading_change": {
+      "max": 104.86268672672244,
+      "min": 0.0,
+      "nan_n": 1353,
+      "negative_inf_n": 0,
+      "positive_inf_n": 0,
+      "valid_n": 12746
+    }
+  },
+  "raw_fields": {
+    "acceleration_abs_gt_10_count": 361,
+    "acceleration_abs_gt_10_denominator": 2280356,
+    "acceleration_abs_gt_10_share": 0.00015830861497064493,
+    "course_angle_above_2pi_count": 2285691,
+    "course_angle_above_360_count": 0,
+    "course_angle_negative_count": 0,
+    "course_angle_range_basis": "observed within [0, 360] with values above 2*pi",
+    "course_angle_unit": "degree",
+    "json_error_count": 0,
+    "non_trajectory_line_count": 0,
+    "nonfinite_counts": {
+      "acceleration": 9,
+      "courseAngle": 0,
+      "frameId": 0,
+      "speed": 0,
+      "x": 0,
+      "y": 0
+    },
+    "null_counts": {
+      "acceleration": 26426,
+      "courseAngle": 3730,
+      "frameId": 26426,
+      "globalTimeStamp": 26426,
+      "id": 0,
+      "name": 26426,
+      "speed": 26426,
+      "x": 26426,
+      "y": 26426
+    },
+    "null_field_slot_share": 0.009089683460703636,
+    "null_field_slots": 188712,
+    "numeric_max": {
+      "acceleration": 1.7601919752357757e+263,
+      "courseAngle": 359.9754669234576,
+      "frameId": 9741.0,
+      "speed": 70.9002665371721,
+      "x": 110.04143342672369,
+      "y": 550.3762988646916
+    },
+    "numeric_min": {
+      "acceleration": -7.5,
+      "courseAngle": 0.007177098040289879,
+      "frameId": 11.0,
+      "speed": 0.0,
+      "x": -766.5397758831035,
+      "y": -784.4954386202463
+    },
+    "per_session": {
+      "6921-1766196941": {
+        "bytes": 64364371,
+        "json_errors": 0,
+        "lines": 5208,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/02_T6_thicv2025/sessions/6921-1766196941/simulation_trajectory.log",
+        "retained_counterpart_records": 3421,
+        "vehicle_records": 108723
+      },
+      "6922-1766197115": {
+        "bytes": 72746443,
+        "json_errors": 0,
+        "lines": 6138,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/beijing/02_T14_bps/sessions/6922-1766197115/simulation_trajectory.log",
+        "retained_counterpart_records": 2919,
+        "vehicle_records": 106772
+      },
+      "6923-1766197775": {
+        "bytes": 51634277,
+        "json_errors": 0,
+        "lines": 4302,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/01_T11_wsd/sessions/6923-1766197775/simulation_trajectory.log",
+        "retained_counterpart_records": 2881,
+        "vehicle_records": 87189
+      },
+      "6924-1766198444": {
+        "bytes": 71946778,
+        "json_errors": 0,
+        "lines": 6403,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/beijing/04_T15_wulala/sessions/6924-1766198444/simulation_trajectory.log",
+        "retained_counterpart_records": 3758,
+        "vehicle_records": 103457
+      },
+      "6925-1766198568": {
+        "bytes": 86487098,
+        "json_errors": 0,
+        "lines": 7529,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/03_T5_limitless/sessions/6925-1766198568/simulation_trajectory.log",
+        "retained_counterpart_records": 3133,
+        "vehicle_records": 143395
+      },
+      "6926-1766199712": {
+        "bytes": 72671672,
+        "json_errors": 0,
+        "lines": 6423,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/beijing/03_T16_autoailab/sessions/6926-1766199712/simulation_trajectory.log",
+        "retained_counterpart_records": 3221,
+        "vehicle_records": 104896
+      },
+      "6928-1766201641": {
+        "bytes": 80168194,
+        "json_errors": 0,
+        "lines": 7667,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/06_T9_takeover92/sessions/6928-1766201641/simulation_trajectory.log",
+        "retained_counterpart_records": 3586,
+        "vehicle_records": 132972
+      },
+      "6930-1766202635": {
+        "bytes": 73101139,
+        "json_errors": 0,
+        "lines": 6724,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/08_T3_e2e/sessions/6930-1766202635/simulation_trajectory.log",
+        "retained_counterpart_records": 4151,
+        "vehicle_records": 122195
+      },
+      "6931-1766206339": {
+        "bytes": 71133570,
+        "json_errors": 0,
+        "lines": 6128,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/beijing/01_T17_panda/sessions/6931-1766206339/simulation_trajectory.log",
+        "retained_counterpart_records": 3651,
+        "vehicle_records": 103430
+      },
+      "6932-1766206403": {
+        "bytes": 79501781,
+        "json_errors": 0,
+        "lines": 7532,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/05_T8_ADVRC/sessions/6932-1766206403/simulation_trajectory.log",
+        "retained_counterpart_records": 880,
+        "vehicle_records": 131765
+      },
+      "6934-1766207726": {
+        "bytes": 85727543,
+        "json_errors": 0,
+        "lines": 10001,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/beijing/07_T21_vtb917/sessions/6934-1766207726/simulation_trajectory.log",
+        "retained_counterpart_records": 3034,
+        "vehicle_records": 113322
+      },
+      "6937-1766209673": {
+        "bytes": 90256392,
+        "json_errors": 0,
+        "lines": 9742,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/beijing/08_T19_223/sessions/6937-1766209673/simulation_trajectory.log",
+        "retained_counterpart_records": 4482,
+        "vehicle_records": 118868
+      },
+      "6938-1766210823": {
+        "bytes": 76228444,
+        "json_errors": 0,
+        "lines": 7249,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/04_T7_SMU/sessions/6938-1766210823/simulation_trajectory.log",
+        "retained_counterpart_records": 3577,
+        "vehicle_records": 126234
+      },
+      "6940-1766211847": {
+        "bytes": 83686407,
+        "json_errors": 0,
+        "lines": 8053,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/07_T1_CQUauto/sessions/6940-1766211847/simulation_trajectory.log",
+        "retained_counterpart_records": 3540,
+        "vehicle_records": 137863
+      },
+      "6941-1766212682": {
+        "bytes": 70048388,
+        "json_errors": 0,
+        "lines": 6412,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/beijing/05_T20_mm/sessions/6941-1766212682/simulation_trajectory.log",
+        "retained_counterpart_records": 2953,
+        "vehicle_records": 99810
+      },
+      "6944-1766214451": {
+        "bytes": 77259248,
+        "json_errors": 0,
+        "lines": 7360,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/09_T4_1216/sessions/6944-1766214451/simulation_trajectory.log",
+        "retained_counterpart_records": 4260,
+        "vehicle_records": 127212
+      },
+      "6947-1766215908": {
+        "bytes": 100961556,
+        "json_errors": 0,
+        "lines": 9981,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/10_T2_Liulang/sessions/6947-1766215908/simulation_trajectory.log",
+        "retained_counterpart_records": 4411,
+        "vehicle_records": 165924
+      },
+      "6948-1766217297": {
+        "bytes": 79485052,
+        "json_errors": 0,
+        "lines": 10001,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/11_T10_tievplus/sessions/6948-1766217297/simulation_trajectory.log",
+        "retained_counterpart_records": 5069,
+        "vehicle_records": 122964
+      },
+      "6953-1766219816": {
+        "bytes": 93876080,
+        "json_errors": 0,
+        "lines": 10001,
+        "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/teams/shanghai/12_T12_mingde/sessions/6953-1766219816/simulation_trajectory.log",
+        "retained_counterpart_records": 2724,
+        "vehicle_records": 149800
+      }
+    },
+    "record_count": 2306791,
+    "records_with_any_required_field_null": 26426,
+    "records_with_any_required_field_null_share": 0.011455740897203085,
+    "required_field_slots": 20761119,
+    "retained_counterpart_records": 65651,
+    "retained_probe_records": 1745,
+    "timestamp_string_count": 2280365,
+    "trajectory_line_count": 142854,
+    "valid_numeric_counts": {
+      "acceleration": 2280356,
+      "courseAngle": 2303061,
+      "frameId": 2280365,
+      "speed": 2280365,
+      "x": 2280365,
+      "y": 2280365
+    }
+  },
+  "raw_log_inventory": {
+    "all_simulation_trajectory_bytes": 1684687166,
+    "all_simulation_trajectory_log_count": 22,
+    "analysis_log_bytes": 1481284433,
+    "analysis_log_count": 19,
+    "unused_log_sessions": [
+      "6927-1766200590",
+      "6933-1766207438",
+      "6935-1766208365"
+    ]
+  }
+}

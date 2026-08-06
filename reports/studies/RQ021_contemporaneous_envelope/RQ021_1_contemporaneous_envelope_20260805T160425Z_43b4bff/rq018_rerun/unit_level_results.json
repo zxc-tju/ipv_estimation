@@ -1,0 +1,1334 @@
+{
+  "generated_at_utc": "2026-08-05T15:52:16Z",
+  "sources": {
+    "exposure": [
+      "data/derived/rq017_onsite_gate/l1_v1",
+      ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+      "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+    ],
+    "outcomes": "data/derived/onsite_competition/RQ012B_event_harm/stage4plus/unit_analysis_table.parquet"
+  },
+  "coverage": {
+    "base_analysis_units": 245,
+    "units_with_defined_exposure": 225,
+    "units_without_two_gate_frames": 20,
+    "two_gate_units_outside_analysis_set": 6,
+    "definition": "Unit exposure is aggregated only over frames passing both mechanisms. Units with no such frame remain missing, not zero. Required unit exceedance summaries use normalized exceedance in interval-width units."
+  },
+  "exposure_definitions": {
+    "frac_outside_90": "outside-frame count divided by two-gate frame count",
+    "mean_signed_exceedance_90": "mean signed normalized exceedance; units are interval widths",
+    "frac_upper_90": "upper-outside-frame count divided by two-gate frame count",
+    "frac_lower_90": "lower-outside-frame count divided by two-gate frame count",
+    "mean_upper_exceedance_90": "mean positive normalized upper magnitude, with zero elsewhere",
+    "mean_lower_exceedance_90": "mean positive normalized lower magnitude, with zero elsewhere",
+    "max_abs_exceedance_90": "maximum absolute normalized exceedance; units are interval widths"
+  },
+  "nonsafety": {
+    "official_efficiency": {
+      "frac_outside_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.09643900844659019,
+          "naive_p_value": 0.1493331597972867,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20482669,
+            "ci95_low": -0.2365864700689907,
+            "ci95_high": 0.07148166058221812,
+            "two_sided_sign_p": 0.23376623376623376
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.2907116732629138,
+          "naive_p_value": 9.75556787653377e-06,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20482670,
+            "ci95_low": -0.4061003044335324,
+            "ci95_high": -0.16613372366588997,
+            "two_sided_sign_p": 0.001998001998001998
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_signed_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.012657797487522106,
+          "naive_p_value": 0.8502362442782216,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20375677,
+            "ci95_low": -0.1656380578000503,
+            "ci95_high": 0.13600622892319952,
+            "two_sided_sign_p": 0.8611388611388612
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.041812422027350755,
+          "naive_p_value": 0.5335722365118515,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20375678,
+            "ci95_low": -0.08089214524435924,
+            "ci95_high": 0.15749177415761825,
+            "two_sided_sign_p": 0.5294705294705294
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "frac_upper_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.09420792762635141,
+          "naive_p_value": 0.15901789916310471,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20435431,
+            "ci95_low": -0.21307285615600213,
+            "ci95_high": 0.043972923823641215,
+            "two_sided_sign_p": 0.17782217782217782
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.22014033563950502,
+          "naive_p_value": 0.0009095302524223235,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20435432,
+            "ci95_low": -0.3425663028047619,
+            "ci95_high": -0.08479216457359091,
+            "two_sided_sign_p": 0.001998001998001998
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "frac_lower_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.07364930331165954,
+          "naive_p_value": 0.2712968106683546,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20634306,
+            "ci95_low": -0.2280690563457407,
+            "ci95_high": 0.07754772192561198,
+            "two_sided_sign_p": 0.3016983016983017
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.2705771710282752,
+          "naive_p_value": 4.0645057675837984e-05,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20634307,
+            "ci95_low": -0.3439329710274138,
+            "ci95_high": -0.18079290651525623,
+            "two_sided_sign_p": 0.001998001998001998
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_upper_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.08840360391500134,
+          "naive_p_value": 0.18641584433382802,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20840421,
+            "ci95_low": -0.22408051804083573,
+            "ci95_high": 0.046358638637351214,
+            "two_sided_sign_p": 0.1938061938061938
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.2212618222095371,
+          "naive_p_value": 0.0008547089414425038,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20840422,
+            "ci95_low": -0.34181999502578103,
+            "ci95_high": -0.08914409100057928,
+            "two_sided_sign_p": 0.001998001998001998
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_lower_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.08081225538895502,
+          "naive_p_value": 0.22727506568696598,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20951377,
+            "ci95_low": -0.21630039496537642,
+            "ci95_high": 0.05966904537018706,
+            "two_sided_sign_p": 0.25374625374625376
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.27246447075929514,
+          "naive_p_value": 3.5722545644866314e-05,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20951378,
+            "ci95_low": -0.35034374119955913,
+            "ci95_high": -0.18154001316842688,
+            "two_sided_sign_p": 0.001998001998001998
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "max_abs_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.08754541743822264,
+          "naive_p_value": 0.1907442593406292,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20429967,
+            "ci95_low": -0.22402418173266767,
+            "ci95_high": 0.059394534668370746,
+            "two_sided_sign_p": 0.23176823176823177
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.312513664303415,
+          "naive_p_value": 1.8317675515069722e-06,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20429968,
+            "ci95_low": -0.415199604912542,
+            "ci95_high": -0.20415553551148635,
+            "two_sided_sign_p": 0.001998001998001998
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      }
+    },
+    "official_comfort": {
+      "frac_outside_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.047080149795656445,
+          "naive_p_value": 0.48226853732952335,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20903646,
+            "ci95_low": -0.10376993540432655,
+            "ci95_high": 0.201749305000543,
+            "two_sided_sign_p": 0.5514485514485514
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.05150917279312791,
+          "naive_p_value": 0.443013130147061,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20903647,
+            "ci95_low": -0.09477293590605175,
+            "ci95_high": 0.20420309326515987,
+            "two_sided_sign_p": 0.45554445554445555
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_signed_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.057950700392692074,
+          "naive_p_value": 0.3869585393480711,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20698547,
+            "ci95_low": -0.18964242352356905,
+            "ci95_high": 0.07661082621507284,
+            "two_sided_sign_p": 0.43356643356643354
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.055162457320191774,
+          "naive_p_value": 0.4113029577791859,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20698548,
+            "ci95_low": -0.16695069581313304,
+            "ci95_high": 0.07281951124640515,
+            "two_sided_sign_p": 0.39760239760239763
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "frac_upper_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.013201099866318386,
+          "naive_p_value": 0.8438884480985632,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20590262,
+            "ci95_low": -0.1248400743704897,
+            "ci95_high": 0.15602810493634012,
+            "two_sided_sign_p": 0.8451548451548452
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.019500667463769255,
+          "naive_p_value": 0.7716219316541353,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20590263,
+            "ci95_low": -0.11583305073371532,
+            "ci95_high": 0.16175117160667088,
+            "two_sided_sign_p": 0.7652347652347652
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "frac_lower_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.06676108666206616,
+          "naive_p_value": 0.3187881391996393,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20507955,
+            "ci95_low": -0.0606475255260709,
+            "ci95_high": 0.17929545687133533,
+            "two_sided_sign_p": 0.26973026973026976
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.0686919678123012,
+          "naive_p_value": 0.3060502876279489,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20507956,
+            "ci95_low": -0.05196219777552458,
+            "ci95_high": 0.18056339938085167,
+            "two_sided_sign_p": 0.22977022977022976
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_upper_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.019106353525750845,
+          "naive_p_value": 0.7756249551546333,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20613083,
+            "ci95_low": -0.11495456368771714,
+            "ci95_high": 0.14835369705364077,
+            "two_sided_sign_p": 0.7572427572427572
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.024553984416643786,
+          "naive_p_value": 0.714746049885828,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20613084,
+            "ci95_low": -0.09287114045028781,
+            "ci95_high": 0.1551408129544356,
+            "two_sided_sign_p": 0.6933066933066933
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_lower_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.06852817078136218,
+          "naive_p_value": 0.30611837154470384,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20654463,
+            "ci95_low": -0.039484101012536285,
+            "ci95_high": 0.17541687910074222,
+            "two_sided_sign_p": 0.2217782217782218
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.07148954487642226,
+          "naive_p_value": 0.2867243117832391,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20654464,
+            "ci95_low": -0.034461484473552864,
+            "ci95_high": 0.1788932978927871,
+            "two_sided_sign_p": 0.16783216783216784
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "max_abs_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.09639639378208595,
+          "naive_p_value": 0.14951385615430304,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20412530,
+            "ci95_low": -0.01914611197356158,
+            "ci95_high": 0.21101780940384313,
+            "two_sided_sign_p": 0.12387612387612387
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.09920644323347044,
+          "naive_p_value": 0.13883780970537252,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20412531,
+            "ci95_low": -0.032104866955388174,
+            "ci95_high": 0.225437240612244,
+            "two_sided_sign_p": 0.13186813186813187
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      }
+    },
+    "official_compliance": {
+      "frac_outside_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.06711783475190701,
+          "naive_p_value": 0.31620321312119315,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 21237570,
+            "ci95_low": -0.07183514493038802,
+            "ci95_high": 0.223912985816314,
+            "two_sided_sign_p": 0.3676323676323676
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.07933770598717545,
+          "naive_p_value": 0.23695189128992494,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 21237571,
+            "ci95_low": -0.042413461836541884,
+            "ci95_high": 0.22343719075071689,
+            "two_sided_sign_p": 0.23576423576423577
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_signed_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.04669576802935599,
+          "naive_p_value": 0.4858556735308889,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20317382,
+            "ci95_low": -0.16499472414963956,
+            "ci95_high": 0.07891410542857226,
+            "two_sided_sign_p": 0.47352647352647353
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.0414865606072204,
+          "naive_p_value": 0.5367690579760329,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20317383,
+            "ci95_low": -0.1648729802430257,
+            "ci95_high": 0.07976045471212762,
+            "two_sided_sign_p": 0.5374625374625375
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "frac_upper_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.04808994130665177,
+          "naive_p_value": 0.47291345542616436,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20515405,
+            "ci95_low": -0.06365974535206727,
+            "ci95_high": 0.15667062905785037,
+            "two_sided_sign_p": 0.41358641358641357
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.06433559967856452,
+          "naive_p_value": 0.33781403433062474,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20515406,
+            "ci95_low": -0.03426054122725574,
+            "ci95_high": 0.16604245673305962,
+            "two_sided_sign_p": 0.2017982017982018
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "frac_lower_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.08220854975186255,
+          "naive_p_value": 0.21931929134067416,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20328156,
+            "ci95_low": -0.04153102623851181,
+            "ci95_high": 0.20846806765216097,
+            "two_sided_sign_p": 0.2177822177822178
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.08917458724297979,
+          "naive_p_value": 0.1835753084656778,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20328157,
+            "ci95_low": -0.027022144656503988,
+            "ci95_high": 0.20815810217280648,
+            "two_sided_sign_p": 0.13186813186813187
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_upper_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.02950928967432229,
+          "naive_p_value": 0.6597416884373386,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20563584,
+            "ci95_low": -0.06371286701901757,
+            "ci95_high": 0.13498249622089156,
+            "two_sided_sign_p": 0.5094905094905094
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.04273274958908358,
+          "naive_p_value": 0.5245953945935077,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20563585,
+            "ci95_low": -0.04012981542607106,
+            "ci95_high": 0.13034358616740963,
+            "two_sided_sign_p": 0.3016983016983017
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_lower_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.10393480103565925,
+          "naive_p_value": 0.12005288275355314,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20462300,
+            "ci95_low": -0.011877537914210354,
+            "ci95_high": 0.22045084081421182,
+            "two_sided_sign_p": 0.0939060939060939
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.11427374213266278,
+          "naive_p_value": 0.08794887724629771,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20462301,
+            "ci95_low": -0.005478601026495578,
+            "ci95_high": 0.2298153886552709,
+            "two_sided_sign_p": 0.06593406593406594
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "max_abs_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.08035330969878335,
+          "naive_p_value": 0.2299341184035973,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20530543,
+            "ci95_low": -0.05236915316634406,
+            "ci95_high": 0.1992551406520178,
+            "two_sided_sign_p": 0.22977022977022976
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.08848321658046124,
+          "naive_p_value": 0.1870100430977246,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20530544,
+            "ci95_low": -0.025248804034600395,
+            "ci95_high": 0.2038152324273885,
+            "two_sided_sign_p": 0.10789210789210789
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      }
+    },
+    "official_coordination": {
+      "frac_outside_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.12550861841634584,
+          "naive_p_value": 0.060165007781184734,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20801912,
+            "ci95_low": -0.025867976328901483,
+            "ci95_high": 0.2921935400343306,
+            "two_sided_sign_p": 0.1018981018981019
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.17793090288309044,
+          "naive_p_value": 0.007597290662045567,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20801913,
+            "ci95_low": 0.06248114203987188,
+            "ci95_high": 0.2880972415068833,
+            "two_sided_sign_p": 0.005994005994005994
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_signed_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.04524834669225308,
+          "naive_p_value": 0.49949102143292723,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20737557,
+            "ci95_low": -0.20804239338866423,
+            "ci95_high": 0.09975120755007948,
+            "two_sided_sign_p": 0.6373626373626373
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": -0.03899802912768991,
+          "naive_p_value": 0.5614935462639247,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20737558,
+            "ci95_low": -0.1849465633100445,
+            "ci95_high": 0.08238300264437623,
+            "two_sided_sign_p": 0.6293706293706294
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "frac_upper_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.08832933780529036,
+          "naive_p_value": 0.1867875445861834,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20729876,
+            "ci95_low": -0.03653788104390488,
+            "ci95_high": 0.23733979382791046,
+            "two_sided_sign_p": 0.1938061938061938
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.1429571210745394,
+          "naive_p_value": 0.032467074328738875,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20729877,
+            "ci95_low": 0.046261185162929534,
+            "ci95_high": 0.2429311733376662,
+            "two_sided_sign_p": 0.007992007992007992
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "frac_lower_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.13349598415829966,
+          "naive_p_value": 0.04547345288537101,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 21020501,
+            "ci95_low": -0.010834881623137924,
+            "ci95_high": 0.2965883240014217,
+            "two_sided_sign_p": 0.07992007992007992
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.1738836265106131,
+          "naive_p_value": 0.009112940316384656,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 21020502,
+            "ci95_low": 0.06777871687411509,
+            "ci95_high": 0.29300478743760605,
+            "two_sided_sign_p": 0.003996003996003996
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_upper_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.10020159739417012,
+          "naive_p_value": 0.13402258969143413,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20355912,
+            "ci95_low": -0.029769969335423176,
+            "ci95_high": 0.22999295502369205,
+            "two_sided_sign_p": 0.17182817182817184
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.15306929987380213,
+          "naive_p_value": 0.021926674765314402,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20355913,
+            "ci95_low": 0.06412153392828976,
+            "ci95_high": 0.25099649303819127,
+            "two_sided_sign_p": 0.003996003996003996
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "mean_lower_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.1448204509300595,
+          "naive_p_value": 0.029880659149159657,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20382772,
+            "ci95_low": 0.014707800898532802,
+            "ci95_high": 0.27397129153217836,
+            "two_sided_sign_p": 0.03196803196803197
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.1933494718688991,
+          "naive_p_value": 0.0036717911720107353,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20382773,
+            "ci95_low": 0.09208572826347555,
+            "ci95_high": 0.29558053602803247,
+            "two_sided_sign_p": 0.003996003996003996
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      },
+      "max_abs_exceedance_90": {
+        "univariate": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.17811788078368102,
+          "naive_p_value": 0.007398847422991622,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20835636,
+            "ci95_low": 0.06030651142418478,
+            "ci95_high": 0.30256005489876214,
+            "two_sided_sign_p": 0.007992007992007992
+          },
+          "control": "none",
+          "method": "Spearman rank association"
+        },
+        "partial_controlling_official_comprehensive": {
+          "n": 225,
+          "team_clusters": 19,
+          "rho": 0.23280938347633995,
+          "naive_p_value": 0.00044261733140147627,
+          "team_block_bootstrap": {
+            "requested_draws": 1000,
+            "valid_draws": 1000,
+            "seed": 20835637,
+            "ci95_low": 0.13137627542857203,
+            "ci95_high": 0.32246305741749826,
+            "two_sided_sign_p": 0.001998001998001998
+          },
+          "control": "official_comprehensive",
+          "method": "Partial Spearman rank association"
+        }
+      }
+    }
+  },
+  "secondary": {
+    "official_safety": {
+      "frac_outside_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": -0.13081410810198632,
+        "naive_p_value": 0.05002950233809121,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20415453,
+          "ci95_low": -0.21840942725161394,
+          "ci95_high": 0.0015380001266391058,
+          "two_sided_sign_p": 0.055944055944055944
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_signed_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": -0.054269100812732465,
+        "naive_p_value": 0.41788289018978586,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20665840,
+          "ci95_low": -0.15184634143850767,
+          "ci95_high": 0.08078163891745657,
+          "two_sided_sign_p": 0.4075924075924076
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "frac_upper_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": -0.10992115981554434,
+        "naive_p_value": 0.10004796842670544,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20313798,
+          "ci95_low": -0.1769315839134302,
+          "ci95_high": -0.014846498027761619,
+          "two_sided_sign_p": 0.03196803196803197
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "frac_lower_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": -0.09199493407890257,
+        "naive_p_value": 0.16908311680921478,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20709427,
+          "ci95_low": -0.1931244159042799,
+          "ci95_high": 0.006901934515354635,
+          "two_sided_sign_p": 0.06793206793206794
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_upper_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": -0.10146496162345578,
+        "naive_p_value": 0.1291616706882589,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20899487,
+          "ci95_low": -0.17367560674678992,
+          "ci95_high": -0.007548073705412003,
+          "two_sided_sign_p": 0.04395604395604396
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_lower_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": -0.06348311757130405,
+        "naive_p_value": 0.34318065068839676,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20351627,
+          "ci95_low": -0.1442283185657599,
+          "ci95_high": 0.015136395159660292,
+          "two_sided_sign_p": 0.12387612387612387
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "max_abs_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": -0.07775871161227338,
+        "naive_p_value": 0.24538015973843144,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20900496,
+          "ci95_low": -0.162046617486012,
+          "ci95_high": 0.02995084957741684,
+          "two_sided_sign_p": 0.13186813186813187
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      }
+    },
+    "collision_intervention_deduction_any": {
+      "frac_outside_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.11572627952274743,
+        "naive_p_value": 0.08326470977853753,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 21027743,
+          "ci95_low": -0.02727763123054562,
+          "ci95_high": 0.213317462423717,
+          "two_sided_sign_p": 0.10789210789210789
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_signed_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.029487658692642298,
+        "naive_p_value": 0.6599755210537885,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20514142,
+          "ci95_low": -0.12230336220039649,
+          "ci95_high": 0.14120947811091908,
+          "two_sided_sign_p": 0.6893106893106893
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "frac_upper_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.08640549190094599,
+        "naive_p_value": 0.19660668887512953,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 21003164,
+          "ci95_low": -0.02319914774910282,
+          "ci95_high": 0.16440707412270475,
+          "two_sided_sign_p": 0.12787212787212787
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "frac_lower_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.1121507474954212,
+        "naive_p_value": 0.0933100571779974,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20890909,
+          "ci95_low": 0.01852714944164103,
+          "ci95_high": 0.21163100444412605,
+          "two_sided_sign_p": 0.025974025974025976
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_upper_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.08026370211724562,
+        "naive_p_value": 0.23045584330627852,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20753703,
+          "ci95_low": -0.014479215703774903,
+          "ci95_high": 0.14997154422477865,
+          "two_sided_sign_p": 0.11388611388611389
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_lower_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.08277395330334619,
+        "naive_p_value": 0.21615490791641884,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20800771,
+          "ci95_low": 0.005167308053229126,
+          "ci95_high": 0.17387029598528858,
+          "two_sided_sign_p": 0.04595404595404595
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "max_abs_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.0756664449471576,
+        "naive_p_value": 0.25835146984270374,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 1000,
+          "seed": 20877742,
+          "ci95_low": -0.016888382876211177,
+          "ci95_high": 0.16070957698475363,
+          "two_sided_sign_p": 0.10989010989010989
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      }
+    },
+    "safety_intervention": {
+      "frac_outside_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.10931355074369452,
+        "naive_p_value": 0.10194948136759846,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 964,
+          "seed": 20861782,
+          "ci95_low": -0.03673993783492865,
+          "ci95_high": 0.20115695068686018,
+          "two_sided_sign_p": 0.20932642487046632
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_signed_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.09892080438533611,
+        "naive_p_value": 0.13909280081432443,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 952,
+          "seed": 20532169,
+          "ci95_low": 0.0458796106285809,
+          "ci95_high": 0.16742509338544584,
+          "two_sided_sign_p": 0.002098635886673662
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "frac_upper_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.0894644449089981,
+        "naive_p_value": 0.18116549111167685,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 963,
+          "seed": 20490296,
+          "ci95_low": -0.022535960320562008,
+          "ci95_high": 0.1682388014716798,
+          "two_sided_sign_p": 0.16182572614107885
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "frac_lower_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.04282976588673448,
+        "naive_p_value": 0.5227178344166713,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 957,
+          "seed": 20529345,
+          "ci95_low": -0.006821865244390871,
+          "ci95_high": 0.08270917953014803,
+          "two_sided_sign_p": 0.10855949895615867
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_upper_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.06935496904624311,
+        "naive_p_value": 0.3003057758564324,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 969,
+          "seed": 21201584,
+          "ci95_low": -0.01627867742537111,
+          "ci95_high": 0.16340193459280145,
+          "two_sided_sign_p": 0.16288659793814433
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "mean_lower_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.00623730431687516,
+        "naive_p_value": 0.9258722919012763,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 965,
+          "seed": 20875612,
+          "ci95_low": -0.04013869637388087,
+          "ci95_high": 0.04239670728566183,
+          "two_sided_sign_p": 0.7929606625258799
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      },
+      "max_abs_exceedance_90": {
+        "n": 225,
+        "team_clusters": 19,
+        "rho": 0.028976801284593404,
+        "naive_p_value": 0.6655074775227634,
+        "team_block_bootstrap": {
+          "requested_draws": 1000,
+          "valid_draws": 951,
+          "seed": 20594614,
+          "ci95_low": -0.05173906564502182,
+          "ci95_high": 0.10750120392862139,
+          "two_sided_sign_p": 0.4852941176470588
+        },
+        "control": "none",
+        "method": "Spearman rank association"
+      }
+    }
+  },
+  "association_count": 49
+}
