@@ -1,0 +1,10 @@
+Command:
+/Users/xiaocong/.rq009_codex_fleet/venv/bin/python .codex-fleet/rq021-contemporaneous-envelope/work/E1/rq019_rerun/rq019_counterpart_burden.py --root .
+
+Exit status: 1
+
+Failure output:
+AssertionError: Alpha-90 exposure counts differ: {'inside': 12711, 'upper': 869, 'lower': 519} vs {'upper': 2700, 'lower': 1998, 'inside': 9401}
+
+Resolution:
+The copied script's input-data contract was updated to the new observed counts. Analysis logic, models, thresholds, RNG seed, bootstrap settings, and permutation settings were unchanged.

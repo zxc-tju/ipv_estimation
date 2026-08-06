@@ -1,0 +1,373 @@
+{
+  "generated_at_utc": "2026-08-05T15:52:16Z",
+  "analysis_set_check": {
+    "observed": 14099,
+    "expected": 14099,
+    "matches_expected": true,
+    "definition": "RQ017 status == OK AND M2 mechanism2_gate_ok == True",
+    "sources": [
+      "data/derived/rq017_onsite_gate/l1_v1",
+      ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+    ],
+    "columns": [
+      "product_row_key",
+      "status",
+      "mechanism2_gate_ok"
+    ]
+  },
+  "joins": {
+    "rq017_to_m2": {
+      "numerator": 67861,
+      "denominator": 67861,
+      "ratio": 1.0,
+      "percent": 100.0,
+      "filter": "left join on product_row_key",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "product_row_key"
+      ]
+    },
+    "analysis_to_anchor": {
+      "numerator": 14099,
+      "denominator": 14099,
+      "ratio": 1.0,
+      "percent": 100.0,
+      "filter": "one-to-one join on parsed case_key + anchor_frame_index + perspective",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "product_row_key",
+        "case_key",
+        "anchor_frame_index",
+        "perspective"
+      ]
+    }
+  },
+  "ipv_log": {
+    "rows": 14099,
+    "nan": 0,
+    "positive_inf": 0,
+    "negative_inf": 0,
+    "finite": 14099,
+    "source": "data/derived/rq017_onsite_gate/l1_v1",
+    "columns": [
+      "ipv_log",
+      "status"
+    ]
+  },
+  "interval_validity": {
+    "80": {
+      "rows": 14099,
+      "width_positive": 14099,
+      "width_nonpositive": 0,
+      "lo_below_hi": 14099,
+      "lo_not_below_hi": 0,
+      "source": ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+      "columns": [
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ]
+    },
+    "90": {
+      "rows": 14099,
+      "width_positive": 14099,
+      "width_nonpositive": 0,
+      "lo_below_hi": 14099,
+      "lo_not_below_hi": 0,
+      "source": ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+      "columns": [
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ]
+    },
+    "95": {
+      "rows": 14099,
+      "width_positive": 14099,
+      "width_nonpositive": 0,
+      "lo_below_hi": 14099,
+      "lo_not_below_hi": 0,
+      "source": ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+      "columns": [
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ]
+    }
+  },
+  "window_coverage": {
+    "contract": {
+      "rows": 14099,
+      "overflow_rows": 0,
+      "overflow_ratio": 0.0,
+      "ttc_all_nonclosing_rows": 1211,
+      "ttc_all_nonclosing_ratio": 0.08589261649762395,
+      "window_row_count": {
+        "min": 7,
+        "median": 7.0,
+        "max": 7
+      },
+      "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+      "columns": [
+        "case_key",
+        "frame_index",
+        "time_s",
+        "distance_m",
+        "closing_rate_mps"
+      ]
+    },
+    "fixed_3s": {
+      "rows": 14099,
+      "overflow_rows": 734,
+      "overflow_ratio": 0.052060429817717566,
+      "ttc_all_nonclosing_rows": 461,
+      "ttc_all_nonclosing_ratio": 0.03269735442229946,
+      "window_row_count": {
+        "min": 7,
+        "median": 31.0,
+        "max": 40
+      },
+      "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+      "columns": [
+        "case_key",
+        "frame_index",
+        "time_s",
+        "distance_m",
+        "closing_rate_mps"
+      ]
+    }
+  },
+  "future_outcome_health": {
+    "contract": {
+      "future_min_distance_m": {
+        "rows": 14099,
+        "finite_rows": 14099,
+        "missing_or_nonfinite_rows": 0,
+        "min": 3.1606216710626738,
+        "median": 18.72579241357012,
+        "p99": 43.07618064311522,
+        "max": 90.36060868052054,
+        "above_1e6": 0,
+        "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+        "columns": [
+          "distance_m",
+          "closing_rate_mps",
+          "frame_index",
+          "time_s"
+        ]
+      },
+      "future_min_ttc_s": {
+        "rows": 14099,
+        "finite_rows": 12888,
+        "missing_or_nonfinite_rows": 1211,
+        "min": 0.3228341050506864,
+        "median": 8.664812291367621,
+        "p99": 4863.440503923932,
+        "max": 3310107655.1107697,
+        "above_1e6": 7,
+        "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+        "columns": [
+          "distance_m",
+          "closing_rate_mps",
+          "frame_index",
+          "time_s"
+        ]
+      },
+      "future_max_closing_rate_mps": {
+        "rows": 14099,
+        "finite_rows": 14099,
+        "missing_or_nonfinite_rows": 0,
+        "min": -13.409941375863845,
+        "median": 2.017080681150967,
+        "p99": 17.639522471161477,
+        "max": 30.34337897506884,
+        "above_1e6": 0,
+        "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+        "columns": [
+          "distance_m",
+          "closing_rate_mps",
+          "frame_index",
+          "time_s"
+        ]
+      }
+    },
+    "fixed_3s": {
+      "future_min_distance_m": {
+        "rows": 14099,
+        "finite_rows": 14099,
+        "missing_or_nonfinite_rows": 0,
+        "min": 2.5394737102266234,
+        "median": 16.347747753131028,
+        "p99": 41.37815810890737,
+        "max": 90.36060868052054,
+        "above_1e6": 0,
+        "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+        "columns": [
+          "distance_m",
+          "closing_rate_mps",
+          "frame_index",
+          "time_s"
+        ]
+      },
+      "future_min_ttc_s": {
+        "rows": 14099,
+        "finite_rows": 13638,
+        "missing_or_nonfinite_rows": 461,
+        "min": 0.24992379830862993,
+        "median": 5.332984727935173,
+        "p99": 30305.68002059172,
+        "max": 690930.1521558677,
+        "above_1e6": 0,
+        "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+        "columns": [
+          "distance_m",
+          "closing_rate_mps",
+          "frame_index",
+          "time_s"
+        ]
+      },
+      "future_max_closing_rate_mps": {
+        "rows": 14099,
+        "finite_rows": 14099,
+        "missing_or_nonfinite_rows": 0,
+        "min": -12.740437671939825,
+        "median": 3.320547082482347,
+        "p99": 19.4134102529868,
+        "max": 30.34337897506884,
+        "above_1e6": 0,
+        "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+        "columns": [
+          "distance_m",
+          "closing_rate_mps",
+          "frame_index",
+          "time_s"
+        ]
+      }
+    }
+  },
+  "outside_counts": {
+    "80": {
+      "upper": 1574,
+      "lower": 1174,
+      "inside": 11351,
+      "sum": 14099,
+      "analysis_rows": 14099,
+      "sum_matches": true,
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ]
+    },
+    "90": {
+      "upper": 869,
+      "lower": 519,
+      "inside": 12711,
+      "sum": 14099,
+      "analysis_rows": 14099,
+      "sum_matches": true,
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ]
+    },
+    "95": {
+      "upper": 387,
+      "lower": 314,
+      "inside": 13398,
+      "sum": 14099,
+      "analysis_rows": 14099,
+      "sum_matches": true,
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ]
+    }
+  },
+  "case_frame_distribution": {
+    "case_count": 231,
+    "team_count": 19,
+    "min": 1,
+    "p25": 20.0,
+    "median": 50.0,
+    "p75": 90.0,
+    "max": 222,
+    "filter": "two-gate analysis frames",
+    "sources": [
+      "data/derived/rq017_onsite_gate/l1_v1",
+      ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+      "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+    ],
+    "columns": [
+      "status",
+      "mechanism2_gate_ok",
+      "case_key"
+    ]
+  },
+  "coordinate_anomaly": {
+    "threshold_m": 500000.0,
+    "full_anchor_rows": 7,
+    "full_anchor_denominator": 67861,
+    "full_anchor_cases": {
+      "onsite:shanghai:T10:C4:native_case:2311": 7
+    },
+    "full_anchor_distance_range_m": [
+      570760.8306138628,
+      570761.6344647736
+    ],
+    "two_gate_rows": 0,
+    "two_gate_denominator": 14099,
+    "handling": "Retain all rows in the auditable as-is path. The seven flagged source rows contribute zero rows to the two-gate analysis, so excluding them leaves every fitted main model unchanged.",
+    "main_model_max_abs_coefficient_change_if_excluded": 0.0,
+    "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+    "columns": [
+      "case_key",
+      "relative_distance_anchor",
+      "anchor_frame_index"
+    ]
+  },
+  "context_cell_counts": {
+    "F|priority": 8931,
+    "F|yield": 2960,
+    "MP|priority": 913,
+    "MP|yield": 774,
+    "CP|yield": 271,
+    "F|equal": 228,
+    "CP|priority": 14,
+    "MP|equal": 8
+  },
+  "ttc_numeric_boundary": {
+    "minimum_positive_closing_rate_mps": 4.91511718624861e-09,
+    "contract_ttc_above_1e6_rows": 7,
+    "fixed_3s_ttc_above_1e6_rows": 0,
+    "handling": "Keep the task-contract TTC definition without an unstated closing-rate floor. Very small positive closing rates can create very large finite TTC values; counts and maxima are disclosed.",
+    "source": "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet",
+    "columns": [
+      "distance_m",
+      "closing_rate_mps"
+    ]
+  }
+}

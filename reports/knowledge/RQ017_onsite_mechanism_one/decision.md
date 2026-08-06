@@ -2,6 +2,12 @@
 
 Status: **ACCEPTED** — 能力主张冻结（PI 裁定 2026-08-05）。单数据集；未做跨数据集复现（见 Boundaries）。
 
+> **2026-08-05 复核：RQ021 更换机制二的 envelope 目标量，本决定的三条主张不受影响。**
+> 机制二的支持门只依赖 context 特征与参照池行集，与 envelope 的目标列无关；本轮行集与特征均未变。
+> 监督方从新旧两份 OnSite 打分表独立复算：支持门通过 **21,936/67,861** 与两门交集
+> **14,099/67,861** 在新旧 envelope 下**精确相同**。C1/C2/C3 的全部数字无需修改。
+> 详见 `reports/knowledge/RQ021_contemporaneous_envelope/decision.md` 的 RQ021-KC-C3。
+
 Run ID: `RQ017_1_onsite_gate_20260804T075311Z_406e7a65`
 执行层：`reports/studies/RQ017_onsite_mechanism_one/RQ017_1_onsite_gate_20260804T075311Z_406e7a65/`
 Decision commit: 见本文件所在提交

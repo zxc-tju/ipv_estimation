@@ -1,0 +1,26 @@
+{
+  "80": {
+    "alpha": 0.2,
+    "c_alpha": 0.0014435052871704102,
+    "calibration_n": 455723,
+    "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score",
+    "nominal": 0.8,
+    "rank": 364580
+  },
+  "90": {
+    "alpha": 0.1,
+    "c_alpha": 1.1920928955078125e-06,
+    "calibration_n": 455723,
+    "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score",
+    "nominal": 0.9,
+    "rank": 410152
+  },
+  "95": {
+    "alpha": 0.05,
+    "c_alpha": 0.0,
+    "calibration_n": 455723,
+    "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score",
+    "nominal": 0.95,
+    "rank": 432938
+  }
+}

@@ -1,0 +1,496 @@
+{
+  "generated_at_utc": "2026-08-05T15:52:16Z",
+  "contract": "Every count metric includes numerator, denominator, filter, source path, and source columns.",
+  "metrics": {
+    "rq017_total": {
+      "numerator": 67861,
+      "denominator": 67861,
+      "ratio": 1.0,
+      "percent": 100.0,
+      "filter": "all RQ017 rows",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1"
+      ],
+      "columns": [
+        "product_row_key"
+      ]
+    },
+    "mechanism1_ok": {
+      "numerator": 37520,
+      "denominator": 67861,
+      "ratio": 0.5528948880800459,
+      "percent": 55.2894888080046,
+      "filter": "status == OK",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1"
+      ],
+      "columns": [
+        "status"
+      ]
+    },
+    "mechanism2_gate_ok": {
+      "numerator": 21936,
+      "denominator": 67861,
+      "ratio": 0.32324899426769427,
+      "percent": 32.32489942676943,
+      "filter": "mechanism2_gate_ok == True",
+      "sources": [
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "mechanism2_gate_ok"
+      ]
+    },
+    "two_gate_analysis_set": {
+      "numerator": 14099,
+      "denominator": 67861,
+      "ratio": 0.20776292715992986,
+      "percent": 20.776292715992987,
+      "filter": "RQ017 status == OK AND M2 mechanism2_gate_ok == True",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "product_row_key",
+        "status",
+        "mechanism2_gate_ok"
+      ]
+    },
+    "rq017_to_m2_join_hits": {
+      "numerator": 67861,
+      "denominator": 67861,
+      "ratio": 1.0,
+      "percent": 100.0,
+      "filter": "left join on product_row_key",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "product_row_key"
+      ]
+    },
+    "analysis_to_anchor_join_hits": {
+      "numerator": 14099,
+      "denominator": 14099,
+      "ratio": 1.0,
+      "percent": 100.0,
+      "filter": "one-to-one join on parsed case_key + anchor_frame_index + perspective",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "product_row_key",
+        "case_key",
+        "anchor_frame_index",
+        "perspective"
+      ]
+    },
+    "unit_total": {
+      "numerator": 267,
+      "denominator": 267,
+      "ratio": 1.0,
+      "percent": 100.0,
+      "filter": "all unit rows",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage4plus/unit_analysis_table.parquet"
+      ],
+      "columns": [
+        "unit_composite_key"
+      ]
+    },
+    "unit_analysis_set": {
+      "numerator": 245,
+      "denominator": 267,
+      "ratio": 0.9176029962546817,
+      "percent": 91.76029962546816,
+      "filter": "analysis_set == True",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage4plus/unit_analysis_table.parquet"
+      ],
+      "columns": [
+        "analysis_set"
+      ]
+    },
+    "unit_official_safety_below_100": {
+      "numerator": 21,
+      "denominator": 267,
+      "ratio": 0.07865168539325842,
+      "percent": 7.865168539325842,
+      "filter": "official_safety < 100, all 267 units",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage4plus/unit_analysis_table.parquet"
+      ],
+      "columns": [
+        "official_safety"
+      ]
+    },
+    "unit_collision_or_intervention_deduction_nonzero": {
+      "numerator": 18,
+      "denominator": 267,
+      "ratio": 0.06741573033707865,
+      "percent": 6.741573033707865,
+      "filter": "collision_intervention_deduction_any != 0, all 267 units",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage4plus/unit_analysis_table.parquet"
+      ],
+      "columns": [
+        "collision_intervention_deduction_any"
+      ]
+    },
+    "unit_safety_intervention_nonzero": {
+      "numerator": 8,
+      "denominator": 267,
+      "ratio": 0.0299625468164794,
+      "percent": 2.9962546816479403,
+      "filter": "safety_intervention != 0, all 267 units",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage4plus/unit_analysis_table.parquet"
+      ],
+      "columns": [
+        "safety_intervention"
+      ]
+    },
+    "analysis_units_with_defined_exposure": {
+      "numerator": 225,
+      "denominator": 245,
+      "ratio": 0.9183673469387755,
+      "percent": 91.83673469387755,
+      "filter": "analysis_set == True AND at least one two-gate frame",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage4plus/unit_analysis_table.parquet"
+      ],
+      "columns": [
+        "status",
+        "mechanism2_gate_ok",
+        "unit_composite_key",
+        "analysis_set"
+      ],
+      "note": "Units with no two-gate frame remain missing rather than being assigned zero exposure."
+    },
+    "frame_case_count": {
+      "numerator": 231,
+      "denominator": 267,
+      "ratio": 0.8651685393258427,
+      "percent": 86.51685393258427,
+      "filter": "distinct case_key with at least one two-gate analysis frame / all anchor-table cases",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "status",
+        "mechanism2_gate_ok",
+        "case_key"
+      ]
+    },
+    "frame_team_count": {
+      "numerator": 19,
+      "denominator": 19,
+      "ratio": 1.0,
+      "percent": 100.0,
+      "filter": "distinct team token with at least one two-gate frame / all anchor-table team tokens",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "case_key"
+      ]
+    },
+    "alpha_80_upper_frames": {
+      "numerator": 1574,
+      "denominator": 14099,
+      "ratio": 0.111639123342081,
+      "percent": 11.1639123342081,
+      "filter": "two-gate frames with upper_80 == True",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ]
+    },
+    "alpha_80_lower_frames": {
+      "numerator": 1174,
+      "denominator": 14099,
+      "ratio": 0.08326831690190793,
+      "percent": 8.326831690190794,
+      "filter": "two-gate frames with lower_80 == True",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ]
+    },
+    "alpha_80_inside_frames": {
+      "numerator": 11351,
+      "denominator": 14099,
+      "ratio": 0.805092559756011,
+      "percent": 80.5092559756011,
+      "filter": "two-gate frames with lo_80 <= ipv_log <= hi_80",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_80",
+        "hi_80",
+        "width_80"
+      ]
+    },
+    "alpha_90_upper_frames": {
+      "numerator": 869,
+      "denominator": 14099,
+      "ratio": 0.061635576991275975,
+      "percent": 6.1635576991275975,
+      "filter": "two-gate frames with upper_90 == True",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ]
+    },
+    "alpha_90_lower_frames": {
+      "numerator": 519,
+      "denominator": 14099,
+      "ratio": 0.03681112135612455,
+      "percent": 3.6811121356124548,
+      "filter": "two-gate frames with lower_90 == True",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ]
+    },
+    "alpha_90_inside_frames": {
+      "numerator": 12711,
+      "denominator": 14099,
+      "ratio": 0.9015533016525995,
+      "percent": 90.15533016525995,
+      "filter": "two-gate frames with lo_90 <= ipv_log <= hi_90",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_90",
+        "hi_90",
+        "width_90"
+      ]
+    },
+    "alpha_95_upper_frames": {
+      "numerator": 387,
+      "denominator": 14099,
+      "ratio": 0.027448755230867438,
+      "percent": 2.7448755230867437,
+      "filter": "two-gate frames with upper_95 == True",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ]
+    },
+    "alpha_95_lower_frames": {
+      "numerator": 314,
+      "denominator": 14099,
+      "ratio": 0.022271083055535854,
+      "percent": 2.2271083055535854,
+      "filter": "two-gate frames with lower_95 == True",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ]
+    },
+    "alpha_95_inside_frames": {
+      "numerator": 13398,
+      "denominator": 14099,
+      "ratio": 0.9502801617135967,
+      "percent": 95.02801617135967,
+      "filter": "two-gate frames with lo_95 <= ipv_log <= hi_95",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet"
+      ],
+      "columns": [
+        "ipv_log",
+        "lo_95",
+        "hi_95",
+        "width_95"
+      ]
+    },
+    "contract_window_overflow": {
+      "numerator": 0,
+      "denominator": 14099,
+      "ratio": 0.0,
+      "percent": 0.0,
+      "filter": "two-gate frames whose contract requested endpoint exceeds the case endpoint",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "case_key",
+        "anchor_frame_index",
+        "target_window_end_frame_index",
+        "frame_index",
+        "time_s"
+      ]
+    },
+    "contract_ttc_all_nonclosing": {
+      "numerator": 1211,
+      "denominator": 14099,
+      "ratio": 0.08589261649762395,
+      "percent": 8.589261649762394,
+      "filter": "all frames in the available contract window have closing_rate_mps <= 0",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "case_key",
+        "frame_index",
+        "time_s",
+        "distance_m",
+        "closing_rate_mps"
+      ]
+    },
+    "contract_future_min_ttc_above_1e6": {
+      "numerator": 7,
+      "denominator": 14099,
+      "ratio": 0.0004964891127030286,
+      "percent": 0.04964891127030286,
+      "filter": "finite contract future_min_ttc_s > 1e6 seconds",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "distance_m",
+        "closing_rate_mps",
+        "frame_index",
+        "time_s"
+      ]
+    },
+    "fixed_3s_window_overflow": {
+      "numerator": 734,
+      "denominator": 14099,
+      "ratio": 0.052060429817717566,
+      "percent": 5.206042981771757,
+      "filter": "two-gate frames whose fixed_3s requested endpoint exceeds the case endpoint",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "case_key",
+        "anchor_frame_index",
+        "target_window_end_frame_index",
+        "frame_index",
+        "time_s"
+      ]
+    },
+    "fixed_3s_ttc_all_nonclosing": {
+      "numerator": 461,
+      "denominator": 14099,
+      "ratio": 0.03269735442229946,
+      "percent": 3.2697354422299454,
+      "filter": "all frames in the available fixed_3s window have closing_rate_mps <= 0",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "case_key",
+        "frame_index",
+        "time_s",
+        "distance_m",
+        "closing_rate_mps"
+      ]
+    },
+    "fixed_3s_future_min_ttc_above_1e6": {
+      "numerator": 0,
+      "denominator": 14099,
+      "ratio": 0.0,
+      "percent": 0.0,
+      "filter": "finite fixed_3s future_min_ttc_s > 1e6 seconds",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_ipv_timeseries_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "distance_m",
+        "closing_rate_mps",
+        "frame_index",
+        "time_s"
+      ]
+    },
+    "coordinate_anomaly_full_anchor_rows": {
+      "numerator": 7,
+      "denominator": 67861,
+      "ratio": 0.00010315203135821753,
+      "percent": 0.010315203135821753,
+      "filter": "relative_distance_anchor >= 500000 m",
+      "sources": [
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "case_key",
+        "anchor_frame_index",
+        "relative_distance_anchor"
+      ]
+    },
+    "coordinate_anomaly_two_gate_rows": {
+      "numerator": 0,
+      "denominator": 14099,
+      "ratio": 0.0,
+      "percent": 0.0,
+      "filter": "two-gate frames with relative_distance_anchor >= 500000 m",
+      "sources": [
+        "data/derived/rq017_onsite_gate/l1_v1",
+        ".codex-fleet/rq021-contemporaneous-envelope/work/E1/onsite_scoring_dryrun.parquet",
+        "data/derived/onsite_competition/RQ012B_event_harm/stage3plus/onsite_anchors_multi/onsite_m3_av_anchors_multi_allvalid.parquet"
+      ],
+      "columns": [
+        "status",
+        "mechanism2_gate_ok",
+        "case_key",
+        "anchor_frame_index",
+        "relative_distance_anchor"
+      ]
+    }
+  }
+}
