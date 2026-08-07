@@ -1,0 +1,24 @@
+[2026-08-07T11:34:51Z] import E1 pipeline module
+[2026-08-07T11:37:18Z] import E1 pipeline module
+[2026-08-07T11:37:19Z] load K2 ledger + join RQ009 matrix (full pool, identical to E1)
+[2026-08-07T11:38:08Z] pool invariants OK: total 2,442,625; invalid_split_rows=0
+[2026-08-07T11:38:08Z] secondary table: score all test rows with the persisted all-source E1 model
+[2026-08-07T11:38:37Z] secondary table anchored: ALL@90 coverage 0.902798 == E1
+[2026-08-07T11:38:37Z] === holdout waymo_train: filter fit folds to non-waymo_train, test fold to waymo_train ===
+[2026-08-07T11:38:38Z] rows: train 555,865 guard_tune 278,253 calibration 278,009 | held-out test 205,988
+[2026-08-07T11:39:18Z] gate refit without waymo_train; held-out gate pass 193,096/205,988
+[2026-08-07T11:39:38Z] holdout waymo_train done in 61.1s; held-out coverage@90 = 0.742532
+[2026-08-07T11:39:38Z] === holdout nuplan_train: filter fit folds to non-nuplan_train, test fold to nuplan_train ===
+[2026-08-07T11:39:39Z] rows: train 663,114 guard_tune 347,044 calibration 321,449 | held-out test 157,938
+[2026-08-07T11:40:18Z] gate refit without nuplan_train; held-out gate pass 150,587/157,938
+[2026-08-07T11:40:43Z] holdout nuplan_train done in 63.9s; held-out coverage@90 = 0.989913
+[2026-08-07T11:40:43Z] === holdout lyft_train_full: filter fit folds to non-lyft_train_full, test fold to lyft_train_full ===
+[2026-08-07T11:40:43Z] rows: train 778,134 guard_tune 397,015 calibration 384,250 | held-out test 100,146
+[2026-08-07T11:41:31Z] gate refit without lyft_train_full; held-out gate pass 91,069/100,146
+[2026-08-07T11:41:57Z] holdout lyft_train_full done in 73.8s; held-out coverage@90 = 0.749651
+[2026-08-07T11:41:57Z] === holdout av2_motion_forecasting: filter fit folds to non-av2_motion_forecasting, test fold to av2_motion_forecasting ===
+[2026-08-07T11:41:58Z] rows: train 927,839 guard_tune 477,367 calibration 459,556 | held-out test 22,588
+[2026-08-07T11:42:31Z] gate refit without av2_motion_forecasting; held-out gate pass 12,576/22,588
+[2026-08-07T11:43:05Z] holdout av2_motion_forecasting done in 67.5s; held-out coverage@90 = 0.899730
+[2026-08-07T11:43:05Z] pre-registered verdict at alpha=90 band (0.87, 0.93): BOUNDARY_STANDS  {'waymo_train': 0.7425322119567469, 'nuplan_train': 0.9899128078785021, 'lyft_train_full': 0.7496513632520396, 'av2_motion_forecasting': 0.8997296437659033}
+[2026-08-07T11:43:05Z] wrote .codex-fleet/rq021-contemporaneous-envelope/work/E2/key_numbers_e2.json in 347.3s total

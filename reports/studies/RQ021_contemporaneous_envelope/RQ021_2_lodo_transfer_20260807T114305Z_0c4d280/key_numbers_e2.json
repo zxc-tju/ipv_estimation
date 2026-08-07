@@ -1,0 +1,1044 @@
+{
+  "created_utc": "2026-08-07T11:43:05Z",
+  "script": ".codex-fleet/rq021-contemporaneous-envelope/work/E2/run_rq021_e2_lodo.py",
+  "execution_note": "codex agent 两次死于后端网络中断（HTTP 503），由监督方按任务书本地执行；见 board/progress.log 与本文件 docstring",
+  "pre_registered_band_90": [
+    0.87,
+    0.93
+  ],
+  "random_state": 20260626,
+  "pool_counts": {
+    "fold_human_rows": {
+      "train": 974984,
+      "guard_tune": 499893,
+      "calibration": 481088,
+      "test": 486660
+    },
+    "fold_status_ok_rows": {
+      "train": 1290663,
+      "guard_tune": 646772,
+      "calibration": 629593,
+      "test": 635618
+    },
+    "split_counts": {
+      "development": 1752509,
+      "guard": 690116
+    },
+    "total_rows": 2442625,
+    "invalid_split_rows": 0,
+    "agent_type_pair_counts": {
+      "HV;HV": 2442625
+    },
+    "av_included_counts": {
+      "all_HV": 2442625
+    },
+    "human_share_of_status_ok_by_fold": {
+      "train": 0.7554133030853135,
+      "calibration": 0.7641253952950557,
+      "guard_tune": 0.7729045165838967,
+      "test": 0.7656485499152006
+    }
+  },
+  "per_source_pool_rows": {
+    "train": {
+      "waymo_train": 419119,
+      "nuplan_train": 311870,
+      "lyft_train_full": 196850,
+      "av2_motion_forecasting": 47145
+    },
+    "guard_tune": {
+      "waymo_train": 221640,
+      "nuplan_train": 152849,
+      "lyft_train_full": 102878,
+      "av2_motion_forecasting": 22526
+    },
+    "calibration": {
+      "waymo_train": 203079,
+      "nuplan_train": 159639,
+      "lyft_train_full": 96838,
+      "av2_motion_forecasting": 21532
+    },
+    "test": {
+      "waymo_train": 205988,
+      "nuplan_train": 157938,
+      "lyft_train_full": 100146,
+      "av2_motion_forecasting": 22588
+    }
+  },
+  "k2_ledger": {
+    "source_path": "data/derived/rq015k_logdomain_gate/l1_v1",
+    "source_filter": "artifact_id == rq009_feature_matrix and measurement_role == target_future",
+    "source_columns": [
+      "artifact_id",
+      "product_row_key",
+      "canonical_key",
+      "measurement_role",
+      "status",
+      "reason_code",
+      "rq007_split",
+      "context_cell_key",
+      "gate_applicable",
+      "ipv_log"
+    ],
+    "rows": 8994736,
+    "training_role_rows": 4497368,
+    "product_row_key_duplicates": 0,
+    "canonical_key_duplicates": 0,
+    "invalid_rq007_split_rows": 0,
+    "status_counts": {
+      "OK": 3202646,
+      "ABSTAIN": 1292896,
+      "SOLVER_FAILURE": 1826
+    },
+    "reason_code_counts": {
+      "__NONE__": 3202646,
+      "NEAR_UNIFORM": 1275480,
+      "NO_IPV_EFFECT": 17416,
+      "SOLVER_FAILURE": 1826
+    },
+    "gate_applicable_false_rows": 0,
+    "target_row_set_equivalence": {
+      "rows": 8994736,
+      "status_ok_rows": 6405292,
+      "target_nonnull_rows": 6405292,
+      "status_ok_target_null_rows": 0,
+      "status_not_ok_target_nonnull_rows": 0,
+      "exact_equivalence": true,
+      "measurement_role_counts": {
+        "counterpart_current": 4497368,
+        "target_future": 4497368
+      }
+    }
+  },
+  "join_health": {
+    "matrix_source_path": "data/derived/interhub/RQ009_dynamic_counterpart_conditioned_envelope/RQ009_1_dynamic_envelope_20260625T121905Z_98c433de/03_features/matrix",
+    "k2_case_key_filter_unique_cases": 26828,
+    "matrix_rows_read_after_k2_case_filter": 4497368,
+    "matrix_product_row_key_duplicates": 0,
+    "joined_rows": 4497368,
+    "ledger_rows": 4497368,
+    "ledger_left_join_hits": 4497368,
+    "ledger_left_join_misses": 0,
+    "one_to_zero_or_one_ok": true,
+    "fold_counts": {
+      "train": {
+        "matrix_rows_read_after_k2_case_filter": 1806548,
+        "joined_dev_guard_rows": 1806548,
+        "status_ok_rows": 1290663,
+        "human_status_ok_rows": 974984,
+        "human_share_of_status_ok": 0.7554133030853135
+      },
+      "guard_tune": {
+        "matrix_rows_read_after_k2_case_filter": 912226,
+        "joined_dev_guard_rows": 912226,
+        "status_ok_rows": 646772,
+        "human_status_ok_rows": 499893,
+        "human_share_of_status_ok": 0.7729045165838967
+      },
+      "calibration": {
+        "matrix_rows_read_after_k2_case_filter": 889702,
+        "joined_dev_guard_rows": 889702,
+        "status_ok_rows": 629593,
+        "human_status_ok_rows": 481088,
+        "human_share_of_status_ok": 0.7641253952950557
+      },
+      "test": {
+        "matrix_rows_read_after_k2_case_filter": 888892,
+        "joined_dev_guard_rows": 888892,
+        "status_ok_rows": 635618,
+        "human_status_ok_rows": 486660,
+        "human_share_of_status_ok": 0.7656485499152006
+      }
+    }
+  },
+  "insample_by_source": {
+    "80": {
+      "waymo_train": {
+        "test_rows": 205988,
+        "gate_pass_rows": 196905,
+        "covered_rows": 150973,
+        "coverage": 0.7667301490566517,
+        "abstention": 0.044094801638930425
+      },
+      "nuplan_train": {
+        "test_rows": 157938,
+        "gate_pass_rows": 152093,
+        "covered_rows": 134985,
+        "coverage": 0.8875161907517112,
+        "abstention": 0.037008193088427066
+      },
+      "lyft_train_full": {
+        "test_rows": 100146,
+        "gate_pass_rows": 93410,
+        "covered_rows": 68820,
+        "coverage": 0.7367519537522749,
+        "abstention": 0.0672617977752481
+      },
+      "av2_motion_forecasting": {
+        "test_rows": 22588,
+        "gate_pass_rows": 19529,
+        "covered_rows": 14889,
+        "coverage": 0.7624046290132623,
+        "abstention": 0.1354258898530193
+      },
+      "ALL": {
+        "test_rows": 486660,
+        "gate_pass_rows": 461937,
+        "covered_rows": 369667,
+        "coverage": 0.8002541472105503,
+        "abstention": 0.05080138084083341
+      }
+    },
+    "90": {
+      "waymo_train": {
+        "test_rows": 205988,
+        "gate_pass_rows": 196905,
+        "covered_rows": 173745,
+        "coverage": 0.8823798278357584,
+        "abstention": 0.044094801638930425
+      },
+      "nuplan_train": {
+        "test_rows": 157938,
+        "gate_pass_rows": 152093,
+        "covered_rows": 145846,
+        "coverage": 0.9589264463190285,
+        "abstention": 0.037008193088427066
+      },
+      "lyft_train_full": {
+        "test_rows": 100146,
+        "gate_pass_rows": 93410,
+        "covered_rows": 80218,
+        "coverage": 0.8587731506262712,
+        "abstention": 0.0672617977752481
+      },
+      "av2_motion_forecasting": {
+        "test_rows": 22588,
+        "gate_pass_rows": 19529,
+        "covered_rows": 17227,
+        "coverage": 0.8821240206871832,
+        "abstention": 0.1354258898530193
+      },
+      "ALL": {
+        "test_rows": 486660,
+        "gate_pass_rows": 461937,
+        "covered_rows": 417036,
+        "coverage": 0.9027984335526273,
+        "abstention": 0.05080138084083341
+      }
+    },
+    "95": {
+      "waymo_train": {
+        "test_rows": 205988,
+        "gate_pass_rows": 196905,
+        "covered_rows": 186189,
+        "coverage": 0.9455778167136436,
+        "abstention": 0.044094801638930425
+      },
+      "nuplan_train": {
+        "test_rows": 157938,
+        "gate_pass_rows": 152093,
+        "covered_rows": 149965,
+        "coverage": 0.9860085605517677,
+        "abstention": 0.037008193088427066
+      },
+      "lyft_train_full": {
+        "test_rows": 100146,
+        "gate_pass_rows": 93410,
+        "covered_rows": 86813,
+        "coverage": 0.9293758698212183,
+        "abstention": 0.0672617977752481
+      },
+      "av2_motion_forecasting": {
+        "test_rows": 22588,
+        "gate_pass_rows": 19529,
+        "covered_rows": 18485,
+        "coverage": 0.946541041527984,
+        "abstention": 0.1354258898530193
+      },
+      "ALL": {
+        "test_rows": 486660,
+        "gate_pass_rows": 461937,
+        "covered_rows": 441452,
+        "coverage": 0.9556541259955362,
+        "abstention": 0.05080138084083341
+      }
+    }
+  },
+  "lodo": {
+    "waymo_train": {
+      "fit_rows": {
+        "train": 555865,
+        "guard_tune": 278253,
+        "calibration": 278009
+      },
+      "held_out_test_rows": 205988,
+      "gate": {
+        "fit": {
+          "definition": {
+            "distance": "mean Euclidean distance to k=25 nearest train anchors after train-fit median imputation, standardization, and one-hot support categoricals",
+            "threshold": "95th percentile of otherwise category-eligible guard_tune distances",
+            "category_support": "train support >=50 anchors and >=10 cases for individual support levels and the joint cell",
+            "category_columns": [
+              "geometry_path_category",
+              "priority_role"
+            ],
+            "joint_cell_columns": [
+              "geometry_path_category",
+              "priority_role"
+            ],
+            "distance_numeric": [
+              "elapsed_time_s",
+              "history_row_count",
+              "relative_distance_anchor",
+              "relative_speed_anchor",
+              "closing_rate_anchor",
+              "heading_difference_anchor",
+              "relative_distance_mean_wx",
+              "relative_distance_std_wx",
+              "relative_speed_mean_wx",
+              "closing_rate_mean_wx",
+              "closing_ttc_anchor",
+              "apet_online_proxy"
+            ],
+            "distance_categorical_one_hot": [
+              "geometry_path_category",
+              "priority_role"
+            ]
+          },
+          "params": {
+            "k": 25,
+            "threshold": 1.3645548820495605,
+            "threshold_percentile": 0.95,
+            "category_min_anchors": 50,
+            "category_min_cases": 10
+          },
+          "train_rows": 555865,
+          "train_reference_rows_after_category_support": 555865,
+          "guard_rows": 278253,
+          "guard_category_eligible_rows": 278253,
+          "guard_gate_passing_rows": 264340,
+          "guard_abstention_rate": 0.05000125784807352,
+          "unsupported_levels": {
+            "geometry_path_category": [],
+            "priority_role": []
+          },
+          "unsupported_joint_cells": []
+        },
+        "guard_tune": {
+          "category_pass_rows": 278253,
+          "distance_pass_rows": 264340,
+          "gate_pass_rows": 264340
+        },
+        "calibration": {
+          "rows": 278009,
+          "category_pass_rows": 278009,
+          "category_fail_rows": 0,
+          "distance_pass_rows": 263258,
+          "distance_fail_rows": 14751,
+          "gate_pass_rows": 263258,
+          "abstain_rows": 14751,
+          "abstention_rate": 0.053059433327698025,
+          "distance_mean": 0.46006128191947937,
+          "distance_p95": 1.4003005027770996
+        },
+        "held_out_test": {
+          "rows": 205988,
+          "category_pass_rows": 205988,
+          "category_fail_rows": 0,
+          "distance_pass_rows": 193096,
+          "distance_fail_rows": 12892,
+          "gate_pass_rows": 193096,
+          "abstain_rows": 12892,
+          "abstention_rate": 0.06258617006815936,
+          "distance_mean": 0.503044843673706,
+          "distance_p95": 1.5287927389144897
+        }
+      },
+      "held_out_gate_pass": 193096,
+      "held_out_abstention": 0.06258617006815936,
+      "conformal_radii": {
+        "80": {
+          "alpha": 0.2,
+          "nominal": 0.8,
+          "c_alpha": 0.00344240665435791,
+          "calibration_n": 263258,
+          "rank": 210608,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        },
+        "90": {
+          "alpha": 0.1,
+          "nominal": 0.9,
+          "c_alpha": 0.0009173154830932617,
+          "calibration_n": 263258,
+          "rank": 236934,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        },
+        "95": {
+          "alpha": 0.05,
+          "nominal": 0.95,
+          "c_alpha": 4.76837158203125e-06,
+          "calibration_n": 263258,
+          "rank": 250097,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        }
+      },
+      "metrics": {
+        "80": {
+          "alpha": 0.2,
+          "nominal": 0.8,
+          "total_n": 205988,
+          "n": 193096,
+          "abstained_n": 12892,
+          "abstention": 0.06258617006815936,
+          "coverage": 0.6259995028379666,
+          "covered_n": 120878,
+          "mean_width": 1.350023869541121,
+          "median_width": 1.379384845695224,
+          "width_p05": 0.6632773598793413,
+          "width_p95": 1.907175064286914,
+          "width_min": 0.08589892016234654,
+          "width_max": 2.28211772461864,
+          "width_std": 0.3869983555792088,
+          "negative_width_rows": 0,
+          "lower_tail": 0.15099743132949414,
+          "upper_tail": 0.22300306583253926,
+          "winkler": 2.3486395537159086,
+          "conformal_radius": 0.00344240665435791,
+          "calibration_n": 263258
+        },
+        "90": {
+          "alpha": 0.1,
+          "nominal": 0.9,
+          "total_n": 205988,
+          "n": 193096,
+          "abstained_n": 12892,
+          "abstention": 0.06258617006815936,
+          "coverage": 0.7425322119567469,
+          "covered_n": 143380,
+          "mean_width": 1.7646430967481395,
+          "median_width": 1.8457196654889252,
+          "width_p05": 1.0825174899909165,
+          "width_p95": 2.2539456488701965,
+          "width_min": 0.5832836518201496,
+          "width_max": 2.4526745082947876,
+          "width_std": 0.37531778899762214,
+          "negative_width_rows": 0,
+          "lower_tail": 0.10652732319675187,
+          "upper_tail": 0.15094046484650123,
+          "winkler": 2.7302684085174485,
+          "conformal_radius": 0.0009173154830932617,
+          "calibration_n": 263258
+        },
+        "95": {
+          "alpha": 0.05,
+          "nominal": 0.95,
+          "total_n": 205988,
+          "n": 193096,
+          "abstained_n": 12892,
+          "abstention": 0.06258617006815936,
+          "coverage": 0.8380598251646849,
+          "covered_n": 161826,
+          "mean_width": 2.0538128619626668,
+          "median_width": 2.1899592878434326,
+          "width_p05": 1.4499557318303253,
+          "width_p95": 2.357538253268924,
+          "width_min": 1.1422222407672074,
+          "width_max": 2.5568002464387085,
+          "width_std": 0.30252528956559405,
+          "negative_width_rows": 0,
+          "lower_tail": 0.07041575175042467,
+          "upper_tail": 0.09152442308489042,
+          "winkler": 2.8057009544992355,
+          "conformal_radius": 4.76837158203125e-06,
+          "calibration_n": 263258
+        }
+      },
+      "elapsed_s": 61.1
+    },
+    "nuplan_train": {
+      "fit_rows": {
+        "train": 663114,
+        "guard_tune": 347044,
+        "calibration": 321449
+      },
+      "held_out_test_rows": 157938,
+      "gate": {
+        "fit": {
+          "definition": {
+            "distance": "mean Euclidean distance to k=25 nearest train anchors after train-fit median imputation, standardization, and one-hot support categoricals",
+            "threshold": "95th percentile of otherwise category-eligible guard_tune distances",
+            "category_support": "train support >=50 anchors and >=10 cases for individual support levels and the joint cell",
+            "category_columns": [
+              "geometry_path_category",
+              "priority_role"
+            ],
+            "joint_cell_columns": [
+              "geometry_path_category",
+              "priority_role"
+            ],
+            "distance_numeric": [
+              "elapsed_time_s",
+              "history_row_count",
+              "relative_distance_anchor",
+              "relative_speed_anchor",
+              "closing_rate_anchor",
+              "heading_difference_anchor",
+              "relative_distance_mean_wx",
+              "relative_distance_std_wx",
+              "relative_speed_mean_wx",
+              "closing_rate_mean_wx",
+              "closing_ttc_anchor",
+              "apet_online_proxy"
+            ],
+            "distance_categorical_one_hot": [
+              "geometry_path_category",
+              "priority_role"
+            ]
+          },
+          "params": {
+            "k": 25,
+            "threshold": 1.1435348987579346,
+            "threshold_percentile": 0.95,
+            "category_min_anchors": 50,
+            "category_min_cases": 10
+          },
+          "train_rows": 663114,
+          "train_reference_rows_after_category_support": 663114,
+          "guard_rows": 347044,
+          "guard_category_eligible_rows": 347044,
+          "guard_gate_passing_rows": 329691,
+          "guard_abstention_rate": 0.050002305183204476,
+          "unsupported_levels": {
+            "geometry_path_category": [],
+            "priority_role": []
+          },
+          "unsupported_joint_cells": []
+        },
+        "guard_tune": {
+          "category_pass_rows": 347044,
+          "distance_pass_rows": 329691,
+          "gate_pass_rows": 329691
+        },
+        "calibration": {
+          "rows": 321449,
+          "category_pass_rows": 321449,
+          "category_fail_rows": 0,
+          "distance_pass_rows": 305112,
+          "distance_fail_rows": 16337,
+          "gate_pass_rows": 305112,
+          "abstain_rows": 16337,
+          "abstention_rate": 0.05082299213872188,
+          "distance_mean": 0.3838668167591095,
+          "distance_p95": 1.152845859527588
+        },
+        "held_out_test": {
+          "rows": 157938,
+          "category_pass_rows": 157938,
+          "category_fail_rows": 0,
+          "distance_pass_rows": 150587,
+          "distance_fail_rows": 7351,
+          "gate_pass_rows": 150587,
+          "abstain_rows": 7351,
+          "abstention_rate": 0.04654358039230588,
+          "distance_mean": 0.388714075088501,
+          "distance_p95": 1.1016665697097778
+        }
+      },
+      "held_out_gate_pass": 150587,
+      "held_out_abstention": 0.04654358039230588,
+      "conformal_radii": {
+        "80": {
+          "alpha": 0.2,
+          "nominal": 0.8,
+          "c_alpha": 0.0008221864700317383,
+          "calibration_n": 305112,
+          "rank": 244091,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        },
+        "90": {
+          "alpha": 0.1,
+          "nominal": 0.9,
+          "c_alpha": 5.960464477539062e-07,
+          "calibration_n": 305112,
+          "rank": 274602,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        },
+        "95": {
+          "alpha": 0.05,
+          "nominal": 0.95,
+          "c_alpha": 0.0,
+          "calibration_n": 305112,
+          "rank": 289858,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        }
+      },
+      "metrics": {
+        "80": {
+          "alpha": 0.2,
+          "nominal": 0.8,
+          "total_n": 157938,
+          "n": 150587,
+          "abstained_n": 7351,
+          "abstention": 0.04654358039230588,
+          "coverage": 0.9590801330792167,
+          "covered_n": 144425,
+          "mean_width": 1.8316408331799776,
+          "median_width": 1.8859274985406067,
+          "width_p05": 1.2748449446770813,
+          "width_p95": 2.3209383489701416,
+          "width_min": 0.6187624635312226,
+          "width_max": 2.3609771730515625,
+          "width_std": 0.3259567047377805,
+          "negative_width_rows": 0,
+          "lower_tail": 0.027977182625326225,
+          "upper_tail": 0.012942684295457111,
+          "winkler": 1.9042421788041137,
+          "conformal_radius": 0.0008221864700317383,
+          "calibration_n": 305112
+        },
+        "90": {
+          "alpha": 0.1,
+          "nominal": 0.9,
+          "total_n": 157938,
+          "n": 150587,
+          "abstained_n": 7351,
+          "abstention": 0.04654358039230588,
+          "coverage": 0.9899128078785021,
+          "covered_n": 149068,
+          "mean_width": 2.1756135668212546,
+          "median_width": 2.253551721772876,
+          "width_p05": 1.844212317666736,
+          "width_p95": 2.356194496354785,
+          "width_min": 1.5516032578560974,
+          "width_max": 2.3827303649994995,
+          "width_std": 0.17880252143548298,
+          "negative_width_rows": 0,
+          "lower_tail": 0.00687974393539947,
+          "upper_tail": 0.0032074481860984018,
+          "winkler": 2.1946647622974442,
+          "conformal_radius": 5.960464477539062e-07,
+          "calibration_n": 305112
+        },
+        "95": {
+          "alpha": 0.05,
+          "nominal": 0.95,
+          "total_n": 157938,
+          "n": 150587,
+          "abstained_n": 7351,
+          "abstention": 0.04654358039230588,
+          "coverage": 0.9972640400565785,
+          "covered_n": 150175,
+          "mean_width": 2.3076139094734325,
+          "median_width": 2.351748585900989,
+          "width_p05": 2.0520820023629334,
+          "width_p95": 2.3578280212494995,
+          "width_min": 1.7484219076249268,
+          "width_max": 2.430194139680591,
+          "width_std": 0.09874600669792785,
+          "negative_width_rows": 0,
+          "lower_tail": 0.0021382987907322677,
+          "upper_tail": 0.0005976611526891431,
+          "winkler": 2.312815552398842,
+          "conformal_radius": 0.0,
+          "calibration_n": 305112
+        }
+      },
+      "elapsed_s": 63.9
+    },
+    "lyft_train_full": {
+      "fit_rows": {
+        "train": 778134,
+        "guard_tune": 397015,
+        "calibration": 384250
+      },
+      "held_out_test_rows": 100146,
+      "gate": {
+        "fit": {
+          "definition": {
+            "distance": "mean Euclidean distance to k=25 nearest train anchors after train-fit median imputation, standardization, and one-hot support categoricals",
+            "threshold": "95th percentile of otherwise category-eligible guard_tune distances",
+            "category_support": "train support >=50 anchors and >=10 cases for individual support levels and the joint cell",
+            "category_columns": [
+              "geometry_path_category",
+              "priority_role"
+            ],
+            "joint_cell_columns": [
+              "geometry_path_category",
+              "priority_role"
+            ],
+            "distance_numeric": [
+              "elapsed_time_s",
+              "history_row_count",
+              "relative_distance_anchor",
+              "relative_speed_anchor",
+              "closing_rate_anchor",
+              "heading_difference_anchor",
+              "relative_distance_mean_wx",
+              "relative_distance_std_wx",
+              "relative_speed_mean_wx",
+              "closing_rate_mean_wx",
+              "closing_ttc_anchor",
+              "apet_online_proxy"
+            ],
+            "distance_categorical_one_hot": [
+              "geometry_path_category",
+              "priority_role"
+            ]
+          },
+          "params": {
+            "k": 25,
+            "threshold": 1.0958622694015503,
+            "threshold_percentile": 0.95,
+            "category_min_anchors": 50,
+            "category_min_cases": 10
+          },
+          "train_rows": 778134,
+          "train_reference_rows_after_category_support": 778134,
+          "guard_rows": 397015,
+          "guard_category_eligible_rows": 397015,
+          "guard_gate_passing_rows": 377164,
+          "guard_abstention_rate": 0.05000062969912977,
+          "unsupported_levels": {
+            "geometry_path_category": [],
+            "priority_role": []
+          },
+          "unsupported_joint_cells": []
+        },
+        "guard_tune": {
+          "category_pass_rows": 397015,
+          "distance_pass_rows": 377164,
+          "gate_pass_rows": 377164
+        },
+        "calibration": {
+          "rows": 384250,
+          "category_pass_rows": 384250,
+          "category_fail_rows": 0,
+          "distance_pass_rows": 364144,
+          "distance_fail_rows": 20106,
+          "gate_pass_rows": 364144,
+          "abstain_rows": 20106,
+          "abstention_rate": 0.05232530904359145,
+          "distance_mean": 0.3824990689754486,
+          "distance_p95": 1.1204216480255127
+        },
+        "held_out_test": {
+          "rows": 100146,
+          "category_pass_rows": 100146,
+          "category_fail_rows": 0,
+          "distance_pass_rows": 91069,
+          "distance_fail_rows": 9077,
+          "gate_pass_rows": 91069,
+          "abstain_rows": 9077,
+          "abstention_rate": 0.0906376690032552,
+          "distance_mean": 0.4801703691482544,
+          "distance_p95": 1.4622842073440552
+        }
+      },
+      "held_out_gate_pass": 91069,
+      "held_out_abstention": 0.0906376690032552,
+      "conformal_radii": {
+        "80": {
+          "alpha": 0.2,
+          "nominal": 0.8,
+          "c_alpha": 0.002123713493347168,
+          "calibration_n": 364144,
+          "rank": 291316,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        },
+        "90": {
+          "alpha": 0.1,
+          "nominal": 0.9,
+          "c_alpha": 8.463859558105469e-06,
+          "calibration_n": 364144,
+          "rank": 327731,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        },
+        "95": {
+          "alpha": 0.05,
+          "nominal": 0.95,
+          "c_alpha": -2.9087066650390625e-05,
+          "calibration_n": 364144,
+          "rank": 345938,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        }
+      },
+      "metrics": {
+        "80": {
+          "alpha": 0.2,
+          "nominal": 0.8,
+          "total_n": 100146,
+          "n": 91069,
+          "abstained_n": 9077,
+          "abstention": 0.0906376690032552,
+          "coverage": 0.6318615555238336,
+          "covered_n": 57543,
+          "mean_width": 1.3001226558987329,
+          "median_width": 1.2682028638336327,
+          "width_p05": 0.65959657376143,
+          "width_p95": 1.9323934914681575,
+          "width_min": 0.1971926262739565,
+          "width_max": 2.363961696824756,
+          "width_std": 0.39387028879474073,
+          "negative_width_rows": 0,
+          "lower_tail": 0.17498819576365174,
+          "upper_tail": 0.19315024871251468,
+          "winkler": 2.461137679688406,
+          "conformal_radius": 0.002123713493347168,
+          "calibration_n": 364144
+        },
+        "90": {
+          "alpha": 0.1,
+          "nominal": 0.9,
+          "total_n": 100146,
+          "n": 91069,
+          "abstained_n": 9077,
+          "abstention": 0.0906376690032552,
+          "coverage": 0.7496513632520396,
+          "covered_n": 68270,
+          "mean_width": 1.7102414701779929,
+          "median_width": 1.669589102468219,
+          "width_p05": 1.0697872342679169,
+          "width_p95": 2.262168860635486,
+          "width_min": 0.7818015666815903,
+          "width_max": 2.438899040422168,
+          "width_std": 0.37444240521253447,
+          "negative_width_rows": 0,
+          "lower_tail": 0.12056792102691366,
+          "upper_tail": 0.12978071572104669,
+          "winkler": 2.8901440872474433,
+          "conformal_radius": 8.463859558105469e-06,
+          "calibration_n": 364144
+        },
+        "95": {
+          "alpha": 0.05,
+          "nominal": 0.95,
+          "total_n": 100146,
+          "n": 91069,
+          "abstained_n": 9077,
+          "abstention": 0.0906376690032552,
+          "coverage": 0.8239027550538602,
+          "covered_n": 75032,
+          "mean_width": 1.9642490331371159,
+          "median_width": 1.9601624610039856,
+          "width_p05": 1.3934754194829133,
+          "width_p95": 2.3574689628693726,
+          "width_min": 1.0492783637854721,
+          "width_max": 2.495228171548572,
+          "width_std": 0.31115486396685194,
+          "negative_width_rows": 0,
+          "lower_tail": 0.07966486949455907,
+          "upper_tail": 0.09643237545158068,
+          "winkler": 3.2053831107168933,
+          "conformal_radius": -2.9087066650390625e-05,
+          "calibration_n": 364144
+        }
+      },
+      "elapsed_s": 73.8
+    },
+    "av2_motion_forecasting": {
+      "fit_rows": {
+        "train": 927839,
+        "guard_tune": 477367,
+        "calibration": 459556
+      },
+      "held_out_test_rows": 22588,
+      "gate": {
+        "fit": {
+          "definition": {
+            "distance": "mean Euclidean distance to k=25 nearest train anchors after train-fit median imputation, standardization, and one-hot support categoricals",
+            "threshold": "95th percentile of otherwise category-eligible guard_tune distances",
+            "category_support": "train support >=50 anchors and >=10 cases for individual support levels and the joint cell",
+            "category_columns": [
+              "geometry_path_category",
+              "priority_role"
+            ],
+            "joint_cell_columns": [
+              "geometry_path_category",
+              "priority_role"
+            ],
+            "distance_numeric": [
+              "elapsed_time_s",
+              "history_row_count",
+              "relative_distance_anchor",
+              "relative_speed_anchor",
+              "closing_rate_anchor",
+              "heading_difference_anchor",
+              "relative_distance_mean_wx",
+              "relative_distance_std_wx",
+              "relative_speed_mean_wx",
+              "closing_rate_mean_wx",
+              "closing_ttc_anchor",
+              "apet_online_proxy"
+            ],
+            "distance_categorical_one_hot": [
+              "geometry_path_category",
+              "priority_role"
+            ]
+          },
+          "params": {
+            "k": 25,
+            "threshold": 1.052668809890747,
+            "threshold_percentile": 0.95,
+            "category_min_anchors": 50,
+            "category_min_cases": 10
+          },
+          "train_rows": 927839,
+          "train_reference_rows_after_category_support": 927279,
+          "guard_rows": 477367,
+          "guard_category_eligible_rows": 477129,
+          "guard_gate_passing_rows": 453274,
+          "guard_abstention_rate": 0.050470602282939536,
+          "unsupported_levels": {
+            "geometry_path_category": [
+              "HO"
+            ],
+            "priority_role": []
+          },
+          "unsupported_joint_cells": [
+            "HO|priority",
+            "HO|yield"
+          ]
+        },
+        "guard_tune": {
+          "category_pass_rows": 477129,
+          "distance_pass_rows": 453274,
+          "gate_pass_rows": 453274
+        },
+        "calibration": {
+          "rows": 459556,
+          "category_pass_rows": 459131,
+          "category_fail_rows": 425,
+          "distance_pass_rows": 434639,
+          "distance_fail_rows": 24492,
+          "gate_pass_rows": 434639,
+          "abstain_rows": 24917,
+          "abstention_rate": 0.05421972512599116,
+          "distance_mean": 0.36897221207618713,
+          "distance_p95": 1.089978575706482
+        },
+        "held_out_test": {
+          "rows": 22588,
+          "category_pass_rows": 14418,
+          "category_fail_rows": 8170,
+          "distance_pass_rows": 12576,
+          "distance_fail_rows": 1842,
+          "gate_pass_rows": 12576,
+          "abstain_rows": 10012,
+          "abstention_rate": 0.44324420046042146,
+          "distance_mean": 0.5415968298912048,
+          "distance_p95": 1.6373671293258667
+        }
+      },
+      "held_out_gate_pass": 12576,
+      "held_out_abstention": 0.44324420046042146,
+      "conformal_radii": {
+        "80": {
+          "alpha": 0.2,
+          "nominal": 0.8,
+          "c_alpha": 0.0013505220413208008,
+          "calibration_n": 434639,
+          "rank": 347712,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        },
+        "90": {
+          "alpha": 0.1,
+          "nominal": 0.9,
+          "c_alpha": 8.344650268554688e-07,
+          "calibration_n": 434639,
+          "rank": 391176,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        },
+        "95": {
+          "alpha": 0.05,
+          "nominal": 0.95,
+          "c_alpha": 0.0,
+          "calibration_n": 434639,
+          "rank": 412908,
+          "formula": "ceil((n+1)*(1-alpha))-th smallest nonconformity score"
+        }
+      },
+      "metrics": {
+        "80": {
+          "alpha": 0.2,
+          "nominal": 0.8,
+          "total_n": 22588,
+          "n": 12576,
+          "abstained_n": 10012,
+          "abstention": 0.44324420046042146,
+          "coverage": 0.7764790076335878,
+          "covered_n": 9765,
+          "mean_width": 1.5928355965356327,
+          "median_width": 1.6452821495148804,
+          "width_p05": 1.0284043589744236,
+          "width_p95": 2.0210305901381638,
+          "width_min": 0.4700199218604233,
+          "width_max": 2.292643189630237,
+          "width_std": 0.3050541263278026,
+          "negative_width_rows": 0,
+          "lower_tail": 0.09716921119592875,
+          "upper_tail": 0.12635178117048346,
+          "winkler": 2.101268944826394,
+          "conformal_radius": 0.0013505220413208008,
+          "calibration_n": 434639
+        },
+        "90": {
+          "alpha": 0.1,
+          "nominal": 0.9,
+          "total_n": 22588,
+          "n": 12576,
+          "abstained_n": 10012,
+          "abstention": 0.44324420046042146,
+          "coverage": 0.8997296437659033,
+          "covered_n": 11315,
+          "mean_width": 1.977578655715653,
+          "median_width": 2.0019086601349976,
+          "width_p05": 1.5651909710976746,
+          "width_p95": 2.3063422443482544,
+          "width_min": 1.147529125413623,
+          "width_max": 2.379419207772937,
+          "width_std": 0.2346496915361223,
+          "negative_width_rows": 0,
+          "lower_tail": 0.046755725190839696,
+          "upper_tail": 0.053514631043256995,
+          "winkler": 2.2741168267866914,
+          "conformal_radius": 8.344650268554688e-07,
+          "calibration_n": 434639
+        },
+        "95": {
+          "alpha": 0.05,
+          "nominal": 0.95,
+          "total_n": 22588,
+          "n": 12576,
+          "abstained_n": 10012,
+          "abstention": 0.44324420046042146,
+          "coverage": 0.9510973282442748,
+          "covered_n": 11961,
+          "mean_width": 2.2379658541369514,
+          "median_width": 2.2960456611725952,
+          "width_p05": 1.9236639144036438,
+          "width_p95": 2.371684789857593,
+          "width_min": 1.566839575967517,
+          "width_max": 2.4854754211518433,
+          "width_std": 0.1478742723835804,
+          "negative_width_rows": 0,
+          "lower_tail": 0.021628498727735368,
+          "upper_tail": 0.02727417302798982,
+          "winkler": 2.3358950609147016,
+          "conformal_radius": 0.0,
+          "calibration_n": 434639
+        }
+      },
+      "elapsed_s": 67.5
+    }
+  },
+  "verdict_alpha90": {
+    "per_source_coverage": {
+      "waymo_train": 0.7425322119567469,
+      "nuplan_train": 0.9899128078785021,
+      "lyft_train_full": 0.7496513632520396,
+      "av2_motion_forecasting": 0.8997296437659033
+    },
+    "verdict": "BOUNDARY_STANDS"
+  },
+  "elapsed_s": 347.3
+}
