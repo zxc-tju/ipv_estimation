@@ -91,3 +91,34 @@ IPV 用的是轨迹层的微观特性，二者信息不同质，可以并列使�
 手稿引用机制二时，必须以本轮 envelope 为准。
 C4 可用于 Results，但**必须**带上 Required Qualification 的两条。
 RQ017 三条主张无需修改（C3）。RQ018/RQ019 见各自 `decision.md`。
+
+---
+
+## B31 addendum — per-source coverage of the DEPLOYED reference (PI registered 2026-08-12)
+
+The PI registered this frozen quantity as citable on 2026-08-12 ("B31 准"). **No computation was
+performed**; the values already exist in the accepted RQ021_2 study and are recorded here so the
+manuscript may print them.
+
+Source: `reports/studies/RQ021_contemporaneous_envelope/RQ021_2_lodo_transfer_20260807T114305Z_0c4d280/key_numbers_e2.json`,
+key `insample_by_source`, 90% level. These are test-fold coverages of the DEPLOYED (all-source-fitted)
+reference — not the leave-one-dataset-out reference, whose separate figures remain as previously frozen.
+
+| Source | Coverage at 90% | Numerator / denominator |
+|---|---:|---|
+| Waymo | 0.8824 | 173,745 / 196,905 |
+| nuPlan | 0.9589 | 145,846 / 152,093 |
+| Lyft | 0.8588 | 80,218 / 93,410 |
+| Argoverse-2 | 0.8821 | 17,227 / 19,529 |
+| Pooled | 0.9028 | — |
+
+Per-source abstention over the same folds: 3.7-13.5%.
+
+**Why it was registered:** a marginal coverage guarantee constrains nothing conditionally, and
+reviewers across five rounds used that opening to hypothesise a source in which the range fails
+while the pooled figure looks healthy. These frozen values bound that hypothetical at the source
+level: the weakest source sits at 0.859 against 0.903 pooled.
+
+**Manuscript uptake:** printed in Methods (conformal calibration and abstention), immediately after
+the sentence stating that the coverage statement is marginal rather than conditional. Percentages
+only; the numerators above stay in the register.

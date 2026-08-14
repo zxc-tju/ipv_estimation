@@ -1,0 +1,104 @@
+# 1. Summary assessment
+
+This manuscript proposes a frame-level monitor that estimates an interaction preference value (IPV), abstains when that estimate or its context is unsupported, and compares accepted estimates with situation-conditioned human reference intervals. It combines four naturalistic driving corpora with a matched-scenario real-vehicle benchmark and a human reference arm. The paper delivers a coherent monitoring architecture, extensive accounting of abstentions, and evidence that the conditioned interval is narrower than a global interval while retaining marginal coverage on an in-distribution test split. It also reports that assertive-side flags co-occur with reduced ordinary interaction margins and larger counterpart speed responses, but not with more emergency events.
+
+The present evidence does not yet establish an NMI-level result about social compliance. The monitored construct is validated mainly against quantities generated from the same trajectories and inverse-planning assumptions; there is no independent human-perception, preference, or appropriateness criterion. The consequence analysis is vulnerable to temporal coupling, repeated-window dependence and system/scenario confounding, while a direct case-label permutation is non-significant. Transfer and online-operability claims also exceed the reported tests. I would support reconsideration only after a major revision that either independently validates the social construct and comparative value of IPV, or narrows the paper explicitly to model-based behavioural atypicality.
+
+# 2. Major weaknesses
+
+1. **[Location: Abstract; Introduction; Sections 2.1, 2.4–2.6 and Discussion] — “Social compliance” is not independently validated.** The paper is commendably explicit that atypicality is not inappropriateness, yet it repeatedly frames the contribution as monitoring “socially compliant autonomous driving” and interprets IPV as how an agent trades its own progress against the group’s. That interpretation is inherited from a specified inverse-planning utility, not established here against an external measure of human social judgement or driver preference. The naturalistic reference only establishes self-consistency with human trajectories under the same estimator. The matched human arm establishes a rate comparison under the same instrument, and the consequence battery establishes associations with TTC- and speed-derived quantities; neither shows that humans perceive a flagged action as less acceptable, less predictable, less courteous or more burdensome. Indeed, the manuscript reports no robust harm relation and excludes preference ratings from the human-arm endpoints. At NMI level, this leaves the central construct underdetermined: the system is clearly a conditional outlier detector for an IPV model, but not yet a validated monitor of social compliance. A remedy would be a preregistered, blinded human-subject validation of flagged and matched within-range clips, including perceived appropriateness, predictability, courtesy and burden, with inter-rater reliability and scenario/system-held-out analysis. Alternatively, the title, abstract, contribution claims and planner-facing language should be narrowed throughout to “model-based conditional behavioural atypicality,” without implying social compliance.
+
+2. **[Location: Introduction, final paragraph; Sections 2.3–2.6; Figs. 4–6] — There is no competitive baseline showing that IPV is needed.** The algorithmic ingredients are a previously published IPV estimator, conditional quantile regression, conformal calibration and abstention. The manuscript compares a conditioned IPV interval with a global IPV interval, but not with plausible alternatives: direct conditional anomaly detection on trajectories or kinematics, gap-acceptance/priority-rule measures, TTC- or PET-conditioned monitors, learned behaviour embeddings, likelihood under a human trajectory model, or established interaction-aware/courtesy metrics. Because the reference features already contain geometry, progress, relative kinematics and online risk proxies, it is possible that the reported AV–human separation and consequence associations can be obtained without inferring a latent preference. This is decisive for both novelty and scientific interpretation: no evidence shows that IPV contributes information beyond the state variables and conventional interaction measures. The remedy is a held-out benchmark with identical support/abstention rules comparing calibrated coverage, interval sharpness, flag stability, AV–human discrimination and independent consequence/human-rating validity. An ablation should remove IPV while preserving the same context and evaluation protocol. Claims of a new social-monitoring capability should depend on incremental value over these baselines.
+
+3. **[Location: Section 2.4; Methods 4.5; Fig. 5 and Fig. ED2] — The “consequence” signature is temporally and mathematically entangled with the verdict.** IPV is estimated from the one-second trajectory window ending at time *t*, while the ego outcome window begins at the same *t*. TTC is computed from distance and closing rate, and the monitor/reference use relative kinematics, progress and online risk proxies. Thus the flagged state and the reported “following” margins are not cleanly separated; adjacent frame-level flags also generate heavily overlapping outcome windows. The counterpart response may likewise have begun within the estimator window before the flag. Matching within frozen situation cells and reassigning flag trajectories do not by themselves remove this coupling. Most importantly, the manuscript reports that the case-level label permutation for the same battery is non-significant (*p* = 0.1493), whereas only the timing-specific exposure placebo is significant (*p* = 0.0199, based on 200 draws). This mixed evidence is not reflected in the headline claim that flags locate moments followed by tighter interaction. The remedy is an analysis based on non-overlapping alert episodes, preferably the first eligible alert per run, with outcomes starting strictly after a prespecified lag; adjustment for the full pre-alert state and pre-alert outcome trajectory; matched or weighted within-scenario comparisons; leave-one-system- and leave-one-scenario-out influence analyses; and a clearly prespecified primary statistic. Both permutation results must be reported in the Results and interpreted jointly. Until then, “compression” should be described as a contemporaneous association, not a prospective consequence.
+
+4. **[Location: Sections 2.4–2.5; Methods 4.4–4.6; Figs. 5–6] — The inferential unit does not consistently match the claims.** The central rates use thousands of moments, but moments are nested within contiguous stretches, runs, systems/drivers and only 15 scenarios. Fig. 5 bootstraps 175 scenario runs, which addresses one dependence level, but it remains unclear whether systems and scenario templates are treated as crossed generalisation factors. Fig. 6 reports 15/15 scenarios above parity and a 2.1-fold moment-level rate difference without uncertainty in panels a or c, despite only 19 automated systems and 20 drivers. Long readable runs or systems producing many judgeable moments can dominate the estimates. The conformal calibration similarly uses 455,723 accepted moments as calibration scores despite within-interaction dependence; whole-scene train/test separation prevents leakage but does not make moment scores exchangeable. The authors correctly call coverage empirical and marginal, but terms such as “calibrated” and the apparent precision of the rates invite stronger interpretation. The remedy is a crossed hierarchical or cluster-randomisation analysis with scenario and system/driver as generalisation units, contiguous flag episodes as the exposure unit, cluster-level confidence intervals for every Fig. 6 comparison, effective sample sizes, and sensitivity to equal weighting by run/system/scenario. For coverage, use scene- or interaction-level conformal calibration (or subsample one prespecified moment per independent unit) and report both marginal moment coverage and cluster-aware uncertainty.
+
+5. **[Location: Sections 2.2–2.5; Methods 4.3–4.4; Figs. 3c, 4 and 6] — The transfer claim is contradicted by the manuscript’s own source-shift results.** Leave-one-source-out prediction explains essentially no variance and is strongly negative for AV2 and nuPlan (Fig. 3c). More directly, nominal 90% coverage falls to 0.743 for Waymo and 0.750 for Lyft; AV2 attains 0.900 only with 44.3% abstention. These are major failures under source shift. Against this background, finding only 4.7% of matched-course human moments outside a nominal 90% range establishes “no alarm inflation,” but not that the reference transfers across country, apparatus and task. A rate below the nominal 10% may reflect an overly broad interval, restricted behavioural diversity, selective support gating or dependence, and scenario aggregation can conceal local miscalibration. The remedy is to replace the broad transfer claim with a bounded apparatus-specific observation unless the authors provide, for the matched human arm, all gate-specific abstention rates, reference widths, achieved coverage by scenario/driver/state, covariate-shift diagnostics and cluster-aware uncertainty. A calibration/sharpness trade-off must be shown jointly. The severe leave-one-source-out failures should be prominent in the main Results and abstract-level limitations, not confined to Methods.
+
+6. **[Location: Sections 2.1 and 2.3; Methods 4.1–4.4; Figs. 2 and 4] — Estimator uncertainty and modelling sensitivity are not carried into the verdict.** A point IPV estimate from seven candidates spaced by π/8 is judged against a learned interval. “Readability” is triggered when the largest normalised likelihood exceeds 0.20 rather than the uniform value of 1/7, using a fixed Gaussian scale of 0.1 m and a one-second window. These choices are consequential but are not justified by error calibration or sensitivity analyses. Fig. 2b in fact shows that readable estimates move by roughly 0.30 rad frame to frame, close to the candidate spacing, yet the verdict treats the weighted point estimate as exact. Agreement with an offline estimate using the same model and lane reference is not validation against a known preference. Nor are uncertainty in the inverse estimate, reference quantiles and support decision propagated into flag probabilities or stability. The remedy is synthetic or controlled recovery with known preferences, calibration of the reliability score against estimation error, robustness across grid resolution, likelihood scale, window length, route/reference perturbation and cost specification, and reporting of verdict-switch rates under these perturbations. A posterior/probabilistic membership rule or an explicit uncertainty margin is needed near interval boundaries.
+
+7. **[Location: Abstract; Sections 2.3 and 3; Methods note on scope and Algorithms 1–2] — “Online runtime monitor” currently means causal offline replay, not demonstrated runtime operation.** The paper verifies that inputs are available at decision time, but explicitly does not evaluate end-to-end real-time operation on vehicle hardware. It gives no latency, compute load, deadline-miss rate, memory use, perception-noise test, map/route uncertainty test or live counterpart-tracking performance. On the benchmark, only 14,099 of 67,861 candidate moments (20.8%) receive verdicts, and a sequential warning/persistence layer is left unevaluated. A per-frame signal with overlapping, potentially flickering verdicts is not yet an operational monitor or planner interface. At NMI level, “runtime” should imply more than non-anticipating batch replay. The remedy is a streaming implementation evaluated at the claimed 10 Hz under realistic compute and perception inputs, with latency distributions, reason-specific abstention, verdict persistence/churn, episode false-alarm rate, detection delay and at least a shadow-mode or closed-loop demonstration. Without this, the manuscript should consistently use “online-computable retrospective monitor” and remove deployment-facing claims.
+
+8. **[Location: Methods 4.6 and reporting of Fig. 6] — The human reference arm is insufficiently documented.** The only participant information is “licensed drivers,” a 20 drivers × 15 scenarios matrix and pseudonymisation. There is no ethics approval or exemption, informed consent statement, recruitment procedure, demographics/driving experience, compensation, inclusion/exclusion accounting, safety protocol, scenario order/counterbalancing, familiarisation, repeated-exposure handling, sample-size rationale, or treatment of learning and fatigue. These omissions prevent assessment of both research ethics and the validity of the AV–human comparison. They are especially important because all drivers appear to encounter the same 15 staged conflicts, making order and adaptation plausible explanations for rate differences. The remedy is a complete human-participant methods and ethics section, a participant flow/accounting table, randomisation or counterbalancing details, and sensitivity analyses for trial order, driver experience and repeated exposure.
+
+# 3. Minor issues
+
+1. **[Methods 4.3]** The conditional quantile model is not reproducibly specified: model class, exact feature vector, interactions, loss, regularisation, hyperparameter selection and non-crossing rearrangement procedure are absent. These details belong in the paper or Supplementary Information, not only in future code.
+
+2. **[Methods 4.2 and Algorithm 2]** Numerical definitions for the interaction-opportunity horizon and the (q_0) and (c_0) gates are missing, as are exact criteria for map/role uncertainty and out-of-distribution abstention.
+
+3. **[Fig. 2a]** “Change in how sharply the reading is identified” is not given a mathematical definition or unit. The plotted contrast and the construction of each control pairing should be stated explicitly.
+
+4. **[Fig. 2c]** The text says sign flips range from 7–22% across pairs, but the figure annotates only 22%. Report all pairwise comparisons and their uncertainty.
+
+5. **[Fig. 3a]** PET is a realised offline quantity, and the high/middle/low bins are observational. Language such as “what holding priority means” and “accommodation under pressure” should not imply a causal or psychological interpretation.
+
+6. **[Fig. 4a]** Width is normalised to the seven-candidate span (3π/4), whereas Eq. 1 declares a broader parameter domain ([-π/2,π/2]). Label the denominator directly on the axis and explain why this is the relevant admissible range.
+
+7. **[Fig. 5b,d]** Multiple nested thresholds are displayed with per-endpoint intervals and no multiplicity control. “At every supported threshold” risks converting a battery of correlated tests into a selection rule. Identify one primary threshold or provide simultaneous intervals/family-wise or false-discovery control.
+
+8. **[Fig. 5]** The distinction between 519 assertive-side judgeable moments and the 472 with defined ego margins should be visible in the panel rather than recoverable only from Methods/caption text.
+
+9. **[Fig. 6b]** Ratios are difficult to interpret when the underlying event rates differ greatly. Provide the absolute human and AV rates/effect sizes with confidence intervals alongside ratios.
+
+10. **[Fig. ED1]** The title contains “changes width with with the situation.”
+
+11. **[Fig. ED2]** Selecting one of two runs that satisfy criteria from 120 flagged runs is clearly labelled illustrative, but the selection rule for choosing between the final two should be disclosed.
+
+12. **[Data and Code Availability]** “Will be made available upon publication” is too vague for a work whose auditability is central. Specify repositories, licences, executable environments and which raw benchmark fields cannot be shared.
+
+13. **[End matter]** Author Contributions and Acknowledgements are empty, and the manuscript lacks an explicit ethics statement.
+
+# 4. Questions to the authors
+
+1. What evidence, independent of the inverse-planning model and trajectory-derived outcomes, validates IPV as a measure of perceived social preference or compliance in the settings studied?
+
+2. Why were preference ratings explicitly excluded from the human-arm endpoints? Were any ratings collected, and if so, was the exclusion preregistered before seeing them?
+
+3. Can a state-only or direct-trajectory baseline match the IPV monitor’s interval sharpness, AV–human rate difference and consequence associations under identical support and abstention rules?
+
+4. How were the 0.20 maximum-weight threshold, σ = 0.1 m, one-second window and seven-point preference grid selected? What fraction of verdicts change under reasonable perturbations of each?
+
+5. What is the complete feature set and fitted model used for conditional quantiles, and how was leakage from future motion, realised passing order and source identity ruled out in implementation rather than only by design statement?
+
+6. How many independent scenes/interactions, runs, systems and drivers contribute to each principal estimate after all exclusions? How concentrated are judgeable and flagged moments across these units?
+
+7. Why does the case-level label permutation fail (*p* = 0.1493) while the exposure-timing placebo passes (*p* = 0.0199)? Which was the preregistered confirmatory test, and what conclusion survives both?
+
+8. Does the consequence association remain when outcomes begin after the full estimation window, only the first flag in each contiguous episode is retained, and pre-alert TTC/speed trajectories are balanced?
+
+9. In the matched human arm, what are the overall and reason-specific abstention rates, interval widths and scenario-/driver-level outside rates? How do these support the claim of transfer rather than conservatism?
+
+10. What are the human-study ethics approval, consent, participant characteristics, scenario-order protocol, safety procedures and handling of learning/fatigue?
+
+11. What are the measured per-frame computation time and worst-case latency, and have verdict stability and abstention been tested with realistic perception and map uncertainty?
+
+12. How would the monitor handle two simultaneously relevant counterparts, a changing principal counterpart, pedestrians/cyclists, or an AV trajectory whose route/lane reference is itself uncertain?
+
+# 5. Prioritised revision requests
+
+1. **Establish external construct validity or narrow the claim.** Add an independent, blinded human-judgement study with matched flagged/within-range interactions and held-out scenarios/systems, or retitle and reframe the work throughout as monitoring conditional atypicality under a specified IPV model.
+
+2. **Demonstrate incremental scientific value.** Benchmark the IPV monitor against state-only, direct trajectory-anomaly, safety-surrogate and established social/courtesy baselines under the same calibration, support and test protocol.
+
+3. **Rebuild the consequence analysis around independent alert episodes.** Enforce temporal separation, adjust for pre-alert state/trajectory, avoid overlapping outcome windows, use a prespecified primary endpoint, and reconcile the conflicting permutation tests.
+
+4. **Use the correct generalisation units.** Provide crossed scenario-by-system/driver inference, cluster-aware Fig. 6 intervals, effective sample sizes, equal-unit weighting sensitivities and cluster-aware conformal analysis.
+
+5. **Correct and bound the transfer claim.** Put the leave-one-source-out coverage failures in the main Results, jointly report calibration, sharpness and abstention on the matched human arm, and remove general transfer language unless supported across states and independent units.
+
+6. **Validate estimator and verdict robustness.** Quantify recovery error and flag instability across grid, likelihood, window, cost, map/route and perception perturbations, and propagate estimator uncertainty into interval membership.
+
+7. **Substantiate or relabel runtime operation.** Provide 10-Hz streaming latency and sequential alert metrics under realistic inputs; otherwise describe the current result as non-anticipating offline replay and keep the planner interface explicitly prospective.
+
+8. **Complete reproducibility and human-participant reporting.** Fully specify the quantile/reference model and every gate; add ethics, consent, recruitment, demographics, counterbalancing, trial-order and safety details; and make the data/code release commitments concrete.
+
+# 6. Acceptance probability
+
+- **As submitted:** 10%
+- **Assuming a competent major revision that addresses the requests above:** 45%
+
+# 7. Recommendation
+
+**Major revision**
