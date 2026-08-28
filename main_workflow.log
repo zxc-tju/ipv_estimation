@@ -3528,3 +3528,9 @@ ID 体系与场景-caseId 对照 / 12 条已知坑 / 可复用中间产物 / 既
 背景：需要把最新的研究 checkpoint、知识层收口和工作日志一并送上远端主分支，便于后续接手的人直接看到当前状态。
 结果：当前可长期保留的 checkpoint 已刷新到 `START_HERE.md` 和 `STUDIES.md`；RQ004 的语义增补已写入知识层决策；PAPER001 的导入交接记录已保留；本次同步不包含 `.codex-fleet` 运行产物。
 边界：只同步可追溯的仓库文本，不触碰论文仓库、不改 HPC 作业、不提交 ignored 运行目录。
+================================================================================
+2026-08-28T04:36:51Z | Formalize latest RQ022/RQ024/RQ025/RQ026 progress for remote sync | COMPLETE
+================================================================================
+背景：需要把最新 NMI 研究进展以仓库可追踪文本的形式推到远端，但不能把 `.codex-fleet`、`work/`、数据目录或论文 review rounds 直接入库。
+结果：新增 `reports/knowledge/RQ026_frozen_monitor_runtime/`，把 repair14 formal pilot promotion、jobs `2336919/2336920/2349471`、`256/256` parity、`167` comparable、`unhandled=0`、repair15 `136` shard / `67,861` 行 / `11 passed` 与 live preflight fail-closed 边界正式写入知识层；`STUDIES.md` 已从旧的 `HPC_REMOTE_LOGIN_BLOCKED` 更新为 `FORMAL_PILOT_PASS / FULL_NOT_SUBMITTED` 口径。本次准备同步的长期文本还包括 RQ022/RQ024/RQ025 的 knowledge 层与 RQ024/RQ025/RQ026 计划文件。
+边界：不改论文仓库，不提交 `.codex-fleet` 运行产物，不把 runtime evidence 升级为 accuracy、deployment 或 alert-effectiveness claim。
