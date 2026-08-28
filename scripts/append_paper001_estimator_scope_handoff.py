@@ -24,7 +24,7 @@ Structure: Results now contain four semantic sections and six main figures. `cla
 
 Verification: paper PR CI passed source lint, LaTeX compilation, bibliography processing, undefined-reference/citation checks and PDF artifact generation.
 """
-HANDOFF.write_text(text.rstrip() + entry + "\n", encoding="utf-8")
+HANDOFF.write_text(text.rstrip() + entry.rstrip() + "\n", encoding="utf-8")
 
 with LOG.open("a", encoding="utf-8") as handle:
     handle.write(
