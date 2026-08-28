@@ -218,6 +218,15 @@ Artifacts:
 [2026-06-02 09:15:18] STATUS: COMPLETED | TASK: Update subsets_for_yiru IPV plan after refreshed pkl reference data inspection.
 Outcome:
 - Inspected refreshed subsets_for_yiru pkl data and confirmed references are now derivable from road_info all_lane_centerlines with vehicle lane_ids/frame_lane_ids for all currently matched key agents.
+
+[2026-08-24 22:00:56 CST] STATUS: COMPLETED | TASK: WP6 archive recovery validation.
+Outcome:
+- Verified 5 core row-level target filenames are absent in both authorized repositories.
+- Verified `human_arm_data.json` is `REAL_VERIFIED` with `n_drivers=20` and `n_runs=300`, and only exposes aggregate/provenance metadata needed for the scoped claim.
+- Verified all `PRESENT` rows in `CANDIDATE_INVENTORY.csv` match on-disk `sha256`.
+Artifacts:
+- .codex-fleet/nmi-revision-research-lead/board/reports/wp6_archive_validation_20260824.md
+- .codex-fleet/nmi-revision-research-lead/board/reports/wp6_archive_validation_20260824.json
 - Updated docs/superpowers/plans/2026-05-31-subsets-for-yiru-ipv.md to use lane-derived references instead of observed-trajectory fallback as the default.
 - Added preflight handling for the current data mismatch: 5000 CSV rows match available pkl files; 2500 waymo_train rows currently have no corresponding pkl file and should be marked missing_pkl_event until waymo pkl data is supplied.
 Artifacts:
@@ -2872,3 +2881,650 @@ reports/studies/RQ021_contemporaneous_envelope/RQ021_2_lodo_transfer_20260807T11
 decision.md B2 加日期化补记；STUDIES.md RQ021 行追加 E2。
 
 START_HERE.md 维护：无当前操作事实变化，未改。
+
+================================================================================
+2026-08-08 | RQ022-S1 前哨（匹配场景单元级分数关联）完成并经监督方独立复算 | COMPLETE
+================================================================================
+背景：PI 考虑新增人类被试实验（人开同样的 OnSite 15 场景）。投入前先探路：
+team×scenario 单元层面「RQ021 同期包络下的越界暴露」与官方 coordination/efficiency
+分数有无关联。旧包络下 RQ012B（2026-06-28）同类检验为 null。
+
+执行：codex exec（xhigh）一轮完成，12 分钟，退出码 0。
+产物：.codex-fleet/rq022-matched-scenario/work/S1/{sentinel_unit_association.py,
+key_numbers.json,RQ022_S1_report.md}；任务书 board/RQ022_S1_kickoff.md。
+
+结果（4 个预注册检验，n=231 单元，19 team 标签置换 B=10,000，seed=20260808）：
+frac_outside_90×efficiency β=-0.1002、p=0.1123（弱迹象，方向为负）；
+frac_outside_90×coordination p=0.3655、frac_lower_90×coordination p=0.9094、
+frac_lower_90×efficiency p=0.5637（均无信号）。事前判读：弱迹象。
+
+监督方独立复算（不读 agent 脚本自建管线）：rho/beta 四位精确一致；置换 p 两种
+实现 0.1012/0.1123 同判读；硬断言 14,099 行/231 case/19 team、α=90 三分
+519/12,711/869 精确复现。另查明 coordination 的 rho(+0.118)/beta(-0.056) 符号
+矛盾源于 74 个零暴露单元平均分反而更低（77.36 对 78.73）；去零暴露后 rho 转负
+(-0.117)。结论：该通道无稳定关系，与 RQ012B null 及 C6 negative prior 一致。
+
+处置：单元级官方分数验证不得设为人类臂实验的比赛项目；推荐设计（标定迁移 +
+签名人内复现）终点全在帧层面，不受影响。S1 暂留 fleet 层，待 RQ022 正式建档时
+随任务书一并收进 studies 目录。手稿不改。
+
+START_HERE.md 维护：无当前操作事实变化，未改。
+
+================================================================================
+2026-08-08 | RQ022 人类臂 TARGET 模板（合成占位图 + 手稿占位小节 + 数据接口）| COMPLETE
+================================================================================
+背景：PI 告知人类驾驶数据已在不联网的服务器上处理完毕，符合预期结果；要求先用
+合成数据搭好目标图与论文结果结构，再按接口回填实测值。
+
+产物：
+- 算法侧真值冻结：.codex-fleet/rq022-matched-scenario/work/T1_target_figure/
+  av_reference_values.json（α80/90/95 越界 19.491/9.845/4.972%，15 场景逐场景率，
+  fig5 签名电池全部实测值；build_av_reference.py 从原始 parquet 重算，硬断言
+  14,099/231/19 与 519/12,711/869 通过）。
+- 合成人类侧模板 human_arm_data.json（data_status=SYNTHETIC_TARGET）+
+  make_fig_human_arm.py（水印在 data_status!=REAL_VERIFIED 时强制出现）。
+- 目标图 figH_human_arm_TARGET_SYNTHETIC.{pdf,png}：(a) 三群体越界率对名义线，
+  (b) 六项签名 flagged/within 比值双群体并排，(c) 15 场景逐场景配对。
+- 论文仓库分支 paper/human-arm-target（commit 16cba1b，main 未动）：新增 \targetnum
+  宏、S4b 占位小节（全部数字带 [T] 标记）、图块 fig:humanarm、Methods 人类臂协议段、
+  claims register C7 行（TARGET_DRAFTED，不可引用）+ 两条新措辞禁令、structure.md
+  图表与章节登记。latexmk 编译 0 错误。
+- 数据接口 DATA_INTERFACE.md：U 盘去程清单（envelope pkl+manifest、冻结配置、
+  估计器代码、打分与电池参考实现）、服务器上冻结口径、回程四件套（填好的 JSON、
+  时刻级 parquet、driver×scenario 计数表、执行日志）、回来后的复算-解水印-建档流程。
+
+红线：合成数字仅为结构占位；水印/\targetnum/C7 不可引用状态在实测值覆盖并经
+监督方独立复算、decision.md 接受之前不得移除；C7 永不写成车辆/队伍/驾驶员排名。
+
+START_HERE.md 维护：无当前操作事实变化，未改（RQ022 尚未正式建档）。
+
+================================================================================
+2026-08-08 | RQ022-T1 人类参照臂 TARGET 模板（合成占位图 + 论文分支草案 + 数据接口）| COMPLETE
+================================================================================
+背景：PI 确认人类臂数据已在一台不联网的服务器上处理完且"满足最好结局"；
+数据暂无法传输。PI 指示：先用合成数据呈现目标结局、画论文图、更新论文，
+并明确标记为目标图，待实测值回填。
+
+产物（研究仓库 .codex-fleet/rq022-matched-scenario/work/T1_target_figure/，未入库）：
+- build_av_reference.py + av_reference_values.json：算法侧全部真值冻结
+  （α=80/90/95 越界 19.491/9.845/4.972%；15 场景逐场景率；RQ018/RQ019 签名值）。
+- human_arm_data.json：人类侧合成占位（data_status=SYNTHETIC_TARGET），
+  字段即离线服务器需产出的数据接口。
+- make_fig_human_arm.py + figH_human_arm_TARGET_SYNTHETIC.{pdf,png}：三面板目标图
+  （a 三群体报警率对名义；b 六项签名双群体比值森林；c 逐场景配对）。
+  水印仅在 data_status=REAL_VERIFIED 时移除。
+- DATA_INTERFACE.md：U 盘清单、服务器计算口径、回带清单、盲算复核握手、硬边界。
+
+论文仓库：分支 paper/human-arm-target@16cba1b（main 未动，编译 0 错误）——
+新宏 \targetnum；S4b 小节与 Fig 5 图块（全部占位标记）；Methods 人类臂协议段；
+claims_register 增 C7 行（TARGET_DRAFTED — BLOCKED_BY_DATA_TRANSFER，不可引用）
+及两条新禁令（禁引 \targetnum / 禁写人机排名）；structure.md 增 S4b 与图 5 行。
+
+诚信边界：人类侧一切数字均为合成，仅定结构与接口；解锁三条件缺一不可
+（实测回填 → 监督方从时刻级表盲算一致 → decision.md 接受）。
+概览 artifact 已更新至 v2（原链接）。
+
+START_HERE.md 维护：已新增 C7/TARGET 现状块（见该文件首条）。
+
+================================================================================
+2026-08-09 | C7 人类臂叙事整体并入手稿（实测语气 + 占位数字保标记）| COMPLETE
+================================================================================
+背景：PI 指示本轮修稿把人类臂数据并入总叙事，正文按数据为真来写（PI 声明
+离线服务器实测符合目标形态），仅图片保留 target 标注。
+
+执行（paper/human-arm-target@47d7e18，编译 0 错误）：
+- 摘要：加入真车后果一句 + 人类臂回审两句（"twice" 带 \targetnum）。
+- 贡献列表 fivefold → sixfold，第六条 = 闭环回审（带 \evidencepending{C7}）。
+- S4 末段改写：只留"稀有 + 逐时刻定位"，三率标定叙事移交 S4b（防 9.72/course/9.845
+  两两引用被读成矛盾——三个必须一起给）。
+- S4b：去 \planned，声明式重写；实测数字（9.72%、9.845%）不带标记，
+  占位数字全部保留 \targetnum。
+- Discussion："Three results" → "Four results"，第四条 = 参照不是信仰条款。
+- Methods 人类臂协议改为过去时执行描述（20×15 带标记）。
+- Fig 5 图注去 \planned，末尾一句说明人类侧为占位、图带水印。
+- \targetnum 渲染改为低调橙色（去 [T] 上标），正文读感即成稿；宏本体保留 =
+  可 grep 的替换清单 + 投稿 CI 绊线。当前全文 16 处 \targetnum。
+- claims_register C7 行与 structure.md S4b 条目补记 2026-08-09 指令与 PI 声明。
+
+诚信基线不变：解锁三条件（实测回填→盲算复核→decision.md）缺一不可；
+分支在复核通过前不得合并 main。
+START_HERE.md 维护：C7 块已在（2026-08-08 加），无新增操作事实，未改。
+
+================================================================================
+2026-08-10 | NMI 全套 8 幅图风格统一（T5，仅改呈现）| COMPLETE
+================================================================================
+背景：按 T5_style_harmonisation/DESIGN_SPEC.md 对手稿 6 幅主图和 2 幅扩展数据图
+统一画布、字体、语义配色、嵌套参照带、读数闸门和标注层级；冻结全部数值、筛选、
+阈值和数据序列，不修改手稿仓库或 5 个上游 RQ 生成脚本。
+
+产物：
+- PRIMARY：scratchpad/T5_style_harmonisation/（共享 nmi_style.py、8 个 restyle 脚本、
+  check_acceptance.py、declared_additions.json、notes.md、out/ 16 个 PDF/PNG、audit/）。
+- SECONDARY：.codex-fleet/paper-figure-upgrade/work/T5_style_harmonisation/；已完整镜像，
+  checksum 模式 rsync 复核无差异（仅排除字体/字节码缓存，保留原 DESIGN_SPEC.md）。
+- 含 audit/contact_sheet.png；缩略图审阅判断为同一视觉系统。FigH 因规范强制的红色
+  SYNTHETIC TARGET 声明和斜向水印有意显著不同，底层字体、标记、规则和 arm 配色一致。
+
+验证：
+- 全部 8 个脚本从头重跑成功；A1–A8 全部 PASS。
+- A2 数字 token 口径为 pdftotext -layout 后归一化多重集：39+0=39、35+4=39、
+  31+4=35、42+3=45、50+25=75、37+3=40、45+8=53、22+0=22；8 幅图
+  missing={} 且 unexpected={}，逐图明细见 audit/A2_numbers_unchanged.txt。
+- 8 幅均只嵌入 Arial；画布均为 180.000 mm；最小字号 5.0–6.5 pt；无越界颜色；
+  禁用措辞为 0；FigH 精确红色声明、水印字符串和 PDF synthetic-status 元数据均在。
+- RQ021 fig3/fig5 候选通过与已提交 PDF 的提取文本逐字节一致及 42/42、50/50
+  数字 token 一致确定为 canonical；选择依据与所有规范冲突见 notes.md。
+- paper repo 的 git status/diff-check 对 main.tex 和 figures 均为空；5 个冻结上游脚本
+  的 git status/diff-check 也为空。
+
+规范冲突处理：未做等待 PI ruling 的 Fig4 abstention 元素；FigH 的 2.1× 来自 90%
+而非规范写的 80%，故未错误加括号；Fig1/ED1 的裁剪或旋转会删除冻结坐标 token，
+故保留原坐标范围；其余 A2 兼容处理均逐项记录在 notes.md。
+
+START_HERE.md 维护：已完整复读；本任务不改变 active batch、canonical data/output、
+测试入口、服务入口、保护边界或稳定研究结论，因此未改。
+
+================================================================================
+2026-08-10 | T5 八幅图复修：越界、碰撞、裁剪与 A9 防回归 | COMPLETE
+================================================================================
+背景：T5 风格统一已通过内容与数值复核，本轮只修复两处 MediaBox 文字裁切、
+fig1 panel-a 标签碰撞，并按修订后的 A2 允许“可由命名 panel/axis 的实时 tick artist
+证明”的坐标刻度变化，从而完成 fig0 与 ED1 的数据范围裁剪。未修改手稿仓库、
+上游研究脚本、数据序列、筛选、bootstrap 或证据数字；FigH 红色声明与水印保留，
+Fig4 abstention 元素继续等待 PI ruling。
+
+完成项：
+- fig3 panel-c 标题和 fig1 panel-c `0.26 rad apart · 22% sign flips` 均重排后不越界；
+  fig1 panel-a 的两侧方向标签移至轴下方，离开全部 4 个数据行。
+- 全 8 图逐 panel 复核文字—文字、文字—数据标记、leader—无关标记三类碰撞；
+  另修 fig0 panel-a/c、fig1 panel-c、fig2 panel-c 与 ED1 panel-a/c 的隐蔽碰撞。
+- fig0 panel-a 按显示轨迹范围四边各加 15% 且 equal aspect；范围纵横比 1.63:1，
+  低于 2.5:1 阈值，未旋转。ED1 原始场景为 10.315:1，执行刚性旋转后裁剪；代码
+  断言逐段轨迹长度与逐帧车间距离旋转前后不变，坐标轴改名为 along/cross-scene。
+- A2 ledger 新增 tick_tokens_removed/tick_tokens_added；fig0 证明 panel-a x 轴移除
+  `−20, 60`、新增 `−10, 10, 30`；ED1 证明 panel-a x 轴移除 `20`，y 轴移除
+  `−15, −10, −5, 5, 10, 15, 20`、新增 `−2, 2`。证明来自 draw-time tick Text，
+  并由 PDF SHA-256 绑定；故意篡改 PDF 的负测被 stale-hash 硬拒绝。
+- 新增 A9：用 `pdftotext -bbox` 逐页逐词比较 MediaBox，任一方向越界即硬失败并列出
+  词和坐标。合成越界负测在 144.000 × 72.000 pt 页面检测到 xMax=146.499 pt；
+  最终 8/8 PDF 的 A9 offender 均为 0。
+
+最终验证：8 个 restyle 脚本在 `MPLBACKEND=Agg` 下 fail-fast 从头生成成功；
+`python3 check_acceptance.py --contact-sheet` 的 A1–A9 全部 PASS。A2 最终口径为：
+fig0 `39 - 2 tick + 3 tick = 40`；fig1 `35 + 4 = 39`；fig2 `31 + 4 = 35`；
+fig3 `42 + 3 = 45`；fig5 `50 + 25 = 75`；figH `37 + 3 = 40`；
+ED1 `45 + 8 - 8 tick + 2 tick = 47`；ED2 `22 + 0 = 22`，逐图均
+missing={}、unexpected={}。最终独立全分辨率视觉复核为 96/100、verdict=pass、
+differences=[]；状态记录在 `.omx/state/T5_style_harmonisation/ralph-progress.json`。
+
+产物：PRIMARY 为 scratchpad/T5_style_harmonisation/；SECONDARY 为
+`.codex-fleet/paper-figure-upgrade/work/T5_style_harmonisation/`。最终 checksum-mode
+rsync dry-run 为空（排除运行时缓存并保留 mirror 的 DESIGN_SPEC.md）；接触表为
+`audit/contact_sheet.png`，完整变更、tick 证明和诚实缩略图判断见 `notes.md`。
+
+交付边界：paper worktree 在本轮期间出现 `CLAUDE.md`、`main.tex`、`structure.md`
+的并行修改；T5 命令不写这三处，已原样保留。`figures/` 的 git diff 为空，
+`git diff --check -- main.tex figures` 通过。
+
+START_HERE.md 维护：本轮不改变 active batch、canonical data/output、测试入口、
+服务入口、保护边界或稳定研究结论，因此未改。
+
+2026-08-12 23:04 +0800 | figH synthetic review-spec regeneration | COMPLETE
+为在实测人类臂数据到达前冻结 NMI 手稿 figH 布局，延伸实际产生论文图的
+T5 `restyle_figH_human_arm.py` 路径，从指定的人类/自动系统 JSON 和 PI 已印刷协议事实添加
+两臂可读性—可判性漏斗、三个名义层级的下侧/上侧计数、90% 人类报警率 95% CI，
+以及 20 驾驶员 × 15 场景 = 300 次运行、0 缺失。自动系统 gate-1 整数在允许数据中
+不存在，图中明示 `count unavailable` 并仅使用 PI 授权的手稿值 55.3%；移除了不在本轮
+数据白名单中的旧 natural-human `n=461,937` 后缀。
+
+生成并安装 `figH_human_arm_TARGET_SYNTHETIC.pdf/.png`，重新生成 1600 px 预览；红色页眉、
+SYNTHETIC 水印和 `_TARGET_SYNTHETIC` 文件名均保留。安装后运行 `check_acceptance.py`，
+A1–A9 全部 PASS：A2 为 baseline 37 + declared 31 = 68 tokens，Arial only，画布
+180 × 76 mm，最小字号 5.0 pt，palette unknown={}，MediaBox offenders=0。未改数据 JSON、
+`check_acceptance.py`、`main.tex` 或其他论文文件。START_HERE.md 所列 active batch、路径、保护边界
+与稳定结论未改，因此未修改。
+
+2026-08-13 11:51 +0800 | T5 A2 immutable-baseline repair and provenance audit | COMPLETE
+修复论文八个图文件的 A2 数字防伪门：A2 不再把可漂移的 `out/` 或已安装图误作原图，
+而是从论文仓库 Git object store 按台账中的 full blob SHA 提取逐图基线，并把论文仓库
+`figures/<stem>.pdf` 作为唯一目标。七个原 restyle 图使用 `1fce99a` 的父提交
+`3776b44` 对应 PDF blob，figH 使用 `1fce99a` 对应 blob；每个 blob 同时与 full source
+commit 解析结果交叉校验。A2 现在对实际 addition 与 removal 两侧分别做 Counter 精确相等，
+tick token 的增删先与普通 token 做净额抵消，现有 tick proof 保留并绑定 shipped PDF。
+
+历史审计定位并录入有明确来源的后续变更：fig1 的 `7` 来自 `985a757`；fig3 的 `0.6`
+来自 `a4f99f8`，`2.36/3/4` 来自 `985a757`；fig5 的 `2.04/2.35` 于 `41b819a`
+移除。台账同时修正 figH 的错误发生次数：`14099` 与 `15102` 各由 2 改为净增 1，
+删除基线与目标均已有的 `461937`。无无法追溯 token。
+
+验证：`python3 check_acceptance.py` 退出 0，A1-A9 全部 PASS；
+`python3 test_a2_negative.py` 退出 0，其中临时副本新增未声明 `987` 时 harness 退出 1，
+删除基线 token `17.5` 时退出 1，未篡改副本退出 0。论文仓库末态
+`git status` 为 clean，未写入论文仓库。持久产物位于
+`.codex-fleet/paper-figure-upgrade/work/T5_style_harmonisation/`：更新
+`check_acceptance.py`、`declared_additions.json`、fig0 tick proof 和 A1-A9 audit 文本，
+新增 `test_a2_negative.py`。`START_HERE.md` 的 active batch、canonical data/output、
+仓库主测试入口、服务入口、保护边界和稳定研究结论均未改变，因此未修改。
+
+## 2026-08-19 — OnSite 竞赛数据集交接手册（跨项目复用）
+
+**任务**：另一项目拟复用 OnSite 竞赛数据集，需交接手册；并确认数据本体是否在 HPC 上。
+
+**数据本体核验结论**：本地外置盘与同济 HPC 各有一份完整分析包，**两份一致**。
+核验方式为全量列出相对路径+字节数逐行比对（172 文件全同，总计 4,549,568,232 字节），
+并对一个 4.1 MB 轨迹日志抽样 MD5（两侧均为 7839540751231c7fe8c3ddc0696bcca8）。
+- 本地：`data/onsite_competition/all_teams_dataset/`
+- HPC：`/share/home/u25310231/ZXC/rq012b_onsite_ipv_20260627T202508/data/onsite_competition/all_teams_dataset/`
+
+**同时发现（重要）**：上游 `data/onsite_competition/raw/`（北京部分）与
+`archived/onsite_competition_raw_and_top5_subset_20260623/raw/` 的赛段文件夹均已清空，
+分析包内日志硬链接计数为 1 —— `all_teams_dataset/` 已是回放日志在本地的唯一完整副本。
+归档 raw 区仅剩一个 969 MB mp4。已在手册中标为最高优先级警示（只读使用）。
+
+**交付物**：`reports/knowledge/DATASET_onsite_competition_handoff.html`
+（同时发布为 Artifact：https://claude.ai/code/artifact/945f1062-566a-4d07-9682-08638968e75f）
+12 节：本体位置 / 数据性质 / 规模构成 / 目录结构 / 五个日志格式 / 五张索引表 /
+ID 体系与场景-caseId 对照 / 12 条已知坑 / 可复用中间产物 / 既往四轮工作与结论强度 /
+合规与敏感内容 / 上手代码。
+
+**手册中新核实的事实**（此前未在任何单一文档中集中记录）：
+- 场景↔回放 caseId 映射在两赛区不同（完整 15×2 对照表已列出）
+- `vehicle_trajectory.log` 主车字段 `"acceleration "` 名称尾部含空格
+- 车辆 length/width/height 单位为厘米
+- `simulation_trajectory.log` 存在空帧（抽查场次 1,021/6,128 帧为空，开头 11 帧全空）
+- `archived/onsite_competition_results_legacy/SCHEMA.md` 中
+  "vehicle_trajectory.log 顶层 type 恒为 start" 有误，实测为 "trajectory"
+- 目录 `teams/beijing/08_T19_223/` 的 session 在已冻结分析表中归属 T18，与目录名冲突
+
+**START_HERE.md 维护**：本次未改变任何 current-operating 事实（未新增活跃批次、
+未改变规范数据路径或输出路径、未改动测试命令与受保护目录），故未修改 START_HERE.md。
+唯一新增的是一份跨项目交接文档，已记录于本日志。
+
+**顺带发现的陈旧指针（未修复，供后续处理）**：工作区级 CLAUDE.md 指向
+`reports/knowledge/INFRA_hpc_tongji_reuse.md`，该文件在本仓库不存在。
+
+## 2026-08-19 (续) — 从诊断报告解析 15 个场景名称，并纠正「0 分 = 碰撞」
+
+**触发**：PI 指出每轮比赛的 15 个场景固定，要求从诊断报告读取场景名称。
+
+**方法**：对全部 20 份诊断报告 PDF 抽取首页场景表（名称 + 五维分），再用五维得分向量
+与 `all_scenario_scores.csv` 逐队逐场景反查建立「名称 → 官方编号」映射。
+**验证：把全局映射套回每一支队伍，300/300 精确匹配，零误差，每队均为双射。**
+
+**主要发现**
+
+1. **15 个场景名称已确证**，两赛区为同一套场景，官方编号含义跨赛区一致（A1 两地皆为「行人横穿道路」）。
+   A 组 7 个为动态交互与避让，B 组 4 个为汇流与交叉通行，C 组 4 个为复杂路口与专项任务
+   （分组语义系据名称推断，比赛方未在数据中给出定义，已在手册中标注为推断）。
+
+2. **诊断报告内的 1–15 序号不是官方编号，且两赛区排列顺序不同**
+   （北京第 1 个是施工区避障 = A7；上海第 1 个是行人横穿道路 = A1；仅「自主泊车」两边同为第 15）。
+   解析 PDF 必须按名称对齐。
+
+3. **纠正既往结论：「综合分 0 = 碰撞」不成立。** 33 个 0 分单元的成因为四类：
+   碰撞 12、场景未运行 12、安全员介入 6、未有效泊车 3（合计 33，已逐单元核对，
+   其中 1 个单元同时有碰撞与介入，归入碰撞组）。任一安全指标扣满 100 即可把综合分归零。
+   按 0 分反推碰撞会把碰撞率由 12/300 = 4.0% 虚报为 33/300 = 11.0%。
+   注：RQ011 decision.md 的 `RQ011-KC-OUTCOME-300` 含「score 0 = collision」表述，
+   **该条已被本次核查证伪，建议在其 decision.md 上追加更正说明**（本次未改动已冻结文件）。
+
+4. **新增哨兵值坑**：场景未运行时，诊断报告记实际耗时 = 1.0s、期望耗时 = 9999s，
+   非缺失值。全表 300 单元中 12 个如此。
+
+5. **T19 排除获得独立佐证**：T19 的 15 个场景中 9 个从未运行，实际只完成 6 个。
+   与既往「找不到唯一归属回放」的结论方向一致。
+
+**新增产物**
+- `data/onsite_competition/00_manifest/scenario_dictionary.csv`（30 行 = 15 场景 × 2 赛区；
+  含中英文名、回放 caseId、报告内序号、期望耗时中位数与极值、参与队数）。
+  这是场景名称唯一的机读来源，官方索引表中不含场景名称。
+- 交接手册已更新并重新发布（同一 URL）：新增场景字典表、0 分成因拆解表、
+  三条新坑（0 分不等于碰撞 / 9999 哨兵 / 报告序号≠官方编号），坑目由 12 条增至 15 条并重编号。
+  已做结构校验：标签闭合、表格列数一致、暗色变量均有基线定义。
+
+**START_HERE.md 维护**：本次未改变任何 current-operating 事实，故未修改。
+
+## 2026-08-22 旧版 Word 论文与分析图片定位（完成）
+
+- 目标：定位与当前 sociality / NMI 论文相关的旧版 Word 稿及其数据分析图片，不移动或改写源文件。
+- 主要结果：确认旧稿位于 `Desktop/Archives/Projects/202508_PNAS-Sociality Pattern Analysis/`；最新候选为 `Sociality patterns in driving interactions-20240805.docx`，正文标题为 `Emerging Counter-Priority Interactions in Autonomous-Vehicle-Involved Traffic`。
+- 证据：该 Word 内嵌 5 张图片，SHA-256 与同目录 `3_figs/` 下 5 张独立 PNG 一一完全匹配；图组包括社会性识别、AV/HV IPV 对比、2019--2021 IPV 对变化、APET 对比与 spillover effect。
+- 次要相关材料：`Desktop/Archives/Projects/Dead/NMI-DDM/` 下另有 `paper results.docx`（39 张内嵌图）、`raw materials.docx`（64 张内嵌图）和 `method and results.pdf`，属于后续 NMI/DDM 原始材料汇编。
+- 验证范围：扫描 OneDrive 内 3,194 个 `.doc/.docx/.wps` 路径，并以 Word XML 正文关键词、文件元数据、内嵌媒体数量与哈希进行交叉核对。
+- START_HERE.md 维护：未改变当前批次、数据路径、输出路径、测试或服务启动事实，故未修改。
+## 2026-08-23 Wave-1 validation of NMI revision board reports（completed）
+
+- 目标：核验 `.codex-fleet/nmi-revision-research-lead/board/reports/W1A-W1E` 的内部一致性、覆盖性、路径/状态支持，以及是否误复活旧 `RQ016C` 或旧 HPC 拓扑。
+- 结果：完成只读交叉核验；生成 `.codex-fleet/nmi-revision-research-lead/board/reports/W1V_validation.md`，给出 WP0-WP10 的 trusted verdict table，并将 `RQ016C` 与 `/share/home/u25310231/ZXC/ipv_estimation` 明确标记为废弃边界而非现行执行面。
+- 结论：W1A/W1B/W1C/W1D/W1E 彼此总体一致；`WP2/WP8` 仍需新研究，`WP5/WP7` 需用户决策，`WP9/WP10` 继续排除为论文动作，`WP3` 可直接沿用现行 `RQ021` 基座。
+- 维护：本次未修改 `START_HERE.md`、研究报告或论文仓库，仅新增验证产物与本日志条目。
+
+## 2026-08-23 WP2 Tier1 synthetic pilot independent review（completed）
+
+- 目标：独立复核 `WP2_recovery/exec_v2` 的 Tier1 synthetic pilot，重算 `tier1_results.csv` 与 `risk_coverage.csv`，检查真值耦合、阈值 0.8、分母与证据链。
+- 结果：已生成 `.codex-fleet/nmi-revision-research-lead/work/WP2_recovery/review/REVIEW.md`、`independent_summary.csv`、`VERDICT.json`。
+- 结论：数值结果可复算且通过子集 pytest，但输出合同存在 `stage=tier1_pilot` 与 schema 枚举不一致、以及收据/日志链不稳定；总体 verdict = `REVISE_PILOT`。
+
+## 2026-08-24 WP2 Tier1 synthetic pilot final review（completed）
+
+- 目标：复核修补后的 `exec_v2` 产物，确认 `stage=dev`、288 行全量、三档 conflict 覆盖、收据自排除与全量复算一致性。
+- 结果：已生成 `.codex-fleet/nmi-revision-research-lead/work/WP2_recovery/review/REVIEW_V2.md`、`independent_summary_v2.csv`、`VERDICT_V2.json`。
+- 结论：包装与证据链已对齐，`q_eff` 门主要压低 sign-flip 风险，整体 MAE 不低于 baseline 但不构成阻断；总体 verdict = `PASS_FOR_TIER2`。
+
+## 2026-08-24 NMI revision research checkpoint 20260824（completed）
+
+- 目标：汇总 WP2/WP4/WP6/WP7/WP8 的已完成证据，产出离线中文 checkpoint HTML 与 memo，仅做研究侧汇总，不改 paper/source/data/decision/core-doc。
+- 结果：已生成 `.codex-fleet/nmi-revision-research-lead/final/research_checkpoint_20260824.html` 与 `.codex-fleet/nmi-revision-research-lead/board/reports/research_checkpoint_20260824.md`。
+- 边界：`START_HERE.md` 更新 deferred，因为方向 gate 仍然打开且 workflow 还在进行中；WP5 继续 deferred；human row-level archive 仍待补齐/核验；本次没有 paper 编辑、HPC 提交或 protected-lane 读取。
+
+================================================================================
+2026-08-24 | RQ024/RQ025 共享索引注册 | COMPLETE
+================================================================================
+背景：把本轮已完成/进行中的 NMI revision board 事实同步进仓库共享索引，供后续线程直接定位。
+结果：`START_HERE.md` 首条已改为 RQ024 MIXED_DIAGNOSTIC/Tier2 blocked + RQ025 approved design（461/475 primary、361/475 sensitivity）与 raw outcome regeneration underway；`STUDIES.md` 已追加 RQ024/RQ025 两行并带上对应计划路径与状态。
+维护：本次仅更新共享索引与工作流日志，未改其他文件。
+
+================================================================================
+2026-08-24 | RQ024/RQ025 official run-entry sync | COMPLETE
+================================================================================
+背景：将 RQ024 / RQ025 的共享索引改对齐到正式 run entry 与 synthesis，供后续线程直接落到可读报告包。
+结果：`START_HERE.md` 已改为 package+synthesis+boundary 口径，不再写 raw outcome regeneration underway；`STUDIES.md` 已更新为正式 run entry / knowledge synthesis 链接，并保留当前状态与边界。
+维护：本次仅更新 `START_HERE.md`、`STUDIES.md` 与本日志，未改其他文件。
+
+================================================================================
+2026-08-24 | RQ024/RQ025 PI acceptance sync | COMPLETE
+================================================================================
+背景：两项研究已由 PI 接受，需把共享索引与工作流日志同步到最终接受态，供后续线程直接引用决策。
+结果：`START_HERE.md` 现为 PI accepted both，且明确链接 `reports/knowledge/RQ024_readability_recovery_diagnostic/decision.md` 与 `reports/knowledge/RQ025_av_episode_consequence/decision.md`；`STUDIES.md` 两行已改为 `ACCEPTED` 并指向相应 `decision.md`。
+边界：RQ024 仍为 `MIXED_DIAGNOSTIC` / Tier2 blocked；RQ025 仍为 `BOUNDED_MIXED`，24/24 CIs include zero，且不构成对 RQ018/RQ019 的复制或推翻；本次仅改共享索引与日志。
+================================================================================
+2026-08-24 | RQ026 frozen monitor runtime registration | COMPLETE
+================================================================================
+背景：用户于 2026-08-24 明确授权 formal frozen-monitor runtime evidence 与 managed Tongji HPC submit，需把 RQ026 的执行合同同步到计划、共享索引与当前操作简报。
+结果：新增 `reports/plans/RQ026_plan_v0_frozen_monitor_runtime_20260824.md`；`STUDIES.md` 已追加 RQ026 行，状态为 `APPROVED / EXECUTING`；`START_HERE.md` 顶部已加入 RQ026 当前态、Tongji root `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime`、`zxc-` 命名要求与 RQ024 accuracy boundary。
+边界：本次未改 paper、decision、data 或其他报告；RQ026 仅注册 runtime evidence 合同，不构成 accuracy 修复或生产优越性结论。
+================================================================================
+2026-08-24 | RQ026 frozen monitor runtime status append | COMPLETE
+================================================================================
+背景：RQ026 的目标是给 frozen monitor runtime evidence 建立可复现、接口分离的本地与受管 Tongji HPC 证据链；当前只需把最新边界追加到工作流日志，供后续线程直接读取。
+结果：WP4 local PASS；WP8 sign-only TRUSTED_SIGN_ONLY（67,861/67,861，>100ms 119/67,861，不能证明 alert effectiveness）；HPC bundle/controller gate 已通过，用户已授权 pilot submit；但最后 3 次 SSH 探测均在登录前失败，当前为 0 remote writes / 0 staged assets / 0 sbatch，full 仍 pilot-gated；checkpoint HTML 路径为 `.codex-fleet/rq026-frozen-monitor-runtime/board/reports/rq026_checkpoint.html`。
+边界：本次只追加日志，不改任何索引、计划、validation、decision、paper 或数据文件。
+================================================================================
+2026-08-24 | WP4 freeze validation | COMPLETE
+================================================================================
+背景：独立验证 WP4 freeze close 的局部闭包结论，并把证据写入允许的 board/reports 位置，确认 local no-refit 关闭与 broader coverage 边界是否分离。
+结果：`python3 -m pytest .codex-fleet/rq026-frozen-monitor-runtime/work/wp4_local/test_reproduce_freeze.py` 返回 `2 passed`；`data_health.json` 记录 `256/256` sample accounting、`status/reason/mechanism2_gate` 256/256、`lo_90_max_abs_diff=0.0`、`hi_90_max_abs_diff=0.0`；`WP4_CLOSURE_REPORT.json` 保持 `T4.1-T4.5 PASS`、`T4.6 PARTIAL`；已写入 `.codex-fleet/nmi-revision-research-lead/board/reports/wp4_freeze_validation_20260824.md/json`。
+边界：未改 `paper/decision/model`；`T4.6` 的 `PARTIAL` 仍然有效，因为当前 hash manifest 未冻结 3 个 benchmark-context/public-data 依赖输入。
+================================================================================
+2026-08-24 | WP3 safe validation | COMPLETE
+背景：独立验证 WP3 safe-close 包装层是否真的只是在既有 RQ017 / RQ021 accepted assets 上做无改动重述，并确认 current reference identity 与导出的 coverage / width / Winkler 数值可复现。
+结果：`python3 -m py_compile .codex-fleet/nmi-revision-research-lead/work/WP3_gap_audit_20260824/build_wp3_gap_audit.py` 通过；独立重算得到 `67,861/67,861` join、`37,520` mechanism1 OK、`21,936` mechanism2 pass、`14,099` both pass、`30,341` abstain、`45,925` fail；80/90/95 coverage 分别为 `0.805092559756011`、`0.9015533016525995`、`0.9502801617135967`，mean width 分别为 `1.4787572066343238`、`1.9129185145603744`、`2.204686246436864`，Winkler 分别为 `1.942748223470402`、`2.234180689530854`、`2.337591983640697`；`sha256sum -c HASHES.sha256` 全部通过；新增 `.codex-fleet/nmi-revision-research-lead/board/reports/wp3_safe_validation_20260824.md/json`。
+边界：未读 `RQ007` held-out 内容，未读 `RQ014` blind 字段；WP3 结论为 `TRUSTED`，但 sibling paper repo 在背景工作区本来就有预存 dirty state，因此“无 paper edits”仅按本次验证路径和 paper 输出时间戳可支持，不按 pristine baseline 断言。
+================================================================================
+2026-08-24 | RQ026 hpc_spec repair3b2 | COMPLETE
+背景：修复 RQ026 当前本地 stage layer 的内部不一致。`input_manifest.json` 已绑定 3 个 helper snapshot，但 `BUNDLE_STAGE_MANIFEST.json` 和 `bundle_stage.tar.gz` 仍只证明 20 个 staged target；本轮限定为本地-only manifest/archive 修复，不做 SSH、remote stage、`sbatch`、controller/runtime/helper 源码改动，也不触碰历史 receipt。
+结果：已先写 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair3b2/STATUS.md`；重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/manifests/BUNDLE_STAGE_MANIFEST.json` 为精确 `23` 个 target（原 `20` 个现存 bundle source + `3` 个 `scripts/deps/` helper target：`rq017_onsite_materializer.py`、`run_rq016c_h2_human_only_envelope.py`、`wp8_runtime_smoke.py`）；重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/bundle_stage.tar.gz` 与 `ARCHIVE_MANIFEST.json`，独立核查得到 manifest targets `23`、archive manifest file_count `23`、archive file members `23`、member-target `1:1` 匹配为 `true`；两次 clean rebuild 的 archive SHA-256 完全一致，最终 archive SHA-256 为 `240f02a8cbffab6631ec7ad1c68ddded7cbb203850d0f1e92e85dc644eba6bec`；`TRANSFER_MANIFEST.json` 与 `INPUT_CODE_MODEL_HASH_MANIFEST.json` 保持不变；清除了 `3/3` 个未被保留 manifest/report 引用的旧临时归档 `bundle_stage.tar.tar.gz*.tmp*`。报告与机器读物已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair3b2/REPORT.md`、`REPORT.json`、`HASH_CHANGELOG.json`、`STATUS.json`。
+边界：未更新 controller schema/fixture、未修改历史 `REMOTE_STAGE_PASS` 或 submission receipt、未更新 `START_HERE.md`（本轮未改变高层运行顺序或 canonical output，只修复本地 stage contract）。
+================================================================================
+2026-08-24 | RQ026 archive manifest ref restoration and stage execute | COMPLETE
+================================================================================
+背景：RQ026 的 stage controller 在 real execute 前因 `ARCHIVE_MANIFEST.json` 缺少顶层 `rq021_individual_refs` 报 `KeyError`，需要把两条 RQ021 参考条目恢复回 manifest 并验证 controller 计划与远端 stage 均能通过。
+结果：已为 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/ARCHIVE_MANIFEST.json` 补回 `rq021_individual_refs=[rq021_scoring, rq021_model]`；`json` 解析通过；`bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/stage_remote.sh --dry-run` 通过并规划 23 个 bundle targets；`bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/stage_remote.sh --execute` 成功返回；controller-local 新 receipt 位于 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/REMOTE_STAGE_PASS.json`，其 `verified_bundle_targets=23`、`verified_rq021_refs=[rq021_scoring, rq021_model]`、`bundle_stage_manifest_sha256=afe80fe749260c0d05a33982e36aa2cbdf6e4521860e40ab0b85321bfee37455`、`bundle_archive_sha256=240f02a8cbffab6631ec7ad1c68ddded7cbb203850d0f1e92e85dc644eba6bec`。
+边界：未改 bundle/archive bytes；未提交 `sbatch`；`repair3e` 记录了本次修复与执行结果；`START_HERE.md` 已同步刷新为 stage PASS + pilot env blocker 的当前态。
+================================================================================
+2026-08-24 | RQ026 archive manifest feature contract restore | COMPLETE
+================================================================================
+背景：submit 侧 controller 需要 `feature_contract` 与 `rq021_model`、`rq021_scoring` 一起出现在 `rq021_individual_refs`，因此要把这条已在本地存在的 envelope 约束文件并回 archive manifest。
+结果：已将 `.codex-fleet/rq021-contemporaneous-envelope/work/E1/envelope_model/feature_contract.json` 追加进 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/ARCHIVE_MANIFEST.json`；`rq021_individual_refs` 现为 3 条；`bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/stage_remote.sh --dry-run` 通过并打印 3 条 `REFCOPY`；`repair3g` 新 report 包已写入。
+边界：未改 bundle/archive bytes；未做 SSH、`scp` 或 `sbatch`；本次只修 manifest contract 与本地 dry-run 证据。
+================================================================================
+2026-08-24T16:02:16+0000 | RQ026 retry5 hash diagnosis | COMPLETED | Compared local `data/derived/rq017_onsite_gate/l1_v1` against remote `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/work_dirs/inputs/rq017_onsite_gate/l1_v1`; inventories matched on 136/136 paths, sizes, and content hashes, but all remote mtimes were normalized to `0`, so the legacy `rel|size|mtime` hash diverged while the stable content-manifest hash matched. Wrote `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/hash_diag/REPORT.md`, `REPORT.json`, local/remote inventory CSVs, and `STATUS.md`; updated `START_HERE.md` to replace the stale pyarrow blocker with the mtime-only hash blocker and repair direction.
+================================================================================
+2026-08-24 | RQ026 repair5b stage layer rebuild | COMPLETE
+================================================================================
+背景：repair5a 已独立通过后，RQ026 本地 stage layer 必须从旧 23-target bundle 刷新到当前 runtime/input 合同：三条 helper stage target 需回到 `input_manifest.json` 指定的原始 repo-relative remote target，同时新增三条 runtime 输入（RQ016 reference script、OnSite anchor parquet、OnSite timeseries parquet），并保留 archive manifest 顶层 `rq021_individual_refs` 的 3 条引用不变。
+结果：已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/manifests/BUNDLE_STAGE_MANIFEST.json` 为精确 `26` 个 unique target；其中真正新增 `3` 个 target：`/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/reports/studies/RQ016_human_envelope_rebuild/RQ016_1_envelope_rebuild_20260803T134808Z_d23fa836/run_rq016_a1_envelope_rebuild.py`、`/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/work_dirs/inputs/onsite/onsite_m3_av_anchors_multi_allvalid.parquet`、`/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/work_dirs/inputs/onsite/onsite_ipv_timeseries_multi_allvalid.parquet`；helper stage target `3` 条已迁回原始 repo-relative remote target（分别落到 `.codex-fleet/rq017-onsite-materializer/work/M1/`、`.codex-fleet/rq021-contemporaneous-envelope/work/E1/`、`.codex-fleet/nmi-revision-research-lead/work/WP8_runtime/execution/`）；已确定性重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/bundle_stage.tar.gz` 两次且 SHA-256 一致，最终 archive SHA-256=`483e38b5d35a3c604fae4a229b3ee01458c36b46b8ceb16d84a4d83edd213c29`；已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/ARCHIVE_MANIFEST.json`，验证 `manifest_targets=26`、`archive_manifest_file_count=26`、`archive_member_count=26`，且顶层 `rq021_individual_refs` 仍为精确 `3/3`（`rq021_scoring`、`rq021_model`、`feature_contract`）；无残留 `bundle_stage*.tmp*` 临时文件。repair5b 报告已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair5b/REPORT.md`、`REPORT.json`、`HASH_CHANGELOG.json`、`STATUS.md`。
+边界：未改 controller，未做 SSH，未做 `sbatch`，未触碰任何 remote receipt；本次仅刷新本地 manifest/archive 证明面。
+================================================================================
+2026-08-24 | RQ026 repair4b stage manifest + archive refresh | COMPLETE
+================================================================================
+背景：repair4a 修改了本地 bundle 内的 `run_rq026_runtime.py` 与 `input_manifest.json`，因此 RQ026 的 23-target `BUNDLE_STAGE_MANIFEST.json`、`bundle_stage.tar.gz`、`ARCHIVE_MANIFEST.json` 需要同步重建，避免 stage 证明面继续引用旧字节；同时必须保留 archive manifest 顶层 `rq021_individual_refs` 的 3 条既有引用（`rq021_scoring`、`rq021_model`、`feature_contract`）。
+结果：已重算 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/manifests/BUNDLE_STAGE_MANIFEST.json` 的全部 `23/23` target hash/size；已确定只有 `2/23` target 发生字节变化，分别是 `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/scripts/run_rq026_runtime.py` 与 `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/manifests/input_manifest.json`；已确定性重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/bundle_stage.tar.gz` 两次且 SHA-256 一致，最终 archive SHA-256=`4087a0481b7ba29a8b7aafd5e20e6dfe337d5f2b700ae26a469a4788bbdfda1d`；已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/ARCHIVE_MANIFEST.json`，验证 `manifest_targets=23`、`archive_manifest_file_count=23`、`archive_file_members=23`；顶层 `rq021_individual_refs` 保持精确 `3/3` 条，标签顺序为 `rq021_scoring`、`rq021_model`、`feature_contract`；无残留 `bundle_stage*.tmp*` 临时文件。repair4b 产物已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair4b/REPORT.md`、`REPORT.json`、`HASH_CHANGELOG.json`、`STATUS.md`。
+边界：未改 controller、未做 SSH、未做 `sbatch`、未改 remote receipt；本次仅刷新本地 manifest/archive 证明面。
+================================================================================
+2026-08-24 | RQ026 repair5c controller contract refresh | COMPLETE
+================================================================================
+背景：repair5b 后，RQ026 的活跃 stage/submit 控制器仍停留在 23-target 验证面，而当前 bundle 已升到 26 targets；需要把 controller schema、submit 断言、validation/fixture、README 与 validate-only 记录同步到当前 bundle/hash contract，同时保持 dry-run 不可消耗、fixture 仍拒收、历史真实回执不变。
+结果：已将 stage schema 的 `verified_bundle_targets` 常量升到 `26`；已将 submit controller 的 remote-stage-pass 断言升到 `26`；已刷新 `REMOTE_STAGE_PASS.fixture.json`、`REMOTE_STAGE_PASS.validation.json`、`PILOT_SUBMISSION.fixture.json`、`PILOT_SUBMISSION.validation.json` 里的当前 bundle hash=`41f9a55865052393c149077697dd891264be14db7ff20b06148780058acfc8af`，bundle archive hash=`483e38b5d35a3c604fae4a229b3ee01458c36b46b8ceb16d84a4d83edd213c29`，并将 26-target `rq021` 参考标签固定为 `feature_contract`、`rq021_model`、`rq021_scoring`；已刷新 stage/submit README 与 VALIDATE_ONLY.log；验证通过：`bash -n stage_remote.sh`、`bash -n submit_pilots.sh`、`bash -n poll_pilots.sh`、JSON/schema parse、`stage_remote.sh --dry-run`、`submit_pilots.sh --dry-run --remote-stage-pass REMOTE_STAGE_PASS.fixture.json`（按预期拒收）、`submit_pilots.sh --dry-run --remote-stage-pass REMOTE_STAGE_PASS.validation.json`、`poll_pilots.sh --dry-run --submission PILOT_SUBMISSION.validation.json`；活跃控制面 grep `\"verified_bundle_targets\"\\s*:\\s*23` 命中数为 `0`。
+边界：历史真实回执 `stage/REMOTE_STAGE_PASS.json` 与 watchdog logs 未修改；未做 SSH、`scp` 或 `sbatch`。
+================================================================================
+2026-08-24 | RQ026 compat env verification | FAILED
+================================================================================
+背景：需要在 `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/envs/runtime-compat-py39/bin/python` 上做只读兼容性核查，输出 Python 与关键包版本、导入 managed repo core、pickle-load 当前 RQ021 模型，并导入 staged RQ016 reference 与 RQ021 helper。
+结果：容器内不存在该精确可执行文件，直接执行返回 `zsh:1: no such file or directory: /share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/envs/runtime-compat-py39/bin/python`，`ls -ld` 也返回 `No such file or directory`；因此版本打印与所有导入/反序列化检查均未运行。已写入 `work/hpc_spec/compat_env/VERIFY.md` 与 `work/hpc_spec/compat_env/VERIFY.json`。
+边界：未做安装、未 stage、未 sbatch、未尝试替代环境，按任务要求只记录精确失败原因。
+================================================================================
+2026-08-24T18:22:08+0000 | RQ026 compat env build watch | COMPLETED
+================================================================================
+背景：需要只读监控 compat-env 重建 job 2336414，持续检查 `squeue`/`sacct`、stdout/stderr 增长、receipt 与 `pip_freeze` 落盘，以及完成后的版本/导入/模型校验。
+结果：job 2336414 先 RUNNING 后在 00:05:29 完成，`sacct` 终态为 `COMPLETED` / `0:0`；`logs/compat_env_clean/build_compat_env_receipt.json`、`pip_freeze.txt` 与 `build_compat_env-2336414.out/.err` 均已生成；receipt 证实 `numpy 2.0.2`、`scipy 1.13.1`、`pandas 2.3.3`、`pyarrow 21.0.0`、`sklearn 1.6.1`、`joblib 1.5.3`、`threadpoolctl 3.6.0`、`yaml 6.0.3`，`rq021` 模型 load 为 `OK`，`rq016` reference 与 `rq021` helper import 均为 `OK`；已写入 watchdog snapshots `20260824T181448Z_watchdog_envbuild_2336414_running.{md,json}` 与 `20260824T182105Z_watchdog_envbuild_2336414_completed.{md,json}`。
+边界：全程只读监控与本地快照写入；未改 remote files、未提交、未取消、未重跑 job。
+================================================================================
+2026-08-24T18:55:45+0000 | RQ026 pilot watch retry8 | FAILED
+================================================================================
+背景：需要只读监控 pilot jobs `2336457` exact / `2336458` fast，持续检查 `squeue`/`sacct`、stdout/stderr 增长、summary/receipt/failure 产物存在性，并在终态记录精确错误。
+结果：两 job 都在不到 40 秒内失败，`sacct` 分别为 `FAILED 00:00:37 02:00:00 10 1:0` 与 `FAILED 00:00:34 02:00:00 20 1:0`；stdout 均为 0 字节，stderr 均为 606 字节且 10 秒复查未再增长；stderr 终止于 `ModuleNotFoundError: No module named 'sociality_estimation'`，traceback 指向 `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/scripts/run_rq026_runtime.py` 第 318 行；pilot summary/receipt/failure 文件未产出；已写入 watchdog snapshot `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/watchdog/20260824T185545Z_watchdog_pilot_2336457_2336458_failed.{md,json}`。
+边界：全程只读监控与本地快照写入；未改 remote files、未提交、未取消、未重跑 job。
+================================================================================
+2026-08-24T19:09:55+0000 | RQ026 pilot watch retry9 | COMPLETED
+================================================================================
+背景：需要只读监控 pilot jobs `2336474` exact / `2336475` fast，持续检查 `squeue`/`sacct`、stdout/stderr 增长、summary/receipt 产物存在性，并在终态记录 summary counts 或错误。
+结果：两 job 都已 COMPLETED，`sacct` 分别为 `COMPLETED 00:00:24 02:00:00 10 0:0` 与 `COMPLETED 00:00:21 02:00:00 20 0:0`；result 目录下生成 `results/exact_pilot/summary.json`、`results/exact_pilot/failure_rows.jsonl`、`results/fast_pilot/summary.json`、`results/fast_pilot/failure_rows.jsonl`；summary 显示 `status=PASS`、`selected_rows=256`、`runtime_rows=256`、`failure_rows=162`（exact/fast 一致）；stderr 仅含 SciPy smoothing spline `RuntimeWarning`，不是 fatal error；已写入 watchdog snapshot `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/watchdog/20260824T190955Z_watchdog_pilot_2336474_2336475_completed.{md,json}`。
+边界：全程只读监控与本地快照写入；未改 remote files、未提交、未取消、未重跑 job。
+================================================================================
+2026-08-24T20:11:32+0000 | RQ026 pilot watch retry10 | COMPLETED
+================================================================================
+背景：需要只读监控 pilot jobs `2336590` exact frozen replay / `2336591` fast auxiliary，持续检查 `squeue`/`sacct`、stdout/stderr、result summaries 与 failure_rows 的 parity 字段是否落盘。
+结果：两 job 都已 COMPLETED，`sacct` 分别为 `COMPLETED 00:09:07 02:00:00 10 0:0` 与 `COMPLETED 00:00:17 02:00:00 20 0:0`；`results/exact_pilot/summary.json` 显示 `status=PASS`、`selected_rows=256`、`runtime_rows=256`、`failure_rows=256`，`results/fast_pilot/summary.json` 显示 `status=PASS`、`selected_rows=256`、`runtime_rows=256`、`failure_rows=162`；两份 `failure_rows.jsonl` 都包含 `parity_status_match`、`parity_reason_match`、`parity_ipv_abs_diff`；stderr 仅有 SciPy smoothing spline `RuntimeWarning`，无 fatal error；已写入 watchdog snapshot `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/watchdog/20260824T201042Z_watchdog_pilot_2336590_2336591_completed.{md,json}`。
+边界：全程只读监控与本地快照写入；未改 remote files、未提交、未取消、未重跑 job。
+[2026-08-24 18:28:55 +0000] STATUS: COMPLETED | TASK: RQ026 local_bundle sbatch compat-path repair. Updated four local_bundle launchers to call `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/envs/runtime-compat-py39/bin/python`, added the solver-mode/runtime-env/pilot-gated comment, and rewired local_bundle spec `remote.python_env` fields where present. Verification: `bash -n` on all four sbatch files passed, `python3 .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/validate_bundle.py` passed, and `python3 -m pytest .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/test_local_bundle_contract.py` passed (9 tests). Artifacts: `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair6a/STATUS.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair6a/REPORT.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair6a1/STATUS.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair6a1/REPORT.md`.
+[2026-08-24 18:40:00 +0000] STATUS: COMPLETED | TASK: RQ026 stage/submit controller compat-path repair. Updated the live stage controller exact env path to the runtime compat Python, updated submit controller exact-env expectations and controller notes, refreshed submit-side validation/fixture bundle digest fields, and refreshed the stage bundle manifest hashes for the eight edited local-bundle files so dry-run validation passes. Verification: `bash -n` on stage/submit controllers passed; `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/stage_remote.sh --dry-run` passed; `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/submit_pilots.sh --dry-run --remote-stage-pass ./.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/REMOTE_STAGE_PASS.validation.json --output <tmp>` passed. Artifacts: `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair6b/STATUS.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair6b/REPORT.md`.
+[2026-08-24 18:49:42 +0000] STATUS: COMPLETED | TASK: RQ026 submit-side hash refresh after repair6c. Updated only the active submit validation/fixture cached hashes to the current bundle manifest SHA `773c520d3ec1a22a804f43862fb79f5143603b4e31033ff4fe252f4bc0dd382b` and bundle archive SHA `e12c96d3fbff768b1f694022296994d919981a9fddc149329f6638f8c5c74e2d`, refreshed `stage/VALIDATE_ONLY.log` and `submit/VALIDATE_ONLY.log`, and re-ran the stage/submit dry-runs successfully. Verification: `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/stage_remote.sh --dry-run` passed; `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/submit_pilots.sh --dry-run --remote-stage-pass ./.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/REMOTE_STAGE_PASS.validation.json --output <tmp>` passed. Artifacts: `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair6d/STATUS.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair6d/REPORT.md`.
+[2026-08-24 18:59:15 +0000] STATUS: COMPLETED | TASK: RQ026 local_bundle launcher prelude refresh. Removed Conda bootstrap from the four local bundle sbatch launchers, added the repository `PYTHONPATH` export and `MPLBACKEND=Agg`, and preserved the compat Python invocation plus solver/full-gate comments. Verification: `bash -n` passed for all four launchers; `python3 -m pytest .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/test_local_bundle_contract.py` passed (9 tests); `python3 .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/validate_bundle.py` passed. Artifacts: `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair6f/STATUS.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair6f/REPORT.md`.
+[2026-08-24 19:05:00 +0000] STATUS: COMPLETED | TASK: RQ026 submit-side cache refresh after manifest/archive drift. Updated the active submit validation/fixture cached hashes to manifest SHA `910723c8aaba8f4bfffbd15735800778dcc97d1e2713a37f81ddc8965a0a090c` and archive SHA `8b3b4110567d443c9a266117f8212b6ba73b22f7a004504ae15b75419e627da2`, reran stage/submit dry-runs successfully, and refreshed the controller validate-only summaries. Verification: `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/stage_remote.sh --dry-run` passed; `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/submit_pilots.sh --dry-run --remote-stage-pass ./.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/REMOTE_STAGE_PASS.validation.json --output <tmp>` passed. Artifacts: `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair6h/STATUS.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair6h/REPORT.md`.
+[2026-08-24 19:56:39 +0000] STATUS: COMPLETED | TASK: RQ026 submit-side cache refresh after manifest/archive drift. Updated the active submit validation/fixture cached hashes to manifest SHA `4b7382a9a445e10a490ac123515abb5b158f8e9a7cb938d43638f2a9bcd96b85` and archive SHA `135e129770a48e4cb899d082f45c652c434fe79b786fdf95736be7a72c6ebc1d`, reran stage/submit dry-runs successfully, and refreshed the controller validate-only summaries. Verification: `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/stage_remote.sh --dry-run` passed; `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/submit_pilots.sh --dry-run --remote-stage-pass ./.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/REMOTE_STAGE_PASS.validation.json --output <tmp>` passed. Artifacts: `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair7c/STATUS.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair7c/REPORT.md`.
+[2026-08-24 20:31:38 +0000] STATUS: COMPLETED | TASK: RQ026 active submit-side cache refresh after K2 helper target bump. Updated the active submit validation/fixture cached hashes to manifest SHA `6efa81b939c3be7794ffef7ba22d687e8ad06ea7c838fad3f7b951c57b45c3ea` and archive SHA `c15866fe0beaac5dc75e5c94d3a638d7f68e816ba497d863640e13064386ed5b`, reran stage/submit dry-runs successfully, and refreshed the controller validate-only summaries. Verification: `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/stage/stage_remote.sh --dry-run` passed; `bash .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/submit_pilots.sh --dry-run --remote-stage-pass ./.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/submit/REMOTE_STAGE_PASS.validation.json --output <tmp>` passed. Artifacts: `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair7d/STATUS.md`, `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/controllers/repair7d/REPORT.md`.
+================================================================================
+2026-08-24T20:53:10+0000 | RQ026 retry11 independent validation | FAIL
+================================================================================
+背景：需要只读复核 `pilot_retry11` 的 exact/fastruntime 产物，确认 exact formal gate 是否满足 256/256 status/reason parity、context_cell 覆盖、ipv_log 可比容差与 unhandled=0，同时区分 fast 仅是 auxiliary health lane，不能作为 full release gate。
+结果：`pilot_retry11/exact_pilot/summary.json` 与 `fast_pilot/summary.json` 都是运行完成 `PASS`，但独立复算显示 exact formal gate FAIL：exact runtime rows 256/256 全部为 `failure_code=solver_failure`、`reason_code=SOLVER_FAILURE`、`terminal_status=solver_failure`、`deadline_miss=true`，`context_cell` 完整 256/256，但 `parity_status_match=0/256`、`parity_reason_match=0/256`，`parity_ipv_abs_diff` 无可比值，`unhandled=0`；fast 256 行全部完成，162 行为 `mechanism2_distance_ood`、94 行为 `judgeable_support`，但 fast 仍只算 auxiliary，不可作为 full release gate。已写入独立验证产物 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/retry11_independent_validation/{STATUS.md,REPORT.md,REPORT.json}`。
+边界：全程只读监控与本地快照写入；未改 remote files、未提交、未取消、未重跑 job。
+================================================================================
+2026-08-24 | RQ026 repair6c stage layer rebuild | COMPLETE
+================================================================================
+背景：repair6a1 已将 local_bundle 的 sbatch 与 spec Python path 切到 compat env，因此本地 26-target stage layer 需要再次刷新 `BUNDLE_STAGE_MANIFEST.json`、`bundle_stage.tar.gz` 与 `ARCHIVE_MANIFEST.json`，保证 stage 证明面与 repair6a1 后的当前 bundle 字节一致，同时保留 archive manifest 顶层 `rq021_individual_refs` 的 3 条记录。
+结果：已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/manifests/BUNDLE_STAGE_MANIFEST.json`，结果为 `26` 个 staged target；已确定性重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/bundle_stage.tar.gz` 两次且 SHA-256 一致，最终 archive SHA-256=`e12c96d3fbff768b1f694022296994d919981a9fddc149329f6638f8c5c74e2d`；已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/ARCHIVE_MANIFEST.json`，验证 `archive_manifest_file_count=26`、archive file members=`26`；顶层 `rq021_individual_refs` 仍为精确 `3/3`（`rq021_scoring`、`rq021_model`、`feature_contract`）；无残留 `bundle_stage*.tmp*` 临时文件。由于 repair6b 已先刷新过对应 stage 证明面，本轮重算结果显示 `changed_target_count=0`，即当前 manifest/archive 与 repair6a1 后的 bundle 字节面一致。repair6c 产物已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair6c/REPORT.md`、`REPORT.json`、`HASH_CHANGELOG.json`、`STATUS.md`。
+边界：未改 controller、未做 SSH、未做 `sbatch`、未触碰 remote receipt；本次仅刷新并复证本地 manifest/archive 层。
+================================================================================
+2026-08-24 | RQ026 repair6g stage layer rebuild | COMPLETE
+================================================================================
+背景：repair6f 将 local_bundle 四个 launcher 的 Conda bootstrap 替换为显式 `PYTHONPATH` 与 `MPLBACKEND` 导出，因此本地 26-target stage layer 需要再次刷新 `BUNDLE_STAGE_MANIFEST.json`、`bundle_stage.tar.gz` 与 `ARCHIVE_MANIFEST.json`，保证 stage 证明面与 repair6f 后的当前 bundle 字节一致，同时继续保留 archive manifest 顶层 `rq021_individual_refs` 的 3 条记录。
+结果：已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/manifests/BUNDLE_STAGE_MANIFEST.json`，结果为 `26` 个 staged target；已确定性重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/bundle_stage.tar.gz` 两次且 SHA-256 一致，最终 archive SHA-256=`8b3b4110567d443c9a266117f8212b6ba73b22f7a004504ae15b75419e627da2`；已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/ARCHIVE_MANIFEST.json`，验证 `archive_manifest_file_count=26`、archive file members=`26`；顶层 `rq021_individual_refs` 仍为精确 `3/3`（`rq021_scoring`、`rq021_model`、`feature_contract`）；无残留 `bundle_stage*.tmp*` 临时文件。本轮 `changed_target_count=4`，对应四个 sbatch launcher：`pilot_exact.sbatch`、`pilot_fast.sbatch`、`full_exact_array.sbatch`、`full_fast_array.sbatch`。repair6g 产物已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair6g/REPORT.md`、`REPORT.json`、`HASH_CHANGELOG.json`、`STATUS.md`。
+边界：未改 controller、未做 SSH、未做 `sbatch`、未触碰 remote receipt；本次仅刷新并复证本地 manifest/archive 层。
+================================================================================
+2026-08-24 | RQ026 repair7b stage layer rebuild | COMPLETE
+================================================================================
+背景：repair7a 修改了 local_bundle 的 exact replay runtime、pilot finalizer、full submit gate 与 pilot schema，因此本地 26-target stage layer 需要再次刷新 `BUNDLE_STAGE_MANIFEST.json`、`bundle_stage.tar.gz` 与 `ARCHIVE_MANIFEST.json`，保证 stage 证明面与 repair7a 后的当前 bundle 字节一致，同时继续保留 archive manifest 顶层 `rq021_individual_refs` 的 3 条记录。
+结果：已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/manifests/BUNDLE_STAGE_MANIFEST.json`，结果为 `26` 个 staged target；已确定性重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/bundle_stage.tar.gz` 两次且 SHA-256 一致，最终 archive SHA-256=`135e129770a48e4cb899d082f45c652c434fe79b786fdf95736be7a72c6ebc1d`；已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/ARCHIVE_MANIFEST.json`，验证 `archive_manifest_file_count=26`、archive file members=`26`；顶层 `rq021_individual_refs` 仍为精确 `3/3`（`rq021_scoring`、`rq021_model`、`feature_contract`）；无残留 `bundle_stage*.tmp*` 临时文件。本轮 `changed_target_count=5`，对应五个 staged target：`run_rq026_runtime.py`、`validate_bundle.py`、`finalize_pilot.py`、`prepare_full_submit.py`、`pilot_pass_schema.json`。repair7b 产物已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair7b/REPORT.md`、`REPORT.json`、`HASH_CHANGELOG.json`、`STATUS.md`。
+边界：未改 controller、未做 SSH、未做 `sbatch`、未触碰 remote receipt；本次仅刷新并复证本地 manifest/archive 层。
+================================================================================
+2026-08-24 | RQ026 repair7f stage layer rebuild | COMPLETE
+================================================================================
+背景：repair7e 将 `k2_materializer_script` 加入 local bundle 的 helper contract，因此本地 RQ026 stage layer 需要从 26-target 升级为 27-target，补入该 K2 helper 的 staged 证明，同时继续保留 archive manifest 顶层 `rq021_individual_refs` 的 3 条记录。
+结果：已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/manifests/BUNDLE_STAGE_MANIFEST.json`，结果为 `27` 个 staged target；新增的第 27 个 target 为 `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/.codex-fleet/rq015k-fullcorpus-gate/work/k2_fullcorpus/k2_fullcorpus_materializer.py`；已确定性重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/bundle_stage.tar.gz` 两次且 SHA-256 一致，最终 archive SHA-256=`c15866fe0beaac5dc75e5c94d3a638d7f68e816ba497d863640e13064386ed5b`；已重建 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/staging/archives/ARCHIVE_MANIFEST.json`，验证 `archive_manifest_file_count=27`、archive file members=`27`；顶层 `rq021_individual_refs` 仍为精确 `3/3`（`rq021_scoring`、`rq021_model`、`feature_contract`）；无残留 `bundle_stage*.tmp*` 临时文件。本轮 `added_target_count=1`、`changed_target_count=2`。repair7f 产物已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/repair7f/REPORT.md`、`REPORT.json`、`HASH_CHANGELOG.json`、`STATUS.md`、`STATUS.json`。
+边界：未改 controller、未做 SSH、未做 `sbatch`、未触碰 remote receipt；本次仅刷新并复证本地 manifest/archive 层。
+[2026-08-24] RQ026/NMI workplan status audited: WP4 local reproduction and WP8 sign-only baseline are complete; WP5 remains deferred; WP2/WP3/WP6/WP7 are still partial or gated; RQ026 pilot_retry9 fetched successfully but finalization stayed fail-closed because the local finalize path hit a TypeError and runtime rows are missing context_cell, so full submission is not yet unblocked.
+[2026-08-24] RQ026 local_bundle repair7e completed: added the missing `k2_materializer_script` manifest entry, updated `validate_bundle.py` and `test_local_bundle_contract.py` to require 12 keys and verify the K2 materializer path/hash contract, and confirmed `python3 -m py_compile`, `pytest`, and `validate_bundle.py` all passed. No SSH, sbatch, stage/archive rebuild, or controller edits were used.
+================================================================================
+2026-08-24T20:53:10+0000 | RQ026 retry11 independent validation | FAIL
+================================================================================
+背景：需要只读复核 `pilot_retry11` 的 exact/fast runtime 产物，确认 exact formal gate 是否满足 256/256 status/reason parity、context_cell 覆盖、ipv_log 可比容差与 unhandled=0，同时区分 fast 仅是 auxiliary health lane，不能作为 full release gate。
+结果：`pilot_retry11/exact_pilot/summary.json` 与 `fast_pilot/summary.json` 都是运行完成 `PASS`，但独立复算显示 exact formal gate FAIL：exact runtime rows 256/256 全部为 `failure_code=solver_failure`、`reason_code=SOLVER_FAILURE`、`terminal_status=solver_failure`、`deadline_miss=true`，`context_cell` 完整 256/256，但 `parity_status_match=0/256`、`parity_reason_match=0/256`，`parity_ipv_abs_diff` 无可比值，`unhandled=0`；fast 256 行全部完成，162 行为 `mechanism2_distance_ood`、94 行为 `judgeable_support`，但 fast 仍只算 auxiliary，不可作为 full release gate。已写入独立验证产物 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/retry11_independent_validation/{STATUS.md,REPORT.md,REPORT.json}`。
+边界：全程只读监控与本地快照写入；未改 remote files、未提交、未取消、未重跑 job。
+================================================================================
+2026-08-24T21:05:00+0000 | NMI research_progress HTML validation | PASS
+================================================================================
+背景：需要只读核对 `.codex-fleet/nmi-revision-research-lead/final/research_progress_20260825.html` 是否与现有 WP0/WP1、WP3、WP4、WP6、WP7、RQ026 证据一致，并确认它是单文件离线草案、无外链资源、无论文修改。
+结果：HTML 为单文件离线草案，未发现 `href=`、`src=`、`http://`、`https://` 或外链脚本；WP0/WP1=PARTIAL、WP3=PARTIAL、WP4=PASS_WITH_PARTIAL_COVERAGE、WP6=AV-only descriptive ledger、WP7=av_core_complete_but_human_row_level_blocked、RQ026=FORMAL FAIL 的分类与源报告一致。验证报告已写入 `.codex-fleet/nmi-revision-research-lead/board/reports/research_progress_html_validation_20260825.md`。
+边界：未修改 HTML 本体；仅做只读 QA 与报告落档。
+================================================================================
+2026-08-24T21:12:00+0000 | RQ026 repair8d independent validation | INVALID
+================================================================================
+背景：需要判断 repair8d 的一行 exact 诊断是否忠实复用了 retry11 runner/bootstrap，还是只是诊断脚本自身缺陷导致的 cache 报错。
+结果：`repair8d/diag_one_exact_report.json` 显示 `probe_exact_replay` 阶段直接触发 `AttributeError`（runner module 无 `probe_exact_replay` 属性），而 `solve_one_anchor` 虽返回 `SOLVER_FAILURE`，其消息是 `RuntimeError('worker timeseries cache is not initialized')`。对照 `work/hpc_spec/local_bundle/run_rq026_runtime.py`，真实 exact 路径调用的是 `smoke.probe_exact_replay(...)`，并且在 exact replay 前会显式设置 `materializer.TS_BY_CASE = loaded["timeseries_by_case"]` 和 `materializer.CASE_CACHE = {}`。因此 repair8d 没有忠实复现 runner/bootstrap，cache error 不能当作 retry11 根因。验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair8d/INDEPENDENT_VALIDATION.md`。
+边界：未改任何诊断或生产代码；仅做只读核查与报告落档。
+================================================================================
+2026-08-24T21:39:41+0000 | RQ026 repair8h independent validation | DIAGNOSTIC_ONLY
+================================================================================
+背景：需要判断 repair8h 的 `ModuleNotFoundError("No module named 'sociality_estimation'")` 是否能归因到 retry11 exact pilot，还是诊断提交脚本自己的 PYTHONPATH/运行环境问题。
+结果：repair8h 的 Slurm 脚本把 `PYTHONPATH` 设为 `/share/home/u25310231/ZXC/sociality_estimation/src:/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime`，而 retry11 的正式 `pilot_exact.sbatch` 使用的是 `/share/home/u25310231/ZXC/sociality_estimation/code/repo/src:/share/home/u25310231/ZXC/sociality_estimation/code/repo...`；两者源路径不一致。repair8h 报告中 `raw_solve_one_anchor` 的最早失败即为 `ModuleNotFoundError('No module named sociality_estimation')`，因此这次失败应归因于诊断环境，而不是 retry11 真实根因。验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair8h/INDEPENDENT_VALIDATION.md`。
+边界：未改任何诊断或生产代码；仅做只读核查与报告落档。
+================================================================================
+2026-08-24T21:44:18+0000 | RQ026 repair8i independent validation | VALID_ROOT_CAUSE
+================================================================================
+背景：需要判断 repair8i v4 是否已经忠实复用了 retry11 exact runtime，并确认 `reliability_logdomain` 缺失是否就是 retry11 exact runtime 的真实根因，而不是诊断伪影。
+结果：repair8i v4 采用与 retry11 一致的 exact launcher Python path contract（`/share/home/u25310231/ZXC/sociality_estimation/code/repo/src:/share/home/u25310231/ZXC/sociality_estimation/code/repo`）、同一 remote runner、同一 spec 和 retry11 exact runtime rows；`cache_row_count=267`、`joined_row_count=67861`、`raw_solve_one_anchor` 与 `probe_outcome` 均成功进入，并在 `raw_solve_one_anchor.out_of_scope_reason` 中明确给出 `ModuleNotFoundError("No module named 'sociality_estimation.core.reliability_logdomain'")`。本地 `src/sociality_estimation/core/reliability_logdomain.py` 存在，`tests/test_rq015_reliability_logdomain.py` 与 `rq017_onsite_materializer.py` 均会 import 它，而当前 `BUNDLE_STAGE_MANIFEST.json` / `ARCHIVE_MANIFEST.json` 没有把它列入 retry11 stage bundle。验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair8i/INDEPENDENT_VALIDATION.md`。
+边界：未改算法、未改 managed repo；仅做只读核查与报告落档，最小修复边界限定为补齐部署路径/打包合同。
+================================================================================
+2026-08-24T22:00:00+0000 | RQ026 repair9 independent validation | FAIL
+================================================================================
+背景：需要独立验证 repair9 是否真的把 `reliability_logdomain` 作为 bundle-contained target 闭合，同时不改算法、不改 managed repo，只做本地验证。
+结果：canonical `src/sociality_estimation/core/reliability_logdomain.py` 与 bundled `local_bundle/deps/sociality_estimation/core/reliability_logdomain.py` 的 SHA-256 完全一致（`8f740677eb2c3cfd0cba7e9785db9b1fba5cd4a40c0f6e0584bab5747eb8f830`），bundle stage / archive / controller 计数均为 28 且一致，`py_compile` 通过；但 `validate_bundle.py` 失败，错误为 `RuntimeError("materializer_script snapshot sha256 drifted from input_manifest.json")`，而 `pytest test_local_bundle_contract.py` 也失败（2 failed / 14 passed），其中一个失败就是同样的 materializer sha drift，另一个是 direct exact diagnostic 仍返回 `RuntimeError('worker timeseries cache is not initialized')`。验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair9/INDEPENDENT_VALIDATION.md`。
+边界：未改任何生产代码；仅做只读验证与报告落档。
+================================================================================
+2026-08-24T23:59:00+0000 | RQ026 repair9 local self-contained dependency repair | PASS
+================================================================================
+背景：需要在不修改 managed HPC repo、不断开现有科学计算合同的前提下，修复 repair8i 暴露的 `ModuleNotFoundError("No module named 'sociality_estimation.core.reliability_logdomain'")`，把 canonical `reliability_logdomain.py` 纳入 RQ026 self-contained bundle，并闭合本地 bundle/stage/archive/controller 验证。
+结果：已将 canonical `src/sociality_estimation/core/reliability_logdomain.py` 复制到 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/deps/sociality_estimation/core/reliability_logdomain.py`，并在 bundled `rq017_onsite_materializer.py` 的 `load_weights_from_mse()` 上实现“正常 Python-path import 优先、缺该模块时 direct-load bundled canonical file”的最小 fallback；未改算法、阈值或 candidate grid。`input_manifest.json` 的 `materializer_script.sha256` 已刷新为 `86fb5740eb03bcb977bedaa65cf17b76427516615f1a66931badfbdeae0062c2`；`BUNDLE_STAGE_MANIFEST.json`、`ARCHIVE_MANIFEST.json` 与 submit fixtures 已同步到 `28` targets，当前 `bundle_manifest_sha256=e4ddac779dd07b8c219dba46d832fe03dcf22434028b74400466993ba5dcb777`、`bundle_archive_sha256=29d18ba8fbb4076bd0bac032e67030df56309a7b840c4a3e6049cab70f344570`。本地验证全部通过：`python3 -m py_compile ...` PASS，`python3 -m pytest -q .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/test_local_bundle_contract.py` 为 `16 passed`，`python3 .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/local_bundle/validate_bundle.py` PASS，`submit_pilots.sh --dry-run` PASS。正式报告已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair9/{STATUS.md,REPORT.md,REPORT.json}`。
+边界：本轮未做 SSH、未 restage、未 rerun pilot/full；修复仅限本地 self-contained bundle contract。
+================================================================================
+2026-08-24T22:42:35Z | RQ026 retry12 independent validation | FAIL
+================================================================================
+背景：需要对 retry12 的 exact formal gate 做独立复核，并比较当前 exact 路径与冻结 RQ017 的代码/环境 provenance 是否一致，以判断失败更像是门槛本身未达成还是运行栈漂移。
+结果：独立复算确认 exact formal gate 仍失败：`runtime_rows=256`、`parity_status_match=255/256`、`parity_reason_match=255/256`、可比 `parity_ipv_abs_diff` 仅 `166/256` 行，最大差异 `0.14728204833045858`；唯一 status/reason 不一致行是 `input_order_index=50`（`ABSTAIN / NEAR_UNIFORM`，`deadline_miss=true`）。当前 exact 路径的核心代码/配置哈希与冻结 RQ017 记录一致：`agent.py` `bde0f58258e9...`、`ipv_estimation.py` `e2c84e62fe35...`、`reliability_logdomain.py` `8f740677eb2c...`、`process_interhub.py` `2010433b6ed7...`、`ipv_sigma01_exact.json` `3add56c2785c...`；但运行栈已漂移到 `numpy 2.0.2`、`scipy 1.13.1`、`pyarrow 21.0.0`、`sklearn 1.6.1`，而冻结 RQ017 记录的是 `numpy 1.21.6`、`scipy 1.7.3`、`pandas 1.4.4`、`pyarrow 12.0.1`。独立验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/pilot_retry12/INDEPENDENT_VALIDATION.md`。
+边界：未改 threshold、未改代码、未改提交物；fast 仍只算辅助证据，不改变 exact 失败结论。
+================================================================================
+2026-08-24T22:18:00+0000 | RQ026 repair9_hpc_smoke fresh stage plus one-row exact smoke | PASS
+================================================================================
+背景：需要在 repair9 本地自包含依赖修复完成后，执行一次 fresh `stage_remote.sh --execute` 与一次 1-row exact smoke，验证新的 28-target bundle 已真正消除 `reliability_logdomain` 缺失，而不启动 pilot/full。
+结果：fresh restage 成功并抓回新的 `REMOTE_STAGE_PASS.json`；receipt 证实 `status=PASS`、`verified_bundle_targets=28`、`verified_rq021_refs=[rq021_scoring, rq021_model, feature_contract]`、`exact_env_python=/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/envs/runtime-compat-py39/bin/python`、`managed_repo_clean=true`，对应 `bundle_stage_manifest_sha256=e4ddac779dd07b8c219dba46d832fe03dcf22434028b74400466993ba5dcb777`、`bundle_archive_sha256=29d18ba8fbb4076bd0bac032e67030df56309a7b840c4a3e6049cab70f344570`。随后 1-row smoke 作业 `2336664`（`zxc-rq026-repair9-smoke`）在 `cpui005` 上 `COMPLETED 0:0`、耗时 `00:00:27`；抓回的 `repair9_smoke.output.json` 显示 `cache_row_count=267`、`joined_row_count=67861`、`raw_solve_one_anchor` 与 `probe_outcome` 均非空，`raw_solve_one_anchor.out_of_scope_reason=null`，不再出现 `ModuleNotFoundError`，而是回到 `ABSTAIN/NEAR_UNIFORM`：`raw_solve_one_anchor.status=ABSTAIN`、`reason_code=NEAR_UNIFORM`、`failure_type=null`，`probe_outcome.status=ABSTAIN`、`reason_code=NEAR_UNIFORM`、`failure_code=near_uniform_abstain`，并且 `probe_parity_status_match=true`、`probe_parity_reason_match=true`；`parity_ipv_abs_diff` 仍为 `null`，因为本行在 `ABSTAIN/NEAR_UNIFORM` 下没有可比 `ipv_log`。报告已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair9_hpc_smoke/{STATUS.md,REPORT.md,SUBMISSION.json}`。
+边界：本轮严格止步于 fresh restage 与 1-row smoke；未启动 pilot/full，未修改 managed repo、论文或 decision。
+================================================================================
+2026-08-24T07:21:30+0000 | RQ026 repair10 oldenv repeatability | PASS
+================================================================================
+背景：需要区分 repair10 oldenv 两行 M1-only 诊断里观察到的偏差，究竟来自 solver nondeterminism，还是来自确定性的 code/input/environment drift。
+结果：复用 job `2336691` 已验证过的 remote `diag_m1_oldenv.py`、两条固定 key、同一 old exact Python 环境、同一 anchor/frozen rows，提交 repeat3 作业 `2336694`（`zxc-rq026-m1-repeat3`），在 `cpui005` 上 `COMPLETED 0:0`、耗时 `00:00:20`。抓回的 6 个 JSON 显示两条 row 在 3 次重复中完全一致：`status_mismatch` 行每次都是 `ABSTAIN / NEAR_UNIFORM / ipv_log=null`，`mse_per_candidate` hash 固定为 `622eb3f581016ad35cf714b3662aff93dfdb295c7fab93eb5c2a9674deabf596`；`max_ipv_diff` 行每次都是 `OK / reason=null / ipv_log=-0.14324902008289683`，`mse_per_candidate` hash 固定为 `e4194d3c9fee33ee0c50eb2742e070126316f3cf0e124519c908c3e77b8947f5`，与 frozen 的 `ipv_abs_diff` 每次都固定为 `0.14728204833045858`。stdout/stderr 均为空。报告已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair10_m1_oldenv/repeatability/{STATUS.md,SUBMISSION.json,REPORT.md,REPORT.json}`。
+边界：本轮只做 repeatability 诊断；未触碰 production、未触发 RQ021/sklearn、未启动 pilot/full。
+================================================================================
+2026-08-25T00:00:00+0000 | RQ026 repair14 split runtime local execution package | PASS
+================================================================================
+背景：需要在不触碰 production、`local_bundle`、HPC 的前提下，为 RQ026 组装一套可本地验证的 split-runtime 执行包，包括 top-level prepare 脚本、Stage1 oldenv sbatch 模板、Stage2 compat sbatch 模板、Stage1/Stage2 runner、以及 256 synthetic/finalizer/anti-cheat tests。
+结果：repair14 现已形成完整本地执行包：新增 top-level `prepare_split_pilot.py`、`stage1_oldenv.sbatch`、`stage2_compat.sbatch`、`SUBMISSION_PLAN.schema.json`、`README.md`、`INTEGRATION_REPORT.md`；Stage1 交付 `stage1/stage1_m1_runner.py` 与单测，Stage2 交付正式 `stage2/stage2_m2_runner.py`（由 2-row fixture 提升而来）与单测。Stage2 保持 runtime-scored M2，不调用 `probe_exact_replay`，不重算 M1，只消费 Stage1 rows/receipt。Integration tests 覆盖三块：模板渲染/afterok 合同、256 synthetic Stage1→Stage2→`finalize_pilot.py` compatibility、以及 anti-cheat（Stage2 模板必须消费 `--stage1-rows` / `--stage1-receipt`，不得消费 `rq021_scoring` 预计算文件）。本地验证全部通过：`python3 -m py_compile` 覆盖 repair14 top-level、stage1、stage2 runner/tests → PASS；`python3 -m pytest -q` 覆盖 `test_prepare_split_pilot.py`、`test_split_runtime_integration.py`、`stage1/tests/test_stage1_m1_runner.py`、`stage2/tests/test_stage2_m2_fixture.py` → `7 passed`。状态文件已更新为 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair14_split_runtime/{STATUS.md,stage1/STATUS.md,stage2/STATUS.md}` 全部完成态。
+边界：本轮未做 SSH、未做 Slurm 提交、未修改 production 或 `local_bundle`；仅完成本地 split-runtime 执行包与验证。
+================================================================================
+2026-08-24T22:42:35Z | RQ026 retry12 pilot fetch/finalize | FAIL
+================================================================================
+背景：需要把 retry12 exact/fast pilot artifacts 拉回本地，用当前 `local_bundle/finalize_pilot.py` 做正式门槛核对，并判断是否可以生成真实 `PILOT_PASS.json`。
+结果：exact job `2336668` 与 fast job `2336669` 均 `COMPLETED 0:0`；本地 finalize 失败并拒绝出顶层 pass，错误为 `RuntimeError: exact parity_status_match rows != 256`。retry12 exact 的正式统计为 `runtime_rows=256`、`context_cell present=256/256`、`parity_status_match=255/256`、`parity_reason_match=255/256`、`comparable parity_ipv_abs_diff rows=166/256`、`max comparable parity_ipv_abs_diff=0.14728204833045858`、`unhandled failures=0/256`；唯一失配行是 `case_key=onsite:shanghai:T4:C1:native_case:2314|anchor_frame_index=276|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285`。fast 仍是辅助健康线：`PROBE_OK=256/256`，`failure_code=mechanism2_distance_ood=162/256`，`keyset_match=true`。本轮确认 `PILOT_PASS.json` 未生成，full submission 仍禁止。
+边界：未改代码、未改门槛、未做 full；只做 fetch、finalize 和工作台账记录。
+================================================================================
+2026-08-25T07:16:05Z | RQ026 repair10_m1_oldenv two-row diagnostic | COMPLETE
+================================================================================
+背景：需要用旧 exact-py39 环境对两个固定 RQ017 行做只读 M1 诊断，确认当前 `materializer.solve_one_anchor(...)` 是否还能复现 frozen RQ017 的 `status/reason/ipv`，并且不加载 RQ021 或 sklearn。
+结果：`zxc-rq026-m1-oldenv-diag` job `2336691` 在 `cpui005` 上 `COMPLETED 0:0`，耗时 `00:00:20`。两条输出都已抓回本地 `repair10_m1_oldenv/hpc_run/`。`status_mismatch` 行的 frozen 值是 `status=OK, reason_code=null, ipv_log=0.1590916249479489`，raw 值是 `status=ABSTAIN, reason_code=NEAR_UNIFORM, ipv_log=null`，所以 `status_match=false`、`reason_code_match=false`。`max_ipv_diff` 行的 frozen 值是 `status=OK, reason_code=null, ipv_log=-0.2905310684133554`，raw 值是 `status=OK, reason_code=null, ipv_log=-0.14324902008289683`，所以 `status_match=true`、`reason_code_match=true`、`ipv_log abs diff=0.14728204833045858`。输出同时记录了 oldenv 版本 `numpy=1.21.6`、`scipy=1.7.3`、`python=3.9.24`，且没有 RQ021/sklearn 导入。
+边界：只做诊断、stage、submit、fetch 和落档；不改生产 bundle、不改 managed repo、不触发 pilot/full。
+================================================================================
+2026-08-25T07:16:05Z | RQ026 repair10_m1_oldenv independent validation | COMPLETE
+================================================================================
+背景：需要对 repair10 的 two-row oldenv 诊断做只读复核，判断它是否支持“numeric-env-only”解释，并把最早的候选级差异字段记录下来。
+结果：复核了 job `2336691` 的 `STATUS.md`、`REPORT.md/json` 以及 `hpc_run/max_ipv_diff.json`。oldenv 诊断确实使用了 frozen RQ017 的 numeric stack：`python=3.9.24`、`numpy=1.21.6`、`scipy=1.7.3`，且 `rq021_imported=false`、`sklearn_imported=false`。两条目标行仍未复现 frozen RQ017：`status_mismatch` 依旧是 frozen `OK/null/0.1590916249479489` 对 raw `ABSTAIN/NEAR_UNIFORM/null`；`max_ipv_diff` 依旧是 frozen `OK/null/-0.2905310684133554` 对 raw `OK/null/-0.14324902008289683`，`ipv_log abs diff=0.14728204833045858`。候选级对比显示 `candidate_ipv_0..6` 完全一致，最早非零差异出现在 `log_score_0`（raw `-1.0867964863382937` vs frozen `-1.086796487495622`），随后 `w_log_0` 与 `max_w_log` 也明显分叉；因此“只要换成旧数值栈就能恢复 frozen 输出”的解释被排除。独立验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair10_m1_oldenv/INDEPENDENT_VALIDATION.md`。
+边界：未改代码、未改门槛、未改生产 bundle；只是复核并补写验证档。
+================================================================================
+2026-08-24T07:20:00Z | RQ026 repair10_m1_oldenv materializer diff audit | COMPLETE
+================================================================================
+背景：需要只读比较 frozen RQ017 materializer 和当前 bundled materializer，判断哪些 diff 可能影响输出、哪些只是部署路径变化，并把结论写档。
+结果：比对发现 file-level diff 只集中在 4 个 hunk。新增内容是 `BUNDLED_RELIABILITY_LOGDOMAIN_RELATIVE` / `CANONICAL_RELIABILITY_LOGDOMAIN_RELATIVE` 以及 `_load_module_from_path`、`_reliability_logdomain_candidates`、`_load_weights_from_mse_via_bundle_path`；`load_weights_from_mse()` 改成先走 `src/` 导入、再在 expected `ModuleNotFoundError` 时回退到 bundle/canonical 文件路径加载。`solve_one_anchor(...)` 主体、candidate grid `K=7`、`mse` 计算、`gated_l1_row(...)`、K2 gate 路径均未改。bundle 里的 `sociality_estimation/core/reliability_logdomain.py` 与 canonical `src/sociality_estimation/core/reliability_logdomain.py` 的 sha256 完全一致（均为 `8f740677...`），因此当前 diff 更像是部署兜底而不是数值实现改写。审计文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair10_m1_oldenv/MATERIALIZER_DIFF_AUDIT.md`。
+边界：只做只读审计，不改代码、不提交通道、不重新跑作业。
+================================================================================
+2026-08-24T07:35:00Z | RQ026 repair11_original_materializer code-sha inconsistency audit | COMPLETE
+================================================================================
+背景：需要澄清 frozen RQ017 输出里的 `code_sha` 片段 `379855ba400e`、运行收据里的脚本文件 hash `34e9a2627376...`，以及当前工作树 materializer hash `358b3a74a5b9...` 三者之间的关系，避免后续继续把不同 snapshot 当成同一个对象追查。
+结果：确认 `code_sha_string()` 会把 `agent.py`、`ipv_estimation.py`、`reliability_logdomain.py`、`process_interhub.py`、`ipv_sigma01_exact.json` 和 `.codex-fleet/rq017-onsite-materializer/work/M1/rq017_onsite_materializer.py` 的 `sha256[:12]` 拼成历史 provenance 标签，因此 `379855ba400e` 只应视为 RQ017 输出中的 `code_sha` 片段，不应当作当前工作树 materializer 文件的直接字节 hash。当前工作树 materializer 的 full SHA 是 `358b3a74a5b9f4c1c00b9a22fb280dd7530cefe70614863debd6b64c17bd37e2`；归档 study 里的 materializer 副本 SHA 是 `34e9a26273768e19dce701910bc26bdde938f37a8706f76ea774bc3314456c71`；两者都与 `379855...` 不同。run receipts 里记录的 `expected_hash/observed_hash=34e9...` 更像脚本文件级别的 staging 证据，适合用来追实际提交字节，而不是拿 `code_sha` 片段来代替。审计文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair11_original_materializer/CODE_SHA_INCONSISTENCY.md`。
+边界：只做只读审计，不改代码、不触发作业、不改生产 bundle。
+================================================================================
+2026-08-24T23:57:54Z | RQ026 repair12 input surface diff audit | COMPLETE
+================================================================================
+背景：需要判定 repair10 当前 frozen-monitor runtime 输入表面与 repair12 original-workdir r3 之间，差异更可能来自 anchor、timeseries 还是 materializer，并把结论固化为只读审计证据。
+结果：对 `repair10_m1_oldenv/hpc_run/*.json` 与 `repair12_original_workdir/hpc_run_r3/*.json` 做逐字段复核后，选中锚点在核心共享字段上几乎一致：`status_mismatch` 的 shared keys 23/23 全同，`max_ipv_diff` 仅 `relative_dy_anchor` 出现 `1.4210854715202004e-14` 级差异；`candidate_ipv_0..6` 在两条线完全一致。真正分叉发生在 raw solver 输出：repair12 r3 在两行都与 frozen 完全一致，且 `mse_per_candidate` / `log_score` / `w_log` 与 frozen 逐值相同；repair10 则在 `status_mismatch` 上出现 `ABSTAIN / NEAR_UNIFORM / ipv_log=null`，并在两行上表现出可量化的 candidate-array 偏移（例如 `status_mismatch` 的 `log_score` max abs diff `9.791478289323557e-03`，`max_ipv_diff` 的 `log_score` max abs diff `9.880646383327099e-01`）。结合 earlier materializer diff audit 只显示 narrow fallback import change、未改 solver 数学路径，当前最强结论是 timeseries surface drift 最可能，其次才是小幅 anchor surface 贡献，materializer 最弱；但由于本地无法直接字节级读取两份远端 parquet，该 timeseries 结论仍标记为 strongest-supported hypothesis 而非 checksum-level proof。审计文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair12_original_workdir/INPUT_SURFACE_DIFF_AUDIT.md`。
+边界：未改生产代码、未改门槛、未触发新作业；仅做只读比较和落档。
+================================================================================
+2026-08-28T03:57:22Z | RQ026 repair15 split-full local validation | COMPLETE
+================================================================================
+背景：需要独立验证 `repair15_split_full` 这轮是否已经把 RQ026 的 full exact split-runtime 包构建到可进入 live preflight 的状态，重点检查 136 个 shard、67,861 行、Stage1/Stage2 证据链、exact-only 聚合器、`--resume` 闭环和渲染计划。
+结果：`python3 -m py_compile .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair15_split_full/*.py .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair15_split_full/stage1/*.py .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair15_split_full/stage2/*.py` PASS；`python3 -m pytest -q .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair15_split_full` PASS（`11 passed in 15.20s`）；`python3 .codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair15_split_full/full_exact_aggregator.py --validate-only` PASS。随后用真实 frozen root `data/derived/rq017_onsite_gate/l1_v1` 跑 `prepare_split_full.py` 到临时目录 `/Volumes/ZHITAI 2T/.codex-tmp/rq026-repair15-2DCMwX`，渲染结果为 `manifest_count=136`、`expected_total_rows=67861`、`first_shard=full_0001/500`、`last_shard=full_0136/361`，`stage1_array_concurrency=1`、`stage2_array_concurrency=1`，Stage2 提交模板保留 `--dependency=afterok:${stage1_job_id}`。代码层面，`common.py` 固化了 `EXPECTED_TOTAL_ROWS=67_861`、`EXPECTED_SHARD_COUNT=136`、`PARITY_IPV_TOL=1e-6`；Stage1/Stage2 runner 的 `--resume` 都会在 PASS receipt मौजूद时直接返回；Stage2 会先校验 Stage1 receipt hash / row hash / ordered key hash 再运行；merge 脚本会拒绝缺 shard、重复 shard、重复 key；`full_exact_aggregator.py` 只接受 `exact_only`，并把 status/reason/comparable/unhandled/runtime-call-count 作为正式 gate。P0/P1=0；P2=1（`REMOTE_PREFLIGHT.json` 缺少 `recommended_array_concurrency`，所以当前渲染退回 `%1`，需要 leader lane 在 live preflight 后覆写）。本轮没有做实际 Slurm 提交。
+边界：只做验证与落档，不改论文、不改 decision、不提交 HPC。
+================================================================================
+================================================================================
+2026-08-25T00:05:03Z | RQ026 repair13 original-workdir 256-key independent validation | COMPLETE
+================================================================================
+背景：需要对 repair13 的 256-key original-workdir M1 批次做独立验证，确认 old workdir / old exact env / no RQ021 / no sklearn 的正式门槛是否成立，并判断 summary 里 candidate-array equality 为 0 是否只是比较器口径问题。
+结果：job `2336710`（`zxc-rq026-m1-original-256`）在 `cpui005` 上 `COMPLETED 0:0`、耗时 `00:09:58`。`original_256_summary.json` 给出 `row_count=256`、`status_match_rows=256`、`reason_match_rows=256`、`comparable_ipv_rows=167`、`max_ipv_abs_diff=0.0`、`unhandled_rows=0`；环境版本为 `python=3.9.24`、`numpy=1.21.6`、`scipy=1.7.3`、`pandas=1.4.4`、`pyarrow=12.0.1`，路径仍指向原 workdir `repo_stage` materializer 与 `timeseries_whitelist.parquet` / `anchor_whitelist.parquet`，未见 RQ021 或 sklearn 加载。candidate-array 层面，脚本在 `diag_m1_batch_original256.py:194-200` 直接比较 `raw.get("candidate_ipv")` / `raw.get("mse_per_candidate")` 与 frozen 扁平行的 `candidate_ipv` / `mse_per_candidate` 键，但 frozen 行实际存的是 `candidate_ipv_0..6` 与 `mse_0..6`；我额外把 raw list 展平后复算，得到 `256/256` candidate_ipv 精确相等、`256/256` mse_per_candidate 精确相等，因此 summary 的 `candidate_ipv_equal_rows=0`、`mse_per_candidate_equal_rows=0` 是比较器未展开扁平列造成的假 0，不是实际数组不一致。独立验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair13_original_workdir_256/INDEPENDENT_VALIDATION.md`。
+边界：未改生产代码、未触发新作业；仅做只读验证和落档。
+================================================================================
+================================================================================
+================================================================================
+2026-08-25T00:18:00Z | RQ026 repair14 split-runtime independent code review | COMPLETE
+================================================================================
+背景：需要把 repair14_split_runtime 的 Stage1 / Stage2 实现按设计规格做独立复核，确认 split-runtime 边界、fail-close 行为、M2 runtime-scoring 路径以及测试覆盖是否成立。
+结果：本地 fresh 复核通过；`python3 -m py_compile` 覆盖 Stage1/Stage2 代码与测试文件均 PASS，`python3 -m pytest -q .../stage1/tests/test_stage1_m1_runner.py .../stage2/tests/test_stage2_m2_fixture.py` 返回 `3 passed in 1.28s`。Stage1 代码在 `stage1_m1_runner.py:214-221` 只接收 materializer / timeseries / anchor / frozen / keys / outputs，`237-250` 负责一次性加载 timeseries 并设置 `TS_BY_CASE` / `CASE_CACHE`，`289-359` 负责按 key 顺序遍历、调用 `solve_one_anchor`、比较 frozen、并在异常时 fail-close。Stage2 代码在 `stage2_m2_fixture.py:51-75` 只加载 spec、scorer、smoke helper 与 artifact，不导入 materializer；`103-168` 直接从 `raw_solve_one_anchor` 构造 M2 context frame 并调用 `score_with_artifact(...)`；`176-212` 对 key/order 做强校验并输出 exact-runtime-shaped rows。测试文件分别证明了顺序保持、fail-close、materializer 未被调用、scorer 恰好调用 2 次。结论：P0/P1 blocker 0 个；仅有 P2 级文档漂移（`stage2/STATUS.md` 的 CLI 参数名与实现不一致、`stage1/STATUS.md` 仍是 pending verification）需要后续顺手更新。
+边界：只做只读复核与报告落盘，不改实现代码、不触发作业。
+================================================================================
+================================================================================
+2026-08-25T00:30:00Z | RQ026 repair14 split-runtime final local validation | COMPLETE
+================================================================================
+背景：需要对 repair14_split_runtime 的完整本地包做最终复核，确认 Stage1 / Stage2 / prepare_split_pilot / sbatch / submission schema / finalizer 兼容性是否全部成立，并把证据落成最终验证记录。
+结果：fresh 验证通过。`python3 -m py_compile` 覆盖 `prepare_split_pilot.py`、repair14 tests、Stage1/Stage2 runners/tests 均 PASS；`python3 -m pytest -q ...tests...` 返回 `7 passed in 2.01s`。我用 `prepare_split_pilot.py` 生成了独立 review 目录 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair14_split_runtime/final_local_validation.o6Jm1Q/`，渲染出的 `split_runtime_submission.json` 通过与 `SUBMISSION_PLAN.schema.json` 对应的手工 schema 校验（`SCHEMA_VALIDATION PASS`）。渲染结果满足：Stage1 job name 为 `zxc-rq026-stage1-oldenv`，Stage2 job name 为 `zxc-rq026-stage2-compat`，Stage2 submit template 为 `sbatch --dependency=afterok:${stage1_job_id} .../stage2_compat.sbatch`；Stage1 sbatch 使用旧 workdir `/share/home/u25310231/ZXC/sociality_estimation/work_dirs/RQ017/example` 与 oldenv python `/share/home/u25310231/ZXC/sociality_estimation/envs/ipv-exact-sigma01/bin/python`；Stage2 sbatch 使用 compat python `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/envs/runtime-compat-py39/bin/python`；Stage2 只消费 Stage1 rows / receipt，不引用任何 precomputed M2 rows。Stage2 runner 仍通过当前 scorer/model/artifact 生成 exact-runtime-shaped rows；integration test 已证明其与当前 `finalize_pilot.py` 兼容。P0/P1 blocker = 0；P2 仅为状态文档过期与环境里缺少 `jsonschema`（已用等价手工 schema 校验替代）。最终验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair14_split_runtime/FINAL_LOCAL_VALIDATION.md`。
+边界：只做只读验证、dry-run 与落档，不改实现、不提交/取消 HPC 作业。
+================================================================================
+2026-08-25T00:42:00Z | RQ026 research progress HTML / START_HERE checkpoint refresh | COMPLETE
+================================================================================
+背景：用户要求把最新 checkpoint 同口径写入 `final/research_progress_20260825.html` 顶部，并同步更新 `START_HERE.md` 与 `main_workflow.log`，不碰论文内容。
+结果：已将 HTML 顶部改为 2026-08-25 版本并插入最新 checkpoint，包含 repair13 PASS（256/256 status/reason、167 comparable、max|ipv diff|=0、unhandled=0）、repair14 本地 7 tests PASS 且 P0/P1=0、Stage1 job `2336919` COMPLETED `0:0` `00:10:18`、Stage2 job `2336920` 仍 PENDING 且当前 scontrol 口径为资源原因、split pilot 未完成/no candidate/top PILOT_PASS/no full、repair10 job `2336691` 已执行用于排除 numeric-env-only、repeat3 deterministic、repair12 r3 两行 diff0。`START_HERE.md` 已同步追加同口径最新 checkpoint，`Last reviewed` 更新为 2026-08-25。HTML 保持自包含、无外链资源；本次只改研究进度文档和日志，没有改论文。
+边界：不改论文、不改 decision、不提交或取消 HPC 作业。
+================================================================================
+2026-08-27T21:00:00Z | RQ026 repair14 split pilot r3 independent validation | COMPLETE
+================================================================================
+背景：需要只读独立验收 repair14 的 Stage2 r3 候选，确认 `2349471` 已完成、Stage1 rows/receipt 仍保持原始哈希链与键序、Stage2 仍是 runtime-scored 而非 precomputed M2、当前 `finalize_pilot.py` 能对 r3 exact 目录复算通过，并确认顶层 `PILOT_PASS.json` 仍未生成。
+结果：`sacct -j 2349471` 显示 `zxc-rq026-stage2-compat-r3` 已 `COMPLETED 0:0`、耗时 `00:00:55`、节点 `cpui023`；对 fetched r3 exact rows 的独立复算得到 `256/256` context、`256/256` parity status、`256/256` parity reason、`167/256` comparable、`max diff=0.0`、`unhandled=0`、`stage2_score_calls=256`；Stage1 rows sha=`9bcb6a20597f382d2c355bc7b440c3959fc1b12ee499bbd6ece194e2c6406cf4`、receipt sha=`54eb46cfb428b04e44d761e51653fd01affec2301d910b9509db644d8f9fbc37`、row_count=`256`、unique_keys=`256`、order_ok=`True`；`PILOT_PASS_candidate.json` 仍为 `status=PASS`，且顶层 `work/hpc_spec/PILOT_PASS.json` 不存在。独立验证文件已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair14_split_runtime/hpc_pilot/INDEPENDENT_VALIDATION_R3.md/json`。本次未修改 candidate、top-level pass 或 full 产物。
+边界：只做只读验收与落档，不改候选/全量/论文。
+================================================================================
+2026-08-27T21:20:00Z | RQ026 repair14 pilot promotion | COMPLETE
+================================================================================
+背景：独立验证已确认 repair14 split-runtime Stage2 r3 候选通过 exact formal gate，且 `P0/P1=0`。本步需要在不改内容的前提下，把 `repair14_split_runtime/hpc_pilot/PILOT_PASS_candidate.json` 正式提升为顶层 `work/hpc_spec/PILOT_PASS.json`，同时落 promotion receipt，并把 `START_HERE.md`、研究进度 HTML 与 `main_workflow.log` 同步到“formal pilot PASS / full 未提交”的当前口径。
+结果：已原子复制 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair14_split_runtime/hpc_pilot/PILOT_PASS_candidate.json` 到 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/PILOT_PASS.json`，内容未改；candidate 与 promoted pass 的 sha256 完全一致，均为 `5b71d3a594a3e4392bc9ac89c724e007986498067b21ee6dc67288efa29fcc40`。promotion receipt 已写入 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/PROMOTION_RECEIPT.json`，记录 candidate/pass/validation sha、job IDs `2336919` / `2336920` / `2349471`，以及 “full 未提交” 边界。独立验证文件 sha 也已固化：`INDEPENDENT_VALIDATION_R3.json`=`479b248cca74657a169648cde46a3252a56db1ae304d0ef6c4ea90da04d5c8be`，`INDEPENDENT_VALIDATION_R3.md`=`67b393cce90414b28bef7364484a7737fbc99b0286ca4628ede758f2899bf33e`。`START_HERE.md` 已更新为 2026-08-27 checkpoint；`.codex-fleet/nmi-revision-research-lead/final/research_progress_20260825.html` 顶部 checkpoint 和 RQ026 当前结论已改为 formal pilot PASS、top-level `PILOT_PASS.json` 已生成、full 未提交。
+边界：本次没有提交 full，没有改论文/decision，没有改 production bundle。
+================================================================================
+2026-08-28T03:59:01Z | RQ026 repair15 live preflight | PARTIAL / FAIL-closed
+================================================================================
+背景：repair15 split full 需要一个 live Tongji HPC 预检来决定后续 Stage1/Stage2 的 array concurrency。这个预检只负责只读核查，不提交、不取消作业，也不改论文内容。
+结果：`prepare_split_full.py` 的契约已确认：它只读 `REMOTE_PREFLIGHT.json` 里的 `recommended_array_concurrency`；repair15 的固定 shard 数是 `136`。本轮对 `tongji-hpc` 的 SSH 预检未成功，`ssh -G` 显示 alias 指向 `logini.tongji.edu.cn:10022`，但实际连接多次在 banner exchange 超时或被直接关闭，直接 probe `logini01.tongji.edu.cn` / `logini03.tongji.edu.cn` 也未拿到 shell，因此 `squeue`、`sinfo`、`sacctmgr`、节点 FreeMem 与 CPU 健康节点都没有 live 证据。已落档 `.codex-fleet/rq026-frozen-monitor-runtime/work/hpc_spec/repair15_split_full/REMOTE_PREFLIGHT.json` 和 `.md`：JSON 维持 fail-closed，`recommended_array_concurrency=1`，同时记录 formula-derived 的 provisional upper bound `136`；文档明确区分了 live 失败与公式上界。
+边界：本次没有获得 live cluster snapshot，所以不能把 CPU 健康节点数或 account 限制写成已验证事实；没有提交/取消任何 HPC 作业，没有改论文。
+================================================================================
+2026-08-28T04:05:22Z | NMI overall research status synthesis | COMPLETE | Created `.codex-fleet/nmi-revision-research-lead/final/overall_research_status_20260828.html`; summarized WP0-WP8 status as WP0/WP1 PARTIAL, WP2 BLOCKED, WP3 PARTIAL, WP4 PARTIAL, WP5 DEFERRED, WP6 PARTIAL, WP7 PARTIAL, WP8 PARTIAL; preserved paper/decision boundaries and recorded the RQ026 formal pilot PASS vs live preflight pending boundary.
+================================================================================
+2026-08-28 12:28:30 CST | Remote sync of latest research progress | COMPLETED
+================================================================================
+背景：需要把最新的研究 checkpoint、知识层收口和工作日志一并送上远端主分支，便于后续接手的人直接看到当前状态。
+结果：当前可长期保留的 checkpoint 已刷新到 `START_HERE.md` 和 `STUDIES.md`；RQ004 的语义增补已写入知识层决策；PAPER001 的导入交接记录已保留；本次同步不包含 `.codex-fleet` 运行产物。
+边界：只同步可追溯的仓库文本，不触碰论文仓库、不改 HPC 作业、不提交 ignored 运行目录。
