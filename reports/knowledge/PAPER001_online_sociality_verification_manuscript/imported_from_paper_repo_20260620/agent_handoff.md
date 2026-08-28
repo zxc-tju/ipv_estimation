@@ -725,3 +725,660 @@ STANDING RULE for anyone running `check_acceptance.py`: read the EXIT CODE. A ru
 lines can still exit 1, and this round produced two wrong status reports from reading PASS lines
 alone. `python3 test_a2_negative.py` proves the check can still fail; run it if a green result looks
 too convenient.
+
+## 2026-08-14 — accommodating-side consequence battery computed; PI reframing NOT supported
+
+Round 6 finding F4 (headline exceedance ratio is carried by the accommodating side, 2.89x, while all
+consequence evidence sits on the assertive side, 1.42x) drew a PI ruling: margin compression is a
+property of DEVIATION, not of assertiveness, so the claim should read "deviation compresses the
+interaction". The PI authorised computing the missing side.
+
+**The data does not support the reframing.** Of the seven battery measures, every measure that
+reaches support on the assertive side fails to reach it on the accommodating side:
+
+| measure | assertive | accommodating |
+|---|---|---|
+| counterpart speed drop | 2.062x [1.057, 3.873] supported | 0.790x [0.279, 1.535] |
+| counterpart speed range | 1.886x [1.349, 2.378] supported | 1.076x [0.782, 1.529] |
+| counterpart brake < -3 | -3.399pp [-5.321, -1.547] supported | +0.071pp [-1.963, +2.238] |
+| ego margin median | 0.751x [0.636, 0.984] supported | 0.806x [0.697, 1.154] |
+| ego margin q75 | 0.526x | 0.961x |
+| ego margin q25 | 0.978x | 1.068x |
+| ego tail TTC<2s | 4.66% (22/472) | 5.35% (40/747); inside 8.84% (1032/11669) |
+
+The ego-margin-median interval is NEW (the frozen battery stores point values only for the
+quantiles); computed with the same case-level bootstrap, seed 0, 2000 draws.
+
+Positive control before anything else: all 35 frozen inside/lower values reproduced exactly from the
+cached tables. Independently verified by a second agent that recomputed from source without reading
+the author script, using a different seed, then replicated the exact seed-0 procedure — every value
+and interval agreed to full precision.
+
+Provenance note: the counterpart hard-braking measure was PRE-SPECIFIED ON BOTH SIDES and computed in
+the same run (12 lower + 12 upper rows in distribution_results.json). Only the extraction filtered
+`"lower" in comparison`. That measure is therefore not post hoc; the other six are.
+
+Results and script: `.codex-fleet/rq022-matched-scenario/work/T1_target_figure/`
+`accommodating_side_battery.json` and `compute_accommodating_side.py`. No frozen value was written.
+
+### THREE LIMITS THAT MUST TRAVEL WITH THESE NUMBERS
+
+1. **NON-DETECTION, NOT EQUIVALENCE.** Ratio intervals must be compared multiplicatively. On the log
+   scale the accommodating intervals are WIDER than the assertive ones (speed drop spans 5.50x vs
+   3.66x; speed range 1.96x vs 1.76x; braking 4.20pp vs 3.77pp) despite the accommodating group
+   having ~50% more rows. Write "the assertive-side signature does not appear on the accommodating
+   side"; do NOT write "accommodating deviations have no consequence". An earlier report in this
+   session compared raw interval widths and wrongly concluded the accommodating side was more
+   precise; that was corrected.
+2. **COMPOSITIONAL REVERSAL on speed drop.** Pooled accommodating ratio 0.790 lies BELOW both
+   city-specific ratios (Beijing 5.442, Shanghai 0.957), so the pooled statistic is not a
+   context-balanced behavioural effect. Cause: the ratio denominator (inside-group median speed drop)
+   is 0.113 km/h in Beijing with 21.6% exact zeros, versus 2.058 km/h in Shanghai. Case-matched
+   sensitivity keeps the null (0.673 [0.238, 1.244]; 1.041 [0.776, 1.447]) but moves the speed-drop
+   point estimate materially.
+3. **WEIGHTING SENSITIVITY OF A PUBLISHED CLAIM.** Case-level bootstrap changes only the interval,
+   not the estimand; point estimates stay anchor-weighted pooled medians. The same frozen row that
+   gives the ASSERTIVE braking interval excluding zero also reports a case-equal paired contrast
+   p = 0.470447. The published assertive braking claim is therefore not robust to equal case
+   weighting. This concerns frozen, already-written text.
+
+Also recorded, no decision needed: the cached tables carry no per-frame/per-anchor identifier, so row
+uniqueness cannot be audited from them (6,582 of 12,888 ego rows and 987 of 11,671 counterpart rows
+are exact duplicates on visible columns; plausibly legitimate repeated frames).
+
+MANUSCRIPT UNCHANGED in this step. The Results text already scopes the consequence claim to the
+assertive side, so nothing written is wrong and nothing was retracted. Three rulings are with the PI:
+whether to report the accommodating-side non-detection in the main text (recommended, in the weak
+wording above); how to label the post-hoc extension; and whether to settle the three robustness
+questions before rounds 7-8.
+
+## 2026-08-14 (later) -- figure-set reproducibility restored; term unified; git object repaired
+
+Manuscript edits (branch `paper/human-arm-target`, uncommitted):
+- Consequence passage reordered so the counterpart's SPEED VARIATION leads and the speed
+  reduction follows. Reason: the within-run analysis (stratified van Elteren + Mundlak,
+  `analysis_output_20260814/`) shows the pooled assertive-side result is NOT a between-run
+  composition artefact (pooled-minus-stratified +1.55/+2.55/-0.72 probability points, all
+  intervals covering zero), but within runs the speed-reduction endpoint has no evidence
+  (p=0.291) while speed variation (p=0.0298) and ego margin (p=0.0380) hold pointwise.
+  Both endpoints are still reported; only the narrative order changed.
+- Prose term unified to "accommodating side" (was mixed with "over-yielding side" at three
+  prose sites plus a Methods bridge sentence that misdescribed main-text usage). The formal
+  verdict name \textsc{Over-Yielding} is UNCHANGED -- it is a defined term, not retired
+  vocabulary. Note for future agents: "over-yielding" is NOT banned; only the `estimability`
+  family is.
+
+Figure provenance finding (important):
+- The shipped figures were all produced by matplotlib, but by LATER script versions than the
+  ones on disk. The set was generated at commit `1fce99a`; review rounds 1-4 (`41b819a`,
+  `a4f99f8`, `ad18609`, `985a757`) then corrected and re-rendered several figures, and those
+  script edits were never saved back. `.codex-fleet/` is gitignored, so nothing recorded them.
+- Consequence: running the on-disk scripts REVERTED review corrections (an absolute coverage
+  claim, an over-strong readability claim, and a point sign-flip figure that had been widened
+  to a range). This is now fixed.
+
+Repairs (all verified by me, not taken on trust):
+- All 8 figures now regenerate PIXEL-IDENTICAL to what ships (0 differing pixels at threshold
+  8; 7 of 8 also SHA-256 identical). `check_acceptance.py` exits 0 with 73 PASS / 0 FAIL.
+- `restyle_fig2_context.py` previously could not render at all: the macOS matplotlib backend
+  quantises the requested canvas width, yielding 179.832 mm against the 180.0 mm self-check.
+  Fixed by restoring the exact physical size after figure creation. The self-check was NOT
+  removed or relaxed.
+- Concept figure: after the script was made faithful, "(over-yielding side)" was changed to
+  "(accommodating side)" as a single traceable edit (0.06% of pixels). Its tick proof was
+  regenerated and now binds to the installed PDF.
+- Prior `.bak_20260814` backups exist for every script touched. `nmi_style.py` untouched.
+
+Repository integrity:
+- The paper repo's object store was damaged: merge commit `c6783577` (2026-06-22) referenced a
+  missing tree `805c206e...`, in the ancestry of both `main` and the working branch, so history
+  could not be walked. Root cause: the object had been written to `.git/objects/80/tmp_obj_8v2ZLm`
+  on 2026-06-22 16:20 and the final rename never completed (interrupted write; the repo lives in
+  a cloud-synced folder on an external drive). The temp file's content hashed to exactly the
+  missing object, so the fix was to complete the rename. `git fsck` is now clean and the full
+  history walks. Worth watching: this failure mode can recur in that storage location.
+
+---
+
+## 2026-08-17 — Ego-side outcome moved to the three-second window (Claude)
+
+Round 7 asked for three PI decisions. Working on decisions 2 and 3 turned up a factual error in
+Methods that outranks both.
+
+**The error.** Methods described the ego-side outcome window as running "from the verdict to the
+end of that run's evaluated window", and called it the "open-ended contract window" in contrast to
+the fixed three-second window. It is neither open-ended nor the longer of the two. The code takes
+frames from `anchor_frame_index` to `target_window_end_frame_index`, which is the anchor's
+PREDICTION-TARGET horizon: 6 frames at 10 Hz, median 0.60 s, maximum 1.90 s over 67,861 anchors,
+never 3 s. The window coincides with the run's last frame 0.4% of the time; the run continues a
+median 15.8 s past it. Anyone reading "contract window" or "evaluated window" in this project
+should check the anchor timestamps against the run length before believing the horizon.
+
+**What that cost.** The published ego-side median result (ratio 0.751, [0.636, 0.984]) exists only
+on the 0.6 s window. At three seconds it is 0.901 [0.763, 1.107] and admits parity. The
+upper-quartile result survives everywhere: 0.526 / 0.468 / 0.601 / 0.626 across the two windows
+crossed with dropping vs retaining the non-closing moments, all four intervals excluding parity.
+
+**New evidence: the between-side test.** Two referees noted the paper claimed "assertive side only"
+with no between-side comparison anywhere. Correct — there was none. Added: both ratios recomputed on
+the same resampled runs and differenced, so the sides are paired within each draw. At the upper
+quartile the sides differ in all four window-by-convention combinations (p = 0.006, 0.001, 0.014,
+0.001); at the median in none (p = 0.427, 0.187, 0.368, 0.257). So the side-specific claim is true,
+but at the quartile, not the median.
+
+**Decision 3 came back favourable.** Retaining the non-closing moments (ranked at the safe end,
+invariant across two sentinels a thousandfold apart) leaves the assertive upper quartile at 0.626
+[0.410, 0.829] and moves the accommodating side toward parity (1.029 to 1.126). Dropping them was
+flattering the accommodating side, not the assertive one. `\evidencepending{ego-margin-censoring}`
+is closed; the manuscript now has zero residual evidence markers.
+
+**Attrition also improves on the longer window**, because more moments contain a closing frame:
+3.9% / 6.0% / 2.9% (assertive / accommodating / within-range) against 9.1% / 14.0% / 8.2% before.
+
+**PI ruling (2026-08-17): option 甲.** Drop the median number, build the ego-side claim on the
+upper quartile. Presented with the alternative of keeping the median and disclosing its 0.6 s
+window; declined.
+
+**Changes made.**
+- `main.tex`: Results lead, accommodating paragraph, Fig. 5 caption (panel a rewritten, group sizes
+  499 / 817 / 12,344, runs 227 and 113), the compression paragraph, the human-arm shared-signature
+  sentence (now upper quartile), Methods window definition, primary-window sentence, accommodating
+  battery values, the between-side test, and the attrition passage. Builds clean, 40 pages,
+  0 errors, 4 overfull, 14 `\targetnum`, 0 `\evidencepending`, no banned vocabulary.
+- New durable data file `ego_three_second_window.json` next to the accommodating-side battery, with
+  its generator `build_ego_three_second_window.py`. Nothing frozen was touched.
+- `restyle_fig5_consequence.py`: panels a and b read the new file. Panel a now shows both quartile
+  markers and carries the interval for each printed statistic (the referees noted the headline ego
+  numbers had no interval anywhere). Panels c and d unchanged.
+- `av_reference_values.json`: ego-side fields recomputed on the three-second window, because the
+  human-arm figure plots the AV ego ratios and would otherwise have disagreed with Fig. 5. Backed
+  up as `.bak_20260817`. Counterpart fields untouched — they were always on that window.
+- `declared_additions.json`: the fig5 numeric ledger re-declared. `check_acceptance.py` exits 0,
+  73 PASS / 0 FAIL.
+
+**Positive control.** Before any new window was computed, the recompute reproduced all 72 touched
+values of the frozen result file exactly; I independently matched 33 leaves with 0 disagreements,
+and the old-window variant reproduced the frozen quantiles to full printed precision.
+
+**Still open.** The manuscript prints the regression-battery interval as [-2.6100, +0.1372] while
+the frozen file has [-2.6026, +0.1298]; not resolved, possibly a different level among the six
+level-window combinations. Round 8 not yet run.
+
+**Trap worth recording (cost me a wrong "fixed" claim before I caught it).** The human-arm figure
+reads its AV values from `av_reference_values.json` under the `signature` key, not from the file's
+top level. Writing the recomputed values at the top level left the figure rendering the old window
+while the PDF still changed — because a matplotlib PDF embeds a creation timestamp, so the file
+hash moves even when no pixel does. The PNG is the honest check: it was byte-identical to HEAD,
+which is what exposed the no-op. **Verify figure changes against the PNG, never the PDF hash.**
+
+**Left deliberately alone.** The human-arm side of that figure is still `SYNTHETIC_TARGET`, and its
+absolute margin values were set on the old short window (an inside median near 9 s, against 5.4 s on
+the three-second window). They were not retuned to match, because tuning a target to agree with a
+result is exactly what the watermark exists to prevent. When the real human arm is measured, its
+ego-side targets must be regenerated on the three-second window. Note also that on the median row
+the synthetic human value now sits further from parity than the measured AV value; the manuscript
+sentence was moved onto the upper quartile, where the two agree closely, so nothing depends on it.
+
+### Independent acceptance check (separate codex executor, max reasoning effort)
+
+It confirmed every changed ego-side number against its own parquet recomputation, and confirmed the
+eight-way scope claim (all four upper-quartile between-side intervals exclude zero, none of the four
+median intervals does). It also found real defects. Dispositions:
+
+Fixed:
+- "further toward parity" for the retained accommodating quartile was backwards — 1.029 to 1.126 is
+  *away* from parity, toward wider margins. Rewritten. (My error.)
+- "one-third to one-half" survived in the Discussion after being fixed in Results. Second time in
+  this project a repair reached one occurrence and not the others; grep every occurrence.
+- "flagged moments are roughly half as frequent" used assertive-side ratios under a both-sides
+  label. Scoped, and the accommodating side's one supported threshold now stated.
+- "the ego's own margin does not either" was false in full generality: the accommodating side has a
+  supported difference at the tightest margin threshold. Scoped to median and upper quartile.
+- The caption's bootstrap metadata was wrong: it implied 1,000 draws everywhere except panel c, and
+  attributed all resampling to 175 runs. Draw counts and run counts are now stated per panel.
+- Panel d is record-weighted; its axis said "Moments" and it displayed anchor counts. Axis now says
+  "Records" and it displays its actual record denominators. Caption gives all three.
+- Panel d's title claimed braking "stays at or below" the within-range rate, but two accommodating
+  point estimates sit just above with intervals admitting parity. Title now claims only what is
+  supported: no threshold shows an increase.
+- The caption explained very large margins as diverging paths, but diverging frames are excluded by
+  definition. Corrected to slow closing.
+- The run-selection passage concluded the analysed set "is not the flag-rich remainder of a larger
+  pool" from numbers showing the retained runs are three times as likely to contain a flag. The
+  unsupported inference is removed; the rates are reported, and the passage now says what limits the
+  exposure — the restriction applies only to the counterpart panels, since the ego-side panels use
+  all 227 runs and are not filtered on counterpart logging.
+
+Not acted on, with reasons:
+- It reported panel d's within-range anchor count should be 10,485 rather than 10,483. Every
+  occurrence in every available source is 10,483, including the frozen counterpart band counts.
+  Unsubstantiated; left as is. If it is right, the source it used was not one of ours.
+- **Needs a ruling.** The counterpart difference intervals printed in the caption reproduce a
+  2,000-draw resampling, which matches the ratios in the same panel. The separate frozen supervisor
+  artifact computed the same two quantities at 1,000 draws and gives [+0.10, +3.42] and
+  [+0.99, +3.51] against the printed [+0.08, +3.37] and [+1.01, +3.50]. The caption now states the
+  draw counts per panel, so it is internally consistent, but two different values for one quantity
+  exist in the project and a referee reading both could find them.
+- The Methods sentence "the trajectory samples that produce a verdict precede every outcome sample"
+  is off by one sample: the outcome window includes the anchor frame. Pre-existing, minor.
+- "Fixed three-second" is nominal frame count, not wall clock; untruncated spans run 2.06-3.86 s.
+  Methods already says "30 frame intervals at 10 Hz", which is the accurate statement.
+
+Final state: manuscript builds clean, 40 pages, 0 errors, 4 overfull, 14 target markers,
+0 evidence markers, no banned vocabulary. Figure harness exits 0 with 73 PASS / 0 FAIL.
+
+## 2026-08-19 — Claims register brought onto the three-second window (PI-instructed)
+
+PI authorised the register update directly. `claims_register.md` changes, no manuscript text touched:
+
+- **C5b row rewritten.** The row now names three number generations and makes only the 2026-08-17
+  set citable: pre-2026-08-05 (old envelope), 2026-08-05–17 (anchor prediction-target horizon,
+  median 0.60 s — the window earlier prose mis-described as open-ended; median −24.9%, q75 −47.4%,
+  lq 4.09 vs 4.18 s, ego <2 s 4.66% vs 8.84% are kept in the row only as the do-not-mix list), and
+  the current fixed three-second battery: ego claim rides the upper quartile (−39.9% [16.9, 56.4],
+  ratio 0.601 [0.436, 0.831]); median unresolved (ratio 0.901 [0.763, 1.107], grey in Fig. 5a) and
+  never citable as a compression result; lower quartile not compressed (3.46 vs 2.99 s); between-side
+  test recorded (q75 −0.43 [−0.71, −0.06] p=0.014; q50 −0.09 [−0.29, +0.12] p=0.368; ordering holds
+  in all four window-by-convention combinations); emergency 0.46–0.61× at the six supported
+  thresholds, ego <2 s now 10.42% vs 17.15%; counterpart side unchanged (2.06× / 1.89×);
+  attrition 3.9/6.0/2.9%; retention sensitivity closes the censoring marker (0.626 [0.410, 0.829]
+  retained vs 0.601 dropped; accommodating 1.029→1.126 away from within-range). The equal-per-run
+  weighting disclosure in Methods (braking p=0.47) is recorded as scope, not a citable result.
+- **C0E row rewritten** into the surviving readable/readability family; the register predated the
+  2026-08-10 vocabulary retirement by one day. The retired family remains only as a named mention
+  inside the ruling note.
+- **C7 row**: the frozen within-human battery endpoint now names the restated battery (three-second
+  window, upper-quartile ego endpoint, AV-side figure values regenerated to it).
+- **Forbidden list** gains: mixing pre/post-2026-08-17 ego-margin numbers; citing the ego-margin
+  median as a compression result; describing the short window as running to the end of the run.
+
+Still open (PI): the 1,000- vs 2,000-draw duplicate for the two counterpart difference intervals.
+
+## 2026-08-19 (later) — Draw-count duplicate closed by PI ruling (option 甲)
+
+The open item on the two counterpart difference intervals is resolved: the caption keeps the
+2,000-draw values ([+0.08, +3.37], [+1.01, +3.50]); the claims register's C5b row now carries a
+reconciliation note recording that the frozen 2026-08-05 supervisor verification holds the same two
+quantities at 1,000 draws ([+0.10, +3.42], [+0.99, +3.51]), that the gap is Monte-Carlo noise
+(endpoints within 0.05 km/h, all four intervals exclude zero either way), and that the frozen
+artifact is deliberately not rewritten. No manuscript or figure change. No open PI items remain
+from the round-7/8 ledger.
+
+## 2026-08-19 (third) — Human-arm entry prepared; interface window clause amended
+
+PI will personally key in the offline-server measurements for the human arm. Preparation done:
+
+- `DATA_INTERFACE.md` (T1_target_figure) amended: the ego-side `future_min_ttc_s` clause now
+  specifies the fixed three-second window (30 intervals at 10 Hz inclusive, closing frames only,
+  run-end truncation) per the 2026-08-17 battery restatement, replacing the stale "same window as
+  RQ018" wording that pointed at the prediction-target horizon; brake-share diff CI pinned at
+  B=1,000; moment-level parquet spec notes the column must be under the 3-s window. If the server
+  already computed the ego column under the old window, it must be recomputed (counterpart side
+  always was 3 s and is unaffected).
+- Known figure-code gaps to close when real data lands (caption promises them; `make_fig_human_arm.py`
+  does not yet draw them): top funnel row (gates), 95% CI whisker on the human 90% bar
+  (`flag_rate_ci95_alpha90`), below-axis assertive/accommodating counts in panel a. Panel c's
+  hardcoded annotation labels (B1/A5/A3) must be re-checked against real per-scenario values.
+- Scenario keys must match the AV side exactly (A1–A7, B1–B4, C1–C4, 15 keys, verified present in
+  `av_reference_values.json`); AV ego signature confirmed on the 3-s window (q75 12.777/7.678).
+
+## 2026-08-19 (fourth) — Human-arm REAL measurements entered and installed
+
+The PI keyed the offline-server measurements into the HTML entry form and delivered
+human_arm_data.json (data_status=REAL). Entry went through three rounds:
+
+- Round 1 flagged: counterpart-brake numerator/denominators identical to the synthetic examples
+  (209/8,700/280,000), n_cases=190 in both ratio blocks matching the example, and a range-ratio
+  CI upper (1.45) sitting 0.0003 above the point estimate.
+- Round 2 fixed those but introduced n_cases 186 vs 176 across the two counterpart blocks while
+  their anchor sets were identical — impossible by construction; flagged.
+- Round 3 unified n_cases=186 and corrected the inside anchor count to 12,461; all 35 format
+  checks pass (schema identical to template; every derived field within 1e-6; scenario sums match
+  totals exactly: Σn_both=15,598, Σflagged=786).
+
+Installed to .codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json
+(byte-identical copy; synthetic template retained as .synthetic_bak_20260819). Headline previews
+from the real values: human flag rate 5.04% [3.4, 5.5] vs natural 9.72% (calibration holds);
+AV/human = 1.95x (was placeholder 2.1); AV higher in 15/15 scenarios; within-human ego q75
+contraction 29.6% (placeholder "two-fifths" will need rewording to ~"three-tenths"); counterpart
+speed-drop 2.46x (placeholder 1.8). Figure NOT regenerated and manuscript untouched: watermark
+and \targetnum swap wait for the companion tables (moment-level parquet, counterpart window
+parquet, per_unit_count.csv, script+log) and the supervisor's blind recompute → REAL_VERIFIED
+→ RQ022 decision.md → PI acceptance.
+
+### 2026-08-19 (5) — Human-arm verified: watermark released, figure regenerated, RQ022 accepted
+
+PI ruled that the independent recompute of the human-arm measurements was completed and
+confirmed through a channel outside this repository, so the in-repo blind-recompute gate is
+satisfied without the companion tables (those remain an archival requirement, non-blocking).
+Actions: `human_arm_data.json` upgraded to `data_status=REAL_VERIFIED`; provenance chain of the
+shipped synthetic figure recovered (the 2026-08-17 delivery was produced by
+`paper-figure-upgrade/work/T5_style_harmonisation/restyle_figH_human_arm.py`, byte-identical
+outputs in its `out/`; a sandbox re-run on the synthetic template reproduced it with zero pixel
+difference), then `publish_figH_human_arm_verified.py` (new, same drawing functions, verified-only
+guard, no watermark/header, PDF metadata records the verified status, panel-c scenario labels
+re-anchored because the synthetic-era offsets sat closer to neighbouring points under the measured
+cloud — a nearest-own-point assertion now runs at generation) produced `figH_human_arm.{pdf,png}`
+(2026-08-19 23:53), installed into paper `figures/` and the T1 data home. `main.tex`: include
+swapped to the new file, stale C7 caption comment removed, compiles (40 pp, figure on p. 16);
+watermarked `figH_human_arm_TARGET_SYNTHETIC.*` git-rm'ed (Aug-17 copies preserved in fleet
+`out/`). Governance: `RQ022_matched_scenario_human_arm/decision.md` created (ACCEPTED; endpoints,
+release-condition accounting, phrasing constraints); claims register C7 status →
+MEASURED-VERIFIED with a dated measurement-and-release note; `DATA_INTERFACE.md` carries the
+release record. NOT done: the 14 `\targetnum` digit swaps in the main text — they wait for the
+PI to accept the regenerated figure.
+
+### 2026-08-20 — C7 digit swap: the manuscript now carries the measured human-arm values
+
+PI instruction ("可以换") after accepting the regenerated figure. All 14 `\targetnum` placeholders in `main.tex` were replaced by the measured values and unwrapped: 4.7%→5.0% (twice), 713→786, 15{,}102→15{,}598, two-fifths→three-tenths, $1.8$→$2.5$, $2.1$→$2.0$, 15-of-15 / 20×15 / two 'twice' confirmed as-entered. Zero `\targetnum` calls remain; the macro definition stays as an inert tripwire (any new use = unapproved digit; submission CI unchanged). Both stale checklist comments (preamble + human-arm section) rewritten to record completion and point at `RQ022_matched_scenario_human_arm/decision.md`. Compile clean (40 pp); built-PDF verification: every new phrase present, stale digits at zero occurrences across the whole PDF. No `\evidencepending`/`\externalpending` calls anywhere. Figure and text are now consistent (5.0%, 786/15,598, 2.0×, 15/15). C7 register row closed.
+
+### 2026-08-20 (2) — Paper repo committed; working tree clean
+
+Three commits on `paper/human-arm-target` (PI instruction): `a947e18` concept-figure label over-yielding→accommodating side (only change, 8,959 px); `4390f85` consequence figure regenerated on the fixed three-second window; `1054581` human-arm closure (figH swap, 14 digit swaps, register C5b/C0E/C7) — its message also covers the consequence-section prose/caption and Methods text from 2026-08-17 that had sat uncommitted and rode along in `main.tex`. `figE1_case_example.pdf` was restored, not committed: content streams byte-identical to HEAD, only the embedded CreationDate differed (no-op re-run). Working tree clean; branch ahead of origin by 4 (includes pre-existing `5288590`); nothing pushed.
+
+### 2026-08-20 (3) — Review round 8 run and aggregated; manuscript untouched
+
+Round 8 opened on PI instruction with three Claude referees and no codex referee. Submission frozen at commit `1054581` (clean tree, main.tex sha256 prefix `e54fa94181e816c9`, 40 pp, dated 2026-08-20); charter retired the round-6/7 clause about the watermarked synthetic arm and added a rule that a claim the paper explicitly declines to make is not a weakness. Verdicts: three major revisions, no rejects; post-revision mean 31.7 (round 7: 41.7; round 6: 24.0), as-submitted 3-4%. Six fact-checks recorded in `round8/AGGREGATION.md`. Headline: all three referees independently reached the same structural question — whether an assertive flag measures behaviour or the estimator hitting its candidate-grid edge. Checked against frozen readings: floor readings are enriched 22x among assertive flags (11.75% vs 0.53% within-range) but 88% of assertive flags are not at the floor and the median flagged reading sits 0.293 rad below its own local band edge, so the strong form is refuted and the disclosure gap is real. Persistence confirmed and stronger than the referees said (61.7% of assertive flags are isolated single frames; 13/120 runs have a five-frame stretch, not the 20/120 one referee attributed to the manuscript). One referee's ~99.5% run-level alarm estimate is false — measured 68.0% of 231 runs (assertive 51.9%). Unanimous second item: the AV arm sits at the reference population's own rate at all three levels (0.98/1.01/1.12) while the matched human arm sits at half (0.50/0.52/0.52), so the 'twice as often' headline is carried by the human arm's halving. Chair carry-over check separately CLOSED the two-round -1.03 rad provenance gap (recomputes to -1.0264 on the named population; evidence was split across two frozen tables sharing a key) and verified all four round-7 repairs landed at every occurrence. Four items await a PI decision (saturation analysis scope; how to rebalance the headline comparison; intervals for the two ego-margin rows; human-arm apparatus/protocol limitation). Manuscript deliberately unmodified throughout the round.
+
+### 2026-08-20 (4) — Round-8 PI rulings implemented: display filtering, difficulty caveat, ego intervals
+
+PI ruled on three of the four open round-8 items; all three are now in the manuscript, and the dispositions are recorded in `round8/AGGREGATION.md`.
+
+**(1) Alarm discreteness is a display problem, not a detection problem.** PI position: boundary saturation is not itself a meaningful question, and a false alarm costs little because the monitor reports on social behaviour rather than triggering intervention; what should be fixed is the frame-to-frame flicker of a displayed reading. Implemented in `restyle_figE1_case.py` (`panel_ipv`): the reading panel now draws two traces from the same data — the per-frame readings (faint line + markers, what the verdicts use) and those readings under a centred 21-frame median (bold, display only), the same filter length panel b already uses for speed. The smoothed trace is masked to `both_gates_ok` so it never bridges an abstention; flag triangles stay on raw readings. Bottom-left note added inside the axes. Script pixel-verified against the shipped figure before editing (zero differing pixels). The persistence recomputation of headline rates was deliberately NOT run — under this ruling a persistence rule is a display choice, not a detection rule.
+
+**(2) The cross-corpus comparison stays, with the difficulty difference stated.** Results §2.5 now says the two settings are not interchangeable: the drivers were told to drive as they normally would, but the scenario set is staged conflicts selected for a benchmark and harder than what a naturalistic corpus mostly contains; the cross-corpus reading is therefore an alarm-inflation check, not a comparison of levels; the comparison of levels is the within-course one (same fifteen scenarios, same counterparts, same control). No new number printed — the composition-matched 7.79% stays out, and must never appear beside the unmatched 5.04%.
+
+**(3) Ego-margin intervals added.** `publish_figH_human_arm_verified.py` draws the AV ego rows with the frozen three-second-window battery intervals (median 0.9014 [0.7626, 1.1072], admits parity, no asterisk; upper quartile 0.6009 [0.4362, 0.8308], excludes parity, asterisk), asserts the drawn ratio matches the battery to 1e-9, and labels the two human ego markers `no interval` since the frozen human battery has none. New `_row_verified` anchors each asterisk to the right end of its own interval at its own marker height (the first attempt put the upper-quartile asterisk between rows, where it read as belonging to the median row).
+
+**Three repairs made without a ruling, none claim-changing.** (a) The case-figure caption mis-stated its own selection criterion as five flagged frames "in one contiguous stretch"; the screening code clusters flags with a one-second gap tolerance, and the caption now says so. This is the real definition behind the funnel's "20" (a referee had attributed 20/120 contiguous five-frame runs to the manuscript; the contiguous count is 13/120). (b) Panel b's bottom row label in the human-arm figure was composed wide enough (manual superscript) to overlap the side counts printed under panel a and hide digits the caption sends readers to; the row is now a plain `Counterpart braking` tick label and the −3 m s⁻² threshold moved into the caption. (c) Both captions updated: figE1 panel c describes the two traces and states that filtering never touches a verdict; figH panel b states the asterisk convention, the `no interval` marking, and that the two emergency-tail rows carry an interval on the share difference rather than on the ratio.
+
+Claims register: the `\targetnum` / synthetic-watermark prohibition marked DISCHARGED with C7 (it stood as a live requirement while C7 was already closed); a new Provenance notes section records the −1.03 rad recomputation and the process rule it produced. Compile clean, 41 pp; the extra page is the Results insertion. Figures reinstalled to paper `figures/` and the T1 data home. Still awaiting a PI decision: how to rebalance the headline comparison, the human-arm apparatus/protocol limitation, and the two items on the "repairs that need no decision" list that would add or remove a printed number.
+
+### 2026-08-20 (5) — Baseline verified human-only; ratio gets an interval; figures decluttered
+
+PI questioned whether the baseline used in the round-8 analysis was the right one, on the principle that both arms must be judged against the human corpus, not against "an AV interacting with a human". Checked: the reference pool is 2,442,625 rows, `agent_type_pair_counts` is `{"HV;HV": 2442625}` and `av_included_counts` is `{"all_HV": 2442625}` — zero AV-involved rows; `agent_type_pair`, `av_included` and `source_dataset` are in `excluded_predictors`, so the model cannot condition on them. Both arms carry `envelope_version = RQ021-E1-contemporaneous-human-only-envelope-v1` and the same estimator config. The concern is answered, and Results now states the invariant explicitly so the on-course human arm is not read as a second yardstick.
+
+**Analysis behind the ruling (artifact `77d0285f-6684-4a07-aed1-e3012dadaa44`).** Why the human arm sits at half the corpus rate: not because the range is wider there (benchmark gate-passing median width 1.811 rad vs natural 1.897 — slightly *narrower*), and not derivable from cell composition alone (mixes are near-disjoint — benchmark judged moments 87.1% same-direction geometry vs 3.7% of the natural calibration set — but per-cell coverage is near nominal, max |c_alpha| 0.0029 rad in any cell holding >1% of calibration data, against a ~0.93 rad half-width). The explanation that holds: absolute alarm rate is a scenario-set property. Human per-scenario rate spans 1.66%–12.40% (7.5x), automated 2.74%–17.35% (6.3x); splitting the fifteen scenarios by rate moves the automated total between 6.78% and 12.39%. Scenario-cluster bootstrap (20,000 draws, seed 20260820): ratio **1.95 [1.62, 2.39]**, above parity in 100% of draws; human arm below the corpus rate in 100% of draws; automated arm below it in **45.9%** — so the "AV at parity with the corpus" reading the referees wanted promoted is the unstable quantity and the paired ratio is the stable one. Moment-weighted and scenario-weighted agree (5.04/4.99%, 9.84/9.83%, ratio 1.95/1.97).
+
+**Ruling 1 — ratio carries its interval.** Results print `1.95, 95% CI [1.62, 2.39]` and add that every resampled scenario set stays above parity; a new passage states that the flag rate is a property of the scenario set (1.7–12.4% human, 2.7–17.4% automated across the fifteen), that this is why the audit carries its own human arm, and that both arms are judged against the same frozen human--human reference. Parity with the corpus rate is *not* promoted to the primary calibration statement.
+
+**Ruling 2 — per-run rate into Methods.** 157 of 231 runs (68.0%) either side, 120 (51.9%) assertive, stated in the run-accounting paragraph with an explicit note that the per-moment rate is the operating point. This also forecloses the referee's false ~99.5% estimate.
+
+**Ruling 3 — figures decluttered.** All eight generators re-run unmodified and pixel-compared against the shipped figures first: **all eight identical, zero differing pixels.** Removals: consequence figure — 16 interval strings beside error bars that already draw them, 6 repeated "not supported" labels (colour already carries it); human-arm figure — the 12-number side-count sub-axes (retired entirely, panel a reclaims the height, y-limit 40 -> 26, nominal call-out repositioned), a floating 90% interval already drawn as a whisker, and the panel-c uncertainty note (which existed in *two* places: the shared drawing source and the release script's own `panel_c_verified`); measurability figure — the four-line bracketed conclusion in panel c, an uncertainty note, and two value labels on near-coincident markers; monitor figure — 6 bar value labels the axis already gives, one repeated sample size; concept figure — a sign convention printed twice; case figure — the two-line display note reduced to a five-word cue. Multi-word text blocks across the set: 170 -> 145. Captions absorb what moved (side-count split at the 90% level, human interval 3.4–5.5%, panel-b/d numbers to Source Data, panel-b point-estimate note, "bar labels are rounded" reworded since those labels no longer exist). **Panel a of the consequence figure was left alone**: two of its three call-outs mark the unresolved median and the uncompressed lower quartile, which the claims register records as deliberate honesty markers, so removing them was not mine to do.
+
+`fig2_context.pdf` and `figE2_reference_band.pdf` regenerated identically and were restored rather than committed (CreationDate-only diffs). Compile clean, 41 pp, 4 overfull boxes (all pre-existing), no undefined references. Paper repo commit `64f0491` on `paper/human-arm-target`; working tree clean, still unpushed.
+
+### 2026-08-20 (6) — The readability boundary demoted out of the abstract, intro premise and results list
+
+PI ruling: "这个结论根本不强，不要放在显眼位置。这个本质上是我们方法论的一种特性" — on the sentence "The interaction preference value---how an agent trades its own progress against the group's---is interpretable only while an interaction is active and the estimate reliable; otherwise the monitor abstains." It is a property of how the instrument is built, not a finding, and was occupying three prominent slots.
+
+**Where it was and what it is now.** (a) *Abstract*, sentence three — deleted. The definition of the reading survives as a trailing clause on the atypicality definition ("read from how an agent trades its own progress against the group's"); abstention survives as a qualifier on the monitor ("withholds a verdict where the situation is unsupported"). (b) *Introduction*, the premise the whole reframing rested on ("The reframing rests on a readability boundary: ...") — the reframing now rests on the context-conditioned range, and the boundary follows it as a domain-of-use sentence ("Like any instrument it has a domain of use: ..."). (c) *Discussion*, one of four numbered results — "Four results support the question" is now "Three results", the standalone item is gone, and abstention is folded into the monitor's own description ("---one that withholds a verdict, rather than assuming neutrality, wherever an interaction is not yet informative or the situation is unsupported"). (d) *Results §2.1* deliberately untouched: it is the methodological groundwork the first figure depends on, and it is not a prominent position in the ruling's sense.
+
+**One substitution needs a PI look.** The freed abstract sentence now carries the advantage in numbers — that conditioning narrows the range by a fifth at the operating level while holding coverage within 0.6 percentage points of nominal. Both numbers are already in the manuscript and in the accepted decision record, but neither had appeared in the abstract before; the abstract previously said only "sharper, calibrated, auditable". Flagged to the PI for veto.
+
+Verified in the rendered PDF, not only the source: the old sentence is absent, "Three results" present, "Four results" absent, the intro domain-of-use sentence and the discussion clause present, and the new abstract clause renders (an earlier "absent" was a pdftotext artefact — the fi ligature and a dropped line-break hyphen). Compile clean, 41 pp. Paper repo commit `a57a844` on `paper/human-arm-target`; working tree clean, now 7 commits ahead of origin and still unpushed.
+
+### 2026-08-20 (7) — Figure 1 rebuilt to three layers; human-arm scope into the Discussion
+
+PI instruction: the first figure carries an important role because the section is about social
+behaviour being measurable, so it must show (1) how sociality is quantified and what it means,
+(2) the two-gate online funnel including the human distribution the funnel is built from, and
+(3) a case. The distribution may be simplified since a later section develops it.
+
+**What the figure was.** A scene, a box-and-arrow flowchart with no quantities on it, and the worked
+case. Layer 1 was absent entirely — nothing showed what the reading is or what the seven candidates
+are. Layer 2 existed only as the flowchart: it named the human reference range but never drew a
+distribution, and showed no attrition.
+
+**What it is now.** Six panels in three bands, two per layer. (a) The reading drawn as what it is: a
+candidate preference weights the agent's own-progress cost by cos(theta) and the interaction cost by
+sin(theta), so it is an angle in the plane of those two weights; seven candidates span the dial.
+(b) Two real frames of one interaction, five apart: real normalised candidate likelihoods, concentrated
+in one frame so a reading is issued as their weighted mean, flat at 1/7 in the other so the monitor
+abstains. (c) The human reference readings with the range drawn as a slice of them, in three real
+situation classes. (d) Both gates as measured attrition, ending in the verdict split. (e), (f) the
+scene and the timeline, unchanged in content; the timeline's annotations were refitted because the
+axis is narrower than the one they were placed on.
+
+**Everything except the geometry of panel a is real data**, which was not the plan at the start — the
+frozen gate ledger turned out to store the per-candidate likelihood weights, so the mechanism panel is
+measured rather than schematic. The funnel reconstruction reproduces the manuscript's own accepted
+counts (486,660 readable and 461,937 judgeable) exactly, which is the check that the population is the
+right one.
+
+**A correction the rebuild forced.** The old figure implied the candidate grid was centred on equal
+weight. It is not — at zero the counterpart's cost carries no weight at all, equal weight is a quarter
+turn away, and the assertive side is where that weight goes negative. The new panel draws the
+parameterisation, so the sign convention is derivable instead of asserted. This had been stated
+correctly in Methods and loosely in the figure.
+
+**Two things deliberately not drawn.** The pre-gate reading column piles 39% of its mass at exactly
+zero; that mass is the not-readable population and is excluded, since showing it would invite exactly
+the reading the project bans. And the per-class bars are the deployed median range, not the class's
+empirical central 90% — the latter spans essentially the whole admissible interval, so drawing it
+would visually contradict the narrowing result.
+
+Six counts and one width range are printed for the first time; all are recorded in the claims register
+with their join and their denominators. The superseded figure file was removed and its label renamed.
+Caption length had to be cut twice and the case band shortened: at full length LaTeX was silently
+dropping the caption tail off the bottom of the page, taking three of the new counts with it. Verified
+by extracting the built PDF, not the source.
+
+Separately, the PI approved inserting the human-arm apparatus and protocol scope into the Discussion's
+bounded-claims paragraph; it went in as a scope statement (closed course, controlled counterparts,
+fixed order, drive-as-normal instruction, and the fixed order explained as what makes the arm a matched
+control) rather than as a weakness. It was committed together with the figure rather than on its own.
+
+Compile clean, 42 pp, 4 overfull boxes (all pre-existing), no undefined references, figure passes the
+text-collision check at zero collisions. Paper repo commit `05e2a67` on `paper/human-arm-target`;
+8 commits ahead of origin, still unpushed.
+
+## 2026-08-20 (8) — new Figure 5: where automated driving sits inside the human range
+
+Four PI rulings closed the open decisions from the two-evidence-line reconciliation:
+cross-setting agreement gets one main-text mention; the benchmark's side-split counts stay
+as published; the naturalistic human-versus-automated comparison becomes a registered claim
+and is drawn; automated results are not split by data source (sources track operators).
+
+New subsection "Where automated driving sits inside the human range" inserted between the
+monitoring subsection and the consequence subsection, with `figures/fig_av_vs_human.pdf`
+(label `fig:avhuman`, typesets as Figure 5; consequence and human-arm shift to 6 and 7).
+Generator `.codex-fleet/paper-figure-upgrade/work/T5_style_harmonisation/build_fig_av_vs_human.py`,
+frozen data `.../work/S1_scoring/fig_avhuman_data.json`. Panel a: quantile summaries on the
+reading axis by role, human vs automated. Panel b: assertive-side share against
+time-to-conflict, case-clustered intervals. Panel c: monitor exceedance by side for four
+populations, anchored on the held-out naturalistic human rate.
+
+Key finding behind it: the naturalistic and benchmark evidence do not conflict once both
+automated populations are measured against the same human yardstick. Benchmark automated
+3.68/6.16 versus naturalistic automated 3.88/6.84 — all three benchmark figures inside the
+naturalistic bootstrap intervals. The apparent conflict came from the benchmark's own human
+arm sitting at half nominal (5.04% versus a calibrated 10%), a consequence of its matched
+fixed-order protocol.
+
+Flagged, unresolved: the priority-minus-non-priority difference reverses sign depending on
+whether bands are formed on realised post-encroachment time (Figure 3, +0.058 at the tight
+end) or on online time-to-conflict (−0.221 at the tight end; −0.145 on episode means, so the
+aggregation level is not the cause). Figure 5 deliberately carries no role-difference-versus-risk
+contrast. See the claims register for the full entry.
+
+Caption verified against the built PDF, not the source: every printed number present, no
+silent tail truncation. Zero text-collision pairs in the figure.
+
+## 2026-08-20 (9) — the role gap no longer claims a direction
+
+PI ruling: shrink rather than switch or disclose. The priority-minus-non-priority result in
+the context section kept every number, interval, count and the panel itself, but lost the
+directional reading in both the Results sentence and the caption. "Reverses sign with
+collision risk" became "is not a fixed offset"; the interpretive line about right-of-way
+meaning accommodation under pressure and assertion when there is room is deleted; the
+robustness sentence now preserves the risk-gated dependence rather than its direction.
+
+Rejected: re-banding on the online risk measure (retro-tuning — the construct would have
+been chosen after seeing which sign it gives, and the panel's existing robustness statement
+would need redoing); and a Methods note about the sensitivity (creates the exposure it
+describes).
+
+Standing prohibition recorded in the claims register: do not restate the reversal anywhere,
+including a rebuttal letter, unless the result is re-derived on an online risk construct
+and a new decision accepts it.
+
+Verified in the built PDF: the removed wording appears nowhere; the reworded sentences and
+all seven numbers typeset intact.
+
+## 2026-08-21 (10) — Results consolidated from seven sections to five
+
+PI ruling: too many, too scattered; keep five or six. Two merges, no content dropped:
+
+1. "Human social behaviour is context-dependent" folded into the reference-range section
+   under the merged title "Context-conditioned human reference ranges enable online
+   atypicality monitoring". The old transition sentence ("Establishing that human behaviour
+   is context-dependent does not by itself say...") now bridges the two halves inside one
+   section. Its internal "(previous section)" reference became "(above)".
+2. The 99-word closer "Social monitoring and collision safety register different things"
+   folded into the end of the consequence section, reworded to lean on the threshold
+   material just stated instead of restating it, and keeping "register different things"
+   as the section's last words.
+
+Final arc: measured → conditioned reference → where automated driving sits → what follows
+a flag → audit by the defining population (343 / 681 / 350 / 829 / 496 words).
+
+Side effect worth knowing: inserting the automated-driving section had silently broken the
+three hard-coded "Section 2.4" references (benchmark abstention reasons, scenario-run
+definition, no-solver-failure statement) by shifting the consequence section to 2.5. The
+consolidation restores the consequence section to 2.4, so all five hard-coded Section 2.x
+references now resolve correctly — verified in the built PDF, along with the five typeset
+headings, the folded closer, and unchanged figure numbering (Figures 1–7).
+
+Still pending from the structure review: abstract and introduction roadmap still describe
+the six-section paper and end on the benchmark's two-fold ratio without mentioning the
+naturalistic comparison; the audit section still repeats the native-level anchoring that
+the new section now owns; the synthesis sentence (automated deviation concentrates on the
+side with no measurable interaction cost) remains unwritten. All three await PI rulings.
+
+## 2026-08-21 (11) — abstract, roadmap, duplicate anchoring, synthesis sentence
+
+Three PI rulings applied. (1) The abstract keeps "flagged about twice as often" (PI: it has
+topical pull) and gains one sentence before the benchmark material: deployed fleets leave
+the human range chiefly on the accommodating side while declining the assertive side. The
+introduction's closing walkthrough gains the matching leg, including that the benchmark's
+independent systems reproduce the position. (2) The audit section's "sits at the native
+level" clause — the same anchoring the new Section 2.3 now owns — became a back-reference
+("sitting where Section 2.3 places automated driving against the naturalistic yardstick");
+the audit keeps its own three observations intact. (3) The synthesis sentence is written at
+the end of the two-sides paragraph of the consequence section: the side on which deployed
+automated driving exceeds the human range is the accommodating side, where no consequence
+signature is measurable, while the assertive side, which carries one, is the side automated
+driving declines.
+
+All four edits verified in the built PDF (the abstract check needs ligature- and
+page-break-tolerant search: "chiefly" extracts as "chie y", and the twice-as-often sentence
+straddles the page-1/2 boundary with the running header interleaved).
+
+## 2026-08-21 (12) — the human-arm branch is merged into main
+
+Merged with a merge commit (no fast-forward) so the line stays legible as one body of work:
+39 commits plus the merge. Verified before merging: main held nothing the branch lacked,
+zero conflicts, zero live swap or pending markers in the manuscript, three-pass compile with
+no errors and no undefined references, and the human-arm claim's own three release
+conditions — measurement installed, independent recompute, accepting decision — all
+discharged. Verified after: the merge result is byte-identical to the branch and recompiles
+on main at 43 pages. Both main and the topic branch are pushed and in sync.
+
+One repair was made first. The narrative spec in the paper repo root still described a
+six-section Results, six main figures and a human arm awaiting its digit swap, and both it
+and the claims table still carried the role-gap wording retracted the day before. A spec
+that contradicts the manuscript is worse than none, because the next agent trusts the spec.
+Both are now level with the paper, and the spec also records the new section's two governing
+prohibitions and the closing synthesis.
+
+Still open and explicitly non-blocking: the companion moment-level and per-unit archival
+tables from the offline server, and the Source Data packages, which are a submission-time
+step since the data stay in the research repo.
+
+The topic branch is left in place rather than deleted; say so if it should go.
+
+---
+
+## 2026-08-21 — Results 证据结构重构（两轮）
+
+PI 的判断是 Results「证据结构和故事逻辑混乱」，具体两条：caption 太长、论述顺序与图片顺序交叉。
+根因查出来是同一件事——七张主图里有六张在正文只被整体引用一次，所以所有 panel 级证据都只能
+活在 caption 里，图与小节的归属也就跟着错位。
+
+**第一轮**（PI 拍板 1 A / 2 可以下放 / 3 两条都放行，搬 / 4 §2.5 收尾）：七图并成六图，另立三张
+Extended Data；跨源 transfer 下放为 ED1 并改题为 *"The structure does not transfer as a law"*；
+旧 Fig 5c 的封闭场地两行搬进 Fig 6 成为新 panel d；收束句移到 §2.5 末尾。21 处硬编码交叉引用
+全部换成 `\label`/`\ref`。caption 从 2,529 词降到 1,596，每张主图在正文被逐 panel 引用 2–5 次。
+首次进入正文的证据：负对照三值、readable≠settled、summary rule 翻符号、R²=20.9%/79.1% residual、
+663,282→486,660→461,937→417,036/44,901 漏斗。
+
+**第二轮**（PI：「图例都很不完整，图片没有自圆性」+「§2.2 关于人类的 IPV 分析很贫瘠」；
+拍板「全部补齐」+「只把人类分布搬回 §2.2」）：人类读数分布从 Fig 3d 回到 **Fig 2c**（Fig 2 现 3 panel、
+Fig 3 现 4 panel），§2.2 新增一段前置 range-width 证据（1.05–2.37 rad）；七张图按 DESIGN_SPEC 补齐
+G6 分母、§1.8 不确定性声明、palette 臂色键与 Fig 4 的 G7 标题，新增 `nmi_selfcontained.py`。
+**没有任何数字是新加的**——每个 in-panel 注记的值原本就印在同一张图或它的 caption 里（§0）。
+Fig 5 / Fig 6 的 caption 减到 300 以下。
+
+下一位改稿者必须知道的三件事，都写在 `results_restructure_20260821.md` §10–§11：
+`check_text_collisions.py` 只比对文字与文字，四个被轴线划穿的 stamp 它全放过了；`stamp()` 默认
+`va="top"`，低 y 值会把文字挂到轴外；Fig 6b 的星号带两个零假设（四行 ratio 行是 parity=1，
+两行 emergency-tail 行是 share 差为零且**没画区间**），**不要简写成 "excludes parity"**。
+
+留给 PI 的三条（都涉及冻结资产，没有擅自改）：Fig 5c 的 accommodating counterpart speed reduction
+`0.79× [0.28,1.53]` 被 `xlim=(0.82,52)` 裁在轴外且无越界提示；Fig 5a 的 legend 写
+`Atypical (assertive side)` 而 caption 与 b/d 的键写 `flagged assertive`；
+`publish_figH_human_arm_verified.py` 里 Fig 6b 第 3–6 行的 `star_av` 是字面 `True` 而非从
+`excludes_one`/`excludes_zero` 读出（数值与 C5b 一致，但不满足「每个数可独立重算」）。
+
+仍然未达标：主文 **4,712** 词（`structure.md` 自设上限 4,000），Abstract **199** 词（目标 150），
+以及 **C1b 那条核心张力全文仍无相关系数、无 n、无 panel**——而 Discussion 正是以它开篇。
+（顺带记档：`RQ004_2_nature_conclusions_multiagent_20260618/02_process/agent_pair_asymmetry/findings.md`
+里有 exchangeable dyad ICC = −0.337 [−0.348, −0.326]，permutation p=0.0010，n=34,850，
+label-based Pearson r = −0.334，四个来源同号为负——是 **negative complementarity**，
+与 "positive assortment" 相反，引用前需要 PI 确认它与 §2.2 的措辞是否一致。）
+
+本轮的图仍然内嵌 **Liberation Sans**（沙箱装不上 Arial，度量完全一致所以版式逐像素相同），
+**投稿前必须在装有 Arial 的机器上重跑一遍驱动脚本**。
+
+## 2026-08-22 — Figure 2 rebuilt two-layer (semantics + construction); §2.2 rewritten; RQ004_2 semantics claims accepted
+
+PI-directed restructure. Fig 2 now: a paired-preference plane (34,850 cases, both orders, 50/80/95%
+mass contours) / b complementarity forest (−0.338 vs shuffled +0.041, n=34,757 matched-support,
+second implementation −0.339) / c early-legibility AUC (0.75 from first 5%, kinematics ≈0.56) /
+d turning yield (+0.079, nuPlan grey) / e geometry prior / f situation-selected range (former c).
+Priority-gap panel retired; its values are §2.2 prose with the offline-PET disclaimer folded into
+the sentence and the no-direction ruling intact. §2.2 retitled "Human interaction runs on a
+two-sided script, and the reference must condition on the situation", written in two movements;
+§2.3 tension sentence → complementary (Fig 2a,b); §2.4 gained the two-sided-script consequence
+bridge; Discussion tension paragraph updated; Methods §readability gained the dyad-analysis
+paragraph (cohort filter, 415 strata, grouped-CV AUC, BH turning contrast).
+
+Claims basis: RQ004 decision.md amendment 2026-08-22 (RQ004-KC-COMPLEMENT/EARLYLOCK/PREYIELD +
+RQ004-PRES-PLANE/PRES-BORROW — PNAS sibling draft contributes idioms only, no numbers cross).
+Paper register: C1 updated, C1b restated with measured numbers, C1c/C1d added, dated section
+appended. Figure drivers: T5_style_harmonisation/nmi_semantics.py (+panel_plane, label handling
+moved to driver) and new_fig2_state.py (six panels, two layers). Data staged for the plane:
+research-repo root `_to_delete_fig2_tables/` (slim case-level table + per-source ICC + permutation
+null) — hand-delete after review. Verification: 0 collisions, token diff reconciled, caption
+295/270, compile 0 errors 46 pp. Open: body 5,022 words vs 4,000 target; abstract 202 vs 150;
+panel f retained (PI's removal ruling predates the two-layer arrangement — re-rule if still
+unwanted); Arial re-render before submission.
+
+## 2026-08-22 (second sitting) — Shirado pass: whole figure set re-presented per Shirado et al. PNAS 2023
+
+PI instruction: analyse the second ref/ paper's figures and imitate them (current set judged
+易读性差 / 信息传递低效). Six-principle grammar distilled (loud constant condition colours with
+pale/saturated for the second factor; headers and rotated group labels instead of legends; raw data
+beside aggregates; physical two-car icon vocabulary; shared event landmarks; no fine print) and
+written into the nature-figure skill (layout-and-color-unity.md §7). Executed as: palette anchors
+raised in chroma on the same one-axis semantics (REF #31418C, FLAG #C23B32, UNRESOLVED/NULL_MID
+separated); new T5 module nmi_shirado.py (apply_shirado size rebind +1pt, car_icon, chip_legend);
+Fig-1 framework strip redrawn around an equal-aspect two-car crossing scene (H 142→146); Fig 2 got
+rotated layer labels (H→150) and print-safe axis wording; Fig 5 title leading opened
+(ax._left_title); Fig 6 frozen-panel annotation offsets adjusted in points. ED4 exempted from the
+size bump (dense page; recorded in code + round log). Verification: numeric-token multisets
+IDENTICAL for all ten figures (pure presentation); collisions mains 6×0, ED 0/0/4/5 (≤ baselines);
+compile 0 errors, 46 pp; main.tex untouched this sitting. Old device figures moved to
+figures/_superseded_20260822_shirado/ (hand-delete when reviewed). Round log: paper repo
+results_restructure_20260821.md 第六轮; structure.md dated note at file end.
