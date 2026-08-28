@@ -8,7 +8,7 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
-- **【2026-08-28 RQ027 bounded feasibility pilot 已完整执行并独立复算，结论 `PILOT_NO_GO`：独立生成器与 frozen exact estimator 接线健康，`288/288` runs 完成、工程失败 `0/288`、重复 key `0/288`、非有限 primary frame `0/3,456`；interactive persistent coverage `215/240=89.5833%`，但 accepted-run MAE `0.553907 rad` 未优于同集零值 predictor `0.553432 rad`，Spearman(true,estimate)=`0.214511`，非零真值 sign accuracy `106/173=61.2717%`；q_eff 与误差 Spearman=`-0.124207`（反向），固定 max-weight 门后 frame MAE `0.597503` 高于全体 `0.586513`；negative-control persistent false accept `35/48=72.9167%`（四类均高）。因此不扩展 S2、不运行 sealed confirmatory、不调门重跑。RQ007 held-out、RQ014 致盲字段、paper/decision/data 均未触碰。正式入口：`reports/studies/RQ027_known_truth_ipv_recovery/RQ027_1_known_truth_recovery_20260828T094332Z_889b49be/00_entry/index.html`。】**
+- **【2026-08-28 RQ027 已由 PI 最终裁定为 `CLOSED_BY_PI_SCOPE_DECISION`：独立生成器 pilot 的 `PILOT_NO_GO` 作为跨模型数值迁移边界保留；当前 NMI 手稿不再推进新的 recovery 研究，改为引用已发表 T-ITS 工作中受控 VGIM 条件下的 IPV identification，并将 estimator 作为冻结方法组件。禁止在 RQ027 内继续 S2、sealed 扩展或调门重跑。正式裁决：`reports/knowledge/RQ027_known_truth_ipv_recovery/decision.md`。】**
 
 - **【2026-08-28 RQ026 最新 checkpoint：repair15_split_full 已完成独立验证并 PASS（`py_compile` PASS，`pytest -q` 11 passed，`full_exact_aggregator.py --validate-only` PASS，真实 frozen root `data/derived/rq017_onsite_gate/l1_v1` 本地渲染 PASS）；渲染结果确认 `136` 个 shard、`67,861` 行、首 shard `full_0001=500`、末 shard `full_0136=361`，Stage1/Stage2 两个 array 仍是 `0-135` 且当前 fail-closed 并发为 `1`，Stage2 依赖 `afterok:${stage1_job_id}`；P0/P1=0，P2 仅为 `REMOTE_PREFLIGHT.json` 缺少 `recommended_array_concurrency`，因此 live preflight 前需要 leader lane 用新值覆盖 `%1`。formal pilot 仍为 PASS，full package 现已可进入 live preflight / HPC staging，但本机尚未执行实际 Slurm 提交。】**
 
