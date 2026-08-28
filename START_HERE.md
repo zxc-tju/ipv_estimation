@@ -1,12 +1,49 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-08-05.
+Last reviewed: 2026-08-28.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
 question index in `STUDIES.md`.
 
 ## Current Active Context
+
+- **【2026-08-28 RQ026 最新 checkpoint：repair15_split_full 已完成独立验证并 PASS（`py_compile` PASS，`pytest -q` 11 passed，`full_exact_aggregator.py --validate-only` PASS，真实 frozen root `data/derived/rq017_onsite_gate/l1_v1` 本地渲染 PASS）；渲染结果确认 `136` 个 shard、`67,861` 行、首 shard `full_0001=500`、末 shard `full_0136=361`，Stage1/Stage2 两个 array 仍是 `0-135` 且当前 fail-closed 并发为 `1`，Stage2 依赖 `afterok:${stage1_job_id}`；P0/P1=0，P2 仅为 `REMOTE_PREFLIGHT.json` 缺少 `recommended_array_concurrency`，因此 live preflight 前需要 leader lane 用新值覆盖 `%1`。formal pilot 仍为 PASS，full package 现已可进入 live preflight / HPC staging，但本机尚未执行实际 Slurm 提交。】**
+
+- **【2026-08-28 整体研究总览：`.codex-fleet/nmi-revision-research-lead/final/overall_research_status_20260828.html` 已生成，汇总当前研究状态为：WP0/WP1 `PARTIAL`，WP2 `BLOCKED`，WP3 `PARTIAL`，WP4 `PARTIAL`，WP5 `DEFERRED`，WP6 `PARTIAL`，WP7 `PARTIAL`，WP8 `PARTIAL`；核心 AV-only 证据线已闭合到可稳定汇总，human row-level、WP2 Tier2、WP5、以及完整 live preflight 仍在等待。】**
+
+- **【2026-08-24 RQ026 当前态：`APPROVED / EXECUTING`；managed Tongji HPC 已完成 fresh restage PASS，最新 fetched receipt 证实 `verified_bundle_targets=28`、`verified_rq021_refs=[rq021_scoring, rq021_model, feature_contract]`、compat env path 正确且 managed repo clean。retry5 pilot 已诊断为 `rq017_input_dir` 的 legacy hash 仅因远端 mtime 被归一化为 `0` 而失败，内容/路径/size 全部一致；pilot retry11（jobs `2336628` exact / `2336629` fast）仍是 formal FAIL：`runtime_rows=256`、`context_cell` 256/256、`solver_failure` 256/256、`parity_status_match=0/256`、`parity_reason_match=0/256`、`parity_ipv_abs_diff` 无可比值；fast 仍只是 auxiliary health lane，不能作为 full release gate。repair8i 的 1-row HPC v4 诊断（job `2336658`, `zxc-rq026-diag-v4`）在 retry11 exact 的原样 `PYTHONPATH` 合同下完成并返回非空 `cache/join/raw/probe`，暴露出 bootstrapped `raw_solve_one_anchor.out_of_scope_reason = ModuleNotFoundError(\"No module named 'sociality_estimation.core.reliability_logdomain'\")`。repair9 已在本地完成自包含依赖修复：canonical `src/sociality_estimation/core/reliability_logdomain.py` 已作为新的 bundle-contained target 纳入，bundled materializer fallback 已接通，当前本地 bundle/stage/archive/controller 合同统一为 `28` targets，且 `py_compile`、16 个 local_bundle tests、`validate_bundle.py`、submit controller dry-run 全部 PASS。修复后的 1-row exact smoke（job `2336664`, `zxc-rq026-repair9-smoke`）已 `COMPLETED 0:0`；`cache_row_count=267`、`joined_row_count=67861`、`raw/probe` 均非空，`raw_solve_one_anchor.out_of_scope_reason=null`，`raw/probe` 同步回到 `ABSTAIN/NEAR_UNIFORM`，且 `probe_parity_status_match=true`、`probe_parity_reason_match=true`。这说明缺失的 `reliability_logdomain` 依赖已被消除。当前恢复顺序是先把 retry11 formal FAIL、repair8i 根因诊断、repair9 本地修复、repair9_hpc_smoke PASS 一并记录，再决定是否推进下一轮；本轮仍未触发 pilot/full，不得跨入 RQ024 accuracy boundary。当前 compat env 重建 job `2336414` 已 COMPLETED，remote receipt `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime/logs/compat_env_clean/build_compat_env_receipt.json` 证实 `numpy/scipy/pandas/pyarrow/sklearn/joblib/threadpoolctl/yaml` 版本齐整，`rq021` 模型加载与 `rq016`/`rq021` staged imports 均为 `OK`。】**
+ 计划文件是 `reports/plans/RQ026_plan_v0_frozen_monitor_runtime_20260824.md`，formal checkpoint 是 `.codex-fleet/rq026-frozen-monitor-runtime/board/reports/rq026_checkpoint.html`；
+  retry12 pilot（jobs `2336668` exact / `2336669` fast）仍保留为历史 fail-closed 证据：exact `runtime_rows=256`、`context_cell` 256/256、`parity_status_match=255/256`、`parity_reason_match=255/256`、`max comparable parity_ipv_abs_diff=0.14728204833045858`，唯一失配行是 `case_key=onsite:shanghai:T4:C1:native_case:2314|anchor_frame_index=276|perspective=onsite_av_primary|source_dataset=onsite_competition_clean_285`；但当前 formal pilot 已由 repair14 split-runtime r3 promotion 通过。
+  Tongji HPC durable root 固定为 `/share/home/u25310231/ZXC/RQ026_frozen_monitor_runtime`；
+  新提交 Slurm job names 必须以 `zxc-` 开头；
+  WP4 local no-refit reproduction 已 `PASS`；full `67,861` sign baseline 与 managed HPC exact/fast preflight、pilot、full 仍属 runtime evidence 范围；
+  WP8 仅是 `TRUSTED_SIGN_ONLY` 的 sign-side evidence，**不能证明 alert effectiveness**；
+  当前本地 `ARCHIVE_MANIFEST.json` 的 `rq021_individual_refs` 已补回 `feature_contract`，stage controller dry-run 现会打印 3 条 RQ021 `REFCOPY`；
+  本轮只做 runtime evidence，不做 refit、paper/decision/data edits。
+
+- **【2026-08-24 RQ024 / RQ025 当前态：PI accepted both；accepted decisions remain baseline（RQ017/RQ018/RQ019/RQ021）；RQ024 为 `ACCEPTED` / `MIXED_DIAGNOSTIC` / Tier2 blocked，RQ025 为 `ACCEPTED` / `BOUNDED_MIXED` / 24/24 CIs include zero；本轮不做 paper edits、protected reads 或 HPC。】**
+  RQ024 official package 是 `reports/studies/RQ024_readability_recovery_diagnostic/RQ024_1_bounded_diagnostic_20260824T065142Z_3698873/00_entry/index.html`，
+  decision 是 `reports/knowledge/RQ024_readability_recovery_diagnostic/decision.md`，
+  边界是 sealed Tier1 synthetic、`protected_data=NONE`、decision accepted；
+  RQ025 official package 是 `reports/studies/RQ025_av_episode_consequence/RQ025_1_matched_episode_20260824T064959Z_3698873/00_entry/index.html`，
+  decision 是 `reports/knowledge/RQ025_av_episode_consequence/decision.md`，
+  边界是 frozen episode/matching design、no stable positive episode-level contrast、decision accepted。
+
+- **【2026-08-24 WP6 archive recovery validation：`TRUSTED`；两套授权仓库内 5 个核心 row-level 文件仍均未落盘（0/5 命中）；`human_arm_data.json` 仅为 `REAL_VERIFIED` 聚合对象（`n_drivers=20`, `n_runs=300`）；最新稳定报告是 `.codex-fleet/nmi-revision-research-lead/board/reports/wp6_archive_validation_20260824.md/json`。】**
+  这次只做只读复核，不改被审产物；row-level 归档恢复仍需离线补齐缺失文件后再谈。
+
+- **【C7 人类参照臂：论文分支上是 TARGET 草案，占位数字一律不可引用。】**
+  PI 于 2026-08-08 告知人类臂数据已在一台离线服务器处理完毕；传输前先以合成占位
+  确定结构。论文仓库分支 `paper/human-arm-target`（@16cba1b，**不得合并**）含
+  S4b 小节、Fig 5 目标图与 claims register C7 行；正文占位数字全部带 `\targetnum`
+  橙色标记，图带 SYNTHETIC TARGET 水印。**解锁三条件缺一不可**：离线实测值按
+  `.codex-fleet/rq022-matched-scenario/work/T1_target_figure/DATA_INTERFACE.md`
+  回填 → 监督方从时刻级表盲算一致（data_status=REAL_VERIFIED，水印自动消失）→
+  `reports/knowledge/RQ022_*/decision.md` 经 PI 接受。预注册终点只有三项：
+  标定迁移、冻结 C5b 电池在人类内部复现、逐场景对比；**官方分数已判死通道**
+  （RQ012B p=0.559；RQ022-S1 前哨 p=0.112 弱迹象、已独立复算），伤害标签与
+  偏好评分同样排除。对外措辞红线：逐时刻对比，永不写人机排名。
 
 - **【当前在用的人类参照区间是 RQ021 的，不是 RQ016C 的。】** PI 于 2026-08-05 裁定：
   envelope 不做预测性，改用同期目标量。原因是 RQ016C-H2 的目标列是锚点之后
