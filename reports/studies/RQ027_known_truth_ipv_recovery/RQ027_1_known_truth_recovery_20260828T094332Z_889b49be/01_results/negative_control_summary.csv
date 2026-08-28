@@ -1,0 +1,5 @@
+negative_control_type,persistent_false_accept_num,run_denominator,persistent_false_accept_rate,collision_run_num
+no_conflict_neighbour,10,12,0.8333333333333334,0
+post_resolution_window,8,12,0.6666666666666666,2
+time_shifted_counterpart,10,12,0.8333333333333334,0
+wrong_run_pseudo_pair,7,12,0.5833333333333334,0

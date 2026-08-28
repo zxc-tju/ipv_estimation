@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RQ027 独立仿真 IPV Recovery Pilot</title>
+  <style>
+    :root { --ink:#17212b; --muted:#5d6975; --paper:#f7f5ef; --card:#fff; --red:#b42318; --redbg:#fef3f2; --blue:#175cd3; --line:#d8d3c8; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif; line-height:1.55; }
+    main { max-width:1080px; margin:0 auto; padding:42px 24px 72px; }
+    .eyebrow { color:var(--muted); font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { font-size:38px; line-height:1.15; margin:8px 0 14px; }
+    h2 { margin-top:38px; font-size:24px; }
+    .verdict { background:var(--redbg); border:1px solid #fecdca; border-left:6px solid var(--red); border-radius:12px; padding:20px 22px; margin:22px 0; }
+    .verdict strong { color:var(--red); font-size:24px; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:22px 0; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; }
+    .card .big { font-size:27px; font-weight:700; }
+    .card .label { color:var(--muted); font-size:13px; }
+    table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); }
+    th,td { padding:11px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { background:#efede6; font-size:13px; }
+    .bad { color:var(--red); font-weight:650; }
+    .links a { display:inline-block; margin:4px 12px 4px 0; color:var(--blue); }
+    .note { color:var(--muted); font-size:14px; }
+    @media (max-width:800px) { .grid { grid-template-columns:repeat(2,1fr); } h1{font-size:31px;} }
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">RQ027 · development-only feasibility · 2026-08-28</div>
+  <h1>独立仿真下的已知真值 IPV 恢复与弃权验证</h1>
+  <p>本研究把“同模型实现一致”与“独立生成行为上的参数恢复”分开。生成器不共享 estimator 的 planner、搜索、代价实现或 likelihood；统计单位是 simulation run。</p>
+  <section class="verdict">
+    <strong>PILOT_NO_GO</strong>
+    <div>执行健康，但 recovery、concentration-error 与负对照三个科学门全部失败。按预冻结合同，停止 S2 与 sealed confirmatory，不调门重跑。</div>
+  </section>
+  <section class="grid">
+    <div class="card"><div class="big">288/288</div><div class="label">scheduled runs complete；工程失败 0</div></div>
+    <div class="card"><div class="big">215/240</div><div class="label">interactive persistent coverage</div></div>
+    <div class="card"><div class="big">0.2145</div><div class="label">Spearman(true, estimate)</div></div>
+    <div class="card"><div class="big bad">35/48</div><div class="label">negative persistent false accept</div></div>
+  </section>
+
+  <h2>为什么是 NO_GO</h2>
+  <table>
+    <thead><tr><th>检验</th><th>Estimator</th><th>对照/预期</th><th>结论</th></tr></thead>
+    <tbody>
+      <tr><td>Accepted-run MAE</td><td>0.553907 rad</td><td>零值 predictor 0.553432 rad</td><td class="bad">未改善</td></tr>
+      <tr><td>q_eff 与绝对误差</td><td>Spearman −0.124207</td><td>应为正向</td><td class="bad">方向反转</td></tr>
+      <tr><td>固定门后 frame MAE</td><td>0.597503 rad</td><td>全部 frames 0.586513 rad</td><td class="bad">门后更差</td></tr>
+      <tr><td>负对照持续通过</td><td>35/48 = 72.9167%</td><td>feasibility 上限 25%</td><td class="bad">大幅超限</td></tr>
+    </tbody>
+  </table>
+
+  <h2>分场景边界</h2>
+  <table>
+    <thead><tr><th>场景</th><th>Accepted/total</th><th>Spearman</th><th>MAE</th></tr></thead>
+    <tbody>
+      <tr><td>same-direction negotiation</td><td>35/60</td><td>0.817464</td><td>0.263714</td></tr>
+      <tr><td>clear-priority crossing</td><td>60/60</td><td>0.277647</td><td>0.521590</td></tr>
+      <tr><td>ambiguous-priority crossing</td><td>60/60</td><td>0.189862</td><td>0.647345</td></tr>
+      <tr><td>merge</td><td>60/60</td><td class="bad">−0.107182</td><td>0.662066</td></tr>
+    </tbody>
+  </table>
+
+  <h2>证据状态</h2>
+  <p><b>可直接支撑：</b>当前独立 generator 与冻结 exact/log-domain 合同下为 NO_GO。<br>
+  <b>可作旁证：</b>same-direction 局部可恢复，工程接线稳定。<br>
+  <b>待核验：</b>其他独立 generator、更多模板或重新定义的 measurement/gate。<br>
+  <b>不能证明：</b>所有 IPV estimator 都不可恢复、真实人类心理参数、因果、外部有效性或生产可用性。</p>
+
+  <h2>文件</h2>
+  <div class="links">
+    <a href="../01_results/report.md">正式报告</a>
+    <a href="../01_results/independent_validation.md">独立复算</a>
+    <a href="../01_results/summary.json">结构化摘要</a>
+    <a href="../01_results/run_level_results.csv">run-level CSV</a>
+    <a href="../01_results/factor_summary.csv">分层表</a>
+    <a href="../01_results/negative_control_summary.csv">负对照表</a>
+  </div>
+  <p class="note">本轮因 feasibility NO_GO 在正式作图层之前停止；没有用图形美化弱化负结果。RQ007 held-out、RQ014 致盲字段、论文与已接受 decision 均未触碰。</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "full_matrix": true,
+  "run_rows": 288,
+  "interactive_run_rows": 240,
+  "negative_control_run_rows": 48,
+  "frame_rows": 3456,
+  "engineering_failure_runs": 0,
+  "duplicate_run_id_rows": 0,
+  "nonfinite_primary_frame_rows": 0,
+  "collision_runs": 2,
+  "elapsed_seconds": 590.815410709,
+  "row_conservation_ok": true
+}

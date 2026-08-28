@@ -1,0 +1,81 @@
+{
+  "schema_version": "rq027-feasibility-summary-v1",
+  "verdict": "PILOT_NO_GO",
+  "scope": "full_240_plus_48",
+  "recovery": {
+    "accepted_runs": 215,
+    "interactive_total": 240,
+    "coverage": 0.8958333333333334,
+    "bias_rad": 0.24681339019621443,
+    "mae_rad": 0.5539072271208504,
+    "rmse_rad": 0.7084279558318664,
+    "median_abs_error_rad": 0.5814251288025833,
+    "spearman": 0.21451069539507012,
+    "half_grid_success": {
+      "numerator": 74,
+      "denominator": 215,
+      "value": 0.34418604651162793
+    },
+    "one_grid_success": {
+      "numerator": 88,
+      "denominator": 215,
+      "value": 0.40930232558139534
+    },
+    "zero_half_grid_success": {
+      "numerator": 42,
+      "denominator": 215,
+      "value": 0.19534883720930232
+    },
+    "zero_one_grid_success": {
+      "numerator": 42,
+      "denominator": 215,
+      "value": 0.19534883720930232
+    },
+    "zero_mae_rad": 0.5534317290916902
+  },
+  "template_spearman": {
+    "ambiguous_priority_crossing": 0.189861826595318,
+    "clear_priority_crossing": 0.2776474023329381,
+    "merge": -0.10718155245722333,
+    "same_direction_negotiation": 0.817464298218393
+  },
+  "nonnegative_template_count": 3,
+  "q_eff_abs_error_spearman": -0.12420742115617708,
+  "fixed_policy_gate": {
+    "attempted_frame_count": 2880,
+    "pass_frame_count": 2476,
+    "coverage": 0.8597222222222223,
+    "all_frame_mae_rad": 0.5865126460977772,
+    "pass_frame_mae_rad": 0.5975031178897271
+  },
+  "interactive_persistent_coverage": {
+    "numerator": 215,
+    "denominator": 240,
+    "value": 0.8958333333333334,
+    "filter": "run_kind=interactive and run_status=RECOVERED_READING",
+    "source_columns": "run_kind,run_status"
+  },
+  "negative_persistent_false_accept": {
+    "numerator": 35,
+    "denominator": 48,
+    "value": 0.7291666666666666,
+    "filter": "run_kind=negative_control and persistent_concentration_any=true",
+    "source_columns": "run_kind,persistent_concentration_any"
+  },
+  "gates": {
+    "engineering_integrity": true,
+    "recovery_vs_zero_baseline": false,
+    "q_eff_error_not_reversed": false,
+    "negative_control_persistent_false_accept": false
+  },
+  "claim_boundary": {
+    "direct_support": "bounded independent-simulation feasibility only",
+    "cannot_prove": [
+      "human latent IPV",
+      "causality",
+      "external validity",
+      "production readiness",
+      "changes to accepted RQ017+ claims"
+    ]
+  }
+}

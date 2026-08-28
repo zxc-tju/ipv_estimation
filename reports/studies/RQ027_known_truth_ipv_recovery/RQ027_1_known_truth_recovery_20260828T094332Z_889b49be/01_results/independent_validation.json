@@ -1,0 +1,72 @@
+{
+  "schema_version": "rq027-independent-validation-v1",
+  "validation_status": "PASS",
+  "verdict_recomputed": "PILOT_NO_GO",
+  "checks": {
+    "run_rows_288": true,
+    "interactive_rows_240": true,
+    "negative_rows_48": true,
+    "frame_rows_3456": true,
+    "frame_rows_per_run_12": true,
+    "unique_run_ids": true,
+    "engineering_failures_zero": true,
+    "primary_finite": true,
+    "reported_verdict_no_go": true,
+    "reported_mae_matches": true,
+    "reported_spearman_matches": true,
+    "reported_negative_matches": true
+  },
+  "recovery_accepted": {
+    "total_runs": 240,
+    "accepted_runs": 215,
+    "coverage": 0.8958333333333334,
+    "spearman": 0.2145106953950701,
+    "bias_rad": 0.24681339019621443,
+    "mae_rad": 0.5539072271208504,
+    "rmse_rad": 0.7084279558318664,
+    "median_abs_error_rad": 0.5814251288025833,
+    "zero_mae_rad": 0.5534317290916902,
+    "half_grid_num": 74,
+    "one_grid_num": 88,
+    "zero_half_grid_num": 42,
+    "zero_one_grid_num": 42
+  },
+  "all_interactive_run_success": {
+    "one_grid_num": 88,
+    "denominator": 240,
+    "value": 0.36666666666666664,
+    "zero_one_grid_num": 42,
+    "zero_value": 0.175
+  },
+  "sign_accuracy_nonzero_truth": {
+    "numerator": 106,
+    "denominator": 173,
+    "value": 0.6127167630057804,
+    "filter": "run_status=RECOVERED_READING and abs(true_ipv_rad)>=pi/8",
+    "source_columns": "run_status,true_ipv_rad,run_estimate_ipv_log"
+  },
+  "q_eff_abs_error_spearman": -0.1242074211561771,
+  "fixed_gate_frame_risk": {
+    "pass_num": 2476,
+    "attempted_den": 2880,
+    "coverage": 0.8597222222222223,
+    "pass_mae_rad": 0.5975031178897271,
+    "all_mae_rad": 0.5865126460977772
+  },
+  "negative_persistent_false_accept": {
+    "numerator": 35,
+    "denominator": 48,
+    "value": 0.7291666666666666
+  },
+  "collision_run_ids": [
+    "negative|post_resolution_window|03",
+    "negative|post_resolution_window|07"
+  ],
+  "factor_summary_file": "factor_summary.csv",
+  "negative_control_summary_file": "negative_control_summary.csv",
+  "no_go_reasons": [
+    "accepted-run MAE does not improve over the zero predictor",
+    "q_eff-error association is reversed",
+    "negative-control persistent false acceptance is high"
+  ]
+}

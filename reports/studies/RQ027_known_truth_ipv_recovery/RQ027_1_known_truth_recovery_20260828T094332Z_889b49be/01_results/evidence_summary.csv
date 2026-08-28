@@ -1,0 +1,5 @@
+evidence_id,claim,numerator,denominator,filter,source_file,source_columns,status
+RQ027-E1-HEALTH,Pilot run ledger completed with explicit engineering failures,288,288,all scheduled runs,run_level_results.csv,"run_id,run_status,reason_code",reported
+RQ027-E2-COVERAGE,Interactive runs reached persistent opportunity-aware concentration,215,240,run_kind=interactive and run_status=RECOVERED_READING,run_level_results.csv,"run_kind,run_status",reported
+RQ027-E3-ONEGRID,Accepted interactive runs met one-grid recovery tolerance,88,215,run_status=RECOVERED_READING,run_level_results.csv,"run_status,abs_error_rad,one_grid_success",reported
+RQ027-E4-NEGATIVE,Negative-control runs had persistent concentration-only acceptance,35,48,run_kind=negative_control and persistent_concentration_any=true,run_level_results.csv,"run_kind,persistent_concentration_any",reported

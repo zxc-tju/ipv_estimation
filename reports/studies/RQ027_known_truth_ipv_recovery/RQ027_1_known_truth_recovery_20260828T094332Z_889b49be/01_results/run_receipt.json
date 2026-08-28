@@ -1,0 +1,52 @@
+{
+  "schema_version": "rq027-run-receipt-v1",
+  "command": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/.venv_ipv_local_test/bin/python pipelines/simulation/run_rq027_pilot.py --output-dir reports/studies/RQ027_known_truth_ipv_recovery/RQ027_1_known_truth_recovery_20260828T094332Z_889b49be/01_results --solver-mode exact --workers 8",
+  "repo_root": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation",
+  "git_commit": "889b49bea9dabcd75c2d7bbc316ee2118ece2e2d",
+  "git_branch": "main",
+  "git_status_short": "M START_HERE.md\n M STUDIES.md\n?? _to_delete_fig2_tables/\n?? data/onsite_competition/00_manifest/scenario_dictionary.csv\n?? exp_dur.json\n?? pipelines/simulation/rq027_independent_generator.py\n?? pipelines/simulation/run_rq027_pilot.py\n?? reports/knowledge/DATASET_onsite_competition_handoff.html\n?? reports/knowledge/PAPER001_online_sociality_verification_manuscript/_to_delete_handoff_append_20260821.md\n?? reports/knowledge/PAPER001_online_sociality_verification_manuscript/review_rounds/round6/\n?? reports/knowledge/PAPER001_online_sociality_verification_manuscript/review_rounds/round7/\n?? reports/knowledge/PAPER001_online_sociality_verification_manuscript/review_rounds/round8/\n?? reports/knowledge/RQ027_known_truth_ipv_recovery/\n?? reports/plans/RQ027_plan_v0_known_truth_ipv_recovery_20260828.md\n?? reports/studies/RQ027_known_truth_ipv_recovery/\n?? tests/test_rq027_known_truth_recovery.py\n?? work/",
+  "python": "3.9.6 (default, Jan  9 2026, 11:03:41) \n[Clang 17.0.0 (clang-1700.6.4.2)]",
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "solver_mode": "exact",
+  "workers": 8,
+  "scheduled_run_count": 288,
+  "limited_smoke": false,
+  "elapsed_seconds": 590.815410709,
+  "artifacts": [
+    {
+      "path": "REPORT.md",
+      "size_bytes": 1661,
+      "sha256": "a8ced039e23b9a59123bc108813717ddc88f8d9cc0223014d586f68af2c5af31"
+    },
+    {
+      "path": "evidence_summary.csv",
+      "size_bytes": 862,
+      "sha256": "6696adba37de2e3583550d55df30e2fd783e10a9f372a2f80bcd114e70e92a2b"
+    },
+    {
+      "path": "frame_level_results.csv",
+      "size_bytes": 2178392,
+      "sha256": "5e22a88f7f40a809cdfaa153ffc67551cd0aec6b7ae9a08f23381522bbf6cedd"
+    },
+    {
+      "path": "frame_level_results.parquet",
+      "size_bytes": 751783,
+      "sha256": "625a7d9ade89e9656a4cab42a6cb9d1b39375844ed76d834c76b72e425cff19d"
+    },
+    {
+      "path": "numerical_health.json",
+      "size_bytes": 323,
+      "sha256": "e0c616b72d84aac3a254981738a00b43cd4e91e1c7e58ff58f7bd715998b34ee"
+    },
+    {
+      "path": "run_level_results.csv",
+      "size_bytes": 86888,
+      "sha256": "2d1bb3e7d85c381dd4c75464b2279c98fd2c0ae20892f300757dee255f390725"
+    },
+    {
+      "path": "summary.json",
+      "size_bytes": 2430,
+      "sha256": "37f611fe9a55c82d38d4dc053c2e547ebaa5cdf738dcb0eabb4c6c714b57ddeb"
+    }
+  ]
+}
