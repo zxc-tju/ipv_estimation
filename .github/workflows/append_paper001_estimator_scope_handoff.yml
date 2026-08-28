@@ -17,51 +17,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Append the paper-repository handoff
+      - name: Append and validate the handoff
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          handoff = Path("reports/knowledge/PAPER001_online_sociality_verification_manuscript/imported_from_paper_repo_20260620/agent_handoff.md")
-          text = handoff.read_text(encoding="utf-8")
-          marker = "## 2026-08-28 — Estimator validation moved to the published-method supplement"
-          if marker in text:
-              raise SystemExit("Handoff entry already exists")
-          entry = r'''
-
-## 2026-08-28 — Estimator validation moved to the published-method supplement
-
-Paper repository merge: `ff9a4f97d4427741628b65bb62833e9db3394419` (PR #10).
-
-Files changed in the paper repository: `main.tex`, `claims_register.md`, `structure.md`, and `CLAUDE.md`.
-
-Summary: Implemented the final RQ027 scope decision in the manuscript. The trajectory-based IPV estimator is now treated as a previously published method component, supported by Zhao, Sun and Wang, T-ITS 2024. The standalone estimator-validation Results subsection was removed. The main text carries a concise citation and keeps the monitoring framework figure; estimator implementation, interaction-specific diagnostics and episode-summary sensitivity now appear in Supplementary Note 1 and Supplementary Figure S1. Estimator and readability equations were moved into Methods. Candidate concentration is described as an operational readability/candidate-discrimination boundary, while the paper remains centred on the context-conditioned human-reference monitor.
-
-Structure: Results now contain four semantic sections and six main figures. `claims_register.md` and `structure.md` advance to v4.3. RQ027's independent-generator pilot remains in the research repository as a bounded internal diagnostic and is not introduced into the manuscript's frontstage narrative.
-
-Verification: paper PR CI passed source lint, LaTeX compilation, bibliography processing, undefined-reference/citation checks and PDF artifact generation.
-'''
-          handoff.write_text(text.rstrip() + entry + "\n", encoding="utf-8")
-
-          log = Path("main_workflow.log")
-          with log.open("a", encoding="utf-8") as handle:
-              handle.write(
-                  "\n[2026-08-28 PAPER001 estimator-scope handoff]\n"
-                  "Paper PR #10 merged at ff9a4f97d4427741628b65bb62833e9db3394419. "
-                  "The manuscript now cites the published T-ITS estimator validation, moves detailed diagnostics to Supplementary Note 1, and removes the standalone recovery Results section.\n"
-              )
-          PY
+          python scripts/append_paper001_estimator_scope_handoff.py
           git diff --check
           grep -q 'ff9a4f97d4427741628b65bb62833e9db3394419' reports/knowledge/PAPER001_online_sociality_verification_manuscript/imported_from_paper_repo_20260620/agent_handoff.md
 
-      - name: Remove the one-shot workflow and commit
+      - name: Remove one-shot files and commit
         run: |
           rm .github/workflows/append_paper001_estimator_scope_handoff.yml
+          rm scripts/append_paper001_estimator_scope_handoff.py
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            reports/knowledge/PAPER001_online_sociality_verification_manuscript/imported_from_paper_repo_20260620/agent_handoff.md \
-            main_workflow.log \
-            .github/workflows/append_paper001_estimator_scope_handoff.yml
+          git add reports/knowledge/PAPER001_online_sociality_verification_manuscript/imported_from_paper_repo_20260620/agent_handoff.md main_workflow.log .github/workflows/append_paper001_estimator_scope_handoff.yml scripts/append_paper001_estimator_scope_handoff.py
           git commit -m "Record PAPER001 estimator-scope merge [paper001-handoff-applied]"
           git push
