@@ -1,0 +1,27 @@
+name: Subjective experiment web
+
+on:
+  pull_request:
+    paths:
+      - 'apps/subjective_experiment_web/**'
+      - '.github/workflows/subjective-experiment-web.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/subjective_experiment_web/**'
+      - '.github/workflows/subjective-experiment-web.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/subjective_experiment_web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run check
+      - run: npm run validate
+      - run: npm test
