@@ -74,7 +74,7 @@ jobs:
           test "$ready" = 1
           grep -q '"status":"ok"' /tmp/health.json
           curl -fsS http://127.0.0.1:39123/ >/tmp/landing.html
-          grep -q '驾驶互动评价实验' /tmp/landing.html
+          grep -q '驾驶互动行为评价实验' /tmp/landing.html
 
       - name: Register the project entry
         run: |
