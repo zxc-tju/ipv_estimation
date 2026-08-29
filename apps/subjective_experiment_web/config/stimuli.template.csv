@@ -1,0 +1,8 @@
+stimulus_id,matched_set_id,scenario_id,actor_source,verdict_class,deviation_side,video_path,is_practice,estimability_pass,human_support_pass,stimulus_qc_pass,target_label,context_text,anchor_time_s,normalized_deviation_d
+PRACTICE_001,PRACTICE,PRACTICE,HUMAN,inside,none,practice/clip_001.mp4,true,true,true,true,蓝色车辆,请代入灰色车辆驾驶员并评价蓝色车辆,0,0
+OPAQUE_0001,SET_001,SCENARIO_001,HUMAN,inside,none,formal/clip_0001.mp4,false,true,true,true,蓝色车辆,请代入灰色车辆驾驶员并评价蓝色车辆,12.4,0
+OPAQUE_0002,SET_001,SCENARIO_001,HUMAN,outside,assertive,formal/clip_0002.mp4,false,true,true,true,蓝色车辆,请代入灰色车辆驾驶员并评价蓝色车辆,12.5,0.42
+OPAQUE_0003,SET_001,SCENARIO_001,HUMAN,outside,accommodating,formal/clip_0003.mp4,false,true,true,true,蓝色车辆,请代入灰色车辆驾驶员并评价蓝色车辆,12.3,0.61
+OPAQUE_0004,SET_001,SCENARIO_001,AV,inside,none,formal/clip_0004.mp4,false,true,true,true,蓝色车辆,请代入灰色车辆驾驶员并评价蓝色车辆,12.4,0
+OPAQUE_0005,SET_001,SCENARIO_001,AV,outside,assertive,formal/clip_0005.mp4,false,true,true,true,蓝色车辆,请代入灰色车辆驾驶员并评价蓝色车辆,12.5,0.44
+OPAQUE_0006,SET_001,SCENARIO_001,AV,outside,accommodating,formal/clip_0006.mp4,false,true,true,true,蓝色车辆,请代入灰色车辆驾驶员并评价蓝色车辆,12.3,0.64

@@ -3554,3 +3554,5 @@ ID 体系与场景-caseId 对照 / 12 条已知坑 / 可复用中间产物 / 既
 
 [2026-08-28 PAPER001 estimator-scope handoff]
 Paper PR #10 merged at ff9a4f97d4427741628b65bb62833e9db3394419. The manuscript now cites the published T-ITS estimator validation, moves detailed diagnostics to Supplementary Note 1, and removes the standalone recovery Results section.
+
+2026-08-29 | Added apps/subjective_experiment_web: source-blind pairwise and single-clip subjective experiment system; checks and end-to-end flow passed.

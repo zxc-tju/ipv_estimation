@@ -1,0 +1,23 @@
+{
+  "study_id": "nmi_subjective_production_v1",
+  "study_title": "驾驶互动行为评价实验",
+  "consent_version": "REPLACE_WITH_ETHICS_APPROVED_VERSION",
+  "estimated_minutes": "25–35",
+  "global_seed": 20260829,
+  "max_replays_per_trial": 1,
+  "practice_stimulus_ids": ["PRACTICE_001", "PRACTICE_002"],
+  "pairwise_comparisons": [
+    {"id": "H_ASSERTIVE", "condition_a": "H_IN", "condition_b": "H_OUT_ASSERTIVE", "count": 3},
+    {"id": "H_ACCOMMODATING", "condition_a": "H_IN", "condition_b": "H_OUT_ACCOMMODATING", "count": 3},
+    {"id": "AV_ASSERTIVE", "condition_a": "AV_IN", "condition_b": "AV_OUT_ASSERTIVE", "count": 3},
+    {"id": "AV_ACCOMMODATING", "condition_a": "AV_IN", "condition_b": "AV_OUT_ACCOMMODATING", "count": 3}
+  ],
+  "single_counts": {
+    "H_IN": 3,
+    "H_OUT_ASSERTIVE": 3,
+    "H_OUT_ACCOMMODATING": 3,
+    "AV_IN": 3,
+    "AV_OUT_ASSERTIVE": 3,
+    "AV_OUT_ACCOMMODATING": 3
+  }
+}
