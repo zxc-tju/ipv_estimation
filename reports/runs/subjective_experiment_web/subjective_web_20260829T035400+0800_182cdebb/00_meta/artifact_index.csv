@@ -1,0 +1,13 @@
+artifact_id,type,path,status,description
+APP,application,apps/subjective_experiment_web,PASS,Standalone Node 22 subjective experiment web system
+README,documentation,apps/subjective_experiment_web/README.md,PASS,Setup deployment configuration and operating guide
+SECURITY,documentation,apps/subjective_experiment_web/SECURITY.md,PASS,Security and data-handling boundary
+STUDY_DEMO,configuration,apps/subjective_experiment_web/config/study.demo.json,PASS,Short demo session configuration
+STUDY_PRODUCTION,configuration,apps/subjective_experiment_web/config/study.production.example.json,READY_TO_CUSTOMIZE,12-pairwise and 18-single production example
+STIMULUS_DEMO,configuration,apps/subjective_experiment_web/config/stimuli.demo.csv,PASS,Demo stimulus manifest
+STIMULUS_TEMPLATE,configuration,apps/subjective_experiment_web/config/stimuli.template.csv,READY_TO_CUSTOMIZE,Production stimulus manifest template
+TESTS,test,apps/subjective_experiment_web/tests/run-tests.js,PASS,Unit and complete participant-flow tests
+CI,workflow,.github/workflows/subjective-experiment-web.yml,PASS,Main and pull-request checks
+RUN_MANIFEST,audit,reports/runs/subjective_experiment_web/subjective_web_20260829T035400+0800_182cdebb/00_meta/run_manifest.json,PASS,Run identity tests and production gates
+SPEC,audit,reports/runs/subjective_experiment_web/subjective_web_20260829T035400+0800_182cdebb/00_meta/spec_snapshot.md,PASS,Frozen implementation scope
+REPORT,report,reports/runs/subjective_experiment_web/subjective_web_20260829T035400+0800_182cdebb/90_report/index.html,PASS,Offline reader-facing development and acceptance report
