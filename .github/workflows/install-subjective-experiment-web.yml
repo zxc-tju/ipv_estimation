@@ -33,14 +33,12 @@ jobs:
           unzip -oq /tmp/subjective-node.zip -d /tmp/subjective-node-unpacked
 
           test ! -e apps/subjective_experiment_web
-          mkdir -p apps/subjective_experiment_web .github/workflows
+          mkdir -p apps/subjective_experiment_web
           cp -a /tmp/subjective-node-unpacked/. apps/subjective_experiment_web/
           rm -rf apps/subjective_experiment_web/.github
-          cp /tmp/subjective-node-unpacked/.github/workflows/subjective-experiment-web.yml .github/workflows/subjective-experiment-web.yml
 
           test -f apps/subjective_experiment_web/server.js
           test -f apps/subjective_experiment_web/config/study.demo.json
-          test -f .github/workflows/subjective-experiment-web.yml
 
       - name: Run syntax, configuration and end-to-end checks
         working-directory: apps/subjective_experiment_web
@@ -103,18 +101,12 @@ jobs:
               handle.write('\n2026-08-29 | Added apps/subjective_experiment_web: source-blind pairwise and single-clip subjective experiment system; checks and end-to-end flow passed.\n')
           PY
 
-      - name: Remove transfer scaffolding and commit the installed system
+      - name: Commit the installed application
         run: |
           set -euo pipefail
-          rm -rf .codex-transfer/subjective-node
-          rm -f .github/workflows/install-subjective-experiment-web.yml
           git diff --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add apps/subjective_experiment_web \
-                  .github/workflows/subjective-experiment-web.yml \
-                  .github/workflows/install-subjective-experiment-web.yml \
-                  .codex-transfer/subjective-node \
-                  START_HERE.md main_workflow.log
+          git add apps/subjective_experiment_web START_HERE.md main_workflow.log
           git commit -m 'Add subjective experiment web system [subjective-web-installed]'
           git push
