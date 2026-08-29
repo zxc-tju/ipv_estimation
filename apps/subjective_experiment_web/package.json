@@ -1,0 +1,16 @@
+{
+  "name": "nmi-subjective-experiment-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Config-driven web system for pairwise and single-clip driving-interaction evaluation.",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {"node": ">=22.5"},
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node --watch server.js",
+    "validate": "node -e \"const {loadStudyBundle}=require('./lib/study'); const b=loadStudyBundle(process.env.EXPERIMENT_STUDY_CONFIG||'./config/study.demo.json',process.env.EXPERIMENT_STIMULUS_MANIFEST||'./config/stimuli.demo.csv'); console.log('Validated',b.stimuli.length,'stimuli; version',b.version)\"",
+    "test": "node tests/run-tests.js",
+    "check": "node --check server.js && node --check lib/study.js && node --check lib/store.js && node --check lib/demo-media.js && node --check public/app.js"
+  }
+}

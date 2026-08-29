@@ -1880,3 +1880,13 @@ These review packets are evidence-boundary reviews, not accepted
   run-level/repeated-run/causal claims are unavailable.
 - RQ012 is readiness-only and human annotation is deferred.
 - Paper `main` is v4.1 but still carries evidence/external-pending markers and is not submission-ready.
+
+<!-- SUBJECTIVE_EXPERIMENT_WEB_SYSTEM -->
+## Subjective experiment web system
+
+- Path: `apps/subjective_experiment_web`
+- Role: source-blind prospective evaluation of conditional social atypicality using pairwise preference and single-clip ratings.
+- Participant flow: consent and screening → instructions and practice → pairwise block → break → single-clip block → post-study survey.
+- Researcher functions: SQLite storage, event logging, signed sessions, protected exports, frozen study/stimulus configuration and analysis-ready CSV/JSON exports.
+- Local checks: `npm run check`, `npm run validate`, `npm test`.
+- Before recruitment: replace demo clips, insert ethics-approved text, freeze the production manifests, configure unique secrets and HTTPS, and complete a device/network pilot.
