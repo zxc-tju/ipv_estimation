@@ -1,0 +1,31 @@
+scenario,name_zh,name_en,area,native_case_id,report_order,expected_duration_s_median,expected_duration_s_min,expected_duration_s_max,n_teams
+A1,行人横穿道路,Pedestrian crossing,beijing,2344,12,19.67,19.42,20.26,7
+A1,行人横穿道路,Pedestrian crossing,shanghai,2325,1,11.24,10.98,12.84,12
+A2,突现故障车,Sudden broken-down vehicle,beijing,2349,14,26.69,13.59,27.54,7
+A2,突现故障车,Sudden broken-down vehicle,shanghai,2328,2,19.25,18.35,20.18,12
+A3,避让闯红灯特殊车辆,Yield to red-light-running emergency vehicle,beijing,2342,3,12.36,12.03,12.75,8
+A3,避让闯红灯特殊车辆,Yield to red-light-running emergency vehicle,shanghai,2323,6,8.9,8.45,15.45,12
+A4,前车急刹车,Lead vehicle hard braking,beijing,2341,11,32.17,32.06,32.5,7
+A4,前车急刹车,Lead vehicle hard braking,shanghai,2322,8,17.54,16.93,17.87,12
+A5,疯狂电瓶车,Erratic e-bike,beijing,2340,10,44.97,44.63,45.45,7
+A5,疯狂电瓶车,Erratic e-bike,shanghai,2321,9,18.02,17.74,18.53,12
+A6,背景车快速切入,Background vehicle fast cut-in,beijing,2339,13,30.58,30.23,31.62,7
+A6,背景车快速切入,Background vehicle fast cut-in,shanghai,2327,10,14.39,13.72,14.81,12
+A7,施工区避障,Construction-zone obstacle avoidance,beijing,2338,1,21.26,20.89,21.81,8
+A7,施工区避障,Construction-zone obstacle avoidance,shanghai,2319,11,18.85,18.59,19.82,12
+B1,环岛通行,Roundabout navigation,beijing,2337,6,31.7,5.05,32.7,8
+B1,环岛通行,Roundabout navigation,shanghai,2318,4,28.24,25.37,29.03,12
+B2,匝道汇入,Ramp merge,beijing,2348,9,21.16,20.66,21.99,7
+B2,匝道汇入,Ramp merge,shanghai,2317,7,18.38,17.7,19.09,12
+B3,非机动车流溢出,Non-motorised traffic overflow,beijing,2335,8,27.43,26.84,27.77,7
+B3,非机动车流溢出,Non-motorised traffic overflow,shanghai,2316,12,39.13,38.09,39.67,12
+B4,无信号交叉口通行,Unsignalised intersection,beijing,2334,4,12.07,11.82,13.4,8
+B4,无信号交叉口通行,Unsignalised intersection,shanghai,2315,13,18.59,16.68,20.07,12
+C1,连续右转复杂场景,Consecutive right turns,beijing,2333,5,24.23,23.7,24.5,8
+C1,连续右转复杂场景,Consecutive right turns,shanghai,2314,3,40.96,39.96,43.08,12
+C2,交叉口排队溢出,Intersection queue spillback,beijing,2350,7,48.0,48.0,48.0,7
+C2,交叉口排队溢出,Intersection queue spillback,shanghai,2313,5,60.0,60.0,60.0,12
+C3,复杂信号灯组合,Complex signal-group intersection,beijing,2347,2,12.0,12.0,12.0,8
+C3,复杂信号灯组合,Complex signal-group intersection,shanghai,2346,14,13.0,13.0,13.0,11
+C4,自主泊车,Autonomous parking,beijing,2330,15,36.43,36.27,38.34,6
+C4,自主泊车,Autonomous parking,shanghai,2311,15,16.76,5.78,17.14,11

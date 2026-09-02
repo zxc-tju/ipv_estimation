@@ -1,0 +1,1004 @@
+<title>OnSite 竞赛回放数据集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#F5F6F4; --surface:#FFFFFF; --surface-2:#EEF0ED;
+  --ink:#181C1E; --ink-mid:#3D464A; --ink-muted:#5F696E;
+  --rule:#DCE0DC; --rule-strong:#C3C9C3;
+  --accent:#146069; --accent-soft:#E2EFF0; --accent-ink:#0E484F;
+  --warn:#9C5B23; --warn-soft:#F6EBDF;
+  --stop:#973A33; --stop-soft:#F8E7E5;
+  --ok:#3D6B45; --ok-soft:#E6EFE7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141719; --surface:#1C2023; --surface-2:#24292C;
+    --ink:#E7EAEB; --ink-mid:#BEC6C9; --ink-muted:#96A0A5;
+    --rule:#2C3235; --rule-strong:#3C4347;
+    --accent:#54B5BF; --accent-soft:#163236; --accent-ink:#7FCDD5;
+    --warn:#D5904F; --warn-soft:#33261A;
+    --stop:#D8756C; --stop-soft:#331E1C;
+    --ok:#7FB289; --ok-soft:#1B2A1E;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141719; --surface:#1C2023; --surface-2:#24292C;
+  --ink:#E7EAEB; --ink-mid:#BEC6C9; --ink-muted:#96A0A5;
+  --rule:#2C3235; --rule-strong:#3C4347;
+  --accent:#54B5BF; --accent-soft:#163236; --accent-ink:#7FCDD5;
+  --warn:#D5904F; --warn-soft:#33261A;
+  --stop:#D8756C; --stop-soft:#331E1C;
+  --ok:#7FB289; --ok-soft:#1B2A1E;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Songti SC",serif;
+  font-size:16.5px; line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1240px; margin:0 auto; padding:0 28px;
+  display:grid; grid-template-columns:228px minmax(0,1fr); gap:56px; align-items:start;}
+@media (max-width:960px){ .wrap{grid-template-columns:1fr; gap:0;} .rail{position:static; margin-bottom:36px;} }
+
+/* ---------- masthead ---------- */
+.mast{border-bottom:2px solid var(--ink); margin-bottom:40px;}
+.mast-in{max-width:1240px; margin:0 auto; padding:44px 28px 24px;}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11.5px; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 16px;
+}
+h1{
+  font-family:Archivo,"PingFang SC",system-ui,sans-serif; font-weight:700;
+  font-size:clamp(30px,4.4vw,46px); line-height:1.08; letter-spacing:-.022em;
+  margin:0 0 14px; text-wrap:balance; color:var(--ink);
+}
+.standfirst{
+  font-size:18px; line-height:1.62; color:var(--ink-mid); max-width:64ch; margin:0 0 26px;
+}
+.mast-meta{
+  display:flex; flex-wrap:wrap; gap:0 30px; row-gap:8px;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-muted);
+  border-top:1px solid var(--rule); padding-top:16px;
+}
+.mast-meta b{color:var(--ink-mid); font-weight:600;}
+
+/* ---------- contents rail ---------- */
+.rail{position:sticky; top:24px;}
+.rail h2{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+  letter-spacing:.15em; text-transform:uppercase; color:var(--ink-muted);
+  margin:0 0 12px; padding-bottom:9px; border-bottom:1px solid var(--rule);
+}
+.rail ol{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px;}
+.rail a{
+  display:grid; grid-template-columns:24px 1fr; gap:8px; align-items:baseline;
+  font-family:Archivo,system-ui,sans-serif; font-size:13.5px; line-height:1.35;
+  color:var(--ink-mid); text-decoration:none; padding:6px 8px 6px 0; border-radius:3px;
+}
+.rail a span{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-muted); font-variant-numeric:tabular-nums;}
+.rail a:hover{color:var(--accent); background:var(--accent-soft);}
+.rail a:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+/* ---------- sections ---------- */
+main{padding-bottom:96px; min-width:0;}
+section{margin:0 0 52px; scroll-margin-top:20px;}
+h2.sec{
+  font-family:Archivo,"PingFang SC",system-ui,sans-serif; font-weight:600;
+  font-size:23px; letter-spacing:-.014em; line-height:1.25;
+  margin:0 0 18px; padding-bottom:11px; border-bottom:1px solid var(--rule-strong);
+  display:grid; grid-template-columns:34px 1fr; gap:6px; align-items:baseline; text-wrap:balance;
+}
+h2.sec em{
+  font-style:normal; font-family:"IBM Plex Mono",monospace; font-size:13px;
+  font-weight:500; color:var(--accent); font-variant-numeric:tabular-nums;
+}
+h3{
+  font-family:Archivo,"PingFang SC",system-ui,sans-serif; font-weight:600; font-size:16px;
+  letter-spacing:-.005em; margin:30px 0 10px; color:var(--ink);
+}
+p{margin:0 0 14px; max-width:70ch;}
+ul,ol.body{margin:0 0 14px; padding-left:20px; max-width:70ch;}
+li{margin-bottom:6px;}
+code{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.855em;
+  background:var(--surface-2); padding:1.5px 5px; border-radius:3px;
+  color:var(--ink); word-break:break-word;
+}
+a.ext{color:var(--accent); text-decoration:underline; text-underline-offset:2px;}
+
+/* ---------- status block ---------- */
+.status{
+  background:var(--surface); border:1px solid var(--rule-strong);
+  border-left:4px solid var(--ok); padding:20px 22px; margin:0 0 22px; border-radius:3px;
+}
+.status .hd{
+  font-family:Archivo,system-ui,sans-serif; font-weight:600; font-size:15.5px;
+  color:var(--ok); margin:0 0 10px; display:flex; align-items:center; gap:9px;
+}
+.status .hd::before{
+  content:""; width:9px; height:9px; border-radius:50%; background:var(--ok); flex:none;
+}
+.status p:last-child{margin-bottom:0;}
+
+/* ---------- callouts ---------- */
+.note{
+  border:1px solid var(--rule-strong); border-left:4px solid var(--accent);
+  background:var(--surface); padding:16px 20px; margin:0 0 18px; border-radius:3px;
+}
+.note.warn{border-left-color:var(--warn); background:var(--warn-soft);}
+.note.stop{border-left-color:var(--stop); background:var(--stop-soft);}
+.note .lbl{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--accent);
+  display:block; margin-bottom:7px;
+}
+.note.warn .lbl{color:var(--warn);}
+.note.stop .lbl{color:var(--stop);}
+.note p:last-child{margin-bottom:0;}
+
+/* ---------- key figures ---------- */
+.figs{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:1px;
+  background:var(--rule-strong); border:1px solid var(--rule-strong);
+  margin:0 0 22px; border-radius:3px; overflow:hidden;
+}
+.fig{background:var(--surface); padding:15px 16px;}
+.fig .n{
+  font-family:Archivo,system-ui,sans-serif; font-weight:700; font-size:27px;
+  line-height:1.05; letter-spacing:-.025em; color:var(--ink); font-variant-numeric:tabular-nums;
+}
+.fig .n small{font-size:14px; font-weight:600; color:var(--ink-muted); letter-spacing:0;}
+.fig .l{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-muted); margin-top:6px; line-height:1.4;
+}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto; margin:0 0 20px; border:1px solid var(--rule-strong); border-radius:3px; background:var(--surface);}
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:520px;}
+th,td{
+  text-align:left; padding:9px 13px; border-bottom:1px solid var(--rule);
+  vertical-align:top; line-height:1.5;
+}
+th{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; color:var(--ink-muted);
+  background:var(--surface-2); border-bottom:1px solid var(--rule-strong); white-space:nowrap;
+}
+tr:last-child td{border-bottom:none;}
+td.mono,th.mono,table.mono td{font-family:"IBM Plex Mono",monospace; font-size:12.3px; font-variant-numeric:tabular-nums;}
+td code{background:none; padding:0; font-size:12.3px;}
+.num{text-align:right; font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace; font-size:12.3px;}
+
+/* ---------- pills ---------- */
+.pill{
+  display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:10px;
+  font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  padding:2.5px 7px; border-radius:2px; white-space:nowrap;
+}
+.pill.ok{background:var(--ok-soft); color:var(--ok);}
+.pill.warn{background:var(--warn-soft); color:var(--warn);}
+.pill.stop{background:var(--stop-soft); color:var(--stop);}
+.pill.info{background:var(--accent-soft); color:var(--accent-ink);}
+
+/* ---------- code block ---------- */
+pre{
+  background:var(--surface); border:1px solid var(--rule-strong); border-radius:3px;
+  padding:16px 18px; overflow-x:auto; margin:0 0 20px;
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12.6px; line-height:1.62;
+  color:var(--ink);
+}
+pre code{background:none; padding:0; font-size:inherit;}
+pre .c{color:var(--ink-muted);}
+
+/* ---------- tree ---------- */
+.tree{
+  background:var(--surface); border:1px solid var(--rule-strong); border-radius:3px;
+  padding:16px 18px; margin:0 0 20px; overflow-x:auto;
+  font-family:"IBM Plex Mono",monospace; font-size:12.4px; line-height:1.78; white-space:pre;
+}
+.tree b{color:var(--accent); font-weight:600;}
+.tree i{color:var(--ink-muted); font-style:normal;}
+
+/* ---------- trap list ---------- */
+.traps{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px;
+  background:var(--rule-strong); border:1px solid var(--rule-strong); border-radius:3px; overflow:hidden;}
+.traps>li{
+  background:var(--surface); padding:15px 18px; margin:0;
+  display:grid; grid-template-columns:26px 1fr; gap:12px; align-items:start;
+}
+.traps .idx{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; font-weight:600;
+  color:var(--ink-muted); font-variant-numeric:tabular-nums; padding-top:3px;
+}
+.traps h4{
+  font-family:Archivo,"PingFang SC",system-ui,sans-serif; font-weight:600; font-size:14.5px;
+  margin:0 0 5px; color:var(--ink); display:flex; flex-wrap:wrap; gap:9px; align-items:center;
+}
+.traps p{margin:0; font-size:14.5px; line-height:1.6; color:var(--ink-mid); max-width:74ch;}
+.traps p+p{margin-top:7px;}
+
+footer{
+  border-top:1px solid var(--rule-strong); padding:22px 0 0; margin-top:12px;
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-muted); line-height:1.75;
+}
+</style>
+
+<header class="mast">
+  <div class="mast-in">
+    <p class="eyebrow">数据集交接手册 · Dataset Handoff</p>
+    <h1>OnSite 竞赛回放数据集</h1>
+    <p class="standfirst">
+      2025 年 12 月 20 日一天之内跑完的自动驾驶算法竞赛，北京与上海两个赛区、20 支正式计分队伍、
+      每队面对完全相同的 15 个场景。真车在场地里跑，仿真器把虚拟交通流注入到它的感知里——
+      因此这份数据同时留下了「车实际怎么开」和「它以为周围发生了什么」两条记录，外加一套官方打分。
+    </p>
+    <div class="mast-meta">
+      <span><b>本体位置</b> 本地外置盘 + 同济 HPC（两份已核对一致）</span>
+      <span><b>体量</b> 4.24 GiB / 172 文件</span>
+      <span><b>场景字典</b> 15 场景 × 2 赛区，已解析</span>
+      <span><b>核验日期</b> 2026-08-19</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<nav class="rail">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#s1"><span>01</span>数据本体在哪</a></li>
+    <li><a href="#s2"><span>02</span>这是什么数据</a></li>
+    <li><a href="#s3"><span>03</span>规模与构成</a></li>
+    <li><a href="#s4"><span>04</span>目录结构</a></li>
+    <li><a href="#s5"><span>05</span>五个回放日志</a></li>
+    <li><a href="#s6"><span>06</span>五张索引表</a></li>
+    <li><a href="#s7"><span>07</span>ID 体系与连接</a></li>
+    <li><a href="#s8"><span>08</span>已知的坑</a></li>
+    <li><a href="#s9"><span>09</span>可直接复用的中间产物</a></li>
+    <li><a href="#s10"><span>10</span>前人已做过什么</a></li>
+    <li><a href="#s11"><span>11</span>合规与敏感内容</a></li>
+    <li><a href="#s12"><span>12</span>五分钟上手</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ================= 01 ================= -->
+<section id="s1">
+  <h2 class="sec"><em>01</em>数据本体在哪</h2>
+
+  <div class="status">
+    <p class="hd">两份完整副本，已逐文件核对一致</p>
+    <p style="margin-bottom:10px">
+      本地外置盘与同济 HPC 各有一份完整的分析包。核对方式是把两边的
+      <b>相对路径 + 字节数</b> 全量列出后逐行比对，172 个文件全部相同；
+      再抽一个 4.1 MB 的轨迹日志做 MD5，两边一致
+      （<code>7839540751231c7fe8c3ddc0696bcca8</code>）。
+      两边总字节数都是 <b>4,549,568,232</b>。
+    </p>
+    <p style="margin-bottom:0">
+      所以：<b>不需要从 HPC 往回搬数据</b>。新项目在本地或在 HPC 上开工都可以，取用哪一份取决于算力在哪。
+    </p>
+  </div>
+
+  <div class="tw">
+    <table>
+      <tr><th style="width:88px">副本</th><th>路径</th><th style="width:150px">状态</th></tr>
+      <tr>
+        <td><b>本地</b></td>
+        <td class="mono">/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset/</td>
+        <td><span class="pill ok">完整</span> 172 文件<br>4.24 GiB</td>
+      </tr>
+      <tr>
+        <td><b>HPC</b></td>
+        <td class="mono">tongji-hpc:/share/home/u25310231/ZXC/rq012b_onsite_ipv_20260627T202508/data/onsite_competition/all_teams_dataset/</td>
+        <td><span class="pill ok">完整</span> 172 文件<br>4.24 GiB</td>
+      </tr>
+    </table>
+  </div>
+
+  <p>HPC 上该目录所在文件系统 <code>/share</code> 目前已用 5.9 T / 8.1 T（74%），空间不紧张。
+     登录别名是 <code>tongji-hpc</code>，重计算一律走 Slurm 提交，作业名需以 <code>zxc-</code> 开头。</p>
+
+  <div class="note stop">
+    <span class="lbl">最重要的一条</span>
+    <p><b>原始 <code>raw/</code> 目录已被清空，<code>all_teams_dataset/</code> 现在是回放日志的唯一完整副本。</b>
+       归档区 <code>archived/onsite_competition_raw_and_top5_subset_20260623/raw/</code> 下的赛段文件夹全是空壳，
+       整个归档 raw 目录里只剩一个 969 MB 的比赛视频。抽查分析包里的日志文件，硬链接计数为 1——
+       意味着别处没有第二个指向同一份数据的入口。</p>
+    <p><b>后果：</b>删掉或覆盖 <code>all_teams_dataset/</code> 里的文件，本地就没有了；此时只能从 HPC 那份取回。
+       新项目请<b>只读</b>使用，需要产出就写到自己的目录去。</p>
+  </div>
+
+  <p>另有一处零散残留：<code>data/onsite_competition/raw/shanghai/</code> 下还剩 27 个日志文件（约 1.1 GB），
+     覆盖 6 支上海队伍，是分析包内容的子集，没有独立价值，不要当成另一个数据源。</p>
+</section>
+
+<!-- ================= 02 ================= -->
+<section id="s2">
+  <h2 class="sec"><em>02</em>这是什么数据</h2>
+
+  <p>这是一场<b>虚实结合（车在环）</b>的自动驾驶算法竞赛留下的完整回放记录。测试方式是：</p>
+
+  <ul>
+    <li>参赛队把自己的算法装在<b>真实测试车</b>上，在实际场地里行驶；</li>
+    <li>仿真器（TESSNG）生成虚拟交通参与者，通过一个注入进程实时喂进车辆的感知通道；</li>
+    <li>因此车看到的「周围车辆」多数是虚拟的，但车自身的运动、底盘信号、控制量全是真实的；</li>
+    <li>全程按约 10 Hz 记录，同时留下仿真侧世界状态、车辆侧感知合成结果、车辆自身状态、以及系统运行监控四条流。</li>
+  </ul>
+
+  <p>比赛分北京、上海两个赛区，<b>所有 22 场回放的时间戳都落在 2025-12-20 当天</b>
+     （北京时间上午 10:00 到下午 16:36）。每支队伍原则上只跑一轮，
+     但<b>两个赛区面对的是同一套 15 个场景</b>——这使得「算法 × 场景」成为天然的配对比较单元，
+     也是这份数据最有价值的结构特征。</p>
+
+  <p>官方对每支队伍的每个场景给出五个维度分和一个综合分，
+     量纲统一为 0–100。综合分为 0 的单元共 33 个，<b>成因有四种，碰撞只占其中 12 个</b>——
+     详见 §03 的拆解。既往工作沿用的「0 分即碰撞」是一个过度简化，直接拿它当碰撞标签会高估碰撞率近两倍。</p>
+
+  <div class="note">
+    <span class="lbl">对复用者的意义</span>
+    <p>这份数据适合做：同一场景下不同算法行为的横向对比、真车运动学与控制信号分析、
+       场景级结果与行为特征的关联探索。<b>不适合</b>做：运行级效应、重复实验、随机种子敏感性、
+       以及任何需要「同一算法多次运行」的因果推断——数据里根本没有重复运行。</p>
+  </div>
+</section>
+
+<!-- ================= 03 ================= -->
+<section id="s3">
+  <h2 class="sec"><em>03</em>规模与构成</h2>
+
+  <div class="figs">
+    <div class="fig"><div class="n">20</div><div class="l">正式计分队伍</div></div>
+    <div class="fig"><div class="n">15</div><div class="l">场景（每队相同）</div></div>
+    <div class="fig"><div class="n">300</div><div class="l">场景得分行</div></div>
+    <div class="fig"><div class="n">22</div><div class="l">回放 session</div></div>
+    <div class="fig"><div class="n">106</div><div class="l">回放日志文件</div></div>
+    <div class="fig"><div class="n">4.24<small> GiB</small></div><div class="l">总体量</div></div>
+  </div>
+
+  <h3>15 个场景是什么</h3>
+  <p>场景名称不在任何一张索引表里，只写在各队的<b>诊断报告 PDF</b> 首页。
+     下表是从全部 20 份诊断报告中抽出、并用五维得分向量逐队逐场景反查确认的结果
+     （300/300 精确匹配，无歧义）。<b>官方编号在两个赛区含义一致</b>：
+     <code>A1</code> 在北京和上海都是「行人横穿道路」。</p>
+
+  <div class="tw">
+    <table>
+      <tr><th style="width:46px">编号</th><th style="width:150px">场景名称</th><th>英文</th>
+          <th class="num">北京<br>caseId</th><th class="num">上海<br>caseId</th>
+          <th class="num">北京期望<br>耗时</th><th class="num">上海期望<br>耗时</th></tr>
+      <tr><td class="mono">A1</td><td>行人横穿道路</td><td>Pedestrian crossing</td><td class="num">2344</td><td class="num">2325</td><td class="num">19.7s</td><td class="num">11.2s</td></tr>
+      <tr><td class="mono">A2</td><td>突现故障车</td><td>Sudden broken-down vehicle</td><td class="num">2349</td><td class="num">2328</td><td class="num">26.7s</td><td class="num">19.2s</td></tr>
+      <tr><td class="mono">A3</td><td>避让闯红灯特殊车辆</td><td>Yield to red-light-running emergency vehicle</td><td class="num">2342</td><td class="num">2323</td><td class="num">12.4s</td><td class="num">8.9s</td></tr>
+      <tr><td class="mono">A4</td><td>前车急刹车</td><td>Lead vehicle hard braking</td><td class="num">2341</td><td class="num">2322</td><td class="num">32.2s</td><td class="num">17.5s</td></tr>
+      <tr><td class="mono">A5</td><td>疯狂电瓶车</td><td>Erratic e-bike</td><td class="num">2340</td><td class="num">2321</td><td class="num">45.0s</td><td class="num">18.0s</td></tr>
+      <tr><td class="mono">A6</td><td>背景车快速切入</td><td>Background vehicle fast cut-in</td><td class="num">2339</td><td class="num">2327</td><td class="num">30.6s</td><td class="num">14.4s</td></tr>
+      <tr><td class="mono">A7</td><td>施工区避障</td><td>Construction-zone obstacle avoidance</td><td class="num">2338</td><td class="num">2319</td><td class="num">21.3s</td><td class="num">18.9s</td></tr>
+      <tr><td class="mono">B1</td><td>环岛通行</td><td>Roundabout navigation</td><td class="num">2337</td><td class="num">2318</td><td class="num">31.7s</td><td class="num">28.2s</td></tr>
+      <tr><td class="mono">B2</td><td>匝道汇入</td><td>Ramp merge</td><td class="num">2348</td><td class="num">2317</td><td class="num">21.2s</td><td class="num">18.4s</td></tr>
+      <tr><td class="mono">B3</td><td>非机动车流溢出</td><td>Non-motorised traffic overflow</td><td class="num">2335</td><td class="num">2316</td><td class="num">27.4s</td><td class="num">39.1s</td></tr>
+      <tr><td class="mono">B4</td><td>无信号交叉口通行</td><td>Unsignalised intersection</td><td class="num">2334</td><td class="num">2315</td><td class="num">12.1s</td><td class="num">18.6s</td></tr>
+      <tr><td class="mono">C1</td><td>连续右转复杂场景</td><td>Consecutive right turns</td><td class="num">2333</td><td class="num">2314</td><td class="num">24.2s</td><td class="num">41.0s</td></tr>
+      <tr><td class="mono">C2</td><td>交叉口排队溢出</td><td>Intersection queue spillback</td><td class="num">2350</td><td class="num">2313</td><td class="num">48.0s</td><td class="num">60.0s</td></tr>
+      <tr><td class="mono">C3</td><td>复杂信号灯组合</td><td>Complex signal-group intersection</td><td class="num">2347</td><td class="num">2346</td><td class="num">12.0s</td><td class="num">13.0s</td></tr>
+      <tr><td class="mono">C4</td><td>自主泊车</td><td>Autonomous parking</td><td class="num">2330</td><td class="num">2311</td><td class="num">36.4s</td><td class="num">16.8s</td></tr>
+    </table>
+  </div>
+
+  <p>此表已存成机读文件：<code>data/onsite_competition/00_manifest/scenario_dictionary.csv</code>
+     （30 行 = 15 场景 × 2 赛区，含报告内序号与期望耗时的中位数/极值）。</p>
+
+  <div class="note warn">
+    <span class="lbl">两件容易误判的事</span>
+    <p><b>一、诊断报告里的 1–15 序号不是官方编号。</b>报告按自己的顺序排列场景，
+       而且<b>两个赛区的排列顺序不同</b>——北京报告的第 1 个是「施工区避障」（官方 A7），
+       上海报告的第 1 个是「行人横穿道路」（官方 A1）。只有「自主泊车」在两边都排第 15。
+       解析 PDF 时必须按名称对齐，不能按序号。</p>
+    <p><b>二、期望耗时不是场景常数。</b>它随实际行驶路径略有浮动（同一场景跨队差异一般在 1 秒内，
+       个别场景到 3 秒）。上表给的是中位数，可用来判断场景长短量级，不要当作精确的场景时长定义。</p>
+  </div>
+
+  <h3>三个分组的含义</h3>
+  <p>编号前缀确实对应可辨认的场景族：<b>A 组（7 个）是动态交互与避让</b>——行人、故障车、特种车辆、
+     前车急刹、电瓶车、切入、施工区；<b>B 组（4 个）是汇流与交叉通行</b>——环岛、匝道、非机动车流、
+     无信号交叉口；<b>C 组（4 个）是复杂路口与专项任务</b>——连续右转、排队溢出、复杂信号灯、自主泊车。
+     这一归纳来自场景名称本身，比赛方未在数据中给出分组定义，引用时请标明是推断。</p>
+
+  <h3>官方评分的分布</h3>
+  <p>300 行得分（20 队 × 15 场景），各维度的实际取值范围如下。
+     注意 efficiency 与 coordination 的均值明显低于 safety，说明区分度主要来自这两个维度。</p>
+
+  <div class="tw">
+    <table>
+      <tr><th>维度</th><th class="num">最小</th><th class="num">最大</th><th class="num">均值</th><th>备注</th></tr>
+      <tr><td>safety 安全</td><td class="num">0.00</td><td class="num">100.00</td><td class="num">89.00</td><td>0 分不等于碰撞，见下</td></tr>
+      <tr><td>efficiency 通行效率</td><td class="num">0.00</td><td class="num">100.00</td><td class="num">66.66</td><td>区分度最高</td></tr>
+      <tr><td>comfort 舒适性</td><td class="num">0.00</td><td class="num">100.00</td><td class="num">85.27</td><td></td></tr>
+      <tr><td>compliance 合规性</td><td class="num">0.00</td><td class="num">100.00</td><td class="num">86.48</td><td></td></tr>
+      <tr><td>coordination 协调性</td><td class="num">0.00</td><td class="num">100.00</td><td class="num">74.52</td><td>区分度次高</td></tr>
+      <tr><td><b>comprehensive 综合</b></td><td class="num">0.00</td><td class="num">99.90</td><td class="num">73.96</td><td>官方排名依据</td></tr>
+    </table>
+  </div>
+
+  <h3>综合分为 0 的 33 个单元：四种成因</h3>
+  <div class="note stop">
+    <span class="lbl">纠正一条既往结论</span>
+    <p>既往工作把「综合分 0」直接当作碰撞标签。<b>核对全部 20 份诊断报告后确认这不成立</b>：
+       33 个 0 分单元里只有 12 个真的发生了碰撞。任一项安全指标扣满 100 分即可把综合分打到 0，
+       而能扣满 100 的有四种情形。<b>把 0 分当碰撞会把碰撞率从 4.0% 虚报成 11.0%。</b></p>
+  </div>
+
+  <div class="tw">
+    <table>
+      <tr><th style="width:150px">成因</th><th class="num" style="width:60px">单元数</th>
+          <th>怎么从诊断报告里认出来</th><th style="width:150px">涉及队伍</th></tr>
+      <tr><td><b>碰撞</b></td><td class="num">12</td>
+          <td>安全指标里「碰撞」次数 ≥ 1，扣 100 分</td>
+          <td class="mono">T15 T18 T20 T1 T10 T12 T2 T3 T4</td></tr>
+      <tr><td><b>场景未运行</b></td><td class="num">12</td>
+          <td>「任务完成」得 0 分，且耗时字段是哨兵值——实际耗时恒为 <code>1.0s</code>、
+              期望耗时恒为 <code>9999s</code>。车根本没跑这个场景。</td>
+          <td class="mono">T19（9 个）<br>T21 T12</td></tr>
+      <tr><td><b>安全员介入</b></td><td class="num">6</td>
+          <td>「安全员介入」次数 ≥ 1，扣 100 分。任务本身完成了（任务完成得 30 分）。</td>
+          <td class="mono">T21 T10 T12 T2</td></tr>
+      <tr><td><b>未有效泊车</b></td><td class="num">3</td>
+          <td>仅出现在自主泊车场景（<code>C4</code>）：「未有效泊车」次数 ≥ 1，扣 100 分。</td>
+          <td class="mono">T18 T10 T4</td></tr>
+      <tr><td colspan="4" style="background:var(--surface-2)"><b>合计 33</b>　
+          （12 + 12 + 6 + 3；已逐单元核对，无重复计数、无遗漏。
+          有 1 个单元同时有碰撞与介入，归入碰撞组。）</td></tr>
+    </table>
+  </div>
+
+  <p>对复用者的实际含义：<b>要碰撞标签，就去诊断报告里读碰撞次数，不要用得分为 0 反推</b>；
+     要「任务失败」这个更宽的标签，用得分 0 是合适的；
+     要排除「压根没跑」的单元，用期望耗时等于 9999 这个条件筛。</p>
+
+  <h3>回放覆盖情况</h3>
+  <p>20 支队伍里，19 支有至少一场回放 session；<code>T18 / bitsite</code> 在索引表中标记为无回放。
+     另有 3 支上海队伍（<code>T4</code>、<code>T10</code>、<code>T12</code>）各有 2 场 session
+     ——是重跑，不是两个不同场次的比赛，<b>做键的时候必须把 <code>session_id</code> 带上</b>，
+     不能假设一队一场。</p>
+</section>
+
+<!-- ================= 04 ================= -->
+<section id="s4">
+  <h2 class="sec"><em>04</em>目录结构</h2>
+
+  <div class="tree"><b>all_teams_dataset/</b>
+├── README.md
+├── <b>tables/</b>                                   <i>← 5 张索引表，先看这里</i>
+│   ├── all_team_summary.csv                  <i>20 行，一队一行</i>
+│   ├── all_session_manifest.csv              <i>22 行，一场回放一行</i>
+│   ├── all_scenario_scores.csv               <i>300 行，官方场景得分</i>
+│   ├── materialized_analysis_files.csv       <i>146 行，文件来源映射</i>
+│   └── validation_summary.csv                <i>23 行，日志完整性自检</i>
+└── <b>teams/</b>
+    ├── beijing/
+    │   ├── 01_T17_panda/
+    │   │   ├── README.md
+    │   │   ├── <b>sessions/</b>6931-1766206339/     <i>← 回放日志在这里</i>
+    │   │   │   ├── monitor.log
+    │   │   │   ├── simulation_trajectory.log
+    │   │   │   ├── vehicle_perception_simulation_trajectory.log
+    │   │   │   ├── vehicle_perception_trajectory.log   <i>（可选）</i>
+    │   │   │   └── vehicle_trajectory.log
+    │   │   └── <b>support_materials/</b>            <i>诊断报告、队伍信息、申诉材料</i>
+    │   └── … 共 8 个北京队伍目录
+    └── shanghai/  … 共 12 个上海队伍目录</div>
+
+  <p>队伍目录命名格式是 <code>&lt;赛区排名&gt;_&lt;队伍代码&gt;_&lt;官方名&gt;</code>，
+     session 目录名格式是 <code>&lt;taskId&gt;-&lt;recordId&gt;</code>，其中 recordId 是该场次开始的 Unix 秒级时间戳。</p>
+
+  <p><code>support_materials/</code> 里可能出现：诊断报告 PDF（8 份北京队伍是
+     <code>诊断报告.pdf</code>，上海队伍是以学校命名的 PDF）、<code>队伍信息.txt</code>、
+     赛场运行日志 <code>onsite_2025-12-20_*.log</code>、申诉证据（图片 / docx）。
+     这些不是每队都齐全。</p>
+
+  <div class="note warn">
+    <span class="lbl">未纳入分析包的内容</span>
+    <p>比赛录像与回放压缩包被<b>有意排除</b>在分析包之外。整个归档区只保留了一个 969 MB 的
+       mp4（华南理工第一次比赛）。如果新项目需要视频做人工核对，需要另找原始来源，这份包里没有。</p>
+  </div>
+</section>
+
+<!-- ================= 05 ================= -->
+<section id="s5">
+  <h2 class="sec"><em>05</em>五个回放日志</h2>
+
+  <p>每个 session 目录下有 4 个必备日志 + 1 个可选日志。全部是 <b>JSON Lines</b>：一行一个完整 JSON 对象，
+     一行通常对应一帧。标称采样率 10 Hz（实测帧间隔中位数正好 100 ms）。
+     时间统一是毫秒级 Unix 时间戳，位置是经纬度。</p>
+
+  <div class="tw">
+    <table>
+      <tr><th style="width:250px">文件</th><th>内容</th><th style="width:110px">典型行数</th></tr>
+      <tr>
+        <td class="mono">simulation_trajectory.log</td>
+        <td><b>仿真侧世界真值。</b>由 TESSNG 生成，包含全部虚拟参与者（车、行人、交通流），
+            并预留 <code>trafficLight</code> 与 <code>obstacles</code> 槽位。三个轨迹文件里参与者名单最全的一个。</td>
+        <td class="num">~6,100</td>
+      </tr>
+      <tr>
+        <td class="mono">vehicle_perception_simulation_trajectory.log</td>
+        <td><b>主车视角的融合帧。</b>按 <code>role</code> 分组打包：<code>av</code>（主车自身）、
+            <code>mvSimulation</code>（仿真参与者）、<code>trafficLight</code>、<code>obstacles</code>。
+            带 <code>caseId</code>，是<b>把回放切成场景的关键字段</b>。注意它不是纯传感器输出，
+            而是集成层记录。</td>
+        <td class="num">~5,800</td>
+      </tr>
+      <tr>
+        <td class="mono">vehicle_trajectory.log</td>
+        <td><b>主车实车状态流。</b>只含主车，但字段最细：底盘、控制、状态信号——
+            方向盘转角、车轮转角、油门开度、制动、挡位、纵横向加速度、自动驾驶状态、转向灯等。
+            做控制/驾驶行为分析主要用这个。</td>
+        <td class="num">~6,100</td>
+      </tr>
+      <tr>
+        <td class="mono">vehicle_perception_trajectory.log</td>
+        <td><span class="pill info">可选</span> 部分场次才导出。在 22 场里出现于大多数但非全部。</td>
+        <td class="num">—</td>
+      </tr>
+      <tr>
+        <td class="mono">monitor.log</td>
+        <td><b>系统运行监控</b>，约 1 Hz。三块：注入进程、仿真器、车端算法各自的 CPU/内存/帧率/通道延迟/状态码。
+            用于诊断丢帧、通信延迟、帧率失配。<b>不是行为数据</b>，但排查异常场次时很有用。</td>
+        <td class="num">~620</td>
+      </tr>
+    </table>
+  </div>
+
+  <h3>主车状态的关键字段</h3>
+  <p>取自 <code>vehicle_trajectory.log</code> 每帧 <code>value.value[0]</code>（共 26 个字段）：</p>
+
+  <div class="tw">
+    <table class="mono">
+      <tr><th>字段</th><th>含义</th><th>单位 / 注意</th></tr>
+      <tr><td>longitude / latitude</td><td>主车位置</td><td>经纬度</td></tr>
+      <tr><td>speed</td><td>车速</td><td>—</td></tr>
+      <tr><td>courseAngle</td><td>航向角</td><td>度</td></tr>
+      <tr><td>lonAcc / latAcc</td><td>纵向 / 横向加速度</td><td>—</td></tr>
+      <tr><td><b>"acceleration&nbsp;"</b></td><td>标量加速度</td><td><span class="pill stop">字段名尾部有空格</span></td></tr>
+      <tr><td>length / width / height</td><td>车辆外廓尺寸</td><td><b>厘米</b>（如 476 / 190 / 170）</td></tr>
+      <tr><td>steeringWheelAngle / wheelAngle</td><td>方向盘转角 / 车轮转角</td><td>—</td></tr>
+      <tr><td>acceleratorPedal / braking / gear</td><td>油门 / 制动 / 挡位</td><td>—</td></tr>
+      <tr><td>autoStatus / driveType</td><td>自动驾驶状态 / 控制来源</td><td>—</td></tr>
+      <tr><td>timestamp / globalTimeStamp</td><td>时间戳</td><td>毫秒，字符串型</td></tr>
+      <tr><td>isPerception</td><td>是否为感知对象</td><td>主车恒为 0</td></tr>
+    </table>
+  </div>
+
+  <p>更完整的逐字段说明（含仿真侧与感知侧）保存在仓库里的
+     <code>archived/onsite_competition_results_legacy/SCHEMA.md</code>，
+     建议连同本手册一起交给新项目。<b>但该文档有一处已知错误</b>，见 §08 第 8 条。</p>
+</section>
+
+<!-- ================= 06 ================= -->
+<section id="s6">
+  <h2 class="sec"><em>06</em>五张索引表</h2>
+
+  <p>所有表都在 <code>tables/</code> 下，UTF-8 CSV。<b>入口是 <code>all_session_manifest.csv</code></b>——
+     它是回放处理的稳定粒度，一行一场。</p>
+
+  <div class="tw">
+    <table>
+      <tr><th style="width:230px">表</th><th class="num" style="width:60px">行</th><th>做什么用 / 关键列</th></tr>
+      <tr>
+        <td class="mono">all_session_manifest.csv</td><td class="num">22</td>
+        <td><b>回放处理入口。</b>粒度 <code>(area, team_code, session_id)</code>。
+            <code>dataset_session_path</code> 直接给出日志所在目录；
+            <code>present_logs</code> / <code>missing_required_logs</code> 说明该场缺哪些文件；
+            另有各日志的字节数。</td>
+      </tr>
+      <tr>
+        <td class="mono">all_scenario_scores.csv</td><td class="num">300</td>
+        <td><b>官方结果。</b>列：<code>area, area_rank, global_rank, team_code, official_name,
+            scenario, safety, efficiency, comfort, compliance, coordination, comprehensive</code>。
+            这是唯一的结果侧真值。</td>
+      </tr>
+      <tr>
+        <td class="mono">all_team_summary.csv</td><td class="num">20</td>
+        <td>一队一行：赛区排名、总排名、平均综合分、是否有回放、session 数、
+            以及队伍目录在包内的路径。</td>
+      </tr>
+      <tr>
+        <td class="mono">validation_summary.csv</td><td class="num">23</td>
+        <td>回放日志完整性自检。没有回放的队伍<b>保留在表里并标注</b>，不要用行数当队伍数。</td>
+      </tr>
+      <tr>
+        <td class="mono">materialized_analysis_files.csv</td><td class="num">146</td>
+        <td>每个文件的来源路径 → 包内路径映射，以及存储方式。追溯来源时用。</td>
+      </tr>
+    </table>
+  </div>
+
+  <p><b>场景字典</b>（本次新增）：<code>data/onsite_competition/00_manifest/scenario_dictionary.csv</code>，
+     30 行 = 15 场景 × 2 赛区。列为场景编号、中文名、英文名、赛区、回放 caseId、诊断报告内序号、
+     期望耗时的中位数与极值、参与队数。<b>这是场景名称唯一的机读来源</b>——
+     官方索引表里没有场景名称。</p>
+
+  <p>另外在 <code>data/onsite_competition/00_manifest/</code> 下还有一套更早的全量组织清单
+     （<code>team_manifest.csv</code>、<code>session_manifest.csv</code>、<code>file_inventory.csv</code>、
+     <code>score_team_coverage.csv</code>），覆盖包括非计分队伍与平台文件在内的全部内容。
+     做正式分析用 <code>tables/</code>，追查「某个文件当初在哪」用 <code>00_manifest/</code>。</p>
+</section>
+
+<!-- ================= 07 ================= -->
+<section id="s7">
+  <h2 class="sec"><em>07</em>ID 体系与连接</h2>
+
+  <h3>连接键</h3>
+  <div class="tw">
+    <table>
+      <tr><th style="width:150px">键</th><th>形态</th><th>说明</th></tr>
+      <tr><td class="mono">team_code</td><td class="mono">T1 … T21</td>
+          <td>队伍主键。原始文件夹用中文校名，映射表在
+              <code>archived/onsite_competition_results_legacy/anno_trans.csv</code>。
+              注意编号不连续：20 支计分队伍占用 T1–T21，缺 T13。</td></tr>
+      <tr><td class="mono">session_id</td><td class="mono">6931-1766206339</td>
+          <td><code>taskId-recordId</code>。有重跑的队伍必须带上这一列。</td></tr>
+      <tr><td class="mono">scenario</td><td class="mono">A1 … C4</td>
+          <td>官方场景编号，得分表用这个。</td></tr>
+      <tr><td class="mono">caseId</td><td class="mono">2311 … 2350</td>
+          <td>回放日志内部的场景编号，出现在
+              <code>vehicle_perception_simulation_trajectory.log</code> 顶层。
+              <b>与 scenario 不是同一套编号</b>，必须用下表换算。</td></tr>
+    </table>
+  </div>
+
+  <h3>场景编号 ↔ 回放 caseId 对照表</h3>
+  <div class="note warn">
+    <span class="lbl">最容易踩的映射问题</span>
+    <p>同一个场景（比如 A1）在<b>两个赛区用的是不同的 caseId</b>。
+       把回放切片对齐到官方得分时，必须按 <code>(赛区, 场景)</code> 两个键去查，只按场景会串。</p>
+  </div>
+
+  <p>完整的「场景编号 ↔ 场景名称 ↔ 两赛区 caseId」对照表在 <b>§03</b>，机读版本是
+     <code>00_manifest/scenario_dictionary.csv</code>。此处不重复。</p>
+
+  <h3>两个不同的「全集」</h3>
+  <p>既往工作把可用范围明确拆成两层，新项目沿用这个划分会省很多事：</p>
+  <div class="tw">
+    <table>
+      <tr><th style="width:120px">全集</th><th class="num" style="width:70px">单元数</th><th>适用范围</th></tr>
+      <tr><td><b>结果全集</b><br><code>full_300</code></td><td class="num">300</td>
+          <td>20 队 × 15 场景。官方得分、扣分、碰撞字段完整，<b>无任何排除</b>。
+              只做结果侧分析时用这个。</td></tr>
+      <tr><td><b>回放全集</b><br><code>clean_285</code></td><td class="num">285</td>
+          <td>19 队 × 15 场景。任何需要轨迹/回放的分析用这个。
+              排除的是 <code>T19</code>，原因见 §08 第 2 条。</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 08 ================= -->
+<section id="s8">
+  <h2 class="sec"><em>08</em>已知的坑</h2>
+
+  <p>共 15 条，按踩中的代价从高到低排。前 6 条会直接算出错误结果，务必先读。</p>
+
+  <ol class="traps">
+
+    <li><span class="idx">01</span><div>
+      <h4>唯一副本 <span class="pill stop">数据可能丢失</span></h4>
+      <p>本地的 <code>all_teams_dataset/</code> 是回放日志在本地的唯一完整副本，
+         上游 <code>raw/</code> 已清空、硬链接计数为 1。<b>只读使用</b>，产出写别处。
+         真删了要从 HPC 那份取回。</p>
+    </div></li>
+
+    <li><span class="idx">02</span><div>
+      <h4>T19 目录名与实际归属冲突 <span class="pill stop">会算错</span></h4>
+      <p>包内目录 <code>teams/beijing/08_T19_223/</code> 里确实有一场 session
+         （<code>6937-1766209673</code>），索引表也把它记在 T19 名下。
+         但既往的可用性审查结论是：<b>无法唯一确认这场回放归 T19 所有</b>，
+         因此把 T19 从回放全集中整体排除。而在已冻结的分析表里，这场 session 被算在了
+         <code>T18</code> 头上——<code>T18</code> 在索引表中标记为「无回放」。</p>
+      <p><b>诊断报告提供了独立佐证：</b>T19 的 15 个场景里有 <b>9 个压根没跑</b>
+         （耗时字段是「未运行」哨兵值，任务完成得 0 分），实际只完成了 6 个场景。
+         这与「找不到唯一归属的回放」是一致的——T19 那一轮本身就没有正常进行。</p>
+      <p><b>怎么办：</b>不要直接信目录名。做回放分析就用 285 的全集定义并排除 T19；
+         如果新项目的问题必须解决这个归属，需要自己重新做一次身份核定，
+         起点是既往审查记录里关于「3190 号车」的冲突分析。</p>
+    </div></li>
+
+    <li><span class="idx">03</span><div>
+      <h4>场景编号在两个赛区对应不同 caseId <span class="pill stop">会串场景</span></h4>
+      <p>见 §03 对照表。按 <code>(赛区, 场景)</code> 联合查，别只用场景号。
+         官方编号本身（A1、B2 …）在两赛区含义一致，会变的只是回放日志里的 caseId。</p>
+    </div></li>
+
+    <li><span class="idx">04</span><div>
+      <h4>得分 0 不等于碰撞 <span class="pill stop">碰撞率会虚报近两倍</span></h4>
+      <p>33 个 0 分单元里只有 12 个是碰撞，另有 12 个是场景根本没跑、6 个是安全员介入、
+         3 个是泊车失败。拆解见 §03。要碰撞标签就去诊断报告读碰撞次数。</p>
+    </div></li>
+
+    <li><span class="idx">05</span><div>
+      <h4>耗时字段有「未运行」哨兵值 <span class="pill stop">会污染统计量</span></h4>
+      <p>诊断报告里，场景未运行时实际耗时记为 <code>1.0s</code>、期望耗时记为 <code>9999s</code>，
+         不是缺失值也不是真实测量。全表 300 个单元中有 <b>12 个</b>如此。
+         直接对耗时求均值会被 9999 拉飞；筛掉它同时也就筛掉了未运行单元。</p>
+    </div></li>
+
+    <li><span class="idx">06</span><div>
+      <h4>诊断报告里的 1–15 序号不是官方场景编号 <span class="pill warn">按序号对齐必错</span></h4>
+      <p>报告有自己的排列顺序，且<b>两个赛区顺序不同</b>：北京第 1 个是施工区避障（官方 A7），
+         上海第 1 个是行人横穿道路（官方 A1）。解析 PDF 时按<b>名称</b>对齐，
+         名称到官方编号的映射见 §03。</p>
+    </div></li>
+
+    <li><span class="idx">07</span><div>
+      <h4>三支队伍有两场 session <span class="pill warn">会重复计数</span></h4>
+      <p><code>T4</code>、<code>T10</code>、<code>T12</code> 各有 2 场（重跑）。
+         做键必须带 <code>session_id</code>，不能假设一队一场，否则聚合时会重复。</p>
+    </div></li>
+
+    <li><span class="idx">08</span><div>
+      <h4>字段名 <code>"acceleration&nbsp;"</code> 尾部带一个空格 <span class="pill warn">会取到 None</span></h4>
+      <p>真实存在于 <code>vehicle_trajectory.log</code> 与感知合成日志的主车对象里。
+         写成 <code>row["acceleration"]</code> 会静默拿不到值。要么按原样带空格取，
+         要么读入后统一 <code>strip()</code> 所有键。</p>
+    </div></li>
+
+    <li><span class="idx">09</span><div>
+      <h4>车辆外廓尺寸单位是厘米 <span class="pill warn">量纲错 100 倍</span></h4>
+      <p><code>length / width / height</code> 形如 <code>476 / 190 / 170</code>，是厘米不是米。
+         做碰撞距离、车头时距、包围盒相关计算时必须先换算。</p>
+    </div></li>
+
+    <li><span class="idx">10</span><div>
+      <h4>仿真轨迹日志开头有空帧 <span class="pill warn">前几帧无参与者</span></h4>
+      <p><code>simulation_trajectory.log</code> 里 <code>value.value</code> 为空数组的帧真实存在——
+         抽查的一场里开头 11 帧全空，全文件共 1,021 帧为空（占约 17%）。
+         直接取第一帧当初始状态会拿到空列表。</p>
+    </div></li>
+
+    <li><span class="idx">11</span><div>
+      <h4>旧 schema 文档有一处错 <span class="pill warn">照抄会解析失败</span></h4>
+      <p><code>SCHEMA.md</code> 写 <code>vehicle_trajectory.log</code> 的顶层 <code>type</code>
+         恒为 <code>"start"</code>。实测该字段值是 <code>"trajectory"</code>
+         （抽查前 3,000 行全部为 <code>trajectory</code>）。按 <code>"start"</code> 过滤会得到空结果。</p>
+    </div></li>
+
+    <li><span class="idx">12</span><div>
+      <h4>事件抽取对采样率极度敏感 <span class="pill warn">结论会翻倍或腰斩</span></h4>
+      <p>既往做过一套基于帧间差分的自动事件抽取（急减速、冲击度、时距等）。
+         独立复核发现：重采样到 5 Hz 事件数 <b>+88%</b>，到 20 Hz <b>−30%</b>。
+         <b>凡是基于帧间差分的指标，必须锁定原生 10 Hz</b>，并在报告里写明。</p>
+    </div></li>
+
+    <li><span class="idx">13</span><div>
+      <h4>没有地图与路径元数据 <span class="pill warn">几何变量只能靠启发式</span></h4>
+      <p>回放日志不提供车道、路径类别、转向标签一类经过审核的地图信息。
+         既往工作里这些量全是基于航向角差、纵横向间距的运动学启发式推出来的，并被明确标注为「启发式」。
+         新项目若需要可靠的地图语义，得另找场景定义文件，这份包里没有。</p>
+    </div></li>
+
+    <li><span class="idx">14</span><div>
+      <h4>没有重复运行 <span class="pill warn">限制可回答的问题</span></h4>
+      <p>一队一轮（除 3 支重跑）。运行级效应、种子敏感性、算法优劣的因果判定
+         都<b>不可识别</b>。能做的是「算法 × 场景」的配对描述与关联。</p>
+    </div></li>
+
+    <li><span class="idx">15</span><div>
+      <h4>少量单元缺回放窗口或主车行 <span class="pill info">已知缺口</span></h4>
+      <p>在 285 个回放单元上跑既往流水线时，有 5 个单元因缺场景窗口（3 个）或缺主车行（2 个）取不到数，
+         另有 18 个单元在更严格的锚点条件下建不出锚点。也就是说
+         <b>实际可用单元约 267 个，不是 285</b>，新流水线也要预期类似量级的损耗。</p>
+    </div></li>
+
+  </ol>
+</section>
+
+<!-- ================= 09 ================= -->
+<section id="s9">
+  <h2 class="sec"><em>09</em>可直接复用的中间产物</h2>
+
+  <p>如果新项目的需求与既往工作有交集，下面这些已经算好了，不必重跑。全部是<b>本项目的衍生结果</b>，
+     不是官方数据，引用时要标明来源。</p>
+
+  <div class="tw">
+    <table>
+      <tr><th style="width:200px">产物</th><th>内容</th><th style="width:100px">位置</th></tr>
+      <tr>
+        <td><b>逐帧时间序列</b><br><span class="pill info">67,861 行</span></td>
+        <td>把 285 个回放单元展开成逐锚点帧的宽表，63 列，136 个 parquet 分片，共约 19 MB。
+            含候选参数网格、逐候选误差与对数得分、权重、有效候选数、状态与原因码。
+            <code>status</code> 列：OK 37,520 行（55.3%）/ ABSTAIN 30,341 行（44.7%）。
+            每行带 <code>input_sha256</code> 与 <code>code_sha</code>，可追溯。</td>
+        <td class="mono">本地<br><code>data/derived/rq017_onsite_gate/</code></td>
+      </tr>
+      <tr>
+        <td><b>锚点与时间序列 CSV</b><br><span class="pill info">118 MB</span></td>
+        <td>同一批 67,861 个锚点覆盖 267 个单元的 CSV 版本，外加一份把本数据集的类别变量
+            映射到既往人类基准口径的说明文档（含每条映射规则与启发式标注）。</td>
+        <td class="mono">HPC<br><code>…/outputs/onsite_anchors_multi/</code></td>
+      </tr>
+      <tr>
+        <td><b>单元级分析表</b><br><span class="pill info">267 × 72</span></td>
+        <td>一行一个「队伍 × 场景」单元，72 列，已把回放侧特征与官方结果连接好。
+            想快速看「行为特征 vs 得分」，从这张表起步最快。</td>
+        <td class="mono">本地<br><code>data/derived/onsite_competition/RQ012B_event_harm/stage4plus/</code></td>
+      </tr>
+      <tr>
+        <td><b>自动事件抽取结果</b></td>
+        <td>9 类自动事件（急减速、冲击、近距接触、僵持等）在 285 个单元上的抽取结果与健康度检查。
+            可计算率 280/285（98.25%）。<b>用前先读 §08 第 9 条关于采样率的警告。</b></td>
+        <td class="mono">本地<br>同上 <code>stage4b/</code></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="note">
+    <span class="lbl">重建路径</span>
+    <p>分析包本身可以从原始数据重建，脚本是
+       <code>scripts/build_onsite_all_teams_dataset.py</code>。但既然 <code>raw/</code> 已清空，
+       这条路目前跑不通——保留它只是为了说明包是怎么来的。</p>
+  </div>
+</section>
+
+<!-- ================= 10 ================= -->
+<section id="s10">
+  <h2 class="sec"><em>10</em>前人已做过什么</h2>
+
+  <p>本项目在这份数据上做过四轮工作。<b>写在这里是为了让新项目不重复劳动，
+     也不要把这些结论当作已发表的事实去引用</b>——它们的结论强度差异很大。</p>
+
+  <div class="tw">
+    <table>
+      <tr><th style="width:190px">做了什么</th><th>结论</th><th style="width:110px">强度</th></tr>
+      <tr>
+        <td><b>可用性与范围审查</b></td>
+        <td>确定了分析单元是「算法 × 场景」的配对比较；确定了结果全集 300 与回放全集 285 的划分；
+            确认运行级、重复运行、种子级效应均不可识别。<b>§07 的全集定义就来自这一轮。</b></td>
+        <td><span class="pill ok">已接受</span></td>
+      </tr>
+      <tr>
+        <td><b>事件标注可行性</b></td>
+        <td>确认 9 类自动事件可无人工计算；放弃了原计划的双人盲标注。
+            发现了事件抽取的采样率敏感性（§08 第 9 条）。</td>
+        <td><span class="pill ok">已接受</span></td>
+      </tr>
+      <tr>
+        <td><b>行为偏差与实际损害的关联</b></td>
+        <td><b>功效受限的零结果。</b>算法相对人类基准的行为偏差，与官方安全分、碰撞、扣分之间
+            没有稳健的、特异的关联。全量 64 项检验中无一稳健成立。
+            损害事件本身太稀少（245 个单元里安全分不满分的只有 17 个），
+            <b>检验功效不足以排除中小效应</b>。</td>
+        <td><span class="pill warn">零结果 / 功效受限</span></td>
+      </tr>
+      <tr>
+        <td><b>时刻级运行时监控可行性</b></td>
+        <td><b>欠识别，未能给出结论。</b>瓶颈不在监控指标本身，而在于
+            <b>「交互失效片段」的检索与切分方法不成立</b>：碰撞判据太稀疏（285 个单元里 19 个），
+            宽泛失效判据又全部命中（285/285），时刻级匹配对照直接归零。
+            <b>这不是对该思路的否定，是测量层面的未解决问题。</b></td>
+        <td><span class="pill stop">欠识别</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="note warn">
+    <span class="lbl">给新项目的提示</span>
+    <p>如果新项目也打算做「行为特征 → 失效/损害」这类关联，
+       上面第 3、4 行说明了会撞上什么：<b>结果侧信号太稀疏，且缺少可靠的失效片段切分方法</b>。
+       这两个问题在这份数据上是结构性的，换个指标不会自动解决。
+       建议要么把问题定位在描述与对比层面，要么先解决失效片段的定义与检索。</p>
+  </div>
+</section>
+
+<!-- ================= 11 ================= -->
+<section id="s11">
+  <h2 class="sec"><em>11</em>合规与敏感内容</h2>
+
+  <div class="note stop">
+    <span class="lbl">对外发布前必须处理</span>
+    <p><code>support_materials/队伍信息.txt</code> 里包含：<b>学校名称、队伍名称、车辆编号、
+       任务号，以及一条含 token 的评分系统访问链接</b>（形如
+       <code>http://…/evaluate?taskID=…&amp;token=…</code>）。
+       另有队伍申诉材料（证据图片、docx）。</p>
+    <p>这些是可识别到具体单位与个人的竞赛过程材料。<b>不要整包对外分发，不要把链接与 token 写进任何公开产物。</b>
+       如需对外，先做匿名化：队伍代码保留、校名与链接去除。</p>
+  </div>
+
+  <p>数据来源是竞赛主办方的正式记录。本项目内部使用与二次分析的授权范围，
+     以及能否用于对外发表，<b>需要向数据提供方确认后再定</b>——本手册无法替代该确认。
+     在确认之前，建议新项目把它当作内部研究数据处理。</p>
+
+  <p>另需注意：官方得分与排名直接对应真实参赛单位。任何形式的「队伍优劣排序」类对外表述，
+     即便技术上成立，也应先取得许可。既往工作在这一点上采取的做法是：
+     <b>只做逐场景的行为对比，不写队伍排名</b>。</p>
+</section>
+
+<!-- ================= 12 ================= -->
+<section id="s12">
+  <h2 class="sec"><em>12</em>五分钟上手</h2>
+
+  <h3>先看一眼有什么</h3>
+  <pre><code><span class="c"># 分析包根目录（本地）</span>
+ROOT="/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/onsite_competition/all_teams_dataset"
+
+<span class="c"># 22 场回放，每场在哪</span>
+column -s, -t "$ROOT/tables/all_session_manifest.csv" | cut -c1-140 | head -25</code></pre>
+
+  <h3>读一场回放的主车轨迹</h3>
+  <pre><code>import json, pandas as pd
+from pathlib import Path
+
+ROOT = Path("…/data/onsite_competition/all_teams_dataset")
+
+sessions = pd.read_csv(ROOT / "tables" / "all_session_manifest.csv")
+row = sessions.iloc[0]
+sess = ROOT / row["dataset_session_path"]
+
+<span class="c"># 主车实车状态流：一行一帧，主车对象在 value.value[0]</span>
+recs = []
+with open(sess / "vehicle_trajectory.log", encoding="utf-8") as f:
+    for line in f:
+        o = json.loads(line)
+        for v in o["value"]["value"]:
+            <span class="c"># 关键：统一 strip 掉键名尾部空格（"acceleration " 有坑）</span>
+            recs.append({k.strip(): val for k, val in v.items()})
+
+ego = pd.DataFrame(recs)
+ego["t"] = pd.to_numeric(ego["globalTimeStamp"]) / 1000.0   <span class="c"># 毫秒 → 秒</span>
+ego[["length", "width", "height"]] /= 100.0                 <span class="c"># 厘米 → 米</span>
+
+print(ego.shape)                       <span class="c"># ~6000 帧</span>
+print(ego["t"].diff().median())         <span class="c"># ≈ 0.1 s，即 10 Hz</span></code></pre>
+
+  <h3>把回放切成 15 个场景</h3>
+  <pre><code><span class="c"># caseId 在感知合成日志的顶层，按帧变化；据此切段</span>
+seg = []
+with open(sess / "vehicle_perception_simulation_trajectory.log", encoding="utf-8") as f:
+    for line in f:
+        o = json.loads(line)
+        av = next((g for g in o["participantTrajectories"] if g["role"] == "av"), None)
+        if av and av["value"]:
+            seg.append({"caseId": o["caseId"],
+                        "t": int(av["value"][0]["globalTimeStamp"]) / 1000.0})
+
+seg = pd.DataFrame(seg)
+
+<span class="c"># caseId → 官方场景号，注意要按赛区查（见 §03 对照表）</span>
+CASE2SCEN = {
+    "beijing":  {2344:"A1",2349:"A2",2342:"A3",2341:"A4",2340:"A5",2339:"A6",2338:"A7",
+                 2337:"B1",2348:"B2",2335:"B3",2334:"B4",2333:"C1",2350:"C2",2347:"C3",2330:"C4"},
+    "shanghai": {2325:"A1",2328:"A2",2323:"A3",2322:"A4",2321:"A5",2327:"A6",2319:"A7",
+                 2318:"B1",2317:"B2",2316:"B3",2315:"B4",2314:"C1",2313:"C2",2346:"C3",2311:"C4"},
+}
+seg["scenario"] = seg["caseId"].map(CASE2SCEN[row["area"]])</code></pre>
+
+  <h3>接上官方得分</h3>
+  <pre><code>scores = pd.read_csv(ROOT / "tables" / "all_scenario_scores.csv")
+
+<span class="c"># 连接键：赛区 + 队伍 + 场景。回放侧分析记得先排除 T19（见 §08 第 2 条）</span>
+merged = seg.merge(
+    scores, left_on=["scenario"], right_on=["scenario"], how="left"
+).query("team_code == @row.team_code and area == @row.area")</code></pre>
+
+  <h3>在 HPC 上直接用</h3>
+  <pre><code>ssh tongji-hpc
+ROOT=/share/home/u25310231/ZXC/rq012b_onsite_ipv_20260627T202508/data/onsite_competition/all_teams_dataset
+ls $ROOT/tables/
+
+<span class="c"># 重计算一律走 Slurm，作业名以 zxc- 开头，不要在登录节点上跑</span></code></pre>
+</section>
+
+<footer>
+  <p>核验于 2026-08-19 · 两处副本经逐文件路径与字节数全量比对、并抽样 MD5 校验后确认一致<br>
+  15 个场景名称取自全部 20 份诊断报告，并以五维得分向量逐队逐场景反查确认（300/300 精确匹配，每队均为双射）<br>
+  综合分为 0 的 33 个单元已逐个核对成因，四类合计 12+12+6+3，无重复计数<br>
+  本手册中的规模、字段、映射与坑点均为本次直接从数据与既往执行记录中核实所得，未引用未经核对的二手描述</p>
+</footer>
+
+</main>
+</div>

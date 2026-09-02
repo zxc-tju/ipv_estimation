@@ -1,6 +1,7 @@
 # Onsite Competition Data Organization Manifest
 
-Generated: 2026-06-18T17:22:55 local time.
+Generated: 2026-06-18T17:22:55 local time. Supplemented on 2026-08-19
+with a bilingual area-scenario dictionary for handoff and reporting.
 
 This folder is a lightweight index for the onsite competition payload. It does
 not replace the raw data. The raw and former top-five subset payloads are now
@@ -12,6 +13,7 @@ archived under `archived/onsite_competition_raw_and_top5_subset_20260623/`.
 - `session_manifest.csv`: one row per materialized replay session directory named like `6923-1766197775`.
 - `file_inventory.csv`: one row per file under the active area folders, with inferred file role and team/session columns.
 - `score_team_coverage.csv`: official scored-team coverage from `archived/anno_trans.csv` plus the archived score CSVs, joined to active folders.
+- `scenario_dictionary.csv`: one row per `(area, scenario)` pair, with bilingual names, native case ID, report order, observed duration range, and team count. It is lightweight reporting metadata, not a replacement for the replay logs.
 
 ## Canonical Reading Pattern
 
