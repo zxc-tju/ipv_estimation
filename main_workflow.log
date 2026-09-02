@@ -3552,3 +3552,11 @@ ID 体系与场景-caseId 对照 / 12 条已知坑 / 可复用中间产物 / 既
 背景：用户需要定位 OnSite 比赛原始视频。项目已具备回放日志分析包，但 MP4 视频与回放日志是不同资产；本轮只读核对现存文件、历史清单、整块外置盘、Mac 内置盘和 OneDrive 本地同步索引。
 结果：`data/onsite_competition/00_manifest/file_inventory.csv` 的 `file_role=video` 历史清单记录 27 个 MP4、合计 25,285,319,371 bytes（23.549 GiB）。当前已挂载存储与 OneDrive `SyncEngineDatabase.db` 仅命中 1/27：`archived/onsite_competition_raw_and_top5_subset_20260623/raw/beijing/9-SCUT_VTB_917/05 SCUT-VTB-971 华南理工大学第一次比赛.mp4`，实测 1,016,442,693 bytes、link count 1。其余 26/27 不在项目、整个 `ZHITAI 2T`、Mac 用户目录或当前 OneDrive 同步树；`SafeDelete.db` 的 MP4 删除/回收记录也无命中。2026-08-19 交接记录与本次结果一致：`all_teams_dataset/` 有完整回放日志但有意不含比赛视频。HPC 实时复核因 SSH banner exchange timeout 未完成；OneDrive 网页端未登录，因此云端回收站未核验。
 边界：历史 `file_inventory.csv` 只能证明 2026-06-18 建清单时这些视频曾按所列相对路径存在，不能证明其当前云端状态；本轮未移动、恢复、下载或删除任何数据。`START_HERE.md` 的当前分析入口与保护边界未变化，因此未修改。
+================================================================================
+2026-09-02T10:53:25+08:00 | Current worktree consolidation and local commits | COMPLETE / 4 LOCAL COMMITS / NOT PUSHED
+================================================================================
+背景：用户要求整理并提交当前仓库修改。开始时 `main` 与 `origin/main` 相同，但工作区混有可长期保存的 OnSite 交接资料、论文第 6–8 轮模拟评审、一个主观实验应用原型，以及重复 ZIP、临时统计 JSON、候删草稿、`work/` 和工具运行状态；本轮负责分组审计、必要修复、验证和本地提交，不负责远端推送。
+结果：形成四个本地提交。`bf9af7b` 保存 OnSite 双语场景字典、交接页和 2026-09-01 视频定位日志；`abcc90d` 保存论文第 6–8 轮的 reviewed-text / charter / referee / aggregation / chair / bounded recomputation 记录，并把已接受的 RQ022、RQ023 补回 `STUDIES.md`；`7c0c72d` 保存独立 FastAPI/SQLite 主观实验原型，并最小修复 Python 3.9 类型注解兼容性和占位管理员密钥失效关闭；第四个提交保存 `.gitignore`、`PROJECT_STRUCTURE.md`、`START_HERE.md` 与本日志。重复 ZIP、`exp_dur.json`、候删草稿、`work/`、`.omx/`、命令日志、虚拟环境、缓存、数据库和上传视频均未入库，原有本地文件未删除。
+验证：OnSite `scenario_dictionary.csv` 为 30/30 个唯一 `(scenario, area)` 键，时长满足 `min <= median <= max`；论文归档暂存 28/28 个预期文件、空文件 0/28，`recomputed_ego_battery.json` 可解析；主观实验 `MANIFEST.sha256` 为 16/16 项通过，隔离 Python 3.9 环境下 `pytest -q` 为 3/3 通过；每组提交前 `git diff --cached --check` 均通过。
+入口维护：`START_HERE.md` 的 reviewed date 更新为 2026-09-02，RQ022 从旧 TARGET 草案状态改为 2026-08-19 PI 已接受状态，补入 RQ023 已接受边界，并新增主观实验原型入口、测试命令和“未授权正式采集”说明；`PROJECT_STRUCTURE.md` 同步记录该独立应用。
+边界：四个提交只存在于本地 `main`，未执行 `git push`；未改论文独立仓库、accepted `decision.md`、RQ007 held-out、RQ014 致盲字段或任何真实/派生研究数据。主观实验代码入库不能证明伦理审批、PI 放行、刺激冻结、正式视频齐备或数据采集已经完成。

@@ -1,12 +1,14 @@
 # START_HERE: Current Operating Brief
 
-Last reviewed: 2026-08-28.
+Last reviewed: 2026-09-02.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
 question index in `STUDIES.md`.
 
 ## Current Active Context
+
+- **【2026-09-02 主观实验应用仅为本地原型，未放行正式采集。】** 入口为 `sociality_subjective_experiment/`；它只负责视频呈现、平衡随机化和匿名作答采集，不计算 IPV 或越界标签。当前配置仍是 18 个占位刺激、正式视频 0 个、`ALLOW_PLACEHOLDER_TRIALS=1`；隔离环境下文件清单校验通过、`pytest -q` 为 `3 passed`。代码入库**不能证明**伦理审批、PI 放行、刺激冻结或正式采集已完成；正式采集前必须替换 `ADMIN_KEY`、将 `ALLOW_PLACEHOLDER_TRIALS=0`、确认缺少视频为 0，并另行建立研究计划/数据合同。
 
 - **【2026-08-28 RQ027 bounded feasibility pilot 已完整执行并独立复算，结论 `PILOT_NO_GO`：独立生成器与 frozen exact estimator 接线健康，`288/288` runs 完成、工程失败 `0/288`、重复 key `0/288`、非有限 primary frame `0/3,456`；interactive persistent coverage `215/240=89.5833%`，但 accepted-run MAE `0.553907 rad` 未优于同集零值 predictor `0.553432 rad`，Spearman(true,estimate)=`0.214511`，非零真值 sign accuracy `106/173=61.2717%`；q_eff 与误差 Spearman=`-0.124207`（反向），固定 max-weight 门后 frame MAE `0.597503` 高于全体 `0.586513`；negative-control persistent false accept `35/48=72.9167%`（四类均高）。因此不扩展 S2、不运行 sealed confirmatory、不调门重跑。RQ007 held-out、RQ014 致盲字段、paper/decision/data 均未触碰。正式入口：`reports/studies/RQ027_known_truth_ipv_recovery/RQ027_1_known_truth_recovery_20260828T094332Z_889b49be/00_entry/index.html`。】**
 
@@ -35,17 +37,20 @@ question index in `STUDIES.md`.
 - **【2026-08-24 WP6 archive recovery validation：`TRUSTED`；两套授权仓库内 5 个核心 row-level 文件仍均未落盘（0/5 命中）；`human_arm_data.json` 仅为 `REAL_VERIFIED` 聚合对象（`n_drivers=20`, `n_runs=300`）；最新稳定报告是 `.codex-fleet/nmi-revision-research-lead/board/reports/wp6_archive_validation_20260824.md/json`。】**
   这次只做只读复核，不改被审产物；row-level 归档恢复仍需离线补齐缺失文件后再谈。
 
-- **【C7 人类参照臂：论文分支上是 TARGET 草案，占位数字一律不可引用。】**
-  PI 于 2026-08-08 告知人类臂数据已在一台离线服务器处理完毕；传输前先以合成占位
-  确定结构。论文仓库分支 `paper/human-arm-target`（@16cba1b，**不得合并**）含
-  S4b 小节、Fig 5 目标图与 claims register C7 行；正文占位数字全部带 `\targetnum`
-  橙色标记，图带 SYNTHETIC TARGET 水印。**解锁三条件缺一不可**：离线实测值按
-  `.codex-fleet/rq022-matched-scenario/work/T1_target_figure/DATA_INTERFACE.md`
-  回填 → 监督方从时刻级表盲算一致（data_status=REAL_VERIFIED，水印自动消失）→
-  `reports/knowledge/RQ022_*/decision.md` 经 PI 接受。预注册终点只有三项：
-  标定迁移、冻结 C5b 电池在人类内部复现、逐场景对比；**官方分数已判死通道**
-  （RQ012B p=0.559；RQ022-S1 前哨 p=0.112 弱迹象、已独立复算），伤害标签与
-  偏好评分同样排除。对外措辞红线：逐时刻对比，永不写人机排名。
+- **【2026-08-19 RQ022 / C7 人类参照臂已由 PI 接受，不再是 TARGET 草案。】**
+  `reports/knowledge/RQ022_matched_scenario_human_arm/decision.md` 已记录三项放行条件的满足方式：
+  实测聚合对象为 20 名司机 × 15 场景 = 300 次驾驶、0 缺失；论文图已移除合成水印；独立复算
+  由论文库外渠道完成并经 PI 确认。90% 带外率为人类 786/15,598 = 5.039%，算法侧
+  1,388/14,099 = 9.845%（1.95×），15/15 场景算法侧更高。接受的是逐时刻校准迁移、冻结
+  C5b 签名在人类内复现和同尺同景对比；**不能证明**车辆、车队或司机排名，不能写
+  “humans are better drivers”，不可读时刻仍是 abstain。逐时刻/逐单元随件表仍在受控归档，
+  本仓库当前只有 `REAL_VERIFIED` 聚合对象与决定文件，不得把“已接受”写成“行级资料已完整入库”。
+
+- **【2026-08-12 RQ023 benchmark run-ledger 审计已由 PI 接受。】**
+  正确漏斗是 267 → 231 → 204 → 175；18 个无锚点系统-场景单元均有官方结果，29 个后门控
+  exact-ID series 缺口也均有官方结果，二者都不是“未参赛/无成绩”。旧 `scripted` 分层只是
+  两份日志的命名约定，不代表控制器差异。引用必须保留 `PROVEN / INFERRED / UNKNOWN` 边界；
+  决定文件为 `reports/knowledge/RQ023_benchmark_run_ledger/decision.md`。
 
 - **【当前在用的人类参照区间是 RQ021 的，不是 RQ016C 的。】** PI 于 2026-08-05 裁定：
   envelope 不做预测性，改用同期目标量。原因是 RQ016C-H2 的目标列是锚点之后
@@ -1837,6 +1842,7 @@ These review packets are evidence-boundary reviews, not accepted
 
 - Launcher checks: `python3 -m unittest tests.test_shortcut_scripts -q`.
 - Broader suite when available: `python -m pytest tests -q`.
+- Subjective-experiment prototype: `cd sociality_subjective_experiment && .venv/bin/python -m pytest -q`; local start instructions are in `sociality_subjective_experiment/README.md`.
 - Syntax check:
   `python -m py_compile src/sociality_estimation/core/agent.py src/sociality_estimation/core/ipv_estimation.py src/sociality_estimation/planning/Lattice.py src/sociality_estimation/planning/lattice_planner.py src/sociality_estimation/planning/utility.py pipelines/interhub/process_interhub.py pipelines/simulation/simulator.py`.
 - One-case InterHub smoke:

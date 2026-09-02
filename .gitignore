@@ -22,6 +22,13 @@ Thumbs.db
 .omx/
 .codex-fleet/
 
+# Root-level scratch and duplicate handoff bundles
+/work/
+/exp_dur.json
+/sociality_subjective_experiment.zip
+/reports/knowledge/PAPER001_online_sociality_verification_manuscript/_to_delete_*
+/reports/knowledge/PAPER001_online_sociality_verification_manuscript/review_rounds/**/_*.log
+
 # Raw/local data and generated report payloads
 argoverse/*
 data/interhub/raw/
