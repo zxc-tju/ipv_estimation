@@ -1,0 +1,3022 @@
+Online monitoring of socially compliant autonomous
+                      driving
+                      1                 1,∗                1            1                      2
+    Xiaocong Zhao , Jian Sun                  , Xiyan Jiang , Yiru Liu , Gustav Markkula
+
+
+
+1
+    College of Transportation Engineering, Tongji University, Shanghai, China
+
+2
+    Institute for Transport Studies, University of Leeds, Leeds, United Kingdom
+
+
+                                    ∗
+                                        Corresponding author
+
+
+                                        August 14, 2026
+
+
+
+
+                                                Abstract
+
+      Autonomous vehicles are engineered and assessed for collision safety, yet a crash-free
+
+      manoeuvre can still be socially atypical. We recast social compliance as an online
+
+      monitoring question: conditional social atypicalitywhether the vehicle's current
+
+      interaction behaviour lies within the human range for its situation. The interaction
+
+      preference valuehow an agent trades its own progress against the group'sis in-
+
+      terpretable only while an interaction is active and the estimate reliable; otherwise
+
+      the monitor abstains. Human social behaviour is context-dependent; conditioning
+
+      the reference range on the current observable situation gives a sharper, calibrated,
+
+      auditable runtime monitor. On a matched-scenario real-vehicle benchmark, mo-
+
+      ments agged on the assertive side are followed by tighter interactions on both
+
+      sides, with no rise in emergency rates at any supported threshold. Auditing the ref-
+
+      erence with its dening populationhuman drivers in the same scenariosshows
+
+      no alarm ination, the same consequence signature, and automated systems agged
+
+      about twice as often. Atypicality is not yet inappropriateness: whether a deviation
+
+      is harmful is the next validation layer, which the monitor makes testable.
+
+
+                                                   1
+Online Social-Compliance Monitoring for AVs                                                 2
+
+
+
+1      Introduction
+Autonomous vehicles (AVs) must share the road with human drivers, cyclists and pedes-
+
+
+trians whose behaviour is shaped not only by physical constraints but also by implicit
+
+
+social norms [13]. A vehicle can be   collision-safe yet not interaction-benign : a manoeu-
+vre that is collision-free in isolation may still be aggressive, hesitant or norm-violating in
+
+
+its interaction context, eroding the predictability on which mixed humanmachine trac
+
+
+depends [46].   Machine behaviour in human collectives is now an object of empirical
+
+
+study in its own right [7]: controlled experiments show that machine agents embedded in
+
+
+human groups reshape coordination and cooperation [810], and can suppress benecial
+
+
+social norms such as reciprocity, with collective consequences [11]. Conventional safety
+
+
+verication asks will this trajectory collide; a socially aware AV also faces a dierent
+
+
+question: is this way of interacting still understandable and acceptable to the humans
+
+
+around it?
+
+
+    Two established families of methods address adjacent but distinct questions. Oine
+
+
+behavioural evaluation asks whether an AV, on average, drove like a human, typically by
+
+
+reporting a single aggregate sociality score over a dataset [1215], and no test-mileage
+
+
+budget can in any case certify rare interactive behaviour by aggregate demonstration [16,
+
+
+17].   Formal safety verication asks whether a trajectory will collide or violate a hard
+
+
+constraint, and can guarantee a formally specied notion of legal safety  within the
+
+
+assumptions of its model  as an online layer around a planner [1821], an assurance now
+
+
+being codied in standards [22, 23].   Neither answers the moment-to-moment question:
+
+
+given the current interaction state, is this behaviour within the range that human drivers
+
+
+exhibit in the same situation? That question is local in time, conditional on context, and
+
+
+graded rather than binary.
+
+
+    We therefore make autonomous-driving social deviation       visible online, and separate
+deviations that are merely uncommon from those a human would disprefer or that burden
+
+
+the interaction. We do not claim that every departure from human behaviour is wrong.
+
+
+Instead we monitor deviation from a human interaction range, we separate the moments
+
+
+at which a social judgement can be made from those at which it cannot, and we lay out
+Online Social-Compliance Monitoring for AVs                                               3
+
+
+
+the validation path along which atypicality may acquire normative meaning:
+
+
+
+
+         human reference range    → conditional social atypicality →
+
+                human-dispreferred behaviour   → interaction-harmful behaviour.
+
+
+The monitored quantity is the interaction preference value (IPV) [24, 25], a trajectory-
+
+
+derived measure of how an agent balances its own progress against the group's. It belongs
+
+
+to the family of preference constructs recovered from observed behavioursocial value
+
+
+orientation in games and in driving [26, 27], and reward inference from trajectories [28,
+
+
+29]estimated here online, within a single interaction.
+
+
+   Three distinctions bound the claims. First,    socially atypical is not socially inappro-
+priate : lying outside the human range is a statement about typicality, not a normative
+verdict, and acquires normative force only when it is shown to track human disprefer-
+
+
+ence or interaction harm.    Second,   collision-safe is not interaction-benign. Third, not
+readable is not neutral : before an interaction is behaviourally informative or after it has
+resolved, the IPV may be weakly identiable or not applicable, and this must not be read
+
+
+as compliant.    A responsible social monitor must know when      not to judge; abstention
+is an explicit boundary of responsible judgement, not a failure mode, in the tradition
+
+
+of prediction with a reject option [3032].    The human range is, moreover, a    reference
+range in the sense familiar from clinical medicine and normative modelling [3335], not
+a demand to imitate one human trajectory.
+
+
+   This framing diers from three existing paradigms. Unlike oine AV evaluation [12,
+
+
+13], it is online, per-timestep and context-conditioned.    Unlike runtime verication of
+
+
+formal specications [3639], the monitored property is an empirical normative distribu-
+
+
+tion estimated from human data. Unlike socially compliant planning [27, 4043], it does
+
+
+not encode sociality into a planner's objective but provides a pluggable, planner-agnostic
+
+
+monitor that any planner can be checked against. Closest to our aim, online monitors
+
+
+exist for codied legal rules [44]; unusual driving can be agged as unexplained deviation
+
+
+from learned trac behaviour [45] or as violated expectation [46, 47]; and AV conduct is
+
+
+benchmarked oine against reference models of a competent human driver [48, 49]. None
+Online Social-Compliance Monitoring for AVs                                                4
+
+
+
+of these reads a social preference, refers it to a calibrated situation-conditioned human
+
+
+range, or separates the moments at which a social judgement is meaningful from those
+
+
+at which it is not.
+
+
+    This work reframes social compliance as the online monitoring of conditional social
+
+
+atypicality. The reframing rests on a readability boundary: a social judgement is mean-
+
+
+ingful only while an interaction is behaviourally informative and the reading is identiable,
+
+
+and elsewhere the monitor abstains rather than passing the vehicle. Human social be-
+
+
+haviour is context-dependent, and although interacting partners' preferences co-vary, the
+
+
+reference range needed online turns out to require only the current observable situation,
+
+
+so the monitor never has to read a hidden intention. Built on that context-conditioned
+
+
+range, it is calibrated and auditable at runtime. We then ask what an atypicality verdict
+
+
+corresponds to in the interaction that follows, on a matched-scenario real-vehicle bench-
+
+
+mark, and report its status honestly: the evidence establishes a compression of ordinary
+
+
+interaction quality on both sides, while   bounding rather than conrming harm prediction.
+Finally we close the loop on the reference itself. The population that dened it drives
+
+
+the same scenarios under the same monitor, which shows that the reference transfers
+
+
+across country, apparatus and task without inating its alarms, that the agged-moment
+
+
+signature is a property of the interaction rather than of machines, and that under this
+
+
+common instrument the automated systems are agged about twice as often as matched
+
+
+human drivers.
+
+
+
+
+2    Results
+
+2.1 When social behaviour can be meaningfully measured
+The monitor reads one interaction frame by frame, issues a reading only where the frame
+
+
+carries discriminative information, and interprets that reading against the human range
+
+
+for the situation at hand; where either condition fails it abstains rather than returning
+
+
+a neutral value (Fig. 1). We rst make precise what is measured and when it is inter-
+
+
+pretable. At each instant an agent's IPV is estimated by online     likelihood-based inverse
+Online Social-Compliance Monitoring for AVs                                                              5
+
+
+
+planning : for a grid of candidate preferences {θk } we generate candidate trajectories
+X
+˜︁a (Wt ; θk ), weight them by the likelihood of the observed trajectory, and report the
+
+weighted estimate,
+
+
+            (︂        ⃓                               )︂                 ℓa,k (t)               ∑︂
+ℓa,k (t) = p Xa (Wt ) ⃓ X    (W  ; θ ), X   (W   ), M    , πa,k (t) = ∑︁            , θ̂a (t) =    πa,k (t) θk ,
+                      ⃓ ˜︁
+                           a    t k       j    t
+                                                                         m ℓa,m (t)              k
+
+                                                                                                       (1)
+
+
+
+where Wt is the interaction window up to time t, Xj the counterpart trajectory and M
+
+
+the map and reference geometry; the IPV is parameterised as θ ∈ [−π/2, π/2] (θ > 0
+
+
+cooperative). The IPV is one continuous, online-computable dimension of social interac-
+
+
+tion  how strongly the agent weights the counterpart's cost against its own progress;
+
+
+signalling conventions, gap acceptance and multi-agent coordination are outside its scope
+
+
+(Discussion). The spread of the weights πa,k (t) gives a reliability statistic ua (t): the more
+
+
+sharply the weights concentrate, the smaller ua (t), and a reading is used only where ua (t)
+
+
+is below a frozen threshold (Methods).
+
+
+    The measurement is interaction-conditioned, and it is not equally interpretable at
+
+
+every instant. We therefore separate four objects (Fig. 2): the estimate θ̂a (t); its reliability
+
+
+ua (t); a readability indicator
+
+
+                   ga (t) = 1[ oij (t) = 1, ua (t) < u0 , qa (t) > q0 , ca (t) > c0 ] ,                (2)
+
+
+
+
+with oij (t) an active interaction, qa (t) trajectory/reference information and ca (t) counterpart-
+
+
+identity stability (thresholds xed in advance); and the human reference range Ihuman (t).
+
+
+Before an interaction becomes behaviourally informative, and after it has resolved, the
+
+
+IPV may be weakly identiable or not applicable; these states (ga (t) = 0) are kept distinct
+
+
+from valid low-magnitude estimates and are never read as neutral. When a state is not
+
+
+readable, the monitor abstains rather than certify it as within-norm. The online estimate
+
+
+is usable at decision time because it can be referenced to static, route-conditioned map
+
+
+geometry available before the outcome is known, under which it agrees closely with the
+
+
+oine estimate (Methods); this is agreement between estimators, not recovery of a latent
+Online Social-Compliance Monitoring for AVs                                                                                                                                                                        6
+
+
+
+
+                                                        a Local view of one interaction                                    b Two mechanisms, three states
+                                                                        counterpart
+                                                        30
+
+                                                        20              monitored
+                                                                                                                                                              mechanism 1                 mechanism 2
+                                                                        vehicle                                                                                                yes   human reference range
+                                                        10             22.0 s conflict zone                                        trajectory                  is this frame
+                                                                                                                                                                                        for this situation
+                                                                                                                                    window                discriminative among
+
+
+
+
+                                      y position (m)
+                                                         0                                                                                                  the 7 candidates?     more negative = more assertive
+
+                                                       −10                        17.5 s
+                                                               19.0 s
+                                                       −20                                                                                           no
+                                                                                                                                                                                        observable situation
+
+                                                       −30
+
+                                                       −40                                                                                                                                    outside range
+                                                                                                                                        no reading                     inside range              · atypical
+                                                                                                                                                                                               · either side
+                                                       −50
+                                                                                  13.2 s
+
+                                                             −10   0      10     20   30   40
+                                                                    x position (m)
+                              c The human reference range changes with the situation
+
+                                                                                                reading issued                                                                         no reading
+                                                                        13.2 s    95%                                               17.5 s                    19.0 s                                   22.0 s
+
+                             1.0                                                  90%
+                                                                                                                                                                   outside the human reference range
+                                                                                  80%                                                                              (accommodating side)
+
+                             0.5
+
+
+
+
+ IPV reading (rad)
+                             0.0
+
+
+
+                            −0.5
+
+
+
+
+         ↓ more assertive
+                            −1.0                                                                    inside human reference range
+
+
+
+
+                                                        12                            14                         16                             18                           20                         22
+                                                                                                                 time in the interaction (s)
+
+
+
+
+Figure 1. Online monitoring separates a frame-level reading from an explicit ab-
+stention, and interprets a reading against the human range for the current situation.
+a Local bird's-eye trajectories around the shared path point for one interaction. Colour runs
+from early to late within the displayed segment; matched time markers link the physical scene
+to panel c, and the pale red circle marks the conict zone. b At each frame the trajectory
+window is compared across seven candidate preference values. A reading is issued only where
+the frame carries discriminative information between those candidates; otherwise the monitor
+abstains. A reading that is issued is then placed against a human reference range conditioned
+on the observable situation, returning inside the range, outside it (atypical), or an abstention.
+More negative values denote a more assertive interaction preference. c Worked example from
+the same interaction. The reading is shown only where both conditions hold; grey intervals
+therefore denote no reading rather than a zero or a neutral value. The concentric 80%, 90% and
+95% human reference ranges change with the situation, and the marked readings lie above the
+90% range (the accommodating side). The display is descriptive and illustrates the three states
+the monitor can return. Source data are provided as a Source Data le.
+Online Social-Compliance Monitoring for AVs                                                                                                                                              7
+
+
+
+
+                 a         The reading is identified most sharply during the real interaction                                    estimate · 95% CI                      n
+
+       Real interaction                                                                                                          -0.132                                 4,743
+
+     Same interaction,                                                                                                           +0.006                                 4,605
+     misaligned in time
+
+       Same moment,                                                                                                              -0.043                                 4,701
+     a different partner
+
+         No interaction                                                                                                          +0.027                                 8,130
+           opportunity
+
+                     −0.150         −0.125     −0.100     −0.075      −0.050         −0.025   0.000      0.025       0.050
+
+                           more sharply identified ←                                          → less sharply identified
+
+                                               Change in how sharply the reading is identified
+
+                 b         Readable does not mean settled                                                        c         The summary rule changes the answer
+
+                                                                                                                                                        median +0.08
+                                                                            0.30                      Every valid frame                                     first two rules
+             Readable                                                                                                                                       0.26 rad apart ·
+                                                                                0.31                                                                        7–22% sign flips
+                            ● ego       ● counterpart                                            Only while interacting                                     across rule pairs
+                                                                                                                                                        median +0.00
+                                                        0.17
+        Less readable
+                                                                                               Weighted by readability                                              median +0.19
+                                                        0.17
+                                                                uncertainty not shown
+
+                           0.0               0.1               0.2             0.3                                        −0.4    −0.2    0.0     0.2     0.4     0.6       0.8    1.0
+                                     Movement of the reading, |Δθ| (rad)                                                         Episode-level summary of the reading (rad)
+
+
+
+
+Figure 2. When social behaviour can be meaningfully measured. The IPV is estimated
+online by likelihood-based inverse planning (Eq. 1), with a reliability read from how sharply the
+candidate weights concentrate (Eq. 2); moments at which the reading is not applicable are
+an explicit abstain, not a neutral verdict. a How sharply the reading is identied inside real
+interaction windows, against three controls (the change in the concentration of the candidate
+weightsthe reliability quantity of Eq. 2relative to control pairings; negative = more sharply
+identied). The gain is present only for the real interaction: it disappears when the same
+interaction is misaligned in time (+0.006), weakens when the same moment is paired with
+a dierent partner (−0.043), and reverses where no interaction opportunity exists (+0.027).
+Points are means with 95% condence intervals over case clusters; the n column counts those
+case clusters. b Mean movement of the current reading between consecutive frames. Where the
+reading is most readable it moves more, not less (0.30 rad for the ego and 0.31 for the counterpart,
+against 0.17 where it is less readable), so a readable moment is not a settled one and reliability
+must not be read as convergence. c Episode-level summaries of the same interactions under
+three summary rules; bars span the interquartile range and the tick marks the median. The
+rules disagree by 0.26 rad on average and ip the sign of the summary in 722% of episodes
+depending on which pair of rules is compared, so a single episode number is only interpretable
+once its summary rule is stated. Panels use the development split; the conrmatory split is held
+sealed. Source data are provided as a Source Data le.
+
+
+preference.
+
+
+
+
+2.2 Human social behaviour is context-dependent
+We next characterise human behaviour at the level of a whole interaction, summarising
+
+
+each agent by the mean IPV over its valid interaction segment.                                                                                  Complete-interaction
+
+
+behaviour does not reduce to a single global sociality score. We analysed 38,228 interac-
+Online Social-Compliance Monitoring for AVs                                                 8
+
+
+
+tion cases from four naturalistic sources within the InterHub corpus [50] (Waymo 23,218;
+
+
+nuPlan 7,499; Lyft 5,105; Argoverse-2 2,406; 3,695,981 trajectory frames).        The social
+
+
+meaning of right-of-way is organised by the interaction state (Fig. 3): the dierence in
+
+
+IPV between the priority and non-priority agent reverses sign with collision risk, from
+
+
++0.058 (95% CI [+0.050, +0.067], n = 9,799) under high risk (post-encroachment time
+≤ 1.0 s), through +0.001 (n = 22,833) at intermediate risk, to −0.034 ([−0.045, −0.023],
+n = 4,863) under low risk (> 2.0 s). The role shifts are small against the width of the
+human range  a few per cent of it; what conditioning contributes operationally is the
+
+
+range sharpening of Fig. 4  but their direction reverses with risk, which no scalar
+
+
+score can represent.     A coarse geometric prior is prosocial across all four sources, and
+
+
+the direction of the risk-gated eect is preserved under dropping the largest source and
+
+
+under alternative risk and geometry binnings. The two interacting agents' preferences,
+
+
+moreover, are   correlated at this event level: social behaviour is a relational quantity, or-
+ganised by role, geometry and risk, not a xed disposition of an individual. Whatever
+
+
+the human reference is, it must therefore be conditioned on the interaction state; a single
+
+
+scalar sociality score cannot serve as that reference. We report this as a state-dependent
+
+
+regularity of the present corpora, not as a transferable cross-dataset law.
+
+
+
+
+2.3 Human reference ranges enable online atypicality monitoring
+Establishing that human behaviour is context-dependent does not by itself say what
+
+
+an online monitor must read.      We dene online monitoring as a membership test: the
+
+
+ego's current IPV should lie within a human reference range determined by the current
+
+
+observable situation,
+
+
+                                            ?
+                                     θ̂i (t) ∈ Ihuman (zt ),
+                    (︁
+             zt =    geometry, role, progress, online-computable risk proxies,            (3)
+
+                                                               )︁
+                                relative kinematics, support     ,
+
+
+evaluated only where the interaction is active and the ego is readable; the risk proxies are
+
+
+those computable from information available at time t (no observed post-encroachment
+Online Social-Compliance Monitoring for AVs                                                                                                                                              9
+
+
+
+
+                                    a      What holding priority means depends on the risk
+                                                                   +0.058
+
+
+
+
+  Priority − non-priority (rad)
+                                             more accommodating                                                                                                                 95% CI
+                                   0.05
+                                                                  n = 9,799
+                                                                                                             +0.001
+                                   0.00
+                                                                                                                                                            -0.034
+                                                                                                            n = 22,833
+
+                                  −0.05
+                                             more assertive                                                                                                n = 4,863
+
+
+                                                                 High risk                                   Middle                                         Low risk
+                                                                 PET ≤ 1 s                                   1–2 s                                         PET > 2 s
+
+
+
+                                    b      Coarse geometry points the same way in every source                           c      Why the preference must be read online
+                                                                                                                                                                   2
+          Waymo                                                                                merge/pass                                                 zero R
+       n = 23,211                                                             same-direction                          Waymo                                                  +0.026
+
+                        Lyft
+                  n = 5,098                                                                                              Lyft                                                +0.017
+
+                       AV2                                                                                                                    -0.195
+                  n = 2,404                                                                                              AV2
+
+                    nuPlan                                                                                                           -0.276
+                  n = 7,498                                                                                           nuPlan
+
+
+                                          0.00       0.05          0.10           0.15         0.20                          −0.4      −0.3       −0.2     −0.1        0.0        0.1
+                                                              Difference in reading (rad)                                           Variance explained on the held-out source (R )
+                                                                                                                                                                                  2
+
+
+
+
+Figure 3. Human social behaviour is organised by the state, not by a xed trait.
+a Dierence between the reading of the agent holding priority and the agent without it, within
+three bands of collision risk. The dierence reverses as risk falls, from +0.058 rad where the
+encroachment margin is under a second, through +0.001 in the middle band, to −0.034 where
+the margin exceeds two seconds: the same formal right of way is accompanied by accommoda-
+tion under pressure and by assertion when there is room. Points are means with 95% bootstrap
+condence intervals. The three bands cover the 37,495 cases with a dened post-encroachment
+margin. The bands are formed on the realised post-encroachment margin, an oine quantity
+used here for description only; the online monitor never reads it (Eq. 3). b Coarse road ge-
+ometry as a prior. Merge-or-pass geometry and same-direction pairing both shift the reading
+in the same direction in all four independent sources, though the size of the shift diers by
+source. Error bars are 95% condence intervals. Panel b uses the cases entering the episode-
+level analysis for each source (Waymo 23,211; Lyft 5,098; Argoverse-2 2,404; nuPlan 7,498 of
+the 23,218/5,105/2,406/7,499 interaction cases). c The same structure does not become a law
+that transfers. Fitting the full state description on every source but one and predicting the
+held-out source leaves the variance explained never above +0.03 in any fold and below zero in
+two (+0.026 Waymo, +0.017 Lyft, −0.195 Argoverse-2, −0.276 nuPlan). R2 is the case-level
+variance explained on the held-out source by the full state description tted on the other three;
+0 marks predicting the held-out source's mean. Together the panels support reading social be-
+haviour as a state-conditioned surface rather than a single sociality score, while bounding that
+reading to the sources observed here. Source data are provided as a Source Data le.
+Online Social-Compliance Monitoring for AVs                                               10
+
+
+
+measure enters online). The range is the conditional distribution of the human current
+
+
+IPV given zt , calibrated by split-conformal prediction [51, 52] and abstaining when the
+
+
+state is unsupported. Conditioned on the current situation, the human range is sharper
+
+
+than a single global rangeabout a fth narrower at the 80% and 90% levels (21% and
+
+
+20%), at coverage within 0.6 percentage points of nominaland it stays informative at
+
+
+the strictest level, where the global range spans essentially the whole admissible scale
+
+
+and can never ag a moment. In absolute terms the conditioned 90% range still averages
+
+
+1.87 rad (5th95th percentiles 1.352.28 rad) of the 2.36 rad candidate span: the reference
+is wide, and a ag therefore marks a clear departure from the human range rather than
+
+
+a ne discrimination. The coverage statement is empirical and marginal over accepted
+
+
+moments; it is not a per-situation or per-interaction guarantee (Methods 4.4).        Where
+
+
+a reading is available, the monitor abstains for lack of human support on only a small
+
+
+fraction of readable moments (5.08% on the held-out natural-driving test fold; abstention
+
+
+on the real-vehicle benchmark is larger and is reported with its reasons in Section 2.4 and
+
+
+Methods), giving an auditable runtime monitor of conditional social atypicality (Fig. 4).
+
+
+The range is not a xed corridor: it rises, falls and changes width as the situation changes,
+
+
+so that the same reading can sit inside it in one situation and outside it in another
+
+
+(Fig. ED1).
+
+
+   A striking feature organises this result. Although the interacting partners' IPVs are
+
+
+correlated at the event level (previous section),    adding the counterpart's own inferred
+preference to the situation does not measurably sharpen the reference range ; conditioning
+on the ego agent's own behavioural history does not either. Both are retained only as
+
+
+ablations. The apparent paradox partners' preferences co-vary, yet reading the coun-
+
+
+terpart adds no measurable sharpening onlineresolves because the partner correlation
+
+
+is already carried by the shared, observable situation (role, geometry, relative kinematics,
+
+
+risk). Monitoring social compliance therefore does   not require inferring the counterpart's
+hidden intention: the current observable situation suces, and the reference range follows
+
+
+from it without tracking a specic temporal pattern of the interaction. This makes the
+
+
+monitor both simpler and more robust, and it returns an explicit abstentionrather than
+Online Social-Compliance Monitoring for AVs                                                                                                                                                                                11
+
+
+
+
+                                                                                                                                                                                   The situation constrains
+                                a Conditioning narrows the reference range                                              b Coverage within 0.6 pp of nominal                     c the reading without fixing it
+                                     entire admissible range
+                                                                                                                       3.0                                   +2.77
+                                                      −20%              −8%
+
+
+
+
+                                                                                   Achieved − nominal coverage (pp)
+                                                     100              100
+
+
+
+
+Width of the reference range
+                               100                                        92                                           2.5
+                                         −21%
+                                        78                 79                                                          2.0
+                               75                                                                                                                                                                      79.1%
+                                            62                                                                         1.5                                                         20.9%              residual
+                                                                                                                                                                                explained
+
+
+
+(% of the admissible range)
+                                                                                                                       1.0    within 1 pp of nominal
+                               50
+                                                                                                                       0.5     +0.18              +0.28
+                                                                                                                                                                        +0.57
+                               25                                                                                      0.0
+                                      global range                   n = 461,937                                               +0.03      -0.01
+                                      conditioned on the situation                                                    −0.5                                n = 461,937
+                                0
+                                         80%           90%              95%                                                  80%              90%                95%              0       20     40      60      80        100
+                                            Nominal coverage level                                                                  Nominal coverage level                            Variance of the online reading (%)
+                                        (candidate span 3π/4 ≈ 2.36 rad)
+
+
+
+
+Figure 4. The situation constrains social preference without determining it, which
+is why the reference range must be conditioned and the preference itself must be
+read online. Grey marks a single global human range; teal marks the range conditioned on the
+current observable situation (Eq. 3). a Width of the reference range at three nominal coverage
+levels, as a percentage of the admissible range of the quantity. The admissible range is the span
+of the candidate grid, 3π/4 ≈ 2.36 rad; the parameterisation domain of Eq. (1) is [−π/2, π/2]
+and the seven candidates span [−3π/8, 3π/8]. A global range is not a usable reference: at the
+95% level its width equals 100.00% of the admissible span, so it is as wide as the quantity itself
+and retains almost no power to discriminate  it still ags, but only where the reading sits at
+the very edge of what the estimator can express, and it pays for that width by over-covering
+(panel b). Conditioning narrows it by 21%, 20% and 8% at the three levels (reductions computed
+from unrounded widths  20.7%, 20.5%, 8.4%; bar labels are rounded to whole percent, so
+recomputing from them can dier by a point) (at the 90% level the conditioned width has
+mean 1.87 rad, 5th95th percentiles 1.352.28 rad). b Achieved minus nominal coverage. The
+conditioned range sits within 0.6 percentage points of nominal at all three levels (+0.03, +0.28,
++0.57); the global range over-covers by 2.8 points at 95%. c Variance of the online reading that
+the situation accounts for, out of fold. The situation explains 20.9% (dened as 1 − SSE/SST
+of the conditional median against the test-fold mean, over all 486,660 test moments; 21.1%
+over the 461,937 accepted moments); the remaining 79.1% is not recovered by the situation
+descriptionwhich is what makes an online reading necessary rather than redundant. Panels
+a,b use n = 461,937 evaluated moments (the accepted moments; identical at all three levels); c
+uses n = 486,660. The monitor abstains on 5.08% of moments, where the situation falls outside
+the support of the human record. It is empirical: it takes no observed risk or post-encroachment
+measure as an online input, and it returns an explicit abstention rather than a neutral verdict
+where the situation is unsupported. Verdicts elsewhere in this paper are issued at the 90% level.
+Transfer to a data source not seen during tting is not established and is reported as a boundary
+of the present monitor. Source data are provided as a Source Data le.
+Online Social-Compliance Monitoring for AVs                                            12
+
+
+
+a neutral verdictwhen the situation is unobservable or the estimate unreliable. Because
+
+
+a deviation here means departure from the human range for the situation, the supported
+
+
+reading is conditional social   atypicality, not inappropriateness.
+
+
+2.4 From atypicality to interaction consequences
+We ask what an atypicality verdict corresponds to in the interaction that follows, when
+
+
+the same situations are driven by dierent automated systems.         We pursue this on a
+
+
+matched-scenario real-vehicle benchmark [53], in which identical scenarios are replayed
+
+
+against many independent driving systems.
+
+
+   The monitor is, rst, able to speak.      The benchmark replays 15 scenario templates
+
+
+against 19 independent driving systems (267 scenario runs). Across its 67,861 candidate
+
+
+moments the monitor returns a verdict on 14,099 (20.8%), with no engineering failures
+
+
+in this replay  no solver or pipeline failure on any candidate moment  and in 231
+
+
+of the 267 scenario runs (86.5%) it speaks at least once. At the moment level, 55.3% of
+
+
+candidate moments carry discriminative information between the candidates, and 20.8%
+
+
+additionally lie within human support; at the run level, none of the 36 runs in which
+
+
+the monitor never speaks is silenced by readability alone  in every such run there are
+
+
+readable moments, and what is missing there is comparable human behaviour for the
+
+
+situation.   Abstention here is a statement about the reference rather than about the
+
+
+vehicle, and it is auditable as such.
+
+
+   Where the monitor does speak, atypicality on the assertive sidea current prefer-
+
+
+ence that weights the counterpart's cost less than humans do in the same situationis
+
+
+followed by a measurably tighter interaction for    both vehicles. The ego's own margin to
+its counterpart contracts across the body of its distribution, the median falling by about
+
+
+a quarter and the upper quartile by nearly half.       The counterpart, read independently
+
+
+from the other vehicle's own control record, carries nearly twice the routine speed vari-
+
+
+ation over the same window, and roughly twice the routine speed reduction (+2.6 and
+
+
++1.4 km h−1 as dierences, which do not depend on how small the routine value is). The
+two sides are measured from dierent sources and dierent quantities, so their agreement
+Online Social-Compliance Monitoring for AVs                                            13
+
+
+
+is a convergence rather than a restatement (Fig. 5); the association survives a placebo
+
+
+test that reassigns whole ag sequences across scenario runs (Methods 4.5); a single run
+
+
+containing agged assertive moments is shown for illustration in Fig. ED2.
+
+
+   The same outcome measures, applied unchanged to the accommodating side, do not
+
+
+reproduce that signature: neither the counterpart's speed variation nor its speed reduc-
+
+
+tion separates detectably from within-range moments, and the ego's own margin does not
+
+
+either (Methods 4.5). Reporting the range's two sides together is what makes a reading
+
+
+interpretable. The monitor registers atypicality, and atypicality on the two sides is fol-
+
+
+lowed by dierent thingswhich is why a ag is a statement about how the behaviour
+
+
+compares with human behaviour in that situation, and not a forecast that the interaction
+
+
+is about to fail. Departing from what humans do here is not the same as behaving badly,
+
+
+and the monitor is not built to conate them.
+
+
+   Such moments are also rare: counting both sides, 9.8% of judgeable moments (can-
+
+
+didate moments that pass both gates; Methods 4.4) are agged (1,388 of 14,099; 519 on
+
+
+the assertive side, 869 on the accommodating side). The verdict does not separate auto-
+
+
+mated driving from human driving as a population; it locates the particular moments at
+
+
+which the interaction that follows is measurably tighter. How that ag rate itself should
+
+
+be readagainst the population that dened the referenceis the subject of the next
+
+
+section.
+
+
+   This is a compression of ordinary interaction quality, not a shift of mass into the
+
+
+tail. At the emergency thresholdsa closing margin short enough to demand immediate
+
+
+action, or braking hard enough to count as evasiveagged moments are one-third to
+
+
+one-half as frequent as typical ones at every threshold whose interval excludes a zero
+
+                                                                         −2
+dierence (margins under 1, 1.5 and 2 s; braking beyond −2, −3 and −4 m s ); at the
+
+
+widest margin tested (under 3 s) the interval admits no dierence. The lower quartile of
+
+
+the ego's margin is nearly unchanged between the groups. What the monitor registers
+
+
+is that ordinarily comfortable margins tighten, not that dangerous events become more
+
+
+common.    The complementary directiona preference more accommodating than the
+
+
+human rangecarries no such signature on either side.
+Online Social-Compliance Monitoring for AVs                                                                                                                                                                                                 14
+
+
+
+                                                                                                                                                                                  Emergency margins stay at or below
+                                                        a Compression appears on the assertive side only                                                                     b the within-range rate
+
+
+
+
+                                                                                                                                Moments in that state (%)
+                                                       1.0
+                                                                                                                                                                     17.5                                            n = 472 / 747 / 11,669
+                                                                                                                                                                     15.0
+
+
+
+
+                      Cumulative fraction of moments
+                                                       0.8                                                                                                           12.5
+                                                                                                                                                                     10.0
+                                                                                                                                                                      7.5
+                                                       0.6                                                                                                            5.0
+
+
+
+
+EGO VEHICLE
+                                                                                                                                                                      2.5
+                                                                                                                                                                      0.0
+                                                             lower quartile nearly unchanged
+                                                       0.4                                                                                                                                                                -1.43 [-2.58, -0.17]
+                                                             (4.09 vs 4.18 s)                                                                                            <1s                                              -1.07 [-2.03, -0.05]
+                                                                                                 median
+                                                                                                 −24.9%                                                                                                                   -3.73 [-5.97, -1.10]
+                                                                                                                                                        < 1.5 s                                                           -2.64 [-4.62, -0.38]
+                                                       0.2                          Within human range (n=11,669)                                                                                                         -4.18 [-7.28, -1.03]
+                                                                                    Atypical (assertive side) (n=472)                                                    <2s                                              -3.49 [-6.36, -0.68]
+                                                                                    Atypical (accommodating side) (n=747)                                                                                                  -3.14 [-8.33, 3.15]
+                                                                                                                                                                         <3s                                              -4.74 [-8.63, -0.59]
+                                                       0.0
+                                                                  10^0                     10^1                   10^2                                                                    Difference: atypical − within-range (pp)
+                                                               Ego margin to counterpart after the verdict (s, log scale)
+
+                                                                                                                                                                                  Counterpart braking stays at or below
+                                                        c Counterpart response at flagged moments                                                                            d the within-range rate
+
+
+
+
+                                                                                                                                                 Moments in that state (%)
+                                                                                                                                                                             10                                      n = 469 / 719 / 10,483
+              Speed reduction                                                                                        2.06×                                                   8
+               from the verdict                                                                               not supported                                                  6
+
+
+
+
+COUNTERPART
+                                                                                                                     1.89×                                                   4
+                 Speed range
+              over the window                                                                                 not supported                                                  2
+                                                                                                                                                                             0
+                  Net heading                                                                                 not supported
+                                                                                                                                                                                                                          -4.43 [-6.48, -2.26]
+                      change                                                                                  not supported   < − 2 m s−2                                                                                  -0.63 [-2.84, 1.77]
+                                                                                                                                                                                                                          -3.40 [-5.32, -1.55]
+                                                                                                              not supported   < − 3 m s−2                                                                                   0.07 [-1.96, 2.24]
+                Peak yaw rate
+                                                                                                              not supported                                                                                               -3.13 [-4.87, -1.44]
+                                                                                                                              < − 4 m s−2                                                                                   0.38 [-1.67, 2.71]
+
+                                                             1×          2×           5×          10×      20×                                                                            Difference: atypical − within-range (pp)
+                                                             Counterpart response, atypical ÷ within-range (median ratio)
+
+
+
+
+Figure 5. Compression follows atypicality on the assertive side and not on the
+accommodating side, and neither side raises emergency rates. Rows separate the two
+vehicles in the interaction; columns separate the body of each distribution from its emergency
+tail. Throughout, teal marks moments whose preference lies within the human range for the
+situation; dark red circles mark moments agged as atypical on the assertive side, i.e. weighting
+the counterpart's cost less than humans do in the same situation; and light red triangles mark
+moments agged on the accommodating side, weighting it more. Both sides are shown for every
+endpoint. a Cumulative distribution of the ego's margin to its counterpart over the window
+following the verdict. The margin is the minimum time-to-collision between the ego and its
+counterpart over the window following the verdict; very large values arise where the paths are
+already diverging. The two assertive and within-range distributions run together through the
+lower quartile (4.09 vs 4.18 s) and separate above it, the median falling 24.9% and the upper
+quartile 47.4%. The accommodating distribution tracks the within-range one across its whole
+body. b Fraction of moments in which that margin falls below each emergency threshold. All
+four thresholds were tested and all four are displayed with their intervals; the < 3 s interval
+admits no dierence. A threshold is called supported when its per-endpoint interval excludes
+a zero dierence  a statement about the interval, distinct from the monitor's human-support
+gate; the panel titles use the word in exactly this sense. c Counterpart response from the same
+moment, as the ratio of the atypical to the within-range median (medians 2.74 vs 1.33 km h−1 for
+the speed reduction and 5.53 vs 2.93 km h−1 for the speed range, read over a xed three-second
+window); the dashed line marks parity. Stated instead as dierences, which do not depend on
+how small the within-range median is, the same two contrasts are +1.41 km h−1 [+0.08, +3.37]
+and +2.60 km h−1 [+1.01, +3.50]. Speed quantities are read from the other vehicle's own logged
+control record. A point ratio is printed only where the interval supports it; grey entries are
+reported but not supported, their intervals admitting parity, and no steering claim is made.
+Every accommodating-side entry falls in that category. d Fraction of counterpart records braking
+below each threshold. Panels a,b use n = 472 assertive, n = 747 accommodating and n = 11,669
+within-range moments; panels c,d use n = 469 assertive, n = 719 accommodating and n =
+10,483 within-range moments (the agged moments falling inside the 175 runs with recorded
+counterpart logs); panel d aggregates the acceleration records within those windows (13,800 vs
+310,246 records). Margin and braking thresholds are nested (a moment below 1 s is also below the
+wider thresholds). Panel d is record-weighted; its uncertainty, like all others, is resampled over
+the 175 scenario runs. Error bars and bracketed values are 95% condence intervals from 1,000
+Online Social-Compliance Monitoring for AVs                                              15
+
+
+
+   Compression of interaction quality is not yet a harm claim, and we do not make
+
+
+one. Under the present denitions of a realised interaction failure, atypicality does not
+
+
+robustly or specically predict harm outcomes; the binding limitation is upstream, in
+
+
+that identifying and segmenting interaction-failure events is itself not yet reliable. The
+
+
+present evidence therefore bounds the harm relationship rather than conrming it.
+
+
+
+
+2.5 The reference is audited by the population that dened it
+The reference range was learned from natural human driving recorded in other countries
+
+
+on open roads, and every verdict above rests on the premise that this reference remains
+
+
+readable in a new country, on a closed course, in deliberately staged conicts. We test that
+
+
+premise directly: licensed human drivers drove the same 15 scenarios in a real vehicle,
+
+
+against the same counterparts under the same control, and the unchanged monitor
+
+
+same estimator, same gates, same frozen referenceaudits them exactly as it audits the
+
+
+automated systems.
+
+
+   Three observations follow (Fig. 6). First, the instrument survives the move. The pop-
+
+
+ulation that dened the reference lies outside it on 9.72% of held-out judgeable moments
+
+
+at the 90% levelthe instrument's native alarm rate. Human drivers on the course are
+
+
+agged on 4.7% of judgeable moments (713/15,102), no more often than that native rate:
+
+
+carrying the reference across country, apparatus and task does not inate its alarms. The
+
+
+automated systems' ag rate of 9.8% sits at the native level while exceeding that of the
+
+
+matched human drivers; all three rates belong together, and no pair of them tells the
+
+
+story alone.   Second, the ag means the same thing for either kind of driver.      At the
+
+
+moments where a human is agged on the assertive side, the same consequence signature
+
+
+appears that Fig. 5 documents for automated vehicles: the ego margin's median con-
+
+
+tracts by about a fth, the counterpart absorbs 1.8 times the routine speed reduction,
+
+
+and every emergency tail is rarer, not more common. The verdict marks a property of
+
+
+the interaction, not a property of machines. Third, under this common instrument the
+
+
+automated systems are agged 2.1 times as often as the matched human drivers (9.8% vs
+
+
+4.7% of judgeable moments), and the per-scenario ag rate is higher for the automated
+Online Social-Compliance Monitoring for AVs                                                                                                                                                                                                               16
+
+
+
+                     TARGET FIGURE: all human-side values are synthetic placeholders (data_status=SYNTHETIC_TARGET); AV-side values are measured. Replace with offline-server measurements, then independent re-verification.
+
+                               Readability / judgeability funnel
+                                                                                  Candidate moments                   Gate 1: readable                           Both gates: judgeable                                   Human protocol
+                               Human                                                   71,240                              39,580                                    15,102 (21.2%)                                      20 drivers × 15 scenarios
+                                                                                                                      count unavailable                                                                                  = 300 runs; 0 missing
+                               Automated                                               67,861                                                                        14,099 (20.8%)
+                                                                                                                        55.3% pass
+
+
+
+                                                                                                                                                                              ATA
+                          a    Flag rates under one reference                                                b Shared consequence signature                                                                  c           Scenario-paired flag rates
+
+
+Moments flagged outside
+                                                                                                                                                                            D
+                                                                                                                                          AV        humans                                                          20                               pa
+                               AV = 2.1× humans
+
+                                                                                                                                                                          T
+                                                                                                                                                                                                                                                       rity
+
+
+
+                                                                                                                                                                                            Automated vehicles
+                                                                                                                                                                       NO
+                                            90% human: 95% CI 3.8–5.8%                                            compressed at flagged                     elevated
+
+
+
+                                                                                                                                                    —
+                                                                                                                  moments                                                                                           15                    B1
+
+
+                                                                                                           ET
+                                  20.0   19.5                                             Ego margin (median)
+                          20                          nominal
+
+
+
+  the reference (%)
+                                                                                                         G
+                                                                                                                                                                                                                                      A5
+
+                                                                                                       R
+                          15         11.2                                           Ego margin (upper quartile)
+
+                                                                                                     A
+                                              9.7         9.8                                                                                                                                                       10
+
+
+                                                                                                 IC T                                                                                    flagged (%) per scenario
+                          10                        4.7         4.4         5.0                                                *                                                                                                               uncertainty
+                                                                      2.2               Ego emergency ( < 2 s)
+
+                                               T
+                           5                                                                                                                                                                                                                    not shown
+
+                                             E
+                                                                                                                               *                        *
+
+                                            H
+                           0                                                                                                                                                                                        5         A3
+
+
+                                          T
+                                                                                  Counterpart speed reduction                                                                                                                          15/15 scenarios
+
+
+                                      SYN
+                                     80%        90%               95%                                                                              **
+                               Side counts (more assertive |                                                                                                                                                                              above parity
+                               accommodating)                                      Counterpart speed variation                                                                                                      0
+                                                                                                                          *                    *
+                               H    912|780 391|322              178|147                               − 2
+                                                                         Counterpart braking (< −3 m s     )                                                                                                             0      5         10      15          20
+                               AV 1,174|1,574 519|869            314|387
+                                                                                                                           *                                                                                             Human drivers flagged (%)
+                                                                                                                        0.5          1         2                 4                                                            per scenario
+                                                                                                                  Flagged-assertive / within-range ratio
+
+                                    Humans, natural driving (held-out), n = 461,937                          Humans, same scenarios, n = 15,102                   Automated vehicles, same scenarios, n = 14,099
+
+
+
+
+Figure 6. The monitor is audited by the population that dened its reference.
+Top Moments entering the comparison in each arm: candidate moments, those that are readable,
+and those additionally judgeable against the reference; for the automated systems the middle
+stage is given as the fraction passing. The human protocol is a xed scenario sequence, identical
+across drivers, with no missing trial. a Fraction of judgeable moments agged outside the
+reference at each nominal level, for the natural-driving population the reference was built from
+(held-out), human drivers in the same scenarios, and the automated systems; dashes mark the
+nominal outside rate. Counts below the axis split the agged moments at each level into the more
+assertive and the accommodating side of the range. The whisker on the human same-scenario
+rate at the 90% level is a 95% condence interval bootstrapped over driver-by-scenario runs.
+b Consequence signature at agged-assertive moments, expressed for each quantity of Fig. 5 as
+the agged-to-within ratio; lled markers are automated-vehicle values, open markers the human
+arm; whiskers are case-bootstrap 95% intervals where dened, and an asterisk marks a ratio
+whose interval excludes parity (the no-dierence value, ratio 1); entries whose intervals admit
+parity carry no asterisk. c Per-scenario ag rates at the 90% level, human drivers vs automated
+systems; the dashed diagonal is parity; per-scenario points are shown without intervals. Verdicts
+are per moment; no panel ranks vehicles, teams or drivers. Source data are provided as a Source
+Data le.
+
+
+systems in 15 of 15 scenarios. The population-level rates answer a calibration question;
+
+
+the moment-level signature answers what a ag means; neither is a ranking of vehicles or
+
+
+drivers.
+
+
+
+
+2.6 Social monitoring and collision safety register dierent things
+Finally, what does a social ag register that a conventional safety check does not? The
+
+
+previous section sharpens the answer. The compression it documents is precisely what
+
+
+a threshold-based check cannot see: at no emergency threshold are the agged moments
+
+
+more frequent than the typical onesat the thresholds whose intervals exclude a zero
+
+
+dierence (Section 2.4) they are one-third to one-half as frequentso a monitor built
+Online Social-Compliance Monitoring for AVs                                              17
+
+
+
+on those thresholds would report nothing, while the interaction has nonetheless become
+
+
+measurably tighter for both vehicles. Social atypicality and conventional safety therefore
+
+
+register dierent things.
+
+
+
+
+3    Discussion
+This work does not turn social compliance into a single score. It turns it into an auditable
+
+
+monitoring question: is the AV's current interaction behaviour within the human range
+
+
+for this situation, and if not, is that deviation meaningful enough to matter?         Four
+
+
+results support the question. The IPV is an online, interaction-conditioned measurement
+
+
+that is interpretable only when an interaction is active and the estimate reliable, so a
+
+
+responsible monitor abstains rather than assume neutrality. Human social behaviour is
+
+
+context-dependent, organised by risk, role and geometry, so the reference cannot be a
+
+
+scalar. A reference range conditioned on the current observable situation is sharp and
+
+
+near-nominally calibrated, giving an auditable monitor of conditional social atypicality.
+
+
+And the reference is not an article of faith: carried to a new country, apparatus and task,
+
+
+it ags its own dening population no more often than at home, and what it ags carries
+
+
+the same consequence signature whether the driver is a human or a machine.
+
+
+    The most informative nding is a tension between two levels. At the level of a whole
+
+
+interaction the partners' preferences are correlated; yet online, conditioning the reference
+
+
+range on the counterpart's inferred preferenceor on the ego agent's own historyadds
+
+
+no measurable value beyond the current situation. The relational structure that is visible
+
+
+across interactions is already carried by the observable situation, so a runtime social
+
+
+monitor does not need to read the other agent's hidden intention. This both simplies
+
+
+deployment and claries what social compliance online    is : a question about behaviour in
+a situation, not about inferred minds.
+
+
+    The claims are deliberately bounded.     Socially atypical is not socially inappropri-
+
+
+ate; collision-safe is not interaction-benign; and not readable is not neutral. Atypicality
+
+
+becomes normatively loaded only along the validation route, and we report its honest
+Online Social-Compliance Monitoring for AVs                                                   18
+
+
+
+status: the real-vehicle route establishes a compression of ordinary interaction quality on
+
+
+both sides, while currently bounding rather than conrming a harm relationship, because
+
+
+identifying interaction-failure events accurately is itself an open measurement problem.
+
+
+Rather than a weakness, this denes a concrete next problemreliable interaction-failure
+
+
+segmentation and adequately powered outcome datacreated by, not hidden by, the
+
+
+present monitor. The evidence in this paper covers pairwise vehiclevehicle interactions
+
+
+at mapped conict points; interactions with cyclists and pedestrians, and multi-agent
+
+
+scenes, are outside the present reference and are the natural next extension of the same
+
+
+construction. Beyond driving, the framework oers a template for monitoring whether
+
+
+autonomous agents behave within human normative ranges online, under uncertainty
+
+
+and distribution shift, while being explicit about when a social judgement should be
+
+
+withheld [7].
+
+
+
+
+4    Methods
+Note on scope. The main text states the social-monitoring argument; this section records
+the estimator, the reference-range model and its ablations, the calibration and abstention
+
+
+machinery, and the two validation protocols. Throughout,        online means that every input
+to a verdict is available at decision time (non-anticipation veried); end-to-end real-time
+
+
+operation on vehicle hardware is not evaluated in this paper.
+
+
+
+
+4.1 Online likelihood-based inverse-planning IPV estimation
+The estimator is the candidate-likelihood weighting of Eq. (1): for each agent we gener-
+
+
+ate candidate trajectories over a grid of preferences, score them by the likelihood of the
+
+
+observed trajectory given the counterpart and the static map-lane-centreline reference,
+
+
+and report the weighted preference θ̂a (t) with a reliability ua (t) from the concentration of
+
+
+the weights. Each candidate trajectory for preference θk optimises the frozen implemen-
+
+
+tation's utility cos θk · (own-progress cost) + sin θk · (interaction cost), so a more negative θ
+
+
+weights the joint term negatively  the assertive direction; the full cost terms and solver
+Online Social-Compliance Monitoring for AVs                                                   19
+
+
+
+conguration are released with the code.     This is inverse planning, not a single joint
+
+
+maximum-likelihood optimum; ua (t) is a dispersion statistic of the normalised candidate
+
+
+weights, not a standard deviation, and the reliability gate ua (t) < u0 of Eq. (2) is oper-
+
+
+ationalised by the following frozen rule: the reading is discarded as near-uniform when
+
+
+the largest normalised weight falls below 0.20 (against 1/7 ≈ 0.14 for exactly uniform
+
+
+weights) or the candidate likelihoods are exactly tied. The reference frame is what makes
+
+
+the estimate usable online: against an observed-trajectory-prex reference the causal cur-
+
+
+rent estimate agrees only weakly with the oine estimate (correlation ≈ 0.281), whereas
+
+
+against a static map-lane-centreline reference, route-conditioned and available before the
+
+
+outcome, it agrees closely (correlation ≈ 0.993, MAE ≈ 0.027), bounded to the lane-
+
+
+referenced slice (about three quarters of cases) and stated as a non-anticipation prop-
+
+
+erty, not a causal-eect claim.    We make no source attribution for readability beyond
+
+
+its interaction-conditioning.   The frozen conguration uses seven candidate preferences
+
+
+θk ∈ {−3, −2, −1, 0, 1, 2, 3} × π/8; the grid spans [−3π/8, 3π/8] inside the declared do-
+main [−π/2, π/2] of Eq. 1, and the admissible span quoted in Fig. 4 is the candidate
+
+
+span 3π/4 (Fig. 4 caption).     A rolling window of the ten most recent frames at 10 Hz
+
+
+(one second), with at least four observed frames required for a reading; and a Gaussian
+
+                                           2
+trajectory likelihood ℓa,k ∝ exp{−MSEk /(2σ )} with σ = 0.1, where MSEk is the mean
+
+                             2
+squared Euclidean distance (m ) between observed and candidate positions over the win-
+
+
+dow, so σ is in metres.   The reported reading is not one of the seven candidates: the
+                                                    ∑︁
+likelihoods are normalised to weights wk = ℓa,k /        j ℓa,j and the reading is their weighted
+             ∑︁
+mean θ̂a =     k wk θk , which varies continuously over [−3π/8, 3π/8]. The candidate set
+
+is the support of the likelihood, not the range of the estimator; the concentration of w
+
+
+is what the readability gate below tests. A reading failing the near-uniform rule above
+
+
+carries no discriminative information between the candidates, and the monitor abstains.
+
+
+The full frozen conguration is released with the code.
+Online Social-Compliance Monitoring for AVs                                                 20
+
+
+
+4.2 Interaction opportunity, readability and episode summary
+An interaction-opportunity indicator oij (t) marks when a behaviourally meaningful in-
+
+
+teraction is active (a mapped conict point reachable by both agents within a bounded
+
+
+horizon with closing geometry), as opposed to mere co-presence. The readability gate of
+
+
+Eq. (2) combines oij , the reliability ua , trajectory/reference information qa and counterpart-
+
+
+identity stability ca , with thresholds frozen on training/guard data and applied identically
+
+
+downstream; ga = 0 states are labelled (no active interaction, insucient discriminative
+
+
+information between the candidates, unstable identity, unreliable reference) rather than
+
+
+scored. The event-level summary of an interaction is the mean current IPV over its valid
+
+
+interaction segment; alternative rules (all valid frames; readability-weighted) dier by
+
+
+0.26 rad on average and ip the episode sign in 722% of episodes (Fig. 2c), which is why
+the monitor never uses an episode summary online and every reading is per-moment.
+
+
+
+
+4.3 Context-conditioned human reference range
+The reference range is the conditional distribution of the human current IPV given the
+
+
+current observable situation zt (geometry, role, interaction progress, relative kinematics,
+
+
+online-computable risk proxies, and support/readability state), estimated by conditional
+
+
+quantile regression (histogram-based gradient-boosted quantile models, one per quantile
+
+
+level, with frozen hyperparameters: learning rate 0.06, 72 boosting iterations, maximum
+
+
+31 leaf nodes, minimum 80 samples per leaf, L2 regularisation 0.01, 255 bins, no early
+stopping) and evaluated only on readable, active windows. The reference pool contains
+
+
+humanhuman vehicle pairs only (2,442,625 anchor rows): any interaction in which either
+
+
+agent is an automated data-collection vehicle is excluded from the reference, so machine
+
+
+behaviour cannot contaminate the human range. The corpora are eet-collected in spe-
+
+
+cic cities in the United States and Singapore; the reference is a sample of natural driving
+
+
+there, not of all human driving. We compare a global reference, an oine oracle-risk ceil-
+
+
+ing, and the context-conditioned reference; the context-conditioned reference supplies
+
+
+essentially all of the achievable sharpening over the global reference (width reductions of
+
+
+21%, 20% and 8% at the 80%, 90% and 95% levels, at coverage within 0.6 percentage
+Online Social-Compliance Monitoring for AVs                                                 21
+
+
+
+points of nominal; the global 95% range spans essentially the whole admissible scale).
+
+
+Two further inputs are evaluated as ablations and add no measurable value: condition-
+
+
+ing on the principal counterpart's current IPV, and conditioning on the ego agent's own
+
+
+behavioural history (the self-anchor). Neither is interpreted as a mechanism; the counter-
+
+
+part channel in particular is statistically indistinguishable from removing the IPV input
+
+
+given the situation (paired 90% interval-score dierence −0.0002, case-clustered p = 0.86),
+
+
+whichset against the event-level partner correlationis the tension highlighted in the
+
+
+Results. Concretely, zt comprises four categorical descriptors (path-geometry category,
+
+
+path relation, turn-pair label and priority role) and 22 numeric channels: elapsed interac-
+
+
+tion time and history length; ego and counterpart velocity components and headings at
+
+
+the anchor; relative position components, distance, velocity components, speed, closing
+
+
+rate and heading dierence at the anchor; short-window means and a dispersion of relative
+
+
+distance, relative speed and closing rate; and two online risk proxies  the closing-rate
+
+
+time-to-collision at the anchor and an anticipated post-encroachment proxy computed
+
+
+only from information available at time t.      Excluded from the reference are observed
+
+
+post-encroachment time, realised passing order, post-hoc phase labels, the episode sum-
+
+
+mary, the machine/human identity, and target-proximal concurrent ego actions; quantiles
+
+
+are made non-crossing by rearrangement. The reference range conditions on the current
+
+
+situation rather than on a specic temporal pattern of the interaction; temporal-history
+
+
+features were examined and are not part of the primary conditioning.
+
+
+
+
+4.4 Conformal calibration and abstention
+Vocabulary, used consistently: an anchor row is one agent-moment eligible for estimation;
+
+
+a readable moment passes the discriminative-information rule; an accepted moment ad-
+
+
+ditionally lies within human support (these receive verdicts); on the benchmark we write
+
+
+candidate moment for an anchor row entering the two gates, and judgeable moment for
+
+
+one that passes both. A scene is one contiguous recorded segment and the unit of the
+
+
+frozen split; an interaction case is one interacting vehicle pair within a scene (Section 2.2);
+
+
+on the benchmark, a scenario is one of the staged templates and a scenario run is one sys-
+Online Social-Compliance Monitoring for AVs                                                 22
+
+
+
+tem's or one driver's traversal of it (Section 2.4). The nal interval is calibrated by split-
+
+
+conformal prediction [52, 54] with nonconformity sk = max{q̂l (xk ) − yk ,   yk − q̂u (xk ), 0}
+and radius cα   = s(⌈(n+1)(1−α)⌉) over accepted calibration moments.     Conformal calibra-
+
+
+tion of trajectory atypicality has precedent in unconditional surveillance settings [55];
+
+
+distribution-shift-aware conformal variants [5658] are compatible with the same monitor,
+
+
+and we use the split-conformal form for auditability. The estimand is pointwise marginal
+
+
+coverage over accepted moments:      the conformal radius cα is the ⌈(n + 1)(1 − α)⌉-th
+
+
+smallest nonconformity score over all accepted calibration-fold moments (n = 455,723),
+
+
+and coverage is evaluated over all accepted test-fold moments (461,937). The tted radii
+
+                            −3         −6
+are near zero (cα = 1.4 × 10 , 1.2 × 10   and 0.0 rad at the 80%, 90% and 95% lev-
+
+
+els), so the conformal step nds essentially nothing to repair in the situational quantile
+
+
+model.   Splits are made by whole scenes under a split frozen before this study, so no
+
+
+scene contributes to more than one fold; the readability gate is frozen on training/guard
+
+
+data and applied identically to calibration and test. Moments within an interaction are
+
+
+dependent, so the coverage statement is marginal over accepted moments  not a per-
+
+
+interaction, sequential or conditional guarantee  and the achieved coverage is reported
+
+
+empirically (Fig. 4b). A marginal statement leaves conditional coverage unconstrained
+
+
+in principle, so we also report it by source:     on the test fold the deployed reference
+
+
+contains 88.2%, 95.9%, 85.9% and 88.2% of moments at the 90% level within Waymo,
+
+
+nuPlan, Lyft and Argoverse-2 respectively, against 90.3% pooled, so the pooled gure is
+
+
+not masking a source in which the range fails. The frozen split assigns 974,984 / 499,893
+
+
+/ 481,088 / 486,660 human anchor rows to the train / guard / calibration / test folds
+
+
+(26,828 interaction cases; whole-scene split frozen in advance).      The universes nest as
+
+
+follows: of the 38,228 corpus interaction cases (Section 2.2), 26,828 enter the frozen an-
+
+
+chor ledger, contributing 4,497,368 anchor rows (the readability accounting above); the
+
+
+humanhuman reference pool retains 2,442,625 of those rows (Methods 4.3), which are
+
+
+exactly the train/guard/calibration/test folds (974,984 + 499,893 + 481,088 + 486,660).
+
+
+The support gate scores each moment by the mean Euclidean distance to its k             = 25
+nearest training anchors after standardisation and one-hot encoding of the situation cat-
+Online Social-Compliance Monitoring for AVs                                             23
+
+
+
+egories, abstaining above the 95th percentile of guard distances (1.081); categorical sup-
+
+
+port additionally requires at least 50 training anchors and at least 10 cases.     On the
+
+
+test fold, support abstention is 5.08% (24,723 of 486,660) with zero categorical failures.
+
+
+On the natural corpus the mechanism-level readability accounting over 4,497,368 anchor
+
+
+rows is:   3,202,646 readable, 1,275,480 near-uniform weights, 17,416 exact ties and 1,826
+solver failures.   The 1,826 solver failures belong to this natural-corpus accounting; on
+
+
+the benchmark, no candidate moment failed the solver or pipeline (Section 2.4). Con-
+
+
+ditional coverage across state groups and trajectory-wise simultaneous coverage are not
+
+
+established here and remain stated boundaries of the construction; leave-one-source-out
+
+
+coverage quanties the source-shift boundary: at the 90% level, retting with one source
+
+
+held out covers the held-out source at 0.743 (Waymo, 143,380/193,096), 0.990 (nuPlan,
+
+
+149,068/150,587), 0.750 (Lyft, 68,270/91,069) and 0.900 (Argoverse-2, 11,315/12,576,
+with 44.3% held-out abstentionthe support gate intercepting unsupported situations);
+
+
+transfer across sources is therefore a bounded property of source heterogeneity, and cover-
+
+
+age and abstention must be read together. We report not only accepted-window coverage
+
+
+but also the active-interaction rate, readability rates, and the total abstention rate with
+
+
+its reason distribution, so that ltering is never hidden. The monitor returns Abstain
+
+
+not Within-Normwith one of the reason codes No-Active-Interaction, Ego-
+
+
+Unreadable, Counterpart-Unreadable (the counterpart's identity is not stable
+
+enough to anchor a reading, ca of Eq. 2), Map-or-Role-Uncertain, Low-Human-
+
+
+Support or Out-of-Distribution; reason codes are assigned by the rst failing gate
+
+in the evaluation order of Algorithm 2, so exactly one code is returned; otherwise it
+
+
+emits Within-Norm, Competitive-Deviation or Over-Yielding. In the main text,
+
+
+Competitive-Deviation is written `outside the range on the assertive side' and Over-
+
+Yielding `outside on the accommodating side'; both sides are tested at every judgeable
+
+moment. A sequential warning layer (persistence over consecutive verdicts) belongs to the
+
+
+deployment interface: no result in this paper uses it, every reported verdict and ag rate
+
+
+is per-moment, and its operating characteristics (episode-level false-alarm rate, detection
+
+
+delay, warning duration) are not evaluated in this paper.
+Online Social-Compliance Monitoring for AVs                                            24
+
+
+
+4.5 Real-vehicle consequence protocol
+We use a matched-scenario real-vehicle benchmark at the scenario level (no run-level,
+
+
+seed-level or causal claims), separating an outcome universe from a replay/IPV universe
+
+
+with frozen exclusions. The counterpart vehicles are driven by trac-simulation software
+
+
+(TESS NG) and respond to what the ego vehicle does; the same counterpart control is
+
+
+used in the human reference arm below, so the two arms face a counterpart that reacts to
+
+
+them on the same terms. The staging is mixed-reality: the ego is a real vehicle driven at
+
+
+a test site, and the simulated counterparts reach an automated system through its per-
+
+
+ception interface and a human driver through a head-mounted display. No conrmatory
+
+
+analysis proceeded until an outcome-blind crosswalk had reconciled canonical scenario
+
+
+identiers, structural case identities and ocial outcome labels.   Realised-consequence
+
+
+events are dened by a frozen automatic extractor.      Verdicts are issued per moment;
+
+
+outcome windows begin at the agged moment, so the trajectory samples that produce a
+
+
+verdict (the one-second window ending at that moment) precede every outcome sample.
+
+
+The ego-side outcome is the minimum time-to-collision to the counterpart over the post-
+
+
+verdict window, which runs from the verdict to the end of that run's evaluated window
+
+
+(the counterpart-side battery instead uses the xed three-second window below); time-
+
+
+to-collision is computed per frame as distance over closing rate, and frames in which the
+
+
+pair is not closing do not enter the minimum; the counterpart-side outcomes are read
+
+
+over a xed three-second window from the same moment, from the other vehicle's own
+
+
+logged control record. Comparisons are made within the frozen situation cells, inference
+
+
+resamples scenario runs (the unit of clustering throughout), and a placebo test that re-
+
+
+assigns whole exposure trajectories across scenario runs distinguishes the real ag timing
+
+
+from permuted timings (200 whole-trajectory reassignment draws; the comparison statis-
+
+
+tic is the absolute case-clustered t; empirical p = 0.0199). Across all six levelwindow
+
+
+combinations of the log(1 + TTC) magnitude battery the coecients agree in sign; the
+
+
+xed three-second window is the pre-specied primary, and its case-clustered intervals
+
+
+exclude zero at all three levels, while the open-ended contract-window interval crosses
+
+
+zero at the 90% level ([−2.6100, +0.1372]). A case-level label permutation on the same
+Online Social-Compliance Monitoring for AVs                                               25
+
+
+
+battery does not reach signicance (p = 0.1493); the exposure placebo above is the test
+
+
+specic to ag timing.      The battery is reported for both sides of the range.    Its end-
+
+
+points, windows, thresholds, clustering unit and resampling settings were xed for the
+
+
+assertive-side comparison and were not altered afterwards; the accommodating-side val-
+
+
+ues were obtained by running that unchanged battery on the accommodating group, so
+
+
+no endpoint, threshold or window was chosen in the light of accommodating-side data.
+
+
+The counterpart braking endpoint was specied for both sides from the outset. On the
+
+
+accommodating side (747 ego moments and 719 counterpart anchors, against the same
+
+
+within-range groups) the counterpart's speed reduction is 0.79× the within-range median
+
+
+([0.28, 1.53]) and its speed variation 1.08× ([0.78, 1.53]); the share of counterpart records
+
+                       −2
+braking below −3 m s        diers by +0.07 percentage points ([−1.96, +2.24]); and the ego's
+
+
+own margin median is 0.81× ([0.70, 1.15]). Every interval admits no dierence. These are
+
+
+non-detections at the achieved precisionwhich on the ratio scale is slightly coarser than
+
+
+on the assertive side, despite the larger groupand not demonstrations of equivalence.
+
+
+Estimates are weighted by moment rather than by scenario run, because the monitor
+
+
+issues a verdict at each moment and the per-moment population is the one its opera-
+
+
+tion denes; resampling scenario runs sets the intervals. Weighted equally per run, the
+
+
+assertive-side counterpart braking contrast does not reach signicance (p = 0.4704); the
+
+
+speed-reduction and speed-variation contrasts carry the counterpart-side result. Ratios
+
+
+of medians are reported alongside dierences because a ratio becomes unstable where the
+
+
+within-range median is near zero, as it is in one of the two sites. Of the 14,099 judge-
+
+
+able moments at the 90% level, 519 lie below the range, 869 above and 12,711 inside.
+
+
+The criterion is the situation-conditioned range, not the sign of the reading: at the 90%
+
+
+level the lower edge is negative in essentially every situation (median −1.03 rad), 40.0%
+
+
+of within-range moments also carry a negative reading, and of all negative-reading mo-
+
+
+ments only 9.25% are agged. The challenge elded 20 systems; one is set aside in full
+
+
+because its replay records are not clean, leaving 19 systems across the 15 scenarios, or
+
+
+285 systemscenario cells, of which 267 yield the trajectory anchors the estimator needs.
+The 18 that do not were all attempted and ocially scored (15 scored completions and 3
+Online Social-Compliance Monitoring for AVs                                               26
+
+
+
+collision failures); they are lost in our own replay processing  11 to observed reference
+
+
+trajectories that collapse to fewer than two distinct points, 3 to no timing-valid anchor, 3
+
+
+to no eligible counterpart and 1 to a counterpart without timing support  and 13 of the
+
+
+18 fall in a single system. No scenario is dropped: each retains between 16 and 19 sys-
+tems. Consequence analyses follow the same run accounting as the rest of the benchmark.
+
+
+Of the 267 scenario runs, 231 contain at least one judgeable moment and can therefore
+
+
+enter a consequence analysis at all. Of those, 27 are runs in which the counterpart was
+
+
+identied from a dierent naming convention in the run logs; they are held out of the
+
+
+pooled counterpart-response analyses and reported separately, leaving 204, of which 175
+
+
+have the recorded counterpart logs the outcome battery requires.        The split is one of
+
+
+record-keeping rather than of apparatus: the counterpart is the same kind of simulator-
+
+
+driven vehicle throughout. The runs dropped at the last step are not the eventful ones
+
+
+ 7 of those 29 contain any agged moment, against 132 of the 175 retained  so the
+
+
+analysed set is not the ag-rich remainder of a larger pool. That the counterparts respond
+
+
+is also visible in the replay itself: in the four scenarios whose counterpart identity recurs
+
+
+across systems, the same counterpart's trajectory diers between systems by 4.359.03 m,
+
+
+and in none of the four is it identical. The ego-margin panels use the moments with a
+
+
+dened post-verdict margin (472 agged, 11,669 within-range). The margin is undened
+
+
+where the pair is not closing; the undened fraction is similar in the two groups (9.1%
+
+
+of agged vs 8.2% of within-range moments), so this exclusion does not preferentially
+
+
+remove either group.   Under these denitions the harm relationship is bounded rather
+
+
+than conrmed: deviation does not robustly or specically predict realised harm, and
+
+
+the dominant limitation is upstream, in the adequacy of interaction-failure segmentation
+
+
+itself. The fraction of moments whose reading carries discriminative information diers
+
+
+between the naturalistic corpora and the benchmark (70.3% vs 55.3%); we report this as
+
+
+an observed dierence without attributing a cause, and the readability gate treats both
+
+
+populations identically.   The binding constraint on benchmark coverage is situational
+
+
+rather than volumetric: in the 36 always-silent runs the readability pass rate (53.78%)
+
+
+is close to the benchmark average (55.30%) while the human-support pass rate is 0.07%
+Online Social-Compliance Monitoring for AVs                                              27
+
+
+
+(against 32.32% overall), and support does not follow sample volume  one high-volume
+
+
+situation cell with 1,148,133 human anchor rows passes support on 14.58% of its bench-
+
+
+mark moments while a 45,283-row cell passes on 47.03%.        The support gate compares
+
+
+kinematic neighbourhoods, not IPV values.
+
+
+
+
+4.6 Human reference arm (matched scenarios)
+Licensed drivers drove the same scenario set in a real vehicle against the same simulator-
+
+
+driven counterparts under the counterpart control described above, giving a drivers-by-
+
+
+scenarios matrix (20 drivers × 15 scenarios) symmetric to the automated-systems bench-
+
+
+mark. The unchanged estimator, abstention gates and frozen reference range were applied
+
+
+to the human runs. Endpoints were xed before analysis: (i) the agged fraction of judge-
+
+
+able moments against the nominal level, with the natural-driving outside rate (9.72% at
+
+
+the   90% level) as the apparatus-validity anchor; and (ii) the consequence battery of
+Fig. 5 recomputed within the human arm under identical frozen denitions, with no new
+
+
+outcome variables and no threshold scans. Ocial competition scores, harm labels and
+
+
+preference ratings were excluded as endpoints in the analysis plan, which was specied
+
+
+and frozen before any outcome was examined; those labels are publicly released by the
+
+
+challenge, which is operated by the authors' research group, and no author entered the
+
+
+challenge as a competitor. Driver identities were pseudonymised before analysis.
+
+
+      The human-reference study was approved by the Science and Technology Ethics Com-
+
+
+mittee of Tongji University (approval tjdxsr2025011). All participants gave written in-
+
+
+formed consent before taking part and were insured for the duration of testing. Runs took
+
+
+place at a dedicated test site with a safety supervisor on board who could intervene or
+
+
+terminate a run at any time. Participants held a valid driving licence, were compensated
+
+
+at CNY 150 per hour, and were instructed to drive naturally; they were not told that
+
+
+their runs would serve as a human reference against automated systems.         Each driver
+
+
+completed the scenario set as a single xed sequence, identical across drivers, and no trial
+
+
+was missing.
+
+
+Planner interface.      The verdicts map to planner actionsaudit, soft cost or warn-
+Online Social-Compliance Monitoring for AVs                                                               28
+
+
+
+Algorithm 1 Oine calibration of the context-conditioned reference range
+
+Require: existing IPV time series            D; target coverage 1 − α
+Ensure: quantile model             Q̂, conformal radius cα , frozen readability gate
+ 1: split whole scenes into train / guard / calibration / test
+ 2: freeze the interaction-opportunity rule and the readability                  gate   (u0 , q0 , c0 )   on
+   train/guard
+ 3: for each interaction in train do
+ 4:   keep active, readable windows; build the current situation zt ; target y ← human
+      current IPV
+ 5: end for
+ 6: t non-crossing situational quantiles; t counterpart-IPV and self-history variants as
+   ablations only
+ 7: apply the identical frozen gate to calibration; score every accepted calibration window
+ 8: cα ← s(⌈(n+1)(1−α)⌉) over accepted calibration windows; freeze all parameters
+ 9: return       Q̂, cα , gate {evaluate once on test}
+
+Algorithm 2 Online social-atypicality monitoring step at time               t
+Require: window              Wt ; map-lane reference; calibrated Q̂, cα ; frozen gate; source health
+Ensure: reference range and verdict, or an abstention with reason code
+ 1: identify the principal counterpart; evaluate active interaction oij (t)
+ 2: if oij (t) = 0 then
+ 3:    return Abstain(No-Active-Interaction)
+ 4: end if
+ 5: estimate θ̂i (t) and reliability ui (t) {Eq. (1)}
+ 6: if gi (t) = 0 then
+ 7:    return       Abstain(Ego-Unreadable if ui or qi failed; Counterpart-
+      Unreadable if ci failed)
+ 8: end if
+ 9: build the current situation zt ; run map/role, human-support and distribution gates
+10: if any gate fails then
+11:      return Abstain(reason code)
+12: end if
+13: [q̂l , q̂u ] ← Q̂(zt ) widened by cα
+14: verdict ← Within-Norm / Competitive-Deviation / Over-Yielding from
+   θ̂i (t) vs [q̂l , q̂u ]
+15: optionally map the verdict to a planner-facing signal through a persistence rule (de-
+   ployment interface; not evaluated in this paper)
+16: return        (range, verdict) {plus signal only where the optional persistence rule is
+   instantiated}
+
+
+
+
+ing, a fallback candidate under sustained competitive deviation at high physical risk, a
+
+
+hesitation/eciency warning, and  on abstention  a degraded mode in which the
+
+
+social verdict is simply unavailable. This mapping is an interface specication, not an
+
+
+external-validity result; the social layer is advisory and subordinate to collision-safety
+Online Social-Compliance Monitoring for AVs                                           29
+
+
+
+enforcement, no social verdict or abstention relaxes or delays any safety constraint, and
+
+
+a planner fallback is a control action never labelled Within-Norm.
+
+
+
+
+Data Availability
+InterHub-derived interaction cases and source datasets (Waymo, nuPlan, Lyft, Argoverse-
+
+
+2) are governed by their respective licences; processed derivatives, including the online
+
+
+IPV time series, will be made available upon publication.    The matched-scenario real-
+
+
+vehicle benchmark is operated by the authors' research group at Tongji University, and
+
+
+its ocial outcome labels are publicly released; the derived moment-level verdict series
+
+
+for the automated-systems arm will be made available upon publication. Records from
+
+
+the human reference arm are not released: participants consented to take part in the
+
+
+study, and that consent does not extend to sharing or publishing their driving records,
+
+
+so the human arm is reported only in aggregate.
+
+
+
+
+Code Availability
+Implementation, the online likelihood-based inverse-planning IPV estimator, the read-
+
+
+ability gate and abstention logic, and gure-generation code will be deposited in Zenodo
+
+
+under a persistent identier upon publication, and are available to referees on request
+
+
+during peer review.
+Online Social-Compliance Monitoring for AVs                                                                                                                                        30
+
+
+
+Extended Data
+
+                                          a The human reference range rises, falls and changes width with the situation
+
+
+
+                                                                                                   reading issued                                                 no reading
+                                                                                            inside 90% range            b                           c
+                                                                                            below range · more assertive     Wide reference range         Narrow reference range
+                                               95%                                          above range · atypical
+                                         1.0
+                                               90%
+
+                                         0.5
+
+
+
+
+                    IPV reading (rad)
+                                                                                                                                       inside                        outside
+
+
+
+
+ ↓ more assertive
+                                         0.0
+                                               80%
+
+                                        −0.5
+
+
+                                                                                                                                                    same IPV = −0.39 rad
+                                        −1.0                                                                                                        outside a 1.49-rad band
+                                                                 same IPV = −0.39 rad
+                                                                 inside a 2.19-rad band
+                                        −1.5
+                                                      2.5            5.0              7.5                10.0               12.5          15.0          17.5            20.0
+                                                                                                         time in the interaction (s)
+
+
+
+
+Figure ED1. The human reference range rises, falls and changes width with the
+situation. A single interaction segment showing the frame-level reading against the nested
+80%, 90% and 95% situation-conditioned human reference ranges. Grey intervals in the top
+strip mark frames with no reading; those frames remain gaps rather than being plotted as a
+value. Readable frames are shown as inside the 90% range, below it (more assertive, atypical) or
+above it (the accommodating side, atypical). The two outlined frames carry the same reading,
+−0.393 rad: it lies inside the range where that range spans 2.19 rad and outside it where the
+range spans 1.49 rad. The pair isolates the role of conditioning, in that the number being judged
+is identical while the reference against which it is judged is not. The display is descriptive.
+Source data are provided as a Source Data le.
+Online Social-Compliance Monitoring for AVs                                                                                                                                                                                        31
+
+
+
+
+                                                                                                                                           b Counterpart speed falls across the flagged stretch
+
+                                                                                                                                           5
+
+
+
+
+                        cross-scene position (m)
+                                                                                                                                           4
+                                                    a Where the selected alert stretch occurs                                                                                           automated vehicle: 3.33 → 3.32 m s−1
+
+
+
+                                                                                                                           speed (m s−1)
+                                                          13.5 s
+                                                    2                                                                                                                                           counterpart: 4.31 → 1.40 m s−1
+                                                          automated vehicle 18.2 s         closest path approach                           3
+                                                    0
+                                                   −2         assertive-side alert           counterpart
+                                                                                                                                           2
+                                                         −20           −10             0          10
+                                                                      along-scene position (m)
+                                                                                                                                           1
+
+                                                                                                                                               pre-alert baseline                                         centred 2.1-s median
+                                                                                                                                           0
+                                                                                                                                                       14           15                16                  17                  18
+                                                                                                                                                                          time in the run (s)
+                                                                       120                              20                                  10                                           2                              1
+                                                          runs with a flagged moment         with ≥5 clustered frames       with counterpart speed drop ≥20%         with automated-vehicle speed change ≤10%         shown
+                                                    c
+                                                         Selected alert stretch below the human reference range
+                                                                                                                                                                                   reading issued               no reading
+
+                                                   1.0
+                                                                                       90% situation-conditioned human reference range
+
+
+
+
+             IPV reading (rad)
+                                                   0.5
+
+
+                                                   0.0
+
+
+
+
+↓ more assertive
+                                           −0.5
+
+
+                                           −1.0
+
+
+                                                                           14                                   15                                          16                        17                                18
+                                                                                                                                            time in the run (s)
+
+
+
+Figure ED2. One illustrative run containing agged assertive moments. a Bird's-eye
+trajectories over the displayed window; red points mark the monitored vehicle's positions during
+the selected agged stretch. b Speed timelines over a 2.0 s pre-ag baseline and the agged
+stretch. Lines are centred 21-frame medians of speed computed from the logged velocity compo-
+nents. The counterpart median moves from 4.31 to 1.40 m s−1 ; the automated vehicle's median
+moves from 3.33 to 3.32 m s−1 . c The same stretch relative to the 90% situation-conditioned
+human reference range. Red downward triangles are readings below the lower edge of that range;
+grey ticks mark no reading, and available rows are connected only for display continuity. This
+run was selected from the 120 runs containing at least one agged assertive moment, and is one
+of only two meeting display criteria xed in advance (at least ve agged frames in one contigu-
+ous stretch; counterpart speed decrease of at least 20%; automated-vehicle speed change within
+10%). Of the two runs meeting all criteria, the displayed one ranks rst under the selection
+score xed together with them  the counterpart's speed-drop fraction minus the automated
+vehicle's absolute speed-change fraction (0.675 vs 0.552). It is one illustrative run: it is not a
+typical value, not an overall distribution, and not evidence for ranking or comparison between
+automated systems. The display is descriptive and assigns no causation. Source data are pro-
+vided as a Source Data le.
+Online Social-Compliance Monitoring for AVs                                          32
+
+
+
+References
+ [1] G. Markkula, R. Madigan, D. Nathanael, E. Portouli, Y. M. Lee, A. Dietrich,
+
+
+    J. Billington, A. Schieben, and N. Merat. Dening interactions: a conceptual frame-
+
+
+    work for understanding interactive behaviour in human and automated road trac.
+
+
+    Theoretical Issues in Ergonomics Science, 21(6):728752, 2020.
+
+ [2] Amir Rasouli and John K. Tsotsos. Autonomous vehicles that interact with pedes-
+
+
+    trians: A survey of theory and practice.     IEEE Transactions on Intelligent Trans-
+    portation Systems, 21(3):900918, 2020.
+
+ [3] Wenshuo Wang, Letian Wang, Chengyuan Zhang, Changliu Liu, and Lijun Sun.
+
+
+    Social interactions for autonomous driving: A review and perspectives.   Foundations
+    and Trends in Robotics, 10(3-4):198377, 2022.
+
+ [4] Peter Trautman and Andreas Krause. Unfreezing the robot: Navigation in dense, in-
+
+
+    teracting crowds. In    2010 IEEE/RSJ International Conference on Intelligent Robots
+    and Systems, pages 797803, 2010.
+
+ [5] Francesca M. Favarò, Nazanin Nader, Sky O. Eurich, Michelle Tripp, and Naresh
+
+
+    Varadaraju. Examining accident reports involving autonomous vehicles in California.
+
+
+    PLOS ONE, 12(9):e0184952, 2017.
+
+ [6] Ðore Petrovi¢, Radomir Mijailovi¢, and Dalibor Pe²i¢. Trac accidents with au-
+
+
+    tonomous vehicles: Type of collisions, manoeuvres and errors of conventional vehi-
+
+
+    cles' drivers.   Transportation Research Procedia, 45:161168, 2020.
+
+ [7] Iyad Rahwan, Manuel Cebrian, Nick Obradovich, Josh Bongard, Jean-François Bon-
+
+
+    nefon, Cynthia Breazeal, Jacob W. Crandall, Nicholas A. Christakis, Iain D. Couzin,
+
+
+    Matthew O. Jackson, Nicholas R. Jennings, Ece Kamar, Isabel M. Kloumann,
+
+
+    Hugo Larochelle, David Lazer, Richard McElreath, Alan Mislove, David C. Parkes,
+
+
+    Alex 'Sandy' Pentland, Margaret E. Roberts, Azim Shari, Joshua B. Tenenbaum,
+
+
+    and Michael Wellman. Machine behaviour.       Nature, 568(7753):477486, 2019.
+Online Social-Compliance Monitoring for AVs                                           33
+
+
+
+ [8] Hirokazu Shirado and Nicholas A. Christakis.    Locally noisy autonomous agents
+
+
+    improve global human coordination in network experiments.    Nature, 545(7654):370
+    374, 2017.
+
+
+
+ [9] Jacob W. Crandall, Mayada Oudah, Tennom, Fatimah Ishowo-Oloko, Sherief Abdal-
+
+
+    lah, Jean-François Bonnefon, Manuel Cebrian, Azim Shari, Michael A. Goodrich,
+
+
+    and Iyad Rahwan. Cooperating with machines.      Nature Communications, 9(1):233,
+    2018.
+
+
+
+[10] Fatimah Ishowo-Oloko, Jean-François Bonnefon, Zakariyah Soroye, Jacob Crandall,
+
+
+    Iyad Rahwan, and Talal Rahwan. Behavioural evidence for a transparencyeciency
+
+
+    tradeo in humanmachine cooperation.      Nature Machine Intelligence, 1(11):517
+    521, 2019.
+
+
+
+[11] Hirokazu Shirado, Shunichi Kasahara, and Nicholas A. Christakis. Emergence and
+
+
+    collapse of reciprocity in semiautomatic driving coordination experiments with hu-
+
+
+    mans.   Proceedings of the National Academy of Sciences, 120(51):e2307804120, 2023.
+
+[12] Holger Caesar, Juraj Kabzan, Kok Seang Tan, Whye Kit Fong, Eric Wol, Alex
+
+
+    Lang, Luke Fletcher, Oscar Beijbom, and Sammy Omari.          nuPlan: A closed-loop
+
+
+    ML-based planning benchmark for autonomous vehicles.          arXiv preprint, 2021.
+
+
+    arXiv:2106.11810.
+
+
+
+[13] Nico Montali, John Lambert, Paul Mougin, Alex Kueer, Nicholas Rhinehart,
+
+
+    Michelle Li, Cole Gulino, Tristan Emrich, Zoey Yang, Shimon Whiteson, Brandyn
+
+
+    White, and Dragomir Anguelov.      The Waymo open sim agents challenge.     In   Ad-
+    vances in Neural Information Processing Systems (NeurIPS), Datasets and Bench-
+    marks Track, volume 36, pages 5915159171, 2023.
+
+[14] Fridulv Sagberg, Selpi, Giulio Francesco Bianchi Piccinini, and Johan Engström. A
+
+
+    review of research on driving styles and road safety.   Human Factors: The Journal
+    of the Human Factors and Ergonomics Society, 57(7):12481275, 2015.
+Online Social-Compliance Monitoring for AVs                                              34
+
+
+
+[15] Anthony Francis, Claudia Pérez-D'Arpino, Chengshu Li, Fei Xia, Alexandre Alahi,
+
+
+    Rachid Alami, Aniket Bera, Abhijat Biswas, Joydeep Biswas, Rohan Chandra, Hao-
+
+
+    Tien Lewis Chiang, Michael Everett, Sehoon Ha, Justin Hart, Jonathan P. How,
+
+
+    Haresh Karnan, Tsang-Wei Edward Lee, Luis J. Manso, Reuth Mirsky, Sören Pirk,
+
+
+    Phani Teja Singamaneni, Peter Stone, Ada V. Taylor, Peter Trautman, Nathan
+
+
+    Tsoi, Marynel Vázquez, Xuesu Xiao, Peng Xu, Naoki Yokoyama, Alexander Toshev,
+
+
+    and Roberto Martín-Martín.       Principles and guidelines for evaluating social robot
+
+
+    navigation algorithms.   ACM Transactions on Human-Robot Interaction, 14(2):165,
+    2025.
+
+
+
+[16] Nidhi Kalra and Susan M. Paddock.       Driving to safety: How many miles of driv-
+
+
+    ing would it take to demonstrate autonomous vehicle reliability?       Transportation
+    Research Part A: Policy and Practice, 94:182193, 2016.
+
+[17] Philip Koopman and Michael Wagner. Challenges in autonomous vehicle testing and
+
+
+    validation.   SAE International Journal of Transportation Safety, 04(1):1524, 2016.
+
+[18] Christian Pek, Stefanie Manzinger, Markus Koschi, and Matthias Altho.         Using
+
+
+    online verication to prevent autonomous vehicles from causing accidents.      Nature
+    Machine Intelligence, 2(9):518528, 2020.
+
+[19] Shai Shalev-Shwartz, Shaked Shammah, and Amnon Shashua. On a formal model
+
+
+    of safe and scalable self-driving cars, 2017. arXiv:1708.06374.
+
+
+
+[20] Matthias Altho and John M. Dolan. Online verication of automated road vehicles
+
+
+    using reachability analysis.   IEEE Transactions on Robotics, 30(4):903918, 2014.
+
+[21] Aaron D. Ames, Samuel Coogan, Magnus Egerstedt, Gennaro Notomista, Koushil
+
+
+    Sreenath, and Paulo Tabuada. Control barrier functions: Theory and applications.
+
+
+    In   2019 18th European Control Conference (ECC), pages 34203431, 2019.
+
+[22] International Organization for Standardization.    ISO 21448:2022 road vehicles 
+
+
+    safety of the intended functionality. International Standard, 2022. ISO 21448:2022,
+
+
+    Edition 1.
+Online Social-Compliance Monitoring for AVs                                            35
+
+
+
+[23] UL Standards & Engagement.        Standard for evaluation of autonomous products.
+
+
+    Standard, 2023. UL 4600, Edition 3 (2023).
+
+
+
+[24] Xiaocong Zhao, Jian Sun, and Meng Wang.        Measuring sociality in driving inter-
+
+
+    action.   IEEE Transactions on Intelligent Transportation Systems, 25(8):92249237,
+    2024.
+
+
+
+[25] Yiru Liu, Xiaocong Zhao, Ye Tian, and Jian Sun. Sociality probe: Game-theoretic
+
+
+    inverse reinforcement learning for modeling and quantifying social patterns in driving
+
+
+    interaction.   IEEE Transactions on Intelligent Transportation Systems, 25(12):20841
+    20853, 2024.
+
+
+
+[26] Ryan O. Murphy, Kurt A. Ackermann, and Michel J. J. Handgraaf. Measuring social
+
+
+    value orientation.   Judgment and Decision Making, 6(8):771781, 2011.
+
+[27] Wilko Schwarting,     Alyssa Pierson,   Javier Alonso-Mora,   Sertac Karaman,    and
+
+
+    Daniela Rus. Social behavior for autonomous vehicles.     Proceedings of the National
+    Academy of Sciences, 116(50):2497224978, 2019.
+
+[28] Brian D. Ziebart, Andrew L. Maas, J. Andrew Bagnell, and Anind K. Dey. Maximum
+
+
+    entropy inverse reinforcement learning. In    Proceedings of the Twenty-Third AAAI
+    Conference on Articial Intelligence (AAAI), pages 14331438, 2008.
+
+[29] Pieter Abbeel and Andrew Y. Ng. Apprenticeship learning via inverse reinforcement
+
+
+    learning. In   Twenty-rst international conference on Machine learning - ICML '04,
+    page 1, 2004.
+
+
+
+[30] C. K. Chow. On optimum recognition error and reject tradeo.     IEEE Transactions
+    on Information Theory, 16(1):4146, 1970.
+
+[31] Corinna Cortes, Giulia DeSalvo, and Mehryar Mohri. Learning with rejection. In
+
+
+    Algorithmic Learning Theory (ALT), pages 6782, 2016.
+Online Social-Compliance Monitoring for AVs                                               36
+
+
+
+[32] Yonatan Geifman and Ran El-Yaniv. Selective classication for deep neural networks.
+
+
+    In   Advances in Neural Information Processing Systems (NIPS), volume 30, pages
+    48784887, 2017.
+
+
+
+[33] Yesim Ozarda. Reference intervals: current status, recent developments and future
+
+
+    considerations.    Biochemia Medica, 26(1):516, 2016.
+
+[34] Andre F. Marquand, Iead Rezek, Jan Buitelaar, and Christian F. Beckmann. Un-
+
+
+    derstanding heterogeneity in clinical cohorts using normative models: Beyond case-
+
+
+    control studies.   Biological Psychiatry, 80(7):552561, 2016.
+
+[35] R. A. I. Bethlehem, J. Seidlitz, S. R. White, et al.     Brain charts for the human
+
+
+    lifespan.   Nature, 604(7906):525533, 2022.
+
+[36] Martin Leucker and Christian Schallhart. A brief account of runtime verication.
+
+
+    The Journal of Logic and Algebraic Programming, 78(5):293303, 2009.
+
+[37] Oded Maler and Dejan Nickovic.        Monitoring temporal properties of continuous
+
+
+    signals. In   Formal Techniques, Modelling and Analysis of Timed and Fault-Tolerant
+    Systems (FORMATS/FTRTFT), volume 3253, pages 152166, 2004.
+
+[38] Lui Sha. Using simplicity to control complexity.   IEEE Software, 18(4):2028, 2001.
+
+[39] Lars Lindemann, Xin Qin, Jyotirmoy V. Deshmukh, and George J. Pappas. Confor-
+
+
+    mal prediction for STL runtime verication. In    Proceedings of the ACM/IEEE 14th
+    International Conference on Cyber-Physical Systems (with CPS-IoT Week 2023),
+    pages 142153, 2023.
+
+
+
+[40] Liting Sun, Wei Zhan, Masayoshi Tomizuka, and Anca D. Dragan. Courteous au-
+
+
+    tonomous cars. In     2018 IEEE/RSJ International Conference on Intelligent Robots
+    and Systems (IROS), pages 663670, 2018.
+
+[41] Dorsa Sadigh, Shankar Sastry, Sanjit A. Seshia, and Anca D. Dragan. Planning for
+
+
+    autonomous cars that leverage eects on human actions. In        Proceedings of Robotics:
+    Science and Systems, 2016.
+Online Social-Compliance Monitoring for AVs                                            37
+
+
+
+[42] Thibault Kruse, Amit Kumar Pandey, Rachid Alami, and Alexandra Kirsch. Human-
+
+
+    aware robot navigation: A survey.   Robotics and Autonomous Systems, 61(12):1726
+    1743, 2013.
+
+
+
+[43] Christoforos Mavrogiannis, Francesca Baldini, Allan Wang, Dapeng Zhao, Pete
+
+
+    Trautman, Aaron Steinfeld, and Jean Oh. Core challenges of social robot navigation:
+
+
+    A survey.   ACM Transactions on Human-Robot Interaction, 12(3):139, 2023.
+
+[44] Wenhao Yu, Chengxiang Zhao, Hong Wang, Jiaxin Liu, Xiaohan Ma, Yingkai Yang,
+
+
+    Jun Li, Weida Wang, Xiaosong Hu, and Ding Zhao. Online legal driving behavior
+
+
+    monitoring for self-driving vehicles.   Nature Communications, 15(1):408, 2024.
+
+[45] Yue Hu, Yuhang Zhang, Yanbing Wang, and Daniel Work. Detecting socially abnor-
+
+
+    mal highway driving behaviors via recurrent graph attention networks. In   Proceedings
+    of the ACM Web Conference 2023, pages 30863097, 2023.
+
+[46] Azadeh Dinparastdjadid, Isaac Supeene, and Johan Engström. Measuring surprise
+
+
+    in the wild. arXiv preprint, 2023. arXiv:2305.07733.
+
+
+
+[47] Johan Engström, Shu-Yuan Liu, Azadeh Dinparastdjadid, and Camelia Simoiu.
+
+
+    Modeling road user response timing in naturalistic trac conicts: A surprise-based
+
+
+    framework.    Accident Analysis & Prevention, 198:107460, 2024.
+
+[48] John M. Scanlon, Kristofer D. Kusano, Johan Engström, and Trent Victor. Colli-
+
+
+    sion avoidance eectiveness of an automated driving system using a human driver
+
+
+    behavior reference model in reconstructed fatal collisions.    SAE Technical Paper
+
+
+    2026-01-0520, SAE International, 2026.
+
+
+
+[49] Julian F. Schumann, Johan Engström, Leif Johnson, Matthew O'Kelly, Joao Messias,
+
+
+    Jens Kober, and Arkady Zgonnikov. Active inference as a model of collision avoidance
+
+
+    behavior in human drivers.   Nature Communications, 17(1):5009, 2026.
+
+[50] Xiyan Jiang, Xiaocong Zhao, Yiru Liu, Zirui Li, Peng Hang, Lu Xiong, and Jian
+
+
+    Sun. A naturalistic trajectory dataset with dense interaction for autonomous driving.
+
+
+    Scientic Data, 12:1084, 2025.
+Online Social-Compliance Monitoring for AVs                                            38
+
+
+
+[51] Vladimir Vovk, Alexander Gammerman, and Glenn Shafer.        Algorithmic Learning in
+    a Random World. Springer, 2005.
+
+[52] Yaniv Romano, Evan Patterson, and Emmanuel J. Candès.           Conformalized quan-
+
+
+    tile regression. In   Advances in Neural Information Processing Systems (NeurIPS),
+    volume 32, pages 35383548, 2019.
+
+
+
+[53] Tongji University TOPS Group.       OnSite autonomous-driving algorithm challenge
+
+
+    and test platform. National Natural Science Foundation of China OnSite challenge
+
+
+    series, https://www.onsite.com.cn, 2024.
+
+
+
+[54] Anastasios N. Angelopoulos and Stephen Bates.        Conformal prediction:   A gentle
+
+
+    introduction.   Foundations and Trends in Machine Learning, 16(4):494591, 2023.
+
+[55] Rikard Laxhammar and Göran Falkman. Online learning and sequential anomaly
+
+
+    detection in trajectories.   IEEE Transactions on Pattern Analysis and Machine In-
+    telligence, 36(6):11581173, 2014.
+
+[56] Ryan J. Tibshirani, Rina Foygel Barber, Emmanuel J. Candès, and Aaditya Ram-
+
+
+    das. Conformal prediction under covariate shift. In   Advances in Neural Information
+    Processing Systems (NeurIPS), volume 32, pages 25262536, 2019.
+
+[57] Isaac Gibbs and Emmanuel J. Candès.        Adaptive conformal inference under dis-
+
+
+    tribution shift. In   Advances in Neural Information Processing Systems (NeurIPS),
+    volume 34, pages 16601672, 2021.
+
+
+
+[58] Jing Lei, Max G'Sell, Alessandro Rinaldo, Ryan J. Tibshirani, and Larry Wasser-
+
+
+    man. Distribution-free predictive inference for regression.   Journal of the American
+    Statistical Association, 113(523):10941111, 2018.
+
+
+
+Acknowledgements
+This work was supported by the National Natural Science Foundation of China (Key
+
+
+Program, grant 52232015). We thank the drivers who took part in the human-reference
+Online Social-Compliance Monitoring for AVs                                           39
+
+
+
+study.
+
+
+
+
+Author Contributions
+X.Z. conceived the study, developed the methodology and the software, and wrote the
+
+
+original draft and the revisions. J.S. acquired funding and revised the manuscript. X.J.
+
+
+contributed validation and data curation.    Y.L. contributed methodology, data cura-
+
+
+tion and validation.   G.M. contributed to the conception of the study and revised the
+
+
+manuscript.
+
+
+
+
+Competing Interests
+The matched-scenario real-vehicle benchmark analysed in this work is organised by the
+
+
+authors' research group at Tongji University. No author entered the challenge as a com-
+
+
+petitor, the ocial outcome labels examined here are publicly released, and the funding
+
+
+for this study is independent of, and does not overlap with, the funding of the challenge
+
+
+series. The authors declare no other competing interests.
+

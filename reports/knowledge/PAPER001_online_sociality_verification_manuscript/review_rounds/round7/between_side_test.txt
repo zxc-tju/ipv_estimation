@@ -1,0 +1,16 @@
+open   /dropped   MEDIAN          assertive 0.751  accommodating 0.806
+                                 difference -0.055  95% CI [-0.382,+0.125]  p=0.4270  -> not distinguished
+open   /dropped   UPPER QUARTILE  assertive 0.526  accommodating 0.961
+                                 difference -0.435  95% CI [-0.887,-0.115]  p=0.0060  -> DIFFERENT
+open   /retained  MEDIAN          assertive 0.755  accommodating 0.974
+                                 difference -0.219  95% CI [-0.663,+0.086]  p=0.1870  -> not distinguished
+open   /retained  UPPER QUARTILE  assertive 0.468  accommodating 1.404
+                                 difference -0.936  95% CI [-2.997,-0.281]  p=0.0010  -> DIFFERENT
+fixed3 /dropped   MEDIAN          assertive 0.901  accommodating 0.987
+                                 difference -0.086  95% CI [-0.291,+0.116]  p=0.3680  -> not distinguished
+fixed3 /dropped   UPPER QUARTILE  assertive 0.601  accommodating 1.029
+                                 difference -0.428  95% CI [-0.710,-0.062]  p=0.0140  -> DIFFERENT
+fixed3 /retained  MEDIAN          assertive 0.908  accommodating 1.029
+                                 difference -0.122  95% CI [-0.364,+0.092]  p=0.2570  -> not distinguished
+fixed3 /retained  UPPER QUARTILE  assertive 0.626  accommodating 1.126
+                                 difference -0.500  95% CI [-1.285,-0.186]  p=0.0010  -> DIFFERENT
