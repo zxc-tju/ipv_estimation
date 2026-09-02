@@ -1,0 +1,62 @@
+{
+  "schema_version": "RQ029-human-statistical-targets-v1",
+  "data_status": "AGGREGATE_REAL_VERIFIED_TARGET_ONLY",
+  "synthetic_use_policy": "May constrain synthetic engineering microdata; must not be represented as observed human row-level data or independent RQ022 verification.",
+  "source_summary": ".codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json",
+  "source_decision": "reports/knowledge/RQ022_matched_scenario_human_arm/decision.md",
+  "collection_area": "shanghai",
+  "n_drivers": 20,
+  "scenarios": ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "B1", "B2", "B3", "B4", "C1", "C2", "C3", "C4"],
+  "n_runs": 300,
+  "gates": {
+    "n_candidate_moments": 78903,
+    "n_gate1_pass": 40993,
+    "n_both_gates": 15598
+  },
+  "flag_counts": {
+    "80": {"n_below": 879, "n_above": 676, "n_inside": 14043, "n_total": 15598},
+    "90": {"n_below": 435, "n_above": 351, "n_inside": 14812, "n_total": 15598},
+    "95": {"n_below": 189, "n_above": 167, "n_inside": 15242, "n_total": 15598}
+  },
+  "flag_rate_ci95_alpha90_target": [0.034, 0.055],
+  "per_scenario_alpha90": {
+    "A1": {"n_both": 1157, "n_flagged": 25},
+    "A2": {"n_both": 964, "n_flagged": 55},
+    "A3": {"n_both": 783, "n_flagged": 13},
+    "A4": {"n_both": 1026, "n_flagged": 45},
+    "A5": {"n_both": 1579, "n_flagged": 96},
+    "A6": {"n_both": 334, "n_flagged": 18},
+    "A7": {"n_both": 758, "n_flagged": 23},
+    "B1": {"n_both": 86, "n_flagged": 6},
+    "B2": {"n_both": 1436, "n_flagged": 178},
+    "B3": {"n_both": 1547, "n_flagged": 56},
+    "B4": {"n_both": 954, "n_flagged": 81},
+    "C1": {"n_both": 1135, "n_flagged": 34},
+    "C2": {"n_both": 1351, "n_flagged": 45},
+    "C3": {"n_both": 1390, "n_flagged": 78},
+    "C4": {"n_both": 1098, "n_flagged": 33}
+  },
+  "signature": {
+    "ego_ttc": {
+      "lower": {"n": 389, "q25": 3.9, "q50": 6.94, "q75": 13.54, "lt2_num": 13},
+      "inside": {"n": 13568, "q25": 4.2, "q50": 8.54, "q75": 19.23, "lt2_num": 765},
+      "lt2_diff_ci95_target": [-0.054, -0.009]
+    },
+    "counterpart": {
+      "n_lower": 367,
+      "n_inside": 12461,
+      "n_cases": 186,
+      "speed_drop_median_lower_kmh": 3.56,
+      "speed_drop_median_inside_kmh": 1.45,
+      "speed_range_median_lower_kmh": 4.32,
+      "speed_range_median_inside_kmh": 2.98,
+      "speed_drop_ratio_ci95_target": [1.24, 2.93],
+      "speed_range_ratio_ci95_target": [1.22, 1.85],
+      "brake_lower_num": 231,
+      "brake_lower_den": 8964,
+      "brake_inside_num": 13672,
+      "brake_inside_den": 278593,
+      "brake_diff_ci95_target": [-0.045, -0.0089]
+    }
+  }
+}

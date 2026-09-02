@@ -1,0 +1,48 @@
+{
+  "schema_version": "RQ029-run-receipt-v1",
+  "run_id": "RQ029_1_shanghai_synthetic_20260902",
+  "completed_at": "2026-09-02T20:13:52+08:00",
+  "git_head_at_execution": "c37b6efb",
+  "status": "PASS",
+  "data_status": "SYNTHETIC_NOT_OBSERVED",
+  "collection_area": "shanghai",
+  "source_team_id": "T11",
+  "source_session_id": "6923-1766197775",
+  "output_path": "data/derived/rq029_human_synthetic_microdata/v1",
+  "n_drivers": 20,
+  "n_scenarios": 15,
+  "n_runs": 300,
+  "n_raw_frames": 81880,
+  "n_candidate_moments": 78903,
+  "n_gate1_pass": 40993,
+  "n_both_gates": 15598,
+  "alpha90_below_inside_above": [435, 14812, 351],
+  "validation": {
+    "checks_passed": 195,
+    "checks_total": 195,
+    "constrained_marginal_target_match": true,
+    "statistical_direction_match": true,
+    "speed_relative_abs_p95": 0.05061534181756976,
+    "recomputed_path_cross_track_max_m": 6.99257507075364e-10,
+    "payload_logical_bytes": 1848180899,
+    "payload_unique_inode_bytes": 809008099
+  },
+  "source_sha256": {
+    "monitor.log": "87f0861d78661e6963aad47eee34ef15b10d692e22ce0d99f538efe7fa0047ad",
+    "simulation_trajectory.log": "74d3d41079e184e21868cc3c1d2af258e2c8977c7be1e8e00ccd8d3645e1fb02",
+    "vehicle_perception_simulation_trajectory.log": "5370a287870fc9ce5df376c108c508642d327a6c069c4b5fbd0a7b991a186065",
+    "vehicle_trajectory.log": "146dbf893cb047d5e9d88cb20e542874466c640286dbc05329b7fefcdd4e0af8"
+  },
+  "tests": {
+    "rq029": "7 passed",
+    "rq029_plus_rq027": "13 passed",
+    "full_root_note": "205 passed, 1 skipped, 3 pre-existing RQ014 pin failures before an old test hung and the run was interrupted"
+  },
+  "protected_reads": {
+    "rq007_held_out": false,
+    "rq014_blinded_fields": false
+  },
+  "estimator_recomputed": false,
+  "interval_values_forced_to_target": false,
+  "boundary": "Synthetic engineering proxy only; not observed human row-level data and not independent RQ022 evidence."
+}
