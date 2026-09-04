@@ -1,0 +1,16 @@
+scenario_id_current,native_case_id,dictionary_name_zh,observed_case_name,agreement_status,required_action
+A1,2325,行人横穿道路,1-行人横穿道路,MATCH,Keep after confirming human protocol used the same definition
+A2,2328,突现故障车,2-突现故障车,MATCH,Keep after confirming human protocol used the same definition
+A3,2323,避让闯红灯特殊车辆,3-连续右转复杂场景,CONFLICT,Confirm authoritative scenario semantics
+A4,2322,前车急刹车,4-环岛通行,CONFLICT,Confirm authoritative scenario semantics
+A5,2321,疯狂电瓶车,5-交叉口排队溢出,CONFLICT,Confirm authoritative scenario semantics
+A6,2327,背景车快速切入,6-避让闯红灯特殊车辆,CONFLICT,Confirm authoritative scenario semantics
+A7,2319,施工区避障,7-匝道汇入,CONFLICT,Confirm authoritative scenario semantics
+B1,2318,环岛通行,8-前车急刹车,CONFLICT,Confirm authoritative scenario semantics
+B2,2317,匝道汇入,9-疯狂电瓶车,CONFLICT,Confirm authoritative scenario semantics
+B3,2316,非机动车流溢出,10-背景车快速切入,CONFLICT,Confirm authoritative scenario semantics
+B4,2315,无信号交叉口通行,11-施工区避障,CONFLICT,Confirm authoritative scenario semantics
+C1,2314,连续右转复杂场景,12-非机动车流溢出,CONFLICT,Confirm authoritative scenario semantics
+C2,2313,交叉口排队溢出,13-无信号交叉口通行,CONFLICT,Confirm authoritative scenario semantics
+C3,2346,复杂信号灯组合,14-复杂信号灯组合,MATCH,Keep after confirming human protocol used the same definition
+C4,2311,自主泊车,15-自主泊车,MATCH,Keep after confirming human protocol used the same definition

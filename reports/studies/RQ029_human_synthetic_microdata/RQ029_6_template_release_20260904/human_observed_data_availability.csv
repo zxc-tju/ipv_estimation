@@ -1,0 +1,26 @@
+field_group,field,status,current_value,evidence_path,required_user_action
+scope,collection_area,USER_CONFIRMED,shanghai,reports/plans/RQ029_plan_v0_human_synthetic_microdata_20260902.md,Confirm the precise site route and route version
+aggregate,n_drivers,REAL_VERIFIED,20,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,None
+aggregate,n_runs,REAL_VERIFIED,300,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,None
+aggregate,n_scenarios,DERIVED_FROM_20x15,15,reports/knowledge/RQ022_matched_scenario_human_arm/decision.md,Confirm that each driver completed the same 15 task definitions
+aggregate,missing_runs,REAL_VERIFIED,0,reports/knowledge/RQ022_matched_scenario_human_arm/decision.md,None
+provenance,generated_by,REAL_VERIFIED,X. Zhao,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,None
+provenance,generation_date,REAL_VERIFIED,2026.08.19,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,None
+provenance,source_machine,REAL_VERIFIED,offline-svr-510,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,None
+provenance,per_unit_table_file,REFERENCED_NOT_PRESENT,per_unit_count.csv,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,Provide the controlled archive location and checksum
+provenance,analysis_script,REFERENCED_NOT_PRESENT,run_human_arm_ana_.py,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,Provide the controlled archive location and checksum
+identity,driver_id_list,NOT_AVAILABLE,,No row-level human identity table found,Provide 20 anonymized driver identifiers or formally adopt D01-D20
+identity,task_id_list,NOT_AVAILABLE,,No row-level human session table found,Provide actual taskId per session
+identity,record_id_list,NOT_AVAILABLE,,No row-level human session table found,Provide actual recordId per session
+identity,session_id_list,NOT_AVAILABLE,,No row-level human session table found,Provide actual session directory identifier per session
+identity,driver_session_mapping,NOT_AVAILABLE,,No row-level human session table found,Provide driver-to-session mapping including repeats and recollections
+vehicle,vehicle_id_and_name,NOT_AVAILABLE,,No row-level human vehicle table found,Provide the actual instrumented vehicle or injection-platform id and name
+vehicle,vehicle_static_configuration,NOT_AVAILABLE,,No row-level human vehicle table found,Provide vehicleType driveType dimensions licence and colour values
+time,session_start_end_time,NOT_AVAILABLE,,No row-level human session table found,Provide actual session start and end timestamps
+time,frame_timestamp_and_frame_id,NOT_AVAILABLE,,No human frame-level logs found,Obtain from the real collection logs rather than manually fabricating
+trajectory,ego_pose_kinematics_and_controls,NOT_AVAILABLE,,No human frame-level logs found,Replace the generated trajectory with recorded pose speed acceleration steering pedal braking and gear streams
+trajectory,background_perception_traffic_light,NOT_AVAILABLE,,No human frame-level logs found,Provide actual replay/perception logs or formally document use of the fixed AV replay background
+monitoring,monitor_telemetry,NOT_AVAILABLE,,No human monitor logs found,Provide actual monitor logs; do not convert template telemetry into an observed record
+mapping,scenario_case_semantics,CONFLICT_REQUIRES_CONFIRMATION,11 of 15 current labels disagree with raw caseName,data/onsite_competition/00_manifest/scenario_dictionary.csv,Choose and document the authoritative scenario naming convention
+mapping,real_186_case_row_mapping,NOT_IDENTIFIABLE_FROM_AGGREGATES,186 aggregate cases only,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,Provide the controlled row-level mapping if manuscript analyses need it
+analysis,gates_flags_scenario_signatures,REAL_VERIFIED,Aggregate tables available,.codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json,None

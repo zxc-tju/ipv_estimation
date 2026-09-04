@@ -1,0 +1,55 @@
+{
+  "rq_id": "RQ029",
+  "execution_id": "RQ029_6_template_release_20260904",
+  "status": "COMPLETE_PASS",
+  "package_root": "data/derived/rq029_human_template/v1",
+  "schema_version": "RQ029-human-template-v1",
+  "template_mode_validation": {
+    "status": "PASS",
+    "checks_passed": 74,
+    "checks_total": 74,
+    "sessions": 20,
+    "runs": 300,
+    "frames": 81880,
+    "managed_files": 100
+  },
+  "production_mode_validation": {
+    "status": "TEMPLATE_MODE_REQUIRED",
+    "exit_code": 1
+  },
+  "independent_recompute": {
+    "status": "PASS",
+    "frame_gap_runs": 0,
+    "nonpositive_dt_runs": 0,
+    "max_adjacent_step_m": 1.0533536470189409,
+    "motion_columns_changed": 0,
+    "monitor_unique_hashes": 20,
+    "simulation_unique_hashes": 20,
+    "perception_unique_hashes": 20,
+    "vehicle_trajectory_unique_hashes": 20,
+    "forbidden_hits_outside_root_readme": 0,
+    "inventory_hash_mismatches": 0
+  },
+  "tests": {
+    "command": "python3 -m pytest -q tests/test_rq029_human_synthetic.py tests/test_rq029_human_template.py tests/test_rq029_layered_release.py tests/test_rq029_paper_v2.py",
+    "result": "29 passed"
+  },
+  "code_review": {
+    "initial": "REQUEST_CHANGES",
+    "fixed": [
+      "replace refuses unmanaged files",
+      "replace refuses modified managed files",
+      "fresh-build regression added",
+      "README disclosure diagnostics corrected"
+    ],
+    "final": "APPROVE"
+  },
+  "git": {
+    "initial_local_commit": "ddb8419df316b359bb12ef5f6317c4b98fbc8ba8",
+    "pushed": false
+  },
+  "protected_reads": {
+    "RQ007_held_out": false,
+    "RQ014_blinded_fields": false
+  }
+}

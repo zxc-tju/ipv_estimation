@@ -103,7 +103,11 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         raise ValueError(f"cannot write empty CSV: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=list(rows[0]),
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 
@@ -305,6 +309,40 @@ def _prepare_output(output: Path, replace: bool) -> None:
         or manifest.get("required_mode") != REQUIRED_MODE
     ):
         raise ValueError("refusing replacement: template release identity mismatch")
+    inventory_path = output / "00_control/file_inventory.csv"
+    checksum_path = output / "MANIFEST.sha256"
+    if not inventory_path.is_file() or not checksum_path.is_file():
+        raise ValueError("refusing replacement: managed inventory or checksum manifest is missing")
+    inventory = pd.read_csv(inventory_path)
+    if inventory.relative_path.duplicated().any():
+        raise ValueError("refusing replacement: managed inventory contains duplicate paths")
+    inventory_entries = dict(zip(inventory.relative_path, inventory.sha256))
+    manifest_entries, malformed = _manifest_entries(checksum_path)
+    if malformed or manifest_entries != inventory_entries:
+        raise ValueError("refusing replacement: managed inventory and checksum manifest disagree")
+    expected_files = set(inventory_entries) | SPECIAL_INVENTORY_FILES
+    actual_files = {
+        path.relative_to(output).as_posix()
+        for path in output.rglob("*")
+        if path.is_file()
+    }
+    unexpected = sorted(actual_files - expected_files)
+    missing = sorted(expected_files - actual_files)
+    if unexpected or missing:
+        raise ValueError(
+            "refusing replacement: unmanaged or missing files detected "
+            f"unexpected={unexpected!r} missing={missing!r}"
+        )
+    modified = sorted(
+        relative
+        for relative, digest in inventory_entries.items()
+        if _sha256(output / relative) != digest
+    )
+    if modified:
+        raise ValueError(
+            "refusing replacement: managed files changed since inventory "
+            f"{modified!r}"
+        )
     shutil.rmtree(output)
     output.mkdir(parents=True)
 
@@ -831,11 +869,15 @@ def validate_release(
         False,
     )
     readme = (output / "README.md").read_text(encoding="utf-8")
+    disclosure_ok = "全部为合成数据" in readme and "synthetic" in readme.lower()
     check(
         "root_readme_disclosure",
-        "全部为合成数据" in readme and "synthetic" in readme.lower(),
-        True,
-        True,
+        disclosure_ok,
+        {
+            "chinese_disclosure": "全部为合成数据" in readme,
+            "english_disclosure": "synthetic" in readme.lower(),
+        },
+        {"chinese_disclosure": True, "english_disclosure": True},
     )
     forbidden_hits = _scan_forbidden_payload(output)
     check("readme_only_forbidden_word", not forbidden_hits, forbidden_hits, [])

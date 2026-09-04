@@ -1,0 +1,7 @@
+evidence_id,claim,status,evidence_path,scope_boundary
+RQ029-V2-E1,"Paper hard records and exact marginal/point targets are reproduced",DIRECT,"data/derived/rq029_human_synthetic_microdata/v2_paper_aligned/validation/checks.csv","By construction from accepted aggregates; not independent human evidence"
+RQ029-V2-E2,"V2 raw files, run manifest, and ego trajectory columns are unchanged from v1",DIRECT,"data/derived/rq029_human_synthetic_microdata/v2_paper_aligned/validation/checks.csv","Inheritance from already-validated synthetic v1"
+RQ029-V2-E3,"Four of five synthetic interval targets are within predeclared endpoint tolerances",DIRECT,"data/derived/rq029_human_synthetic_microdata/v2_paper_aligned/validation/validation_summary.json","Alpha90 run-bootstrap CI remains outside tolerance"
+RQ029-V2-E4,"CI endpoint loss is 95.68% lower than v1",DIRECT,"data/derived/rq029_human_synthetic_microdata/v2_paper_aligned/tables/achieved_summary.json","Synthetic calibration loss only"
+RQ029-V2-E5,"Raw designated-counterpart kinematic closeness loss is 99.52% lower than v1",DIRECT,"data/derived/rq029_human_synthetic_microdata/v2_paper_aligned/tables/achieved_summary.json","Uses fixed Shanghai counterpart IDs and 31-frame windows"
+RQ029-V2-E6,"The package remains synthetic and does not recover observed participant rows or true case mapping",BOUNDARY,"data/derived/rq029_human_synthetic_microdata/v2_paper_aligned/manifest.json","SYNTHETIC_NOT_OBSERVED"

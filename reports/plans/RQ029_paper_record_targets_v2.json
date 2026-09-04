@@ -1,0 +1,53 @@
+{
+  "schema_version": "RQ029-paper-record-targets-v2",
+  "data_status": "PAPER_AGGREGATE_TARGETS_ONLY",
+  "paper_commit_observed": "938b77669663",
+  "paper_main_tex": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/2_PaperWriting/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle/main.tex",
+  "human_runs": {"drivers": 20, "scenarios": 15, "runs": 300, "missing": 0},
+  "human_alpha90": {
+    "flagged_num": 786,
+    "judgeable_den": 15598,
+    "rate": 0.05039107577894602,
+    "run_bootstrap_ci95_rounded": [0.034, 0.055],
+    "scenario_rate_range_rounded": [0.017, 0.124],
+    "assertive_num": 435,
+    "accommodating_num": 351
+  },
+  "automated_alpha90": {
+    "flagged_num": 1388,
+    "judgeable_den": 14099,
+    "rate": 0.09844669834740053,
+    "scenario_rate_range_paper_display": [0.027, 0.174],
+    "scenario_rate_range_from_frozen_counts": [0.027434842249657063, 0.17346938775510204],
+    "paper_display_tolerance": 0.0006
+  },
+  "automated_to_human": {
+    "moment_weighted_ratio": 1.9536534361612639,
+    "display_ratio": 1.95,
+    "scenario_bootstrap_ci95_rounded": [1.62, 2.39],
+    "scenario_bootstrap_draws": 20000,
+    "scenario_bootstrap_seed": 20260820,
+    "draws_above_parity": 20000,
+    "scenario_weighted_ratio_from_exact_counts": 1.9708659003090003,
+    "scenario_weighted_ratio_from_six_decimal_reported_rates": 1.9708637741963375,
+    "scenarios_av_higher": 15
+  },
+  "human_signature": {
+    "ego_median_ratio": 0.8126463700234192,
+    "ego_upper_quartile_ratio": 0.704108164326573,
+    "ego_margin_intervals_available": false,
+    "ego_ttc_lt2_difference_ci95": [-0.054, -0.009],
+    "counterpart_speed_drop_ratio": 2.4551724137931035,
+    "counterpart_speed_drop_ratio_ci95": [1.24, 2.93],
+    "counterpart_speed_range_ratio": 1.4496644295302015,
+    "counterpart_speed_range_ratio_ci95": [1.22, 1.85],
+    "counterpart_brake_difference": -0.023305428529556277,
+    "counterpart_brake_difference_ci95": [-0.045, -0.0089]
+  },
+  "soft_tolerances": {
+    "rate_ci_endpoint_abs": 0.002,
+    "difference_ci_endpoint_abs": 0.005,
+    "ratio_ci_endpoint_abs": 0.05
+  },
+  "boundary": "Targets are rounded paper records and accepted aggregates. They constrain synthetic calibration but do not identify real human rows, clusters, covariance, or trajectories."
+}

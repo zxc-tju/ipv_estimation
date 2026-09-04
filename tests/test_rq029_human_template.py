@@ -6,12 +6,15 @@ import re
 import pandas as pd
 import pytest
 
+import pipelines.simulation.package_rq029_human_template as template_module
+
 from pipelines.simulation.package_rq029_human_template import (
     DATA_ORIGIN,
     DEFAULT_OUTPUT,
     REQUIRED_MODE,
     SCHEMA_VERSION,
     _prepare_output,
+    _finalize_inventory,
     _required_real_fields,
     _rewrite_tree,
     _transform_dataframe,
@@ -115,6 +118,154 @@ def test_replace_rejects_noncanonical_directory(tmp_path) -> None:
     with pytest.raises(ValueError, match="canonical"):
         _prepare_output(output, replace=True)
     assert marker.read_text(encoding="utf-8") == "preserve"
+
+
+def test_replace_rejects_unmanaged_or_modified_files(tmp_path, monkeypatch) -> None:
+    output = tmp_path / "canonical"
+    control = output / "00_control"
+    control.mkdir(parents=True)
+    (output / "release_manifest.json").write_text(
+        json.dumps(
+            {
+                "schema_version": SCHEMA_VERSION,
+                "data_origin": DATA_ORIGIN,
+                "required_mode": REQUIRED_MODE,
+            }
+        ),
+        encoding="utf-8",
+    )
+    managed = output / "payload.txt"
+    managed.write_text("managed", encoding="utf-8")
+    _finalize_inventory(output)
+    monkeypatch.setattr(template_module, "DEFAULT_OUTPUT", output)
+
+    extra = output / "manual_note.txt"
+    extra.write_text("preserve me", encoding="utf-8")
+    with pytest.raises(ValueError, match="unmanaged"):
+        _prepare_output(output, replace=True)
+    assert extra.read_text(encoding="utf-8") == "preserve me"
+
+    extra.unlink()
+    managed.write_text("user changed", encoding="utf-8")
+    with pytest.raises(ValueError, match="changed since inventory"):
+        _prepare_output(output, replace=True)
+    assert managed.read_text(encoding="utf-8") == "user changed"
+
+
+def test_fresh_minimal_package_rewrites_logs_and_builds_inventory(
+    tmp_path, monkeypatch
+) -> None:
+    source_root = tmp_path / "source"
+    source_session = source_root / "raw/drivers/D01/sessions/source-session"
+    tables = source_root / "tables"
+    source_session.mkdir(parents=True)
+    tables.mkdir()
+    (source_root / "manifest.json").write_text(
+        json.dumps({"schema_version": "source-v1"}), encoding="utf-8"
+    )
+    ego = {
+        "timestamp": "1766197789851",
+        "globalTimeStamp": "1766197789851",
+        "frameId": 1,
+        "id": "2490",
+        "name": "SYNTHETIC_HUMAN_D01",
+        "longitude": 121.2,
+        "latitude": 31.2,
+        "speed": 1.0,
+        "isPerception": 0,
+    }
+    (source_session / "vehicle_trajectory.log").write_text(
+        json.dumps(
+            {
+                "type": "start",
+                "value": {
+                    "timestamp": "1766197789851",
+                    "value": [ego],
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (source_session / "monitor.log").write_text(
+        json.dumps(
+            {
+                "timestamp": 1766197789851,
+                "frameId": 1,
+                "taskId": "6923",
+                "recordId": 1766197775,
+                "avMonitor": {
+                    "timestamp": 1766197789851,
+                    "longitude": 0,
+                    "latitude": 0,
+                    "speed": 0,
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (source_session / "simulation_trajectory.log").write_text(
+        json.dumps(
+            {
+                "type": "trajectory",
+                "value": {
+                    "timestamp": "1766197789851",
+                    "value": [{"id": "1200002", "speed": 3.0}],
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (source_session / "vehicle_perception_simulation_trajectory.log").write_text(
+        json.dumps(
+            {
+                "caseId": 2325,
+                "taskId": "6923",
+                "participantTrajectories": [
+                    {"role": "av", "value": [ego]},
+                    {
+                        "role": "mvSimulation",
+                        "value": [
+                            {
+                                "id": "1200002",
+                                "name": "background",
+                                "speed": 3.0,
+                                "isPerception": 1,
+                            }
+                        ],
+                    },
+                ],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    one_entry = build_placeholder_registry()[0]
+    monkeypatch.setattr(template_module, "SOURCE_ROOT", source_root)
+    monkeypatch.setattr(template_module, "RAW_TABLES", {})
+    monkeypatch.setattr(template_module, "ANALYSIS_TABLES", {})
+    monkeypatch.setattr(template_module, "build_placeholder_registry", lambda: [one_entry])
+    output = tmp_path / "release"
+    template_module.package_release(output)
+
+    session = next((output / "01_collection_raw/raw/drivers/D01/sessions").iterdir())
+    assert session.name == one_entry["session_id"]
+    assert sorted(path.name for path in session.iterdir()) == sorted(
+        template_module.REQUIRED_LOGS
+    )
+    with (session / "vehicle_trajectory.log").open(encoding="utf-8") as handle:
+        rewritten = json.loads(handle.readline())["value"]["value"][0]
+    assert rewritten["id"] == one_entry["vehicle_id"]
+    assert rewritten["name"] == one_entry["vehicle_name"]
+    assert template_module._scan_forbidden_payload(output) == []
+    inventory = pd.read_csv(output / "00_control/file_inventory.csv")
+    actual = {
+        path.relative_to(output).as_posix()
+        for path in template_module._managed_files(output)
+    }
+    assert set(inventory.relative_path) == actual
 
 
 def test_production_mode_fails_closed_without_reading_payload(tmp_path) -> None:

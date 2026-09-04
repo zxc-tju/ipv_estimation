@@ -18,5 +18,7 @@
   `data/derived/rq029_human_synthetic_release/v1/`。
 - 真实导入前的模板包：`data/derived/rq029_human_template/v1/`；它保留占位符注册表、
   补录字段合同和模板级验证结果，供后续填充脚本直接替换真实采集信息。
+- 模板包整理、上海实际值清单与填充脚本合同：
+  `RQ029_6_template_release_20260904/`。
 - 当前推荐的本地大型数据：
   `data/derived/rq029_human_synthetic_microdata/v2_paper_aligned/`；v1 保留用于对照。

@@ -1,0 +1,68 @@
+{
+  "schema_version": "RQ029-paper-claim-parity-audit-v1",
+  "run_id": "RQ029_4_paper_claim_parity_audit_20260904",
+  "completed_at": "2026-09-04T10:54:39+08:00",
+  "verified_at": "2026-09-04T11:02:30+08:00",
+  "git_head_at_execution": "4e019ab2b05f",
+  "paper_commit_observed": "938b77669663",
+  "status": "PASS_WITH_BOUNDARY",
+  "data_status": "SYNTHETIC_NOT_OBSERVED",
+  "conclusion": "POINT_ESTIMATES_EXACT / INTERVALS_PARTIAL / RAW_EMERGENT_MISMATCH / FULL_DISTRIBUTION_NOT_IDENTIFIABLE",
+  "comparison_rows": 28,
+  "status_counts": {
+    "EXACT": 18,
+    "WITHIN_PRINTED_PRECISION": 3,
+    "WITHIN_TOLERANCE_NOT_EXACT": 4,
+    "CLEAR_MISMATCH": 1,
+    "NOT_IDENTIFIABLE": 2
+  },
+  "raw_status_counts": {
+    "CLEAR_MISMATCH": 10,
+    "NOT_IDENTIFIABLE": 2
+  },
+  "safe_repair": {
+    "paper_claim_match_status": "POINT_ESTIMATES_EXACT_INTERVALS_PARTIAL",
+    "raw_emergent_match_status": "NOT_MATCHED_AND_NOT_CLAIMED",
+    "full_distribution_match_claimed": false,
+    "value_level_v3_generated": false
+  },
+  "validation": {
+    "hard_checks_passed": 55,
+    "hard_checks_total": 55,
+    "soft_intervals_within_tolerance": 4,
+    "soft_intervals_total": 5,
+    "notebook_code_cells": 5,
+    "notebook_error_cells": 0,
+    "targeted_tests": "22 passed, 15 dependency deprecation warnings",
+    "independent_verifier": "PASS",
+    "independent_code_review": "APPROVE",
+    "summary_overclaim_tamper": "FAIL as required"
+  },
+  "environment_change": {
+    "scope": "user Python 3.9 notebook tooling only",
+    "installed": ["nbformat", "nbclient", "ipykernel"],
+    "project_requirements_changed": false
+  },
+  "protected_reads": {
+    "rq007_held_out": false,
+    "rq014_blinded_fields": false
+  },
+  "paper_repository_modified": false,
+  "sha256": {
+    "calibrator": "70274b737bede0c5736bb451a8de3495ec174b710dbc9164ef674da108dd1968",
+    "validator": "8367b322ecdacb2fd6b85cbfeb5cf5748b7c3d5e9e7dd14b7636979429808b1e",
+    "tests": "785459ee9716504a1e16e820a127089863a17110afa9b70499a916dad8005348",
+    "manifest": "fb7bf76e2ad389fc51cce2f0ec5121f4760e41b5f1a75defcc474bd08083e17d",
+    "achieved_summary": "65f21de58a39bd1f79f350d8a3b193af5f1cfba0de0f282080d5c82fc88d87d4",
+    "validation_summary": "fc4b6332242587bd41609ec5bab6cfafc1805b0835b4fbdf501a0e74ef5dec83",
+    "notebook": "b78369d6b307a06953fd8d0b5d105b40b2d8b594a35fb351c87a51e5d06a99bf",
+    "comparison_csv": "0ba5d00b077d76e434a1c1922b9e64c62540d7bc4599bee6a4d7ee6cc00d43d2",
+    "summary_json": "0398973eed8ddc01b67109190a33155fbfbb1489583ba7500bc9ffa93541ed5c",
+    "report": "2146b6faa34bd2ef6064e170be2d701620e66e5bfed088adda396235eb656605",
+    "interval_endpoint_gap": "62414704e0407e9e1e9f415cb993b2f3677b6620991a81411d9ae02cdc2ce955",
+    "point_layer_gap": "d3cd2f2b56fc2a5566612394a3048a3b5e4e570d8d998a831675139d67984fc4",
+    "chart_map": "b753ea3b9c2aa4f8b9e8f5f5cb93262c4a2831d3853a4c85fcae9b268f0bd2c7",
+    "figure": "65684d74336fcd01fbc5b8a3dc961fd0b18a1b6fe65fbe5c752ba2a05f7ead33"
+  },
+  "boundary": "The audit verifies paper-point alignment on calibrated synthetic fields and discloses residual intervals and raw mismatches. It does not recover or represent observed human microdata."
+}

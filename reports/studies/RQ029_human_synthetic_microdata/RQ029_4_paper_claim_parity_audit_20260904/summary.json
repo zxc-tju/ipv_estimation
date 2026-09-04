@@ -1,0 +1,45 @@
+{
+  "paper_commit_observed": "938b77669663",
+  "data_status": "SYNTHETIC_NOT_OBSERVED",
+  "paper_claim_match_status": "POINT_ESTIMATES_EXACT_INTERVALS_PARTIAL",
+  "raw_emergent_match_status": "NOT_MATCHED_AND_NOT_CLAIMED",
+  "full_distribution_match_claimed": false,
+  "comparison_rows": 28,
+  "status_counts": {
+    "EXACT": 18,
+    "WITHIN_TOLERANCE_NOT_EXACT": 4,
+    "WITHIN_PRINTED_PRECISION": 3,
+    "NOT_IDENTIFIABLE": 2,
+    "CLEAR_MISMATCH": 1
+  },
+  "raw_status_counts": {
+    "CLEAR_MISMATCH": 10,
+    "NOT_IDENTIFIABLE": 2
+  },
+  "canonical_intervals": {
+    "alpha90": [
+      0.04221849164014768,
+      0.05850213316040428
+    ],
+    "ego_ttc": [
+      -0.049066921422966564,
+      -0.005454805708783488
+    ],
+    "speed_drop": [
+      1.2454267798541236,
+      2.896203036797316
+    ],
+    "speed_range": [
+      1.1979707095065384,
+      1.8473243377809576
+    ],
+    "braking": [
+      -0.04407604629100153,
+      -0.006309908840301126
+    ]
+  },
+  "conclusion": "POINT_ESTIMATES_EXACT / INTERVALS_PARTIAL / RAW_EMERGENT_MISMATCH / FULL_DISTRIBUTION_NOT_IDENTIFIABLE",
+  "data_value_repair_applied": false,
+  "safe_repair_applied": "fail-closed manifest and validator status fields",
+  "exact_full_match_safe": false
+}
