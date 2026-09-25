@@ -1,6 +1,7 @@
 # RQ Research Program Progress Dashboard
 
 Last synchronized: **2026-06-29**
+
 Scope: `PAPER001/PAPER002` and `RQ001–RQ013`  
 Machine-readable registry: [`rq_progress_registry.csv`](rq_progress_registry.csv)  
 Central plan index: [`../plans/README.md`](../plans/README.md)

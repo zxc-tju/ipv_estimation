@@ -2,7 +2,7 @@
 
 - **2026-09-25 PAPER001 six-figure revision completed locally:** latest remote manuscript/research baselines merged while retaining prior local work. Entry `reports/knowledge/PAPER001_online_sociality_verification_manuscript/figure_revision_20260925/index.html`; compiled `main_revised.pdf` (57 pages), all six main figures plus supporting migrations, 24 main panels source-mapped, no undefined references/citations or overfull boxes. Figure assets/aggregate Source Data are installed in the separate paper repository; no new research computation or participant-level export. Subjective protocol/consent/stimulus-version and sharing gaps remain open. No push performed.
 
-Last reviewed: 2026-09-04.
+Last reviewed: 2026-09-14 (RQ028 source mapping update; other sections not re-audited).
 
 Use this file as the first stop for a new agent thread. Keep durable policy in
 `AGENTS.md`, architecture notes in `PROJECT_STRUCTURE.md`, and the compact research
@@ -12,19 +12,29 @@ question index in `STUDIES.md`.
 
 - **【2026-08-28 RQ027 已由 PI 最终裁定为 `CLOSED_BY_PI_SCOPE_DECISION`：独立生成器 pilot 的 `PILOT_NO_GO` 作为跨模型数值迁移边界保留；当前 NMI 手稿不再推进新的 recovery 研究，改为引用已发表 T-ITS 工作中受控 VGIM 条件下的 IPV identification，并将 estimator 作为冻结方法组件。禁止在 RQ027 内继续 S2、sealed 扩展或调门重跑。正式裁决：`reports/knowledge/RQ027_known_truth_ipv_recovery/decision.md`。】**
 
-- **【2026-09-04 RQ028 三层参考模板已改为中性路径和真实格式占位，但仍不是实测数据。】** 当前模板根目录为 `data/derived/rq028_subjective_experiment/reference_dataset_v1/`：保留 raw / manuscript tables / evidence tables 三层，包含 40 人、20 对、40 个 session、680 个 trial（670 completed / 10 aborted）、1,192 行 segment-level 和 239,592 行 moment-level 参考结构。数据集 819/819 个目录均有 README 明确披露全部为合成模板；除 README 外的路径、CSV/JSON 和两个 Excel 内部 XML 禁用标记 0 命中。占位替换合同已定义 11 个替换/重建组，路径级清单 2,759 行，全包验证 `25/25 PASS`；17 个 workbook sheets 逐页视觉检查通过。报告：`reports/studies/RQ028_invehicle_replay_perception/RQ028_0d_reference_template_20260904/REPORT.md`。**真实 RQ028 受试者、时间/天气、设备人员、问卷、trial 结局和冻结 run 映射仍待采集/填充；第二、三层必须从真实 raw 重算，不得保留参考结果。**
+- 2026-09-07：按用户要求归档的独立研究已退出本目录的活动索引、测试及启动入口；归档文件夹内保留原目录结构、说明、迁移清单与缺失项记录。
 
-- **【2026-09-04 RQ029 模板包已重建并通过 74/74 校验。】** 当前可写入模板入口为 `data/derived/rq029_human_template/v1/`：20 drivers、300 runs、81,880 frames；包内除根 `README.md` 外无 `synthetic` 路径或内容命中；四类日志均为 20/20 唯一哈希，去除 ego/时间/身份后背景运动与源一致；`placeholder_registry.csv`、`required_real_collection_fields.csv` 与 `import_contract.json` 已列出待补信息。全部 RQ029 专项回归 `29 passed`，独立数据复算 PASS，代码复审 APPROVE；`--replace` 遇未登记或已修改文件会拒绝删除。报告：`reports/studies/RQ029_human_synthetic_microdata/RQ029_6_template_release_20260904/REPORT.md`。**硬边界**：这是模板壳，不是实测数据；真实导入前必须替换全流日志、确认场景映射并在真实行级数据上重算分析，不能只换 ID。**
+- **2026-09-07 RQ028 风险复核更新：实测验证主张暂缓。** 当前接收快照仍为 `data/derived/rq028_received_20260907/RQ028_complete_package_20260905.zip`（SHA256 `52aac110ad66f9813969aead6fad1e86d149d6f56e36108a1384bc3e3f13fab7`），40人/20对、90片段、596完成回放/1192评分。初轮H1/H2数值可复算，但不能据此称实测效度已验证：1360/1360个actual_traj文件13数值列与固定种子公式逐值一致；596/596正式monitor_replayed与旧参考核验成员哈希一致；W固定于order_index=5/8/11/14/17，flagged与位置完全绑定，加入位置分类项后H1和两个E2不可识别。共同9场景AV来源敏感性CI [-0.0189,1.6865]，不再称两来源均稳健验证。未据此认定全部问卷/旋钮为生成或实验从未实施。当前报告 `reports/studies/RQ028_invehicle_replay_perception/RQ028_20260907_subjective_claim_analysis/report.html`，最新风险层 `risk_summary.json`/`risk_findings.csv`；复算与来源审查 `archived/report_process/RQ028_20260907_subjective_claim_analysis/risk_audit/`。待取得原始采集导出、标准化脚本、真实呈现日志和冻结监测器执行记录后再判断实测主张。原ZIP及数值不改，未形成accepted decision。
 
-- **【2026-09-04 RQ029 已整理为两层完整释放包，第三层未定义故未擅自创建。】** 入口为 `data/derived/rq029_human_synthetic_release/v1/`：`01_collection_shaped_raw/` 含 100 个采集形态 synthetic raw 文件、300 runs 与 81,880 帧轨迹，不混入 band/calibrated/claim 分析表；`02_analysis_and_paper_support/` 再分为真实聚合权威依据、合成分析演练、审计链和核心结果/证据映射。只有 `human_arm_data.json`、`av_reference_values.json`和 `RQ022_decision.md` 标记为 `DIRECT_SUPPORT`；论文目标合同为 `CALIBRATION_CONTRACT_NOT_EVIDENCE`，所有 synthetic 表为 rehearsal/QA/边界证据。完整包 161 个当前文件，155 条哈希清单，逻辑字节约 1.850 GB；raw/shared logs 实际记录为 `apfs_clone`且 100/100 非硬链接，`MANIFEST.sha256` 与 inventory 双向一致，深度验证 `33/33 PASS`，专项测试 `4 passed`。正式报告：`reports/studies/RQ029_human_synthetic_microdata/RQ029_5_layered_release_20260904/REPORT.md`。**硬边界**：Layer 1 只是采集形态合成代理，不是真实受试者采集；Layer 2 中的 synthetic 分析不得作为论文独立实证支撑。】**
+- **RQ028 数据正确性补查（2026-09-07）**：时刻表gap_hull_m全239592行、ttc_s的238400/239592行不同于同刻源监测值，二者都被片段常量填满；90/90片段的min_gap/min_ttc也非所附明细极值；596/596 cp横向RMS与lat_err直接重算（同3位精度）不同。G3的190/191不能由删除t=20解释，C类名义burst_n与网格计数相差1须分开。具体样例与字段见RQ028报告目录 `DATA_CORRECTNESS.md`、`data_correctness_examples.csv`，核对脚本在过程目录 `risk_audit/correctness/`；仅说明正确性，不把样本或文档不足混作数值错误。
 
-- **【2026-09-04 RQ028 40人合成数据已整理成三层交接包。】** 当前交接根目录为 `data/derived/rq028_subjective_synthetic/v2_40p_natural_handoff/`：第一层是31,829,952-byte原始压缩包、5,265文件清单与SHA-256；第二层是12张论文写作/QC/描述统计/图面板Source Data CSV及 `RQ028_manuscript_support_tables.xlsx`；第三层是12条claim-indexed核心结果、claim register、7条解释边界及 `RQ028_core_evidence_tables.xlsx`。H3图源已统一为−3至+3 s、0.1 s网格的122行。交接验证 `12/12 PASS`，两个工作簿逐sheet视觉检查通过、公式错误0、XLSX结构无错误。报告：`reports/studies/RQ028_invehicle_replay_perception/RQ028_0c_three_layer_data_handoff_20260904/REPORT.md`。**所有层仍为合成参考；核心表全部标记 `SYNTHETIC_ONLY_NOT_CITABLE`。】**
+- **2026-09-14 RQ028 AV A12 源窗口恢复（未冻结）**：最新私有归集版 `data/derived/rq028_av_source_mapping/v4_20260914_AV_A12缺测保留/` 保留 56 个 S→56 个源 run，将 S473 改配回原普查表中 T17/B3 的完整 A 窗口；正式 AV 为 A12/C18/W15，55 个其他片段与 v3 逐字节一致。S473 的 220 个 AV 原始事件齐全，但第 251 帧缺指定交互车；双车实测 219/220，未补零、复制或插值。该源窗口还有 19 处 AV 相邻时间间隔 >150 ms、最大 252 ms，原始时间跨度 24.132 s 比名义 21.9 s 长 2.232 s；150 ms 是前版临时筛选偏好而非冻结类别定义。全包名义源帧 11,345、实有双车 11,344、AV 原始事件 11,345。故 A 类源候选恢复为 12，但双车逐帧完整的 A 片段仍仅 11，不能称为已可回放的 12 段或冻结实验池。v2 的北京 6937→T18 来源裁决和用户确认的北京等效性保持；每场景每层≤5 按 AV/人类臂分别计数，AV 正式各场景/层最大 4；安全/运动学及实车 G3 不在归集层执行。人类 A 配对和正式实验池冻结仍未完成，旧主观响应不能沿用到重配后的 S 编号。
 
-- **【2026-09-04 RQ028 40人自然效应参考与研究方案已同步到 draft v0.6；正式实验仍未开始。】** `v2_40p_natural` 保持 90 个正式片段（W/A/C=`30/24/36`）与 12 个 AV-A/human-A 匹配组，含 40 名受试者、20 对、40 个 session、600 次正式物理回放、1,200 条正式评分和 241,200 行 10 Hz 时刻级数据；draft v0.6 已正式写入区组使用次数 `7/7/7/7/6/6` 的平衡不完全轮转、奇偶 pair 车辆角色轮换、每臂 A12+C18、评分前密封的 E4 match sets、第10对盲态健康检查及40人功效模拟网格。自然效应健康检查为 H1 `0.643`（Holm p=`0.00037`）、H3 `0.526 SD`（p=`0.00017`）、H1a/H1c/H2 p=`0.01898/0.00066/0.00477`、E3 `rho=0.240, p=0.06446`，E4 三项 CI 均跨0；验证 `63/63 PASS`、专项测试 `6 passed`，旧24人强效应 v1 保留。计划：`reports/plans/RQ028_plan_v0_6_invehicle_replay_perception_20260904.md`；schema：`reports/plans/RQ028_data_schema_v0_6_20260904.md`；数据：`data/derived/rq028_subjective_synthetic/v2_40p_natural/`。**硬边界**：v0.6 仍未冻结、未预注册、未过伦理；合成数据不能证明真实构念效度或 AV–human 等效，无 accepted claim。】**
+- **2026-09-14 RQ028 S473 第 12 段回放修复试案（未放行）**：`data/derived/rq028_av_source_mapping/v5_20260914_S473真实时间窗插值候选/` 单独保留 v4 原始层，在缺测的第 251 帧只做一处明确标记的交互车线性插值；按 A 突发首末真实时间戳各留 10 s 后裁出 21.891 s 窗口、220 个 10 Hz 派生样本。冻结监测输入复核为可判 64、下界越界 9、上界越界 0，A 类仍成立。交互车 26/220 个样本加速度超过 v0.6 暂定 3 m/s²，最大 14.65 m/s²，故不是可直接上车的第 12 段；须先做有界平滑/车辆能力核定，再经过移植、P1 与 G3，失败则按方案两臂 A 同降至 11。v4 原始 56 段映射与源文件未改，v5 文件不得当作实测坐标或控制指令。
 
-- **【2026-09-04 RQ029 上海 20×15 合成人类轨迹已完成连续性与论文 claim parity 双重审计，仍不是实测数据。】** 当前推荐包为 `data/derived/rq029_human_synthetic_microdata/v2_paper_aligned/`。论文对齐状态已 fail-closed 为 `POINT_ESTIMATES_EXACT / INTERVALS_PARTIAL / RAW_EMERGENT_MISMATCH / FULL_DISTRIBUTION_NOT_IDENTIFIABLE`：28 项检查中 18 项 calibrated 点/硬计数精确一致、3 项在论文展示精度上一致、4 组 CI 仅在事前容差内、1 项 alpha90 CI 明确不匹配、2 项真实聚类/全分布不可识别；raw 层另有 10 项明确差异。当前验证 `55/55` 硬检查 PASS、4/5 软区间进容差，回归 `22 passed`；manifest 和 summary 任一层篡改为 FULL_MATCH 都会 FAIL。未生成过拟合 v3：alpha90 CI 为 `[0.042218,0.058502]` 对论文 `[0.034,0.055]`，强行追匹配会制造空 run/过度集中并过拟合固定 bootstrap realization。轨迹连续性为 `PASS_WITH_CAVEATS`：300 runs / 81,880 帧中 frame gap、非正 dt、step>5m、弧长回退均 `0/300`；但 dt `0.101–0.125s` 非严格 10Hz，高 jerk 峰值集中固定曲率段。v1/v2 的 12 个主车 motion 列逐行相同，v2 微调的是统计结构而非轨迹。**硬边界**：只有 `_calibrated` 层已报告点估计可直接用于合成接口演示；raw 轨迹指标、真实个体效应、真实 186-case 映射和全分布不得声称匹配。轨迹审计：`reports/studies/RQ029_human_synthetic_microdata/RQ029_3_trajectory_continuity_audit_20260904/REPORT.md`；claim 逐项对齐：`reports/studies/RQ029_human_synthetic_microdata/RQ029_4_paper_claim_parity_audit_20260904/REPORT.md`。】**
+- **2026-09-14 RQ028 S473 均匀有界平滑（最新工程候选，未放行）**：`data/derived/rq028_av_source_mapping/v6_20260914_S473均匀有界平滑候选/` 在 v5 单点插值后只改交互车参考位置，主车与原始层不改；全段统一权重、首末位置固定，不按 A 类标记特调。220 样本最大二阶差分加速度 2.95 m/s²、超过方案暂定 3 m/s² 为 0/220；最大相对 v5 位置改动 0.407 m（原 A 突发时段 0.242 m），最大速度向量改动 2.370 m/s。`0.5 m` 位置改动上限是本版内部审阅假设，非批准容差；车辆速度/曲率能力、车体安全、北京→上海移植、P1 与 G3 均未通过/未执行，不能作为可直接上车的第 12 段。v4 A12 仍只表示来源分类候选，最终池须以后续物理/裁决门限为准。
 
-- **【2026-09-02 主观实验应用仅为本地原型，未放行正式采集。】** 入口为 `sociality_subjective_experiment/`；它只负责视频呈现、平衡随机化和匿名作答采集，不计算 IPV 或越界标签。当前配置仍是 18 个占位刺激、正式视频 0 个、`ALLOW_PLACEHOLDER_TRIALS=1`；隔离环境下文件清单校验通过、`pytest -q` 为 `3 passed`。代码入库**不能证明**伦理审批、PI 放行、刺激冻结或正式采集已完成；正式采集前必须替换 `ADMIN_KEY`、将 `ALLOW_PLACEHOLDER_TRIALS=0`、确认缺少视频为 0，并另行建立研究计划/数据合同。
+- **2026-09-14 RQ028 AV 轨迹人工审核整包（最新交付，非冻结池）**：`data/derived/rq028_av_source_mapping/v7_20260914_AV轨迹人工审核整包/RQ028_AV_trajectory_review_v7_20260914.zip` 为独立内部审核包，SHA-256 `db859af6cd03dbf7d2cac5202b1507b53dd085a8c5c12f460512c9750caf936e`，14,022,198 bytes。包内 56 S→56 源 run，正式 A12/C18/W15、备用 C5/W5、练习 C1；55 段当前轨迹与 v4 逐字节相同，S473 当前轨迹与 v6 逐字节相同并保留 v4 原始观测及 v5 插值来源。当前轨迹共 11,345 行，原始事件共 11,345 行；233 条包内 SHA 清单与 ZIP 中 234 文件逐项核对通过，所有当前轨迹时间严格递增且双车坐标有限。仅一份数据包根 README，含完整目录与派生说明；包内没有人类臂或旧主观评分，含内部源时间戳/路径，不可直接公开，也不是物理/G3 放行。
+
+
+
+
+
+
+
+
+
+
 
 
 - **【2026-08-28 RQ026 最新 checkpoint：repair15_split_full 已完成独立验证并 PASS（`py_compile` PASS，`pytest -q` 11 passed，`full_exact_aggregator.py --validate-only` PASS，真实 frozen root `data/derived/rq017_onsite_gate/l1_v1` 本地渲染 PASS）；渲染结果确认 `136` 个 shard、`67,861` 行、首 shard `full_0001=500`、末 shard `full_0136=361`，Stage1/Stage2 两个 array 仍是 `0-135` 且当前 fail-closed 并发为 `1`，Stage2 依赖 `afterok:${stage1_job_id}`；P0/P1=0，P2 仅为 `REMOTE_PREFLIGHT.json` 缺少 `recommended_array_concurrency`，因此 live preflight 前需要 leader lane 用新值覆盖 `%1`。formal pilot 仍为 PASS，full package 现已可进入 live preflight / HPC staging，但本机尚未执行实际 Slurm 提交。】**
@@ -1857,7 +1867,6 @@ These review packets are evidence-boundary reviews, not accepted
 
 - Launcher checks: `python3 -m unittest tests.test_shortcut_scripts -q`.
 - Broader suite when available: `python -m pytest tests -q`.
-- Subjective-experiment prototype: `cd sociality_subjective_experiment && .venv/bin/python -m pytest -q`; local start instructions are in `sociality_subjective_experiment/README.md`.
 - Syntax check:
   `python -m py_compile src/sociality_estimation/core/agent.py src/sociality_estimation/core/ipv_estimation.py src/sociality_estimation/planning/Lattice.py src/sociality_estimation/planning/lattice_planner.py src/sociality_estimation/planning/utility.py pipelines/interhub/process_interhub.py pipelines/simulation/simulator.py`.
 - One-case InterHub smoke:

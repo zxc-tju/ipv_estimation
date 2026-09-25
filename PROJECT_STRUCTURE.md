@@ -42,7 +42,6 @@
 ├─ models/rq009_m3/            # Git 同步的冻结 M3 scorer、contract 与 SHA manifest
 ├─ configs/                    # 版本化实验参数 profile
 ├─ environments/               # estimator/verifier 分离环境锁
-├─ sociality_subjective_experiment/ # 主观评价实验本地原型（独立 FastAPI/SQLite 应用）
 ├─ archived/
 │  ├─ compat_wrappers_20260619 # 已归档的旧根入口/旧 tools 兼容层
 │  └─ legacy_scripts/          # 旧版数据脚本归档
@@ -146,26 +145,6 @@ python pipelines/interhub/process_interhub.py --csv <input.csv> --pkl-root <pkl_
   - T-intersection、ramp merge、NDS 分析入口函数
 
 注意：该模块仍引用外部 `NDS_analysis`，当前仓库快照不包含该模块；直接运行相关仿真入口可能失败。这是迁移前已有风险。
-
-### 3.6 主观实验原型
-
-- `sociality_subjective_experiment/` 是独立的 FastAPI/SQLite 本地原型，用于成对选择和单片段主观评分。
-- 它只负责呈现、平衡随机化和匿名作答采集，不计算 IPV、参照区间或越界方向。
-- 应用有独立的 `requirements.txt`、`MANIFEST.sha256` 和测试；数据库、上传视频、`.env`、虚拟环境与缓存均不入库。
-- 当前默认配置仍包含占位刺激且没有正式视频；代码入库不等于伦理审批、PI 放行或正式采集已经完成。
-
-本地验证与启动：
-
-```bash
-cd sociality_subjective_experiment
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python -m pytest -q
-cp .env.example .env  # 先替换 ADMIN_KEY
-./start.sh
-```
-
----
 
 ## 4. 核心对象与职责
 

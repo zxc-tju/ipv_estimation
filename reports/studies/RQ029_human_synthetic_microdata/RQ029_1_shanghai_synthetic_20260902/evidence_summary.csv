@@ -1,7 +1,0 @@
-evidence_id,claim,status,evidence_path,scope_boundary
-RQ029-E1,"20 drivers x 15 Shanghai scenarios produce 300 unique runs",DIRECT,"data/derived/rq029_human_synthetic_microdata/v1/tables/runs.csv","synthetic structure only"
-RQ029-E2,"Background replay motion equals Shanghai T11 source",DIRECT,"data/derived/rq029_human_synthetic_microdata/v1/validation/checks.csv","simulation byte identity and non-ego semantic identity"
-RQ029-E3,"Synthetic ego stays on source path with small speed variation",DIRECT,"data/derived/rq029_human_synthetic_microdata/v1/tables/ego_warp_metrics.csv","generated kinematics; not observed humans"
-RQ029-E4,"Known RQ022 counts and calibrated marginal signatures are reproduced",DIRECT,"data/derived/rq029_human_synthetic_microdata/v1/tables/achieved_summary.json","by construction; not independent verification"
-RQ029-E5,"Synthetic bootstrap preserves the recorded directional/null decisions",DIRECT,"data/derived/rq029_human_synthetic_microdata/v1/validation/validation_summary.json","interval values differ because real dependence is unidentified"
-RQ029-E6,"The package cannot recover real human joint distributions or true IPV outputs",BOUNDARY,"data/derived/rq029_human_synthetic_microdata/v1/manifest.json","SYNTHETIC_NOT_OBSERVED"

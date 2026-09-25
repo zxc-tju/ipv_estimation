@@ -1,7 +1,0 @@
-evidence_id,claim,status,evidence_path,scope_boundary
-RQ029-LR-E1,"Layer 1 contains 100 source-identical raw files and 81,880 normalized trajectory rows",DIRECT,"data/derived/rq029_human_synthetic_release/v1/00_metadata/validation_summary.json","Synthetic collection shape only"
-RQ029-LR-E2,"Layer 1 excludes candidate, counterpart, and achieved-summary analysis tables",DIRECT,"data/derived/rq029_human_synthetic_release/v1/00_metadata/validation_checks.csv","Prevents raw/analysis layer mixing"
-RQ029-LR-E3,"Layer 2 separates REAL_VERIFIED aggregate authorities from synthetic rehearsal tables",DIRECT,"data/derived/rq029_human_synthetic_release/v1/02_analysis_and_paper_support/README.md","Only authoritative subdirectory can directly support paper claims"
-RQ029-LR-E4,"No synthetic artifact is classified as DIRECT_SUPPORT",DIRECT,"data/derived/rq029_human_synthetic_release/v1/02_analysis_and_paper_support/04_core_results/claim_evidence_map.csv","Synthetic results remain rehearsal or QA"
-RQ029-LR-E5,"The release passes all deep file, hash, schema, layer, and evidence-authority checks",DIRECT,"data/derived/rq029_human_synthetic_release/v1/00_metadata/VALIDATION_REPORT.md","28/28 checks"
-RQ029-LR-E6,"A third data layer was not inferred because the user defined only two",BOUNDARY,"data/derived/rq029_human_synthetic_release/v1/release_manifest.json","third_layer_status=NOT_SPECIFIED_BY_USER"
