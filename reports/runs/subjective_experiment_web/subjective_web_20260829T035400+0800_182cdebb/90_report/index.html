@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主观评价实验网页系统 · 开发与验收报告</title>
+<style>
+:root{--ink:#172033;--muted:#667085;--line:#d8dee9;--panel:#fff;--bg:#f4f7fb;--blue:#315aa6;--pale:#eaf0fb;--green:#16794b;--amber:#9a6700}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.65}.wrap{max-width:1120px;margin:auto;padding:40px 24px 72px}.hero{background:linear-gradient(135deg,#17365d,#315aa6);color:white;padding:38px 42px;border-radius:18px;box-shadow:0 18px 45px rgba(23,54,93,.18)}h1{margin:0 0 8px;font-size:32px}.hero p{margin:4px 0;color:#eaf0fb}.status{display:inline-block;margin-top:18px;padding:7px 12px;border-radius:999px;background:#dff6e8;color:#11643e;font-weight:700}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:22px 0}.kpi,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(23,32,51,.05)}.kpi{padding:20px}.kpi strong{display:block;font-size:22px;color:var(--blue)}.kpi span{color:var(--muted)}.card{padding:26px;margin-top:18px}h2{font-size:22px;margin:0 0 14px}h3{font-size:17px;margin:22px 0 8px}.flow{display:grid;grid-template-columns:repeat(9,minmax(95px,1fr));gap:8px;overflow:auto}.step{background:var(--pale);padding:12px;border-radius:10px;text-align:center;font-size:13px;min-width:105px}.step b{display:block;color:var(--blue);margin-bottom:5px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}th{background:#eef3fa}.pass{color:var(--green);font-weight:700}.gate{color:var(--amber);font-weight:700}code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}pre{background:#111827;color:#e5e7eb;padding:16px;border-radius:10px;overflow:auto}a{color:var(--blue)}ul{margin:8px 0;padding-left:22px}.note{border-left:4px solid var(--blue);background:#f3f6fc;padding:14px 16px}.footer{margin-top:26px;color:var(--muted);font-size:13px}@media(max-width:800px){.grid{grid-template-columns:1fr}.hero{padding:28px}.flow{grid-template-columns:repeat(9,120px)}}@media print{body{background:white}.wrap{max-width:none;padding:0}.hero,.card,.kpi{box-shadow:none}.hero{background:#17365d!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body><main class="wrap">
+<section class="hero">
+<h1>主观评价实验网页系统</h1>
+<p>开发、测试与交付验收报告</p>
+<p>RUN_ID: subjective_web_20260829T035400+0800_182cdebb</p>
+<span class="status">PASS · 可进入真实材料配置阶段</span>
+</section>
+
+<section class="grid">
+<div class="kpi"><strong>2 × 3</strong><span>Human/AV × 区间内/两侧区间外</span></div>
+<div class="kpi"><strong>12 + 18</strong><span>正式配置示例：成对选择 + 单片段评价</span></div>
+<div class="kpi"><strong>7/7 PASS</strong><span>语法、配置、流程、盲法、媒体、导出、HTTP</span></div>
+</section>
+
+<section class="card">
+<h2>1. 系统定位</h2>
+<p>系统用于收集前瞻性人类主观判断，验证 <b>conditional social atypicality → human dispreference</b>。IPV 和人类参考区间由上游冻结流程生成；网页只读取匿名刺激清单并采集评价。</p>
+<div class="note">参与者页面不接收 Human/AV 来源、区间内外判定、偏离方向、偏离幅度、系统编号或驾驶员编号。</div>
+</section>
+
+<section class="card">
+<h2>2. 单次实验流程</h2>
+<div class="flow">
+<div class="step"><b>1</b>创建匿名会话</div><div class="step"><b>2</b>知情同意</div><div class="step"><b>3</b>持照筛查</div><div class="step"><b>4</b>背景信息</div><div class="step"><b>5</b>说明与练习</div><div class="step"><b>6</b>Pairwise</div><div class="step"><b>7</b>休息</div><div class="step"><b>8</b>Single-clip</div><div class="step"><b>9</b>事后问卷与完成码</div>
+</div>
+<h3>Pairwise trial</h3>
+<p>顺序播放 A、B 两段同场景视频，允许一次完整重播；收集 A / B / 无明显偏好和 1–5 分置信度。两段视频必须属于同一 <code>matched_set_id</code>。</p>
+<h3>Single-clip trial</h3>
+<p>收集 7 个独立的 1–7 分评价：可接受性、互动舒适度、可预测性、对另一方的调整负担、感知不安全、过度激进、过度谨慎。可接受性、安全感和互动负担不会被合并。</p>
+</section>
+
+<section class="card">
+<h2>3. 数据与审计</h2>
+<table><thead><tr><th>层级</th><th>主要内容</th></tr></thead><tbody>
+<tr><td>Participant / Session</td><td>匿名编号、同意版本、筛查结果、背景信息、开始/结束与完成状态</td></tr>
+<tr><td>Trial</td><td>顺序、类型、刺激 ID、开始/提交时间、播放完成、重播次数、响应时长</td></tr>
+<tr><td>Pairwise response</td><td>原始 A/B/无偏好、映射后的首选刺激、置信度</td></tr>
+<tr><td>Single response</td><td>七项 1–7 分评价和可选开放理由</td></tr>
+<tr><td>Event log</td><td>页面可见性、播放/暂停/结束、视频错误、重播与页面卸载</td></tr>
+<tr><td>Hidden manifest</td><td>来源、verdict、side、偏离幅度与质量门，仅管理员导出可见</td></tr>
+</tbody></table>
+<p>数据保存在 SQLite，启用 WAL；管理员可导出 participants、sessions、trials、pairwise、single、events 六类 CSV，以及包含冻结配置和刺激清单的完整 JSON。</p>
+</section>
+
+<section class="card">
+<h2>4. 验收结果</h2>
+<table><thead><tr><th>检查</th><th>状态</th><th>证据</th></tr></thead><tbody>
+<tr><td>JavaScript syntax</td><td class="pass">PASS</td><td><code>npm run check</code></td></tr>
+<tr><td>Study / stimulus configuration</td><td class="pass">PASS</td><td><code>npm run validate</code></td></tr>
+<tr><td>完整参与者流程</td><td class="pass">PASS</td><td>从开始、同意、筛查、练习、全部 trial 到完成码</td></tr>
+<tr><td>隐藏条件泄漏检查</td><td class="pass">PASS</td><td>参与者 HTML 不含来源、verdict、side、偏离幅度字段</td></tr>
+<tr><td>Demo media 与路径检查</td><td class="pass">PASS</td><td>全部配置刺激可读取</td></tr>
+<tr><td>管理员 CSV / JSON 导出</td><td class="pass">PASS</td><td>受保护导出端点完成测试</td></tr>
+<tr><td>HTTP health / landing smoke</td><td class="pass">PASS</td><td><code>/health</code> 与首页真实服务检查</td></tr>
+<tr><td>Pull request 与 main CI</td><td class="pass">PASS</td><td>PR #54；merge commit <code>20202be0...</code></td></tr>
+</tbody></table>
+</section>
+
+<section class="card">
+<h2>5. 正式招募前的六个 Gate</h2>
+<ol>
+<li><span class="gate">PENDING</span> 用匿名、冻结的真实片段替换 demo 视频。</li>
+<li><span class="gate">PENDING</span> 写入伦理审批版本的知情同意、筛查、退出和去盲文本。</li>
+<li><span class="gate">PENDING</span> 冻结正式 <code>study.json</code> 与 <code>stimuli.csv</code>，保存哈希和版本。</li>
+<li><span class="gate">PENDING</span> 配置独立的 secret key 与 admin token。</li>
+<li><span class="gate">PENDING</span> 使用 HTTPS 和有备份的持久化数据库卷部署。</li>
+<li><span class="gate">PENDING</span> 完成真实电脑、浏览器、网络和完整视频时长的 pilot。</li>
+</ol>
+</section>
+
+<section class="card">
+<h2>6. 运行与复现</h2>
+<pre>cd apps/subjective_experiment_web
+npm run check
+npm run validate
+npm test
+cp .env.example .env
+npm start</pre>
+<p>Docker：</p>
+<pre>cd apps/subjective_experiment_web
+docker compose up --build</pre>
+<p><a href="../../../../../apps/subjective_experiment_web/README.md">应用 README</a> · <a href="../../../../../apps/subjective_experiment_web/SECURITY.md">安全与数据边界</a> · <a href="../00_meta/run_manifest.json">Run manifest</a> · <a href="../00_meta/artifact_index.csv">Artifact index</a> · <a href="../00_meta/spec_snapshot.md">冻结规格</a></p>
+</section>
+
+<p class="footer">Generated 2026-08-29 · This report is self-contained and can be opened offline from the repository.</p>
+</main></body></html>

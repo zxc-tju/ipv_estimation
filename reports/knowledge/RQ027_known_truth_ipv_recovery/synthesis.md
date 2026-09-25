@@ -1,33 +1,25 @@
 # RQ027 Synthesis
 
-Status: `PILOT_NO_GO / AWAITING PI ACCEPTANCE`
+Status: `CLOSED / PI ACCEPTED`
 
-## Problem and stage
+## Final ruling
 
-RQ027 tests whether the frozen IPV estimator recovers a simulation-controlled target IPV when the generator does not share its planner, search, cost implementation or likelihood, and whether candidate concentration supports selective abstention. The development-only `240 interactive + 48 negative-control` feasibility pilot is complete; no sealed test was opened.
+The development-only `240 interactive + 48 negative-control` feasibility pilot completed and independently reproduced `PILOT_NO_GO` for the frozen estimator under the independent-generator contract. The execution record remains unchanged.
 
-## What the reports establish
+The PI has ended this RQ. The current manuscript will not present cross-model known-truth recovery as a new contribution. It will cite the published T-ITS validation of IPV identification in controlled VGIM interactions and treat the estimator as a fixed measurement component of the human-reference monitor.
 
-- Engineering execution completed: `288/288` runs, `0/288` engineering failures, `0/288` duplicate IDs and `0/3,456` non-finite primary frames.
+## Evidence retained in the research record
+
+- `288/288` scheduled runs completed with no engineering failure.
 - Persistent opportunity-aware readings existed for `215/240` interactive runs.
-- Accepted-run MAE was `0.553907 rad`, not better than the same-run zero predictor (`0.553432 rad`); Spearman was `0.214511`.
-- `q_eff` versus absolute error Spearman was `-0.124207`; the fixed concentration policy raised frame MAE from `0.586513` to `0.597503 rad`.
-- Negative-control persistent false acceptance was `35/48=72.9167%`, with every control family above `58%`.
-- Independent recomputation matched the executor summary and returned `validation_status=PASS`.
+- Accepted-run MAE was `0.553907 rad`, compared with `0.553432 rad` for the same-run zero predictor.
+- Candidate concentration did not select lower-error frames in this pilot.
+- Negative-control persistent concentration acceptance was `35/48`.
 
-## What the reports do not establish
+## Scope carried forward
 
-- They do not prove that all possible IPV estimators or generators fail.
-- They do not establish or refute a stable human psychological IPV.
-- They do not change accepted RQ017/RQ018/RQ019/RQ021/RQ024/RQ025 claims.
-- They do not support causal, external-validity, production or deployment language.
-
-## Boundary and action
-
-The evidence directly supports `PILOT_NO_GO` for this frozen estimator/gate under this independent-generator feasibility domain. Per the approved contract, S2, the 3,120/14,040-run expansion and sealed confirmatory testing remain stopped. No retuned rerun is authorized inside RQ027 v0.
-
-## Manuscript-safe language
-
-> In an independent-generator feasibility pilot, the frozen IPV estimator showed weak pooled ordering but did not improve mean absolute recovery error over a zero predictor; its candidate-concentration rule did not reduce error and frequently persisted in negative controls.
-
-This wording remains provisional until PI acceptance; no `decision.md` exists.
+- RQ027 is a bounded cross-model transportability diagnostic.
+- It does not negate the previously published controlled VGIM validation.
+- It does not reopen accepted RQ017+ decisions.
+- No S2, sealed expansion or retuned rerun is authorised.
+- Paper-facing treatment is concise: one main-text citation and a supplementary method note, with no defensive detour.

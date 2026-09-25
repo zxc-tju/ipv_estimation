@@ -1,0 +1,34 @@
+{
+  "source_hashes_unchanged": true,
+  "all_original_rating_values_retained": true,
+  "analysis_rows": 1192,
+  "independent_numerical_check": "30 primary estimates/tests/CIs/Holm;30 common-scenario contrasts;60 source-label estimates match",
+  "figure_qa": {
+    "score": 95,
+    "verdict": "pass",
+    "category_match": true,
+    "differences": [],
+    "suggestions": [],
+    "reasoning": "Both figures visually inspected: titles, panel labels, source counts and confidence intervals are visible without overlap. Original score ranges and pointwise uncertainty are labelled.",
+    "next_actions": [],
+    "reference": "Scientific figure contract; no external reference image",
+    "svg_text_nodes": {
+      "FigS2_common_scenario_check.svg": 35,
+      "FigS1_subjective_ratings.svg": 45
+    },
+    "pdf_check": {
+      "FigS2_common_scenario_check.pdf": {
+        "pages": 1,
+        "width_points": 518.7401733398438,
+        "height_points": 255.11810302734375,
+        "selectable_text": true
+      },
+      "FigS1_subjective_ratings.pdf": {
+        "pages": 1,
+        "width_points": 518.7401733398438,
+        "height_points": 255.11810302734375,
+        "selectable_text": true
+      }
+    }
+  }
+}

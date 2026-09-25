@@ -1382,3 +1382,15 @@ IDENTICAL for all ten figures (pure presentation); collisions mains 6×0, ED 0/0
 compile 0 errors, 46 pp; main.tex untouched this sitting. Old device figures moved to
 figures/_superseded_20260822_shirado/ (hand-delete when reviewed). Round log: paper repo
 results_restructure_20260821.md 第六轮; structure.md dated note at file end.
+
+## 2026-08-28 — Estimator validation moved to the published-method supplement
+
+Paper repository merge: `ff9a4f97d4427741628b65bb62833e9db3394419` (PR #10).
+
+Files changed in the paper repository: `main.tex`, `claims_register.md`, `structure.md`, and `CLAUDE.md`.
+
+Summary: Implemented the final RQ027 scope decision in the manuscript. The trajectory-based IPV estimator is now treated as a previously published method component, supported by Zhao, Sun and Wang, T-ITS 2024. The standalone estimator-validation Results subsection was removed. The main text carries a concise citation and keeps the monitoring framework figure; estimator implementation, interaction-specific diagnostics and episode-summary sensitivity now appear in Supplementary Note 1 and Supplementary Figure S1. Estimator and readability equations were moved into Methods. Candidate concentration is described as an operational readability/candidate-discrimination boundary, while the paper remains centred on the context-conditioned human-reference monitor.
+
+Structure: Results now contain four semantic sections and six main figures. `claims_register.md` and `structure.md` advance to v4.3. RQ027's independent-generator pilot remains in the research repository as a bounded internal diagnostic and is not introduced into the manuscript's frontstage narrative.
+
+Verification: paper PR CI passed source lint, LaTeX compilation, bibliography processing, undefined-reference/citation checks and PDF artifact generation.

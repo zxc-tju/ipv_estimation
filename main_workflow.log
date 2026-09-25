@@ -3670,3 +3670,13 @@ README/工作簿：数据集819/819个目录均有 README，每份都明确说�
 验证：完整深度验证 74/74 PASS；独立复算得 frame gap run 0/300、非正 dt run 0/300、最大相邻位移 1.053353647 m、12 个 motion 列与 v2 差异均为 0；背景 perception/simulation 归一化语义哈希各为 1 类；actual/inventory/MANIFEST 均 100 项，互差/哈希 mismatch 为 0。RQ029 全部专项测试 29 passed。代码复审首轮发现 `--replace` 会删除未登记文件；现已改为删除前校验 actual/inventory/MANIFEST/逐文件哈希，并新增 fresh-build 和人工文件保留测试，复审结论 APPROVE。生产模式退出 1 并返回 `TEMPLATE_MODE_REQUIRED`。
 产物：可复跑包装/验证器 `pipelines/simulation/package_rq029_human_template.py`；测试 `tests/test_rq029_human_template.py`；正式报告、补录脚本合同、实际 session 清单、人类实际数据可用性表和场景冲突表位于 `reports/studies/RQ029_human_synthetic_microdata/RQ029_6_template_release_20260904/`。
 边界：模板只解决 schema、路径、占位符、日志唯一性和填充合同，不恢复真实人类轨迹。只替换 ID 不能将其升级为真实采集包；必须使用真实导出整体替换全流日志、确认口径并重算分析。未读取 RQ007 held-out/RQ014 致盲字段，未修改论文仓库，未推送 Git。
+
+[2026-08-28 RQ027 PI closure]
+背景：PI 决定不再为当前 NMI 手稿推进新的 IPV recovery 研究，改用已发表 T-ITS 受控 VGIM 验证作为 estimator 的方法依据。
+结果：新增 RQ027 decision.md；知识层、STUDIES 与 START_HERE 已同步为 CLOSED_BY_PI_SCOPE_DECISION。RQ027 pilot 继续作为跨模型数值迁移的内部边界保存；S2、sealed 扩展与调门重跑终止。
+论文指令：正文一句引用，细节进入 Supplementary Information；不展开防御性论述。
+
+[2026-08-28 PAPER001 estimator-scope handoff]
+Paper PR #10 merged at ff9a4f97d4427741628b65bb62833e9db3394419. The manuscript now cites the published T-ITS estimator validation, moves detailed diagnostics to Supplementary Note 1, and removes the standalone recovery Results section.
+
+2026-08-29 | Added apps/subjective_experiment_web: source-blind pairwise and single-clip subjective experiment system; checks and end-to-end flow passed.

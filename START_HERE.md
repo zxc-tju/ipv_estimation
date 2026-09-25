@@ -8,6 +8,8 @@ question index in `STUDIES.md`.
 
 ## Current Active Context
 
+- **【2026-08-28 RQ027 已由 PI 最终裁定为 `CLOSED_BY_PI_SCOPE_DECISION`：独立生成器 pilot 的 `PILOT_NO_GO` 作为跨模型数值迁移边界保留；当前 NMI 手稿不再推进新的 recovery 研究，改为引用已发表 T-ITS 工作中受控 VGIM 条件下的 IPV identification，并将 estimator 作为冻结方法组件。禁止在 RQ027 内继续 S2、sealed 扩展或调门重跑。正式裁决：`reports/knowledge/RQ027_known_truth_ipv_recovery/decision.md`。】**
+
 - **【2026-09-04 RQ028 三层参考模板已改为中性路径和真实格式占位，但仍不是实测数据。】** 当前模板根目录为 `data/derived/rq028_subjective_experiment/reference_dataset_v1/`：保留 raw / manuscript tables / evidence tables 三层，包含 40 人、20 对、40 个 session、680 个 trial（670 completed / 10 aborted）、1,192 行 segment-level 和 239,592 行 moment-level 参考结构。数据集 819/819 个目录均有 README 明确披露全部为合成模板；除 README 外的路径、CSV/JSON 和两个 Excel 内部 XML 禁用标记 0 命中。占位替换合同已定义 11 个替换/重建组，路径级清单 2,759 行，全包验证 `25/25 PASS`；17 个 workbook sheets 逐页视觉检查通过。报告：`reports/studies/RQ028_invehicle_replay_perception/RQ028_0d_reference_template_20260904/REPORT.md`。**真实 RQ028 受试者、时间/天气、设备人员、问卷、trial 结局和冻结 run 映射仍待采集/填充；第二、三层必须从真实 raw 重算，不得保留参考结果。**
 
 - **【2026-09-04 RQ029 模板包已重建并通过 74/74 校验。】** 当前可写入模板入口为 `data/derived/rq029_human_template/v1/`：20 drivers、300 runs、81,880 frames；包内除根 `README.md` 外无 `synthetic` 路径或内容命中；四类日志均为 20/20 唯一哈希，去除 ego/时间/身份后背景运动与源一致；`placeholder_registry.csv`、`required_real_collection_fields.csv` 与 `import_contract.json` 已列出待补信息。全部 RQ029 专项回归 `29 passed`，独立数据复算 PASS，代码复审 APPROVE；`--replace` 遇未登记或已修改文件会拒绝删除。报告：`reports/studies/RQ029_human_synthetic_microdata/RQ029_6_template_release_20260904/REPORT.md`。**硬边界**：这是模板壳，不是实测数据；真实导入前必须替换全流日志、确认场景映射并在真实行级数据上重算分析，不能只换 ID。**
@@ -22,7 +24,6 @@ question index in `STUDIES.md`.
 
 - **【2026-09-02 主观实验应用仅为本地原型，未放行正式采集。】** 入口为 `sociality_subjective_experiment/`；它只负责视频呈现、平衡随机化和匿名作答采集，不计算 IPV 或越界标签。当前配置仍是 18 个占位刺激、正式视频 0 个、`ALLOW_PLACEHOLDER_TRIALS=1`；隔离环境下文件清单校验通过、`pytest -q` 为 `3 passed`。代码入库**不能证明**伦理审批、PI 放行、刺激冻结或正式采集已完成；正式采集前必须替换 `ADMIN_KEY`、将 `ALLOW_PLACEHOLDER_TRIALS=0`、确认缺少视频为 0，并另行建立研究计划/数据合同。
 
-- **【2026-08-28 RQ027 bounded feasibility pilot 已完整执行并独立复算，结论 `PILOT_NO_GO`：独立生成器与 frozen exact estimator 接线健康，`288/288` runs 完成、工程失败 `0/288`、重复 key `0/288`、非有限 primary frame `0/3,456`；interactive persistent coverage `215/240=89.5833%`，但 accepted-run MAE `0.553907 rad` 未优于同集零值 predictor `0.553432 rad`，Spearman(true,estimate)=`0.214511`，非零真值 sign accuracy `106/173=61.2717%`；q_eff 与误差 Spearman=`-0.124207`（反向），固定 max-weight 门后 frame MAE `0.597503` 高于全体 `0.586513`；negative-control persistent false accept `35/48=72.9167%`（四类均高）。因此不扩展 S2、不运行 sealed confirmatory、不调门重跑。RQ007 held-out、RQ014 致盲字段、paper/decision/data 均未触碰。正式入口：`reports/studies/RQ027_known_truth_ipv_recovery/RQ027_1_known_truth_recovery_20260828T094332Z_889b49be/00_entry/index.html`。】**
 
 - **【2026-08-28 RQ026 最新 checkpoint：repair15_split_full 已完成独立验证并 PASS（`py_compile` PASS，`pytest -q` 11 passed，`full_exact_aggregator.py --validate-only` PASS，真实 frozen root `data/derived/rq017_onsite_gate/l1_v1` 本地渲染 PASS）；渲染结果确认 `136` 个 shard、`67,861` 行、首 shard `full_0001=500`、末 shard `full_0136=361`，Stage1/Stage2 两个 array 仍是 `0-135` 且当前 fail-closed 并发为 `1`，Stage2 依赖 `afterok:${stage1_job_id}`；P0/P1=0，P2 仅为 `REMOTE_PREFLIGHT.json` 缺少 `recommended_array_concurrency`，因此 live preflight 前需要 leader lane 用新值覆盖 `%1`。formal pilot 仍为 PASS，full package 现已可进入 live preflight / HPC staging，但本机尚未执行实际 Slurm 提交。】**
 
@@ -1898,3 +1899,13 @@ These review packets are evidence-boundary reviews, not accepted
   run-level/repeated-run/causal claims are unavailable.
 - RQ012 is readiness-only and human annotation is deferred.
 - Paper `main` is v4.1 but still carries evidence/external-pending markers and is not submission-ready.
+
+<!-- SUBJECTIVE_EXPERIMENT_WEB_SYSTEM -->
+## Subjective experiment web system
+
+- Path: `apps/subjective_experiment_web`
+- Role: source-blind prospective evaluation of conditional social atypicality using pairwise preference and single-clip ratings.
+- Participant flow: consent and screening → instructions and practice → pairwise block → break → single-clip block → post-study survey.
+- Researcher functions: SQLite storage, event logging, signed sessions, protected exports, frozen study/stimulus configuration and analysis-ready CSV/JSON exports.
+- Local checks: `npm run check`, `npm run validate`, `npm test`.
+- Before recruitment: replace demo clips, insert ethics-approved text, freeze the production manifests, configure unique secrets and HTTPS, and complete a device/network pilot.

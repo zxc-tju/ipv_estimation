@@ -1,0 +1,13 @@
+services:
+  experiment:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "3000:3000"
+    volumes:
+      - experiment-data:/app/data
+      - ./public/stimuli:/app/public/stimuli:ro
+      - ./config:/app/config:ro
+volumes:
+  experiment-data:

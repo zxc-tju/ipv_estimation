@@ -1,0 +1,4 @@
+﻿contrast,estimate,ci_low,ci_high,n_pairs,unit,status
+A-W,0.6702978735,0.5518737787,0.7899238042,20,pair; average seats within participant first,descriptive only; fixed stimulus set
+C-W,0.2862196067,0.1661093931,0.402169183,20,pair; average seats within participant first,descriptive only; fixed stimulus set
+A-C,0.3840782668,0.3091579615,0.4601162897,20,pair; average seats within participant first,descriptive only; fixed stimulus set

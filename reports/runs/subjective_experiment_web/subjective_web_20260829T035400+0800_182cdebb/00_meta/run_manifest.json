@@ -1,0 +1,31 @@
+{
+  "run_id": "subjective_web_20260829T035400+0800_182cdebb",
+  "status": "PASS_WITH_PRODUCTION_GATES",
+  "generated_at": "2026-08-29T03:54:00+08:00",
+  "repo_root": "zxc-tju/ipv_estimation",
+  "spec_path": "reports/runs/subjective_experiment_web/subjective_web_20260829T035400+0800_182cdebb/00_meta/spec_snapshot.md",
+  "output_parent": "reports/runs/subjective_experiment_web",
+  "application_path": "apps/subjective_experiment_web",
+  "merge_commit": "20202be0c4de61ba5cece959faf48e9fda03f8bc",
+  "pull_request": 54,
+  "node_version_tested": ["22.16.0", "22.23.x GitHub runner"],
+  "database": "SQLite via node:sqlite",
+  "tests": {
+    "syntax": "PASS",
+    "configuration_validation": "PASS",
+    "end_to_end_participant_flow": "PASS",
+    "hidden_condition_leakage_check": "PASS",
+    "media_check": "PASS",
+    "admin_export_check": "PASS",
+    "http_smoke_test": "PASS",
+    "main_branch_ci": "PASS"
+  },
+  "production_gates": [
+    "Replace demo media with frozen opaque clips",
+    "Insert ethics-approved consent and debrief wording",
+    "Freeze the production study and stimulus manifests",
+    "Set unique secret key and administrator token",
+    "Deploy behind HTTPS with backed-up persistent storage",
+    "Complete a real-device and network pilot"
+  ]
+}

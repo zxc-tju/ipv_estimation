@@ -1,0 +1,8 @@
+.env
+data/*.sqlite3
+data/*.sqlite3-shm
+data/*.sqlite3-wal
+public/stimuli/**/*.mp4
+public/stimuli/**/*.webm
+!public/stimuli/README.md
+.DS_Store

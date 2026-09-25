@@ -1,0 +1,4 @@
+﻿contrast,estimate,ci_low,ci_high,n_common_scenarios,n_positive,loo_min,loo_max,status
+A-W,0.567069156,0.3800105879,0.7786774011,8,8,0.4857584097,0.6155674952,descriptive; all three classes present in each included scenario
+C-W,0.09914038737,-0.2119361525,0.4122736633,8,4,-0.005883573776,0.1977407562,descriptive; all three classes present in each included scenario
+A-C,0.4679287686,-0.003865309393,0.963483126,8,5,0.2880176535,0.5902529783,descriptive; all three classes present in each included scenario
