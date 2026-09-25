@@ -1,0 +1,7 @@
+﻿class,seat,n_series,n_subjects,n_pairs,estimate,ci_low,ci_high,baseline,post,status
+A,cp,158,40,20,1.144932832,1.076241064,1.217860105,"[-2,0) seconds relative to retained onset","[0,2) seconds relative to retained onset",descriptive; dial_z normalization and meaning incomplete
+A,ego,158,40,20,0.9288838868,0.8864704845,0.9745492397,"[-2,0) seconds relative to retained onset","[0,2) seconds relative to retained onset",descriptive; dial_z normalization and meaning incomplete
+C,cp,239,40,20,0.6956428843,0.6434029241,0.7476710014,"[-2,0) seconds relative to retained onset","[0,2) seconds relative to retained onset",descriptive; dial_z normalization and meaning incomplete
+C,ego,239,40,20,0.6120577999,0.5440159494,0.6762715464,"[-2,0) seconds relative to retained onset","[0,2) seconds relative to retained onset",descriptive; dial_z normalization and meaning incomplete
+W,cp,199,40,20,0.3569873755,0.2520627265,0.4620435915,"[-2,0) seconds relative to retained onset","[0,2) seconds relative to retained onset",descriptive; dial_z normalization and meaning incomplete
+W,ego,199,40,20,0.3758293972,0.2821464909,0.4692502336,"[-2,0) seconds relative to retained onset","[0,2) seconds relative to retained onset",descriptive; dial_z normalization and meaning incomplete

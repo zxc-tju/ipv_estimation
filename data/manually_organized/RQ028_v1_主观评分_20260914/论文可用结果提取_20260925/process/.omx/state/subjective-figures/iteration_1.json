@@ -1,0 +1,15 @@
+{
+  "score": 78,
+  "verdict": "revise",
+  "category_match": true,
+  "differences": [
+    "Titles and panel letters clipped above both figure canvases"
+  ],
+  "suggestions": [
+    "Use explicit margins with reserved top and bottom bands"
+  ],
+  "reasoning": "Quantitative marks and notes are legible but missing headings prevent standalone reading.",
+  "next_actions": [
+    "Replace constrained-layout rectangle with explicit subplot margins"
+  ]
+}

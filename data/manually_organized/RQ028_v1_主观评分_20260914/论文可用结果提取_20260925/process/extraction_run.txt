@@ -1,0 +1,76 @@
+{
+  "source_scope": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/manually_organized/RQ028_v1_主观评分_20260914",
+  "outside_research_data_reads": [],
+  "authority": "User-confirmed final release; no external provenance re-certification",
+  "original_inputs_modified": false,
+  "n_subjects": 40,
+  "n_pairs": 20,
+  "n_sessions": 40,
+  "n_trials_attempted": 600,
+  "n_trials_completed": 596,
+  "n_trials_aborted": 4,
+  "n_rating_rows": 1192,
+  "n_segments": 90,
+  "n_scenarios": 15,
+  "moment_rows": 239592,
+  "dial_rows": 335520,
+  "duplicate_rating_keys": 0,
+  "duplicate_moment_keys": 0,
+  "join_validation": "all passed",
+  "ego_q5_and_q5b_missing": "596 each, structurally not applicable",
+  "segment_conditional_blanks": "exceed_peak_rad absent in 30 W; inside_margin_min_rad absent in 60 A/C",
+  "manifest_issues": [
+    {
+      "relative_path": "README.md",
+      "status": "differs",
+      "listed_sha256": "ee3f18a99be8eba2897bd42679b6229bb26ca46cb98505fb51e50e5916f4cf42",
+      "current_sha256": "b73688393c5bf5a594b25a6021e18d60e6933ef6f99b0ea661706b17943182a7"
+    },
+    {
+      "relative_path": "metadata/dataset.json",
+      "status": "not_present",
+      "listed_sha256": "fff97806bf2e4f26c3f154e24fab82cd975294d1b2298049e2a6845839d6eec0",
+      "current_sha256": null
+    }
+  ],
+  "analysis_type": "exploratory secondary extraction, no preregistration claimed",
+  "pair_bootstrap_repetitions": 10000,
+  "seed": 20260925,
+  "software": {
+    "python": "3.9.6",
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "scipy": "1.13.1"
+  }
+}
+seat           metric contrast  estimate    ci_low   ci_high  n_subjects  n_pairs     pair_t  df  p_unadjusted                                                               estimand                               ci_method    p_holm_30
+ ego           q1_rev      A-W  0.465417  0.170000  0.759177          40       20   3.020271  19  7.038383e-03 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 7.038383e-02
+ ego           q1_rev      C-W  0.756250  0.612083  0.896250          40       20  10.255064  19  3.502439e-09 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 8.756097e-08
+ ego           q1_rev      A-C -0.290833 -0.551250 -0.040813          40       20  -2.171409  19  4.277121e-02 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 3.421697e-01
+ ego q2_yield_bipolar      A-W  0.012917 -0.339177  0.368354          40       20   0.069640  19  9.452075e-01 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.000000e+00
+ ego q2_yield_bipolar      C-W  0.574583  0.342500  0.799583          40       20   4.824761  19  1.177261e-04 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.883618e-03
+ ego q2_yield_bipolar      A-C -0.561667 -0.793344 -0.342083          40       20  -4.782009  19  1.296084e-04 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.923539e-03
+ ego               q3      A-W -0.679167 -0.854177 -0.515000          40       20  -7.556721  19  3.866850e-07 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 8.120385e-06
+ ego               q3      C-W -0.502083 -0.670417 -0.323750          40       20  -5.573892  19  2.243268e-05 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 4.037882e-04
+ ego               q3      A-C -0.177083 -0.335417 -0.022917          40       20  -2.153707  19  4.431503e-02 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 3.421697e-01
+ ego               q4      A-W -0.665833 -0.802500 -0.530833          40       20  -9.351284  19  1.533073e-08 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 3.372761e-07
+ ego               q4      C-W -0.358750 -0.463760 -0.255000          40       20  -6.573326  19  2.715633e-06 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 5.431266e-05
+ ego               q4      A-C -0.307083 -0.429167 -0.183333          40       20  -4.786740  19  1.282359e-04 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.923539e-03
+  cp           q1_rev      A-W  0.639167  0.317906  0.992094          40       20   3.569645  19  2.044857e-03 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 2.453828e-02
+  cp           q1_rev      C-W  0.682500  0.548333  0.816667          40       20   9.693942  19  8.662842e-09 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.992454e-07
+  cp           q1_rev      A-C -0.043333 -0.302083  0.227510          40       20  -0.310621  19  7.594709e-01 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.000000e+00
+  cp q2_yield_bipolar      A-W -0.227500 -0.492917  0.055833          40       20  -1.579619  19  1.306984e-01 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 6.534921e-01
+  cp q2_yield_bipolar      C-W  0.451250  0.273333  0.641667          40       20   4.614637  19  1.890954e-04 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 2.458241e-03
+  cp q2_yield_bipolar      A-C -0.678750 -0.925000 -0.435417          40       20  -5.346577  19  3.687678e-05 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 6.269052e-04
+  cp               q3      A-W -0.822083 -0.980000 -0.671667          40       20  -9.995187  19  5.303997e-09 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.272959e-07
+  cp               q3      C-W -0.520417 -0.687917 -0.354167          40       20  -6.028014  19  8.461249e-06 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.607637e-04
+  cp               q3      A-C -0.301667 -0.492927 -0.106250          40       20  -2.971208  19  7.845787e-03 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 7.061209e-02
+  cp               q4      A-W -1.090833 -1.226250 -0.961250          40       20 -15.806264  19  2.183763e-12 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 6.114536e-11
+  cp               q4      C-W -0.221250 -0.351250 -0.100000          40       20  -3.384884  19  3.108934e-03 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 3.419828e-02
+  cp               q4      A-C -0.869583 -0.973750 -0.765823          40       20 -15.986502  19  1.785990e-12 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 5.179370e-11
+  cp       q5_cost_cp      A-W  2.070417  1.885000  2.262510          40       20  20.994908  19  1.315244e-14 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 3.945733e-13
+  cp       q5_cost_cp      C-W  0.907917  0.770833  1.050833          40       20  12.473485  19  1.344014e-10 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 3.494437e-09
+  cp       q5_cost_cp      A-C  1.162500  1.018750  1.300000          40       20  15.662402  19  2.567609e-12 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 6.932545e-11
+  cp              q5b      A-W  0.032500 -0.092500  0.146250          40       20   0.514484  19  6.128465e-01 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.000000e+00
+  cp              q5b      C-W  0.091250 -0.011667  0.192500          40       20   1.703178  19  1.048374e-01 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 6.290245e-01
+  cp              q5b      A-C -0.058750 -0.175417  0.063333          40       20  -0.945278  19  3.563838e-01 equal-subject mean within-subject class difference; fixed stimulus set 10000 pair-cluster percentile bootstrap 1.000000e+00

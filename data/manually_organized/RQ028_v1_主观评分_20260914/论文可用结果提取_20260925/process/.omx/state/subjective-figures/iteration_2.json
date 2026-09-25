@@ -1,0 +1,18 @@
+{
+  "score": 86,
+  "verdict": "revise",
+  "category_match": true,
+  "differences": [
+    "Long class labels touch in Figure 1",
+    "Legend crowds A-C confidence interval in Figure 2"
+  ],
+  "suggestions": [
+    "Use class codes on x-axis and define them in caption/footer",
+    "Place shared legend above Figure 2 axes"
+  ],
+  "reasoning": "Headings now visible; remaining overlap needs correction before delivery.",
+  "next_actions": [
+    "Shorten ticks",
+    "Move legend"
+  ]
+}

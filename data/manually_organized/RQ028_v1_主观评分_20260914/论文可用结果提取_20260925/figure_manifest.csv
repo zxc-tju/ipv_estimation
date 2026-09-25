@@ -1,0 +1,5 @@
+﻿figure,panel,claim,metric,source
+FigS1_subjective_ratings,a,R1,q1_rev,rating_descriptives.csv; ratings_analysis_rows.csv
+FigS1_subjective_ratings,b,R2;R3,q4,rating_descriptives.csv; ratings_analysis_rows.csv
+FigS1_subjective_ratings,c,R2;R3,q5_cost_cp,rating_descriptives.csv; ratings_analysis_rows.csv
+FigS2_common_scenario_check,a-c,R1;R2;R3 robustness,q1_rev;q4;q5_cost_cp,participant_paired_contrasts.csv; common_scenario_sensitivity.csv; common_scenario_source.csv

@@ -1,0 +1,45 @@
+{
+  "source_scope": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation/data/manually_organized/RQ028_v1_主观评分_20260914",
+  "outside_research_data_reads": [],
+  "authority": "User-confirmed final release; no external provenance re-certification",
+  "original_inputs_modified": false,
+  "n_subjects": 40,
+  "n_pairs": 20,
+  "n_sessions": 40,
+  "n_trials_attempted": 600,
+  "n_trials_completed": 596,
+  "n_trials_aborted": 4,
+  "n_rating_rows": 1192,
+  "n_segments": 90,
+  "n_scenarios": 15,
+  "moment_rows": 239592,
+  "dial_rows": 335520,
+  "duplicate_rating_keys": 0,
+  "duplicate_moment_keys": 0,
+  "join_validation": "all passed",
+  "ego_q5_and_q5b_missing": "596 each, structurally not applicable",
+  "segment_conditional_blanks": "exceed_peak_rad absent in 30 W; inside_margin_min_rad absent in 60 A/C",
+  "manifest_issues": [
+    {
+      "relative_path": "README.md",
+      "status": "differs",
+      "listed_sha256": "ee3f18a99be8eba2897bd42679b6229bb26ca46cb98505fb51e50e5916f4cf42",
+      "current_sha256": "b73688393c5bf5a594b25a6021e18d60e6933ef6f99b0ea661706b17943182a7"
+    },
+    {
+      "relative_path": "metadata/dataset.json",
+      "status": "not_present",
+      "listed_sha256": "fff97806bf2e4f26c3f154e24fab82cd975294d1b2298049e2a6845839d6eec0",
+      "current_sha256": null
+    }
+  ],
+  "analysis_type": "exploratory secondary extraction, no preregistration claimed",
+  "pair_bootstrap_repetitions": 10000,
+  "seed": 20260925,
+  "software": {
+    "python": "3.9.6",
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "scipy": "1.13.1"
+  }
+}
