@@ -1,0 +1,11 @@
+Make all six manuscript figures traceable to the evidence they present
+
+Restore missing relational and direction-specific panels, render the separate subjective study, and redistribute monitoring mechanics and calibration evidence. Captions, panel callouts and complete aggregate supplements follow the verified sources.
+
+Constraint: Existing frozen results only; retain unavailable intervals, abstention and protocol gaps
+Rejected: Infer curves or confidence intervals from prose | no source evidence
+Confidence: high
+Scope-risk: moderate
+Directive: Do not combine matched-arm rates with subjective ratings into population harm
+Tested: 57-page LaTeX build; no undefined references/citations or overfull boxes; numerical and compiled-page visual checks; authored-text whitespace check
+Not-tested: Subjective protocol, consent and stimulus-version documentation remain unresolved

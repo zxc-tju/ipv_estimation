@@ -1,0 +1,1279 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{xcolor}
+
+% Page setup
+\geometry{margin=1in}
+\doublespacing
+
+% Captions are set single-spaced and small. Under \doublespacing a 20-line caption
+% doubles in height, which alone can exceed the space a float may occupy, forcing
+% LaTeX to defer every figure to the end of the document.
+\usepackage[font={small,stretch=1.0},labelfont=bf,labelsep=period]{caption}
+
+% Float placement. The defaults (topfraction 0.7, textfraction 0.2) forbid a float
+% taller than ~70% of the text block from sitting on a page with text, so full-width
+% figures with long captions accumulate and flush at the end. These values let a
+% figure appear on the page that cites it.
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.90}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{3}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Online Social-Compliance Monitoring for AVs}
+
+% Helper: planned content not yet supported by results (detailed protocol prose)
+\newcommand{\planned}[1]{{\color{blue!60!black}\textit{[PLANNED: #1]}}}
+% Claim-level pending markers (mirror claims_register.md; submission-mode CI must
+% fail if any remain open). EP = internal evidence pending; XP = external pending.
+\newcommand{\evidencepending}[1]{{\color{orange!75!black}\textsuperscript{[EP:#1]}}}
+% \targetnum: FORMER placeholder wrapper for the C7 human-arm digits (claims
+% register C7). All 14 wrapped values were replaced by the measured, independently
+% verified values and unwrapped on 2026-08-20 on PI instruction (decision:
+% research repo reports/knowledge/RQ022_matched_scenario_human_arm/decision.md).
+% Zero \targetnum calls remain. The inert macro definition stays as a tripwire:
+% any new \targetnum use marks an unapproved digit and must fail submission-mode CI.
+\newcommand{\targetnum}[1]{#1}
+\newcommand{\externalpending}[1]{{\color{red!65!black}\textsuperscript{[XP:#1]}}}
+% Helper: figure placeholder box (keeps the file compilable without image files)
+\newcommand{\figph}[2]{\fbox{\parbox[c][#1][c]{0.92\linewidth}{\centering\itshape #2}}}
+
+% Title and author information
+\title{Online monitoring of socially compliant autonomous driving}
+% Author list, affiliations and corresponding-author designation supplied by the PI
+% (2026-08-11); name spellings verified against jiang2025interhub. Do not alter
+% without a further PI instruction.
+\author{
+    Xiaocong Zhao$^{1}$, Jian Sun$^{1,*}$, Xiyan Jiang$^{1}$, Yiru Liu$^{1}$,
+    Gustav Markkula$^{2}$ \\[0.5em]
+    \textit{$^{1}$College of Transportation Engineering, Tongji University, Shanghai, China} \\
+    \textit{$^{2}$Institute for Transport Studies, University of Leeds, Leeds, United Kingdom} \\[0.4em]
+    \textit{$^{*}$Corresponding author}
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+Autonomous vehicles are assessed for collision safety, yet crash-free interactions can depart from
+human behaviour. We monitor conditional social atypicality by comparing a published trajectory-derived
+interaction-preference reading with a situation-conditioned human range, withholding judgement when
+the reading or human support is unavailable. Human interactions exhibit complementary roles;
+conditioning narrows the reference by about one-fifth while maintaining near-nominal coverage. In
+matched scenarios, automated systems are flagged about twice as often as human drivers, with the
+larger excess on the accommodating side. Assertive-side flags accompany tighter routine interactions
+for both vehicles without a detected increase in emergency-tail rates. A 40-participant evaluation
+of selected segments finds higher counterpart-position atypicality ratings for both outside-range
+categories than for within-range segments. Comfort and reported interaction cost distinguish their
+directions, with larger differences on the assertive side. The framework connects departures to
+subjective experience and vehicle-motion consequences while keeping social appropriateness and
+realised harm as distinct questions.
+\end{abstract}
+
+% ======================================================================
+\section{Introduction}
+% ----------------------------------------------------------------------
+Autonomous vehicles (AVs) must share the road with human drivers, cyclists and pedestrians whose
+behaviour is shaped not only by physical constraints but also by implicit social norms~\cite{markkula2020defining, rasouli2020autonomous, wang2022social}. A vehicle
+can be \emph{collision-safe} yet not \emph{interaction-benign}: a manoeuvre that is collision-free
+in isolation may still be aggressive, hesitant or norm-violating in its interaction context,
+eroding the predictability on which mixed human--machine traffic depends~\cite{trautman2010unfreezing, favaro2017examining, petrovic2020traffic}. Machine behaviour in human collectives is now an object of empirical study in its own
+right~\cite{rahwan2019machine}: controlled experiments show that machine agents embedded in
+human groups reshape coordination and cooperation~\cite{shirado2017locally,
+crandall2018cooperating, ishowo2019transparency}, and can suppress beneficial social norms such as
+reciprocity, with collective consequences~\cite{shirado2023reciprocity}. Conventional safety
+verification asks ``will this trajectory collide''; a socially aware AV also faces a different
+question: ``is this way of interacting still understandable and acceptable to the humans around
+it?''
+
+Two established families of methods address adjacent but distinct questions. Offline behavioural
+evaluation asks whether an AV, on average, drove like a human, typically by reporting a single
+aggregate sociality score over a dataset~\cite{caesar2021nuplan, montali2023waymo, sagberg2015review,
+francis2025principles}, and no test-mileage budget can in any case certify rare interactive behaviour
+by aggregate demonstration~\cite{kalra2016driving, koopman2016challenges}. Formal safety verification
+asks whether a trajectory will collide or violate a hard constraint, and can guarantee a formally
+specified notion of legal safety --- within the assumptions of its model --- as an online layer
+around a planner~\cite{pek2020online, shalevshwartz2017rss, althoff2014online,
+ames2019control}, an assurance now being codified in standards~\cite{iso21448sotif, ul4600}. Neither
+answers the moment-to-moment question: given the current interaction state, is this behaviour within
+the range that human drivers exhibit in the same situation? That question is local in time, conditional on context, and
+graded rather than binary.
+
+We make autonomous-driving social deviation \emph{visible online} by comparing current interaction
+behaviour with a human reference range, while separating moments that support a judgement from those
+that do not. The interpretation of a departure then requires evidence beyond interval membership.
+Do people also perceive the behaviour as atypical? Do more assertive and more accommodating
+departures correspond to the same comfort and interaction cost? We address these questions through
+two complementary dimensions: subjective experience of selected interactions and vehicle-motion
+consequences following flagged moments. Neither dimension is treated as a necessary intermediate
+step to the other; direct judgements of appropriateness and evidence of realised harm remain
+separate validation targets.
+
+The monitored quantity is the interaction preference value (IPV), a trajectory-derived measure of
+how an agent balances its own progress against the group's. The trajectory-based estimator was
+introduced and validated in controlled VGIM interactions in our previous work~\cite{zhao2024measuring};
+here we use its frozen online implementation as the behavioural reading supplied to the
+human-reference monitor. A related inverse-game formulation provides complementary evidence for
+quantifying social patterns from trajectories~\cite{liu2024sociality}.
+
+Three distinctions bound the claims. First, \emph{socially atypical is not socially inappropriate}:
+lying outside the human range is a statement about typicality. Subjective experience and
+vehicle-motion outcomes help interpret that departure without converting it into a normative
+verdict. Second, \emph{collision-safe is not interaction-benign}. Third, \emph{not readable is not neutral}: before
+an interaction is behaviourally informative or after it has resolved, the IPV may be weakly
+identifiable or not applicable, and this must not be read as compliant. A responsible social
+monitor must know when \emph{not} to judge; abstention is an explicit boundary of responsible
+judgement, not a failure mode, in the tradition of prediction with a reject
+option~\cite{chow1970optimum, cortes2016learning, geifman2017selective}. The human range is, moreover,
+a \emph{reference range} in the sense familiar from clinical medicine and normative
+modelling~\cite{ozarda2016reference, marquand2016understanding, bethlehem2022brain}, not a demand to
+imitate one human trajectory.
+
+This framing differs from three existing paradigms. Unlike offline AV
+evaluation~\cite{caesar2021nuplan, montali2023waymo}, it is online, per-timestep and
+context-conditioned. Unlike runtime verification of formal
+specifications~\cite{leucker2009brief, maler2004monitoring, sha2001using, lindemann2023conformal}, the
+monitored property is an empirical reference distribution estimated from human data. Unlike socially
+compliant planning~\cite{schwarting2019social, sun2018courteous, sadigh2016planning, kruse2013human,
+mavrogiannis2023core}, it does not encode sociality into a planner's objective but provides a
+pluggable, planner-agnostic monitor that any planner can be checked against. Closest to our aim,
+online monitors exist for codified legal rules~\cite{yu2024online}; unusual driving can be flagged as
+unexplained deviation from learned traffic behaviour~\cite{hu2023socially} or as violated
+expectation~\cite{dinparastdjadid2023measuring, engstrom2024modeling}; and AV conduct is benchmarked
+offline against reference models of a competent human driver~\cite{scanlon2026collision,
+schumann2026active}. None of these reads a social preference, refers it to a calibrated
+situation-conditioned human range, or separates the moments at which a social judgement is meaningful
+from those at which it is not.
+
+This work reframes social compliance as the online monitoring of conditional social atypicality.
+Human interaction is relational and context-dependent: partners take complementary roles, yet the
+reference needed online can be determined from the current observable situation without reading a
+hidden intention. Built on that situation-conditioned range, the monitor is calibrated and auditable
+at runtime, and it abstains whenever the interaction is unreadable or the situation lacks comparable
+human support. We then apply the unchanged instrument to a matched-scenario real-vehicle benchmark,
+where 19 automated systems and 20 licensed drivers face the same 15 interactions. Automated systems
+are flagged about twice as often as the matched human drivers, with the larger excess on the
+accommodating side. At assertive-side flagged moments, ordinary interaction quality tightens for both
+vehicles without a corresponding increase in emergency-tail events. The human arm checks alarm
+inflation after transfer to a new country and apparatus and examines the same consequence signature
+in human-driven interactions. A separate subjective evaluation with 40 participants asks how
+90 selected interaction segments are experienced from the ego and counterpart positions. It links
+both outside-range categories to perceived atypicality from the counterpart position and identifies
+larger comfort and reported-cost differences on the assertive side. Together, the studies separate
+how frequently a departure occurs, its direction, and its experiential and motion-related meaning.
+
+% ======================================================================
+\section{Results}
+% ----------------------------------------------------------------------
+
+\subsection{A human-reference monitor makes conditional social atypicality visible online}
+
+The trajectory-based IPV estimator was previously validated in controlled VGIM
+interactions~\cite{zhao2024measuring}; here it is held fixed and used as the frame-level behavioural
+reading supplied to the human-reference monitor. Figure~\ref{fig:measured} summarises the monitoring
+pipeline, including the candidate-based reading, the context-conditioned reference, explicit
+abstention and a complete interaction example.
+
+\begin{figure}[tbp]\centering
+\includegraphics[width=\linewidth]{figures/fig1_three_layer.pdf}
+\caption{\textbf{The human-reference monitoring framework, from a trajectory-derived IPV reading to a context-conditioned verdict.}
+\textbf{a}~The reading is an angle: a candidate preference $\theta$ weights the agent's own-progress
+cost by $\cos\theta$ and the interaction cost by $\sin\theta$, so $\theta$ is the direction in which
+the two are traded. Seven candidates span $[-3\pi/8,\,3\pi/8]$ at $\pi/8$ spacing; below the
+horizontal axis the counterpart's cost carries negative weight, the assertive side.
+\textbf{b}~Two frames of one interaction, five apart. Bars are the normalised candidate likelihoods
+of Eq.~\eqref{eq:estimator}: concentrated above, where the reading is their weighted mean; at the
+uniform value $1/7$ below, where the frame does not say which candidate the agent is following and
+the monitor abstains.
+\textbf{c}~Human reference readings on the held-out fold ($486{,}660$ moments) and the range applied
+to them. Bars give the median $90\%$ range in three real situation classes, narrowest to widest:
+crossing with priority, merging with priority, merging with equal priority; shading gives the verdict
+the middle class returns. The deployed range also conditions on the continuous situation, so it
+varies within a class ($1.05$--$2.37$\,rad wide across the benchmark; Methods).
+\textbf{d}~The same population through both gates, from $663{,}282$ candidate moments: $486{,}660$
+readable, $461{,}937$ of those also human-supported, splitting $417{,}036$ inside and $44{,}901$
+outside. Failing either gate returns no verdict, which is not a pass.
+\textbf{e}~Local trajectories; time markers link to \textbf{f} and the red circle is the conflict
+zone. \textbf{f}~The same interaction frame by frame, drawn only where both gates hold, so grey
+intervals denote no reading rather than a zero. The three ranges move with the situation; the marked
+readings lie above the $90\%$ range, on the accommodating side. Panels \textbf{e} and \textbf{f} are
+descriptive. Source data are provided as a Source Data file.}
+\label{fig:measured}
+\end{figure}
+
+\subsection{Human interaction runs on a two-sided script, and the reference must condition on the situation}
+
+We next ask what a reading should be compared against, beginning with the structure of human
+interaction in the space that the reading describes. We analysed $38{,}228$ interaction cases from
+four naturalistic sources within the InterHub corpus~\cite{jiang2025interhub} (Waymo $23{,}218$;
+nuPlan $7{,}499$; Lyft $5{,}105$; Argoverse-2 $2{,}406$; $3{,}695{,}981$ trajectory frames),
+summarising each agent by the mean IPV over its valid interaction segment. Seen whole, an interaction
+between two humans follows a two-sided script rather than two independent scores. Plotting each valid
+case as the pair of its partners' summaries concentrates the mass where one partner sits below zero
+while the other sits above it. Across the $34{,}757$ cases in strata that
+support matched re-pairing, the within-interaction correlation is $-0.338$ (95\% CI
+$[-0.351,-0.325]$), whereas re-pairing partners across cases within matched scenario strata gives
+$+0.041$ ($[+0.030,+0.052]$); an independently built implementation returns $-0.339$, and the
+correlation is negative in every source.
+
+The division of roles is legible early. Readings from the first $5\%$ of an interaction identify
+which partner will ultimately give way at AUC $0.75$, rising to $0.81$ by half-way, while early
+kinematics over the same windows remains near $0.56$--$0.57$. The script is
+also keyed to the situation before the conflict is joined: turning vehicles read $+0.079$\,rad
+further toward giving way than their straight-driving partners ($[+0.063,+0.095]$,
+$n=3{,}565$ pairs), in the same direction in all four sources, with one source's interval admitting
+zero. Social behaviour at this level is relational---organised by partner,
+role, geometry and risk---rather than a fixed disposition of an individual.
+
+No single number attached to a role reproduces that script. What holding right-of-way contributes is
+not a fixed offset: across three bands of realised post-encroachment margin the priority minus
+non-priority difference is $+0.058$ ($[+0.050,+0.067]$, $n=9{,}799$), $+0.001$
+($n=22{,}833$) and $-0.034$ ($[-0.045,-0.023]$, $n=4{,}863$; Fig.~\ref{fig:context}a).
+These offline bands are used only to describe the human data and are never read by the online monitor.
+A coarse geometric prior points in the same direction across all four sources
+(Fig.~\ref{fig:context}b), and the dependence is preserved
+under dropping the largest source and alternative geometry and risk binnings.
+
+The cost of a single global reference is visible in the distribution itself. Across the $486{,}660$
+readable human moments of the held-out fold, the range selected by the situation is narrow in some
+real situations and wide in others: among three illustrative classes, crossing with priority is the
+narrowest and merging with equal priority the widest, while the deployed range spans
+$1.05$--$2.37$\,rad across the benchmark (Fig.~\ref{fig:measured}c). The classes make the variation
+visible; the deployed range conditions on the continuous situation and varies within each class. We
+report this as a regularity of the observed corpora rather than a transferable law: fitting the full
+state description on every source but one explains at most $+0.03$ of the variance in the held-out
+source and falls below zero in two (Fig.~\ref{fig:context}c; Methods 4.4).
+
+% Interim caption matches the existing three-panel asset inspected in the base PDF.
+% The local figure pass must restore the six-panel semantic evidence display and
+% update its caption and panel callouts together; see the figure handoff plan.
+\begin{figure}[tbp]\centering
+\includegraphics[width=\linewidth]{figures/fig2_context.pdf}
+\caption{\textbf{Human interaction depends on role and geometry, with a boundary on cross-source prediction.}
+\textbf{a} Priority-minus-non-priority mean IPV in three realised post-encroachment-time bands.
+The difference changes from $+0.058$ to $+0.001$ to $-0.034$\,rad across the displayed bands;
+these are descriptive offline strata, not inputs to the online monitor.
+\textbf{b} Coarse geometry effects on the reading in each of four sources: merge-or-pass and
+same-direction pairings show directionally consistent shifts with source-dependent magnitudes.
+\textbf{c} Variance explained when the state-based predictor is fitted without the evaluated
+source. Values near or below zero delimit transfer of the state-to-reading relationship.
+Error bars show $95\%$ confidence intervals where available. The complementary-role, early-legibility
+and turning-partner results are reported in the text and Methods; this existing asset displays the
+role, geometry and source-transfer analyses. Source data are provided as a Source Data file.}
+\label{fig:context}
+\end{figure}
+
+\subsection{A situation-conditioned human range is a calibrated monitor}
+
+Establishing that human behaviour is context-dependent does not by itself say what an online monitor
+must read. We define online monitoring as a membership test: the ego's current IPV should lie within
+a human reference range determined by the current observable situation,
+\begin{equation}
+\begin{gathered}
+  \hat\theta_i(t)\ \stackrel{?}{\in}\ I_{\mathrm{human}}(z_t),\\
+  z_t=\big(\text{geometry, role, progress, online-computable risk proxies,}\\
+  \text{relative kinematics, support}\big),
+\end{gathered}
+  \label{eq:membership}
+\end{equation}
+evaluated only where the interaction is active and the ego is readable; the risk proxies are those
+computable from information available at time $t$ (no observed post-encroachment measure enters
+online). The range is the conditional
+distribution of the human current IPV given $z_t$, calibrated by split-conformal
+prediction~\cite{vovk2005algorithmic,romano2019cqr} and
+abstaining when the state is unsupported. Conditioned on the current situation, the human range is
+sharper than a single global range---about a fifth narrower at the 80\% and 90\% levels (21\% and
+20\%), at coverage within 0.6 percentage points of nominal---and it stays informative at the
+strictest level, where the global range spans essentially the whole admissible scale and retains
+almost no power to discriminate. In absolute terms the conditioned $90\%$ range still averages $1.87$\,rad
+(5th--95th percentiles $1.35$--$2.28$\,rad) of the $2.36$\,rad candidate span: the reference is wide,
+and a flag therefore marks a clear departure from the human range rather than a fine discrimination.
+The coverage statement is empirical and marginal over accepted moments; it is not a
+per-situation or per-interaction guarantee (Methods 4.4). Where a reading is available, the monitor abstains for lack of human support on only a small
+fraction of readable moments ($5.08\%$ on the held-out natural-driving test fold; abstention on the real-vehicle
+benchmark is larger and is reported with its reasons in Section 2.4 and Methods), giving an auditable runtime monitor
+of conditional social atypicality (Fig.~\ref{fig:monitor}). The range is not a fixed corridor:
+it rises, falls and changes width as the situation changes, so that the same reading can sit inside it
+in one situation and outside it in another (Fig.~\ref{fig:edband}).
+
+\begin{figure}[tbp]\centering
+\includegraphics[width=\linewidth]{figures/fig3_monitor.pdf}
+\caption{\textbf{The situation constrains social preference without determining it, which is why the
+reference range must be conditioned and the preference itself must be read online.} Grey marks a single
+global human range; teal marks the range conditioned on the current observable situation
+(Eq.~\ref{eq:membership}).
+\textbf{a} Width of the reference range at three nominal coverage levels, as a percentage of the
+admissible range of the quantity. The admissible range is the span of the candidate grid,
+$3\pi/4\approx2.36$\,rad; the parameterisation domain of Eq.~\eqref{eq:estimator} is $[-\pi/2,\pi/2]$ and the seven
+candidates span $[-3\pi/8,3\pi/8]$. A global range is not a usable reference: at the $95\%$ level its
+width equals $100.00\%$ of the admissible span, so it is as wide as the quantity itself and retains
+almost no power to discriminate --- it still flags, but only where the reading sits at the very edge
+of what the estimator can express, and it pays for that width by over-covering (panel~\textbf{b}).
+Conditioning narrows it by
+$21\%$, $20\%$ and $8\%$ at the three levels (reductions computed from unrounded widths --- $20.7\%$,
+$20.5\%$, $8.4\%$; the narrowing labels drawn on the panel are rounded to whole percent, so
+recomputing from them can differ by a point) (at the $90\%$ level the conditioned width has mean
+$1.87$ rad, 5th--95th percentiles $1.35$--$2.28$ rad).
+\textbf{b} Achieved minus nominal coverage. The conditioned range sits within $0.6$ percentage points
+of nominal at all three levels ($+0.03$, $+0.28$, $+0.57$); the global range over-covers by $2.8$
+points at $95\%$.
+\textbf{c} Variance of the online reading that the situation accounts for, out of fold. The situation
+explains $20.9\%$ (defined as $1-\mathrm{SSE}/\mathrm{SST}$ of the conditional median against the
+test-fold mean, over all $486{,}660$ test moments; $21.1\%$ over the $461{,}937$ accepted moments); the remaining $79.1\%$ is not recovered
+by the situation description---which is what makes an online reading necessary rather than
+redundant.
+Panels \textbf{a},\textbf{b} use $n=461{,}937$ evaluated moments (the accepted moments; identical at
+all three levels); \textbf{c} uses $n=486{,}660$. The
+monitor abstains on $5.08\%$ of moments, where the situation falls outside the support of the human
+record. It is empirical: it takes no observed risk or post-encroachment measure as an online input, and
+it returns an explicit abstention rather than a neutral verdict where the situation is unsupported.
+Verdicts elsewhere in this paper are issued at the $90\%$ level.
+Transfer to a data source not seen during fitting is not established and is reported as a boundary of
+the present monitor. Source data are provided as a Source Data file.}
+\label{fig:monitor}
+\end{figure}
+
+A striking feature organises this result. Although the interacting partners' IPVs are correlated at
+the event level (above), \emph{adding the counterpart's own inferred preference to the
+situation does not measurably sharpen the reference range}; conditioning on the ego agent's own
+behavioural history does not either. Both are retained only as ablations. Thus the event-level
+complementarity does not translate into measurable additional sharpening from the counterpart-IPV
+channel in this implementation. The current observable situation supplies the deployed reference
+without requiring that additional inferred preference. The monitor returns an explicit abstention
+when the situation lacks human support or the reading is unavailable. Its supported interpretation
+remains conditional social \emph{atypicality}.
+
+\subsection{From atypicality to interaction consequences}
+We ask what an atypicality verdict corresponds to in the interaction that follows, when
+the same situations are driven by different automated systems. We pursue this on a matched-scenario
+real-vehicle benchmark~\cite{onsite}, in which identical scenarios are replayed against many
+independent driving systems.
+
+The monitor is, first, able to speak. The benchmark replays 15 scenario templates against 19
+independent driving systems (267 scenario runs). Across its 67{,}861 candidate moments the monitor
+returns a verdict on 14{,}099 ($20.8\%$), with no engineering failures in this replay --- no solver or pipeline failure on any
+candidate moment --- and in 231 of the 267 scenario runs ($86.5\%$) it speaks at least once. At the
+moment level, $55.3\%$ of candidate moments carry discriminative information between the candidates,
+and $20.8\%$ additionally lie within human support; at the run level, none of the 36 runs in which the
+monitor never speaks is silenced by readability alone --- in every such run there are readable
+moments, and what is missing there is comparable human behaviour for the situation. Abstention here
+is a statement about the reference rather than about the vehicle, and it is auditable as such.
+
+If human interaction follows a two-sided script (Section 2.2), a departure by one partner should be
+visible both in that vehicle's own margin and in what the counterpart absorbs. Where the monitor does
+speak, atypicality on the assertive side---a current preference that weights the counterpart's cost less
+than humans do in the same situation---is followed by a measurably tighter interaction for
+\emph{both vehicles}. The ego's own margin to its counterpart contracts at the
+comfortable end of its distribution: the upper quartile falls by two-fifths, while the lower
+quartile---the end where a margin would actually be pressing---is not compressed at all. The
+counterpart, read independently from the other vehicle's own control record, carries nearly
+twice the routine speed variation over the same window, and roughly twice the routine speed reduction
+($+2.6$ and $+1.4$\,km\,h$^{-1}$ as differences, which do not depend on how small the routine value
+is). The two
+sides are measured from different sources and different quantities, so their agreement is a
+convergence rather than a restatement (Fig.~\ref{fig:consequence}); the association survives a
+placebo test that reassigns whole flag sequences across scenario runs (Methods 4.5); a single run containing flagged
+assertive moments is shown for illustration in Fig.~\ref{fig:edcase}.
+
+The same outcome measures, applied unchanged to the accommodating side, do not reproduce that
+signature: neither the counterpart's speed variation nor its speed reduction separates detectably
+from within-range moments, and neither the median nor the upper quartile of the ego's own margin
+does either. The two sides are also compared
+with each other directly, rather than each against the within-range group in turn, and on the
+quartile where the assertive side compresses they differ (Methods 4.5).
+The result is direction-specific: assertive-side departures accompany compression of the measured
+routine vehicle-motion outcomes, whereas accommodating-side departures show no corresponding
+compression in this battery. The latter finding concerns these objective endpoints; subjective
+experience is examined separately in Section~\ref{sec:subjective_results}.
+
+% Existing asset retained in the text-only pass. Its counterpart-response forest
+% and threshold-difference intervals show the assertive comparison; the local
+% figure pass must add the published accommodating comparisons without new tests.
+\begin{figure}[tbp]\centering
+\captionsetup{singlelinecheck=false}
+\includegraphics[width=\linewidth]{figures/fig5_consequence.pdf}
+\caption{\textbf{Assertive-side flags accompany tighter routine interactions without a detected increase in emergency-tail events.}
+Rows separate the ego vehicle from the counterpart; columns separate routine outcomes from emergency
+thresholds. Teal denotes within-range moments, dark red the assertive side and light red the
+accommodating side. The three categories appear in the margin distribution and threshold-share
+summaries; the interval summaries in this existing display show assertive-versus-within contrasts.
+The accommodating-side intervals are reported in Methods 4.5.
+\textbf{a} Cumulative distribution of the minimum ego-to-counterpart time-to-collision over the
+three-second post-verdict window, omitting non-closing frames. The lower quartile is not compressed
+($3.46$ versus $2.99$\,s); the upper quartile falls $39.9\%$ $[16.9,56.4]$, while the median contrast
+is unresolved ($9.9\%$ $[-10.7,23.7]$). Direct assertive-minus-accommodating comparisons distinguish
+the upper-quartile ratios ($-0.43$ $[-0.71,-0.06]$) but not the median ratios
+($-0.09$ $[-0.29,+0.12]$).
+\textbf{b} Shares below all four prespecified margin thresholds, with assertive-minus-within
+share differences and intervals. Supported differences point toward fewer short margins.
+\textbf{c} Counterpart-response median ratios relative to within-range moments. Assertive-side
+speed reduction is $2.74$ versus $1.33$\,km\,h$^{-1}$ and speed range is $5.53$ versus
+$2.93$\,km\,h$^{-1}$. Corresponding median differences are $+1.41$ $[+0.08,+3.37]$ and
+$+2.60$ $[+1.01,+3.50]$\,km\,h$^{-1}$. Grey steering entries have intervals admitting parity.
+\textbf{d} Counterpart-record shares below each braking threshold, with assertive-minus-within
+differences and intervals; this is the only record-weighted panel.
+Panels \textbf{a},\textbf{b} contain $499$ assertive, $817$ accommodating and $12{,}344$ within-range
+moments; \textbf{c},\textbf{d} use $469$, $719$ and $10{,}483$ anchors with counterpart logs.
+Panel \textbf{d} pools $13{,}800$, $21{,}025$ and $310{,}246$ acceleration records, respectively.
+Intervals are pointwise $95\%$ bootstrap intervals over whole scenario runs: $227$ ego-window runs
+and $175$ counterpart-log runs. Quantile ratios and speed contrasts use $2{,}000$ draws; threshold
+contrasts use $1{,}000$. Thresholds are nested. The unchanged outcome battery and its full
+side-specific results are described in Methods 4.5. Associations are descriptive. Source data are
+provided as a Source Data file.}
+\label{fig:consequence}
+\end{figure}
+
+Counting both sides, $9.8\%$ of judgeable moments (candidate moments that pass both gates; Methods 4.4)
+are flagged ($1{,}388$ of $14{,}099$; $519$ on the assertive side and $869$ on the accommodating side).
+These fractions describe the frequency and direction of departures. The outcome analyses describe
+what follows flagged moments. The next section places the flag rate alongside a matched human control.
+
+This is a compression of ordinary interaction quality, not a shift of mass into the tail. At the
+emergency thresholds---a closing margin short enough to demand immediate action, or braking hard
+enough to count as evasive---assertive-side moments are roughly half as frequent as typical ones
+($0.46$ to $0.61$ times) at every threshold whose interval excludes a zero difference (margins under
+$1$, $1.5$ and $2$\,s; braking beyond $-2$, $-3$ and $-4$\,m\,s$^{-2}$); at the widest margin tested
+(under $3$\,s) the interval admits no difference. On the accommodating side the only threshold whose
+interval excludes zero is the tightest margin, and it points the same way, with fewer short margins
+rather than more. The lower quartile of the ego's margin is not compressed on either side, sitting
+marginally wider for flagged moments than for typical ones. What
+the monitor registers is that ordinarily comfortable margins tighten, not that dangerous events become more common.
+The accommodating side shows no corresponding compression of these routine vehicle-motion outcomes.
+
+Compression of interaction quality is not yet a harm claim, and we do not make one. Under the
+present definitions of a realised interaction failure, atypicality does not robustly or specifically
+predict harm outcomes; the binding limitation is upstream, in that identifying and segmenting
+interaction-failure events is itself not yet reliable. The present evidence therefore bounds the
+harm relationship rather than confirming it.
+
+What, then, does a social flag register that a conventional safety check does not? The routine
+interaction differences above occur without an observed rise in the tested emergency-tail rates.
+Thus the social reading and the threshold-based safety endpoints describe different aspects of
+these interactions; the routine differences are not evidence of more emergency events.
+
+\subsection{The reference is audited by the population that defined it}
+% C7: the human-arm numeric literals in this section are the measured,
+% independently verified values (swapped and unwrapped 2026-08-20; decision:
+% research repo reports/knowledge/RQ022_matched_scenario_human_arm/decision.md).
+The reference range was learned from natural human driving recorded in other countries on open
+roads, and every verdict above rests on the premise that this reference remains readable in a new
+country, on a closed course, in deliberately staged conflicts. We test that premise directly:
+licensed human drivers drove the same 15 scenarios in a real vehicle, against the same
+counterparts under the same control, and the unchanged monitor---same estimator, same gates, same frozen
+reference---audits them exactly as it audits the automated systems.
+
+Three observations follow (Fig.~\ref{fig:humanarm}). First, the instrument survives the move. The
+population that defined the reference lies outside it on $9.72\%$ of held-out judgeable moments at
+the $90\%$ level---the instrument's native alarm rate. Human drivers on the course are flagged on
+5.0\% of judgeable moments (786/15{,}598), no more often than
+that native rate: carrying the reference across country, apparatus and task does not inflate its
+alarms. The course human rate therefore serves as the matched calibration control; the automated systems are
+evaluated against the same frozen reference in the same scenarios, and their corresponding rate is
+reported below. The two settings are not, however, interchangeable. Drivers on the course were asked to drive
+as they normally would, but the scenario set is not ordinary driving: these are staged conflicts
+selected for a benchmark, and they are harder than what a naturalistic corpus mostly contains. The
+cross-corpus reading is therefore an alarm-inflation check---does the instrument fire more often
+once it is carried somewhere new---and not a comparison of levels. The comparison of levels is the
+one made inside the course, where both kinds of driver meet the same fifteen scenarios and the same
+counterparts under the same control. How often the monitor fires at all is a property of the
+scenarios it is pointed at: across these fifteen the human flag rate runs from $1.7\%$ to $12.4\%$
+and the automated rate from $2.7\%$ to $17.4\%$, so an absolute alarm rate is not a portable
+quantity. That is why the audit carries its own human arm rather than treating the corpus rate as a
+yardstick. The yardstick itself never changes: both arms are judged against the same frozen
+reference, built from human--human interaction alone, and the question asked of each is whether the
+behaviour falls inside the human range for this situation---never whether it resembles the other
+arm. Second, the flag means the same thing for either kind of
+driver. At the moments where a human is flagged on the assertive side, the same consequence signature appears that
+Fig.~\ref{fig:consequence} documents for automated vehicles: the ego margin's upper quartile
+contracts by about three-tenths, the counterpart absorbs $2.5$ times the routine speed
+reduction, and every emergency tail is rarer, not more common. The verdict marks a property of the
+interaction, not a property of machines. Third, under this common instrument the automated systems
+are flagged $2.0$ times as often as the matched human drivers ($1.95$, $95\%$ CI $[1.62, 2.39]$
+resampling scenarios; $9.8\%$ vs $5.0\%$ of judgeable moments), and the per-scenario flag rate is
+higher for the automated systems in 15 of 15 scenarios---in every resampled scenario set the ratio
+stays above parity. The population-level rates answer
+a calibration question; the moment-level signature answers what a flag means; neither is a ranking
+of vehicles or drivers.
+
+The side-specific split sharpens the comparison. Automated systems exceed matched humans primarily
+on the accommodating side ($6.16\%$ versus $2.25\%$), whereas the assertive-side difference is
+smaller ($3.68\%$ versus $2.79\%$). The larger machine--human excess therefore lies on the side for
+which the frozen vehicle-motion battery detects no corresponding compression signature. Whether
+that side also differs in human experience is a separate question, addressed next.
+
+% Interim caption matches the existing a-c asset; the missing side-split panel
+% is specified in the figure plan and its measured values remain in the text.
+\begin{figure}[tbp]\centering
+\includegraphics[width=\linewidth]{figures/figH_human_arm.pdf}
+\caption{\textbf{The monitor is audited by the population that defined its reference.}
+\textbf{Top}~Moments entering the comparison in each arm: candidate moments, those that are
+readable, and those additionally judgeable against the reference; for the automated systems the
+middle stage is given as the fraction passing. The human protocol is a fixed scenario sequence,
+identical across drivers, with no missing trial.
+\textbf{a}~Fraction of judgeable moments flagged outside the reference at each nominal level, for
+the held-out natural-driving reference population, matched human drivers and automated systems;
+dashes mark nominal outside rates. At $90\%$, the human flagged moments comprise $435$ assertive
+and $351$ accommodating moments, and the automated flagged moments comprise $519$ and $869$.
+The human same-scenario $90\%$ outside rate has a driver-by-scenario bootstrap $95\%$ interval
+of $3.4$--$5.5\%$; displayed rates are point estimates.
+\textbf{b}~Consequence signature at flagged-assertive moments, expressed as flagged-to-within
+ratios; the braking row counts counterpart records below $-3$\,m\,s$^{-2}$. Filled markers denote
+automated vehicles and open markers human drivers. Asterisks denote case-bootstrap intervals
+excluding parity, or excluding zero share difference for the emergency endpoints. Whiskers appear
+where intervals were computed on the ratio. The two human ego-margin entries have no interval in
+the frozen battery; absence of an interval is not a null result.
+\textbf{c}~Scenario-specific human and automated flag rates at $90\%$; the diagonal marks parity
+and the 15 scenario points are shown without intervals. Both arms use the same frozen human--human
+reference; no panel ranks individual systems or drivers. Source data are provided as a Source Data file.}
+\label{fig:humanarm}
+\end{figure}
+
+\subsection{Subjective experience distinguishes the two directions of atypicality}
+\label{sec:subjective_results}
+% Adopted for exploratory manuscript reporting on PI instruction, 2026-09-25.
+% Source: ipv_estimation@0e05a65, final RQ028 extraction package.
+We examined whether the monitoring categories were also reflected in human experience of selected
+interaction segments. This separate study comprised 40 participants in 20 pairs and 90 segments
+from 15 scenarios; 596 completed trials yielded 1{,}192 position-specific rating records. From the
+counterpart position, both assertive-side and accommodating-side segments were rated as more
+atypical than within-range comparison segments: mean within-participant differences were
+$+0.639$ $[+0.318,+0.992]$ and $+0.682$ $[+0.548,+0.817]$ points, respectively, on a 1--7 scale.
+These contrasts survived Holm correction across all 30 exploratory comparisons. Thus the supplied
+monitoring categories have a perceptual counterpart in this selected stimulus set
+(Fig.~\ref{fig:subjective}; Supplementary Table~\ref{tab:subjective_core}).
+
+Comfort and reported interaction cost distinguished the two directions more clearly. Relative to
+within-range segments, assertive-side segments received counterpart-position comfort ratings
+$1.091$ points lower and interaction-cost ratings $2.070$ points higher. Direct comparison with
+accommodating-side segments gave a comfort difference of $-0.870$ $[-0.974,-0.766]$ points and a
+reported-cost difference of $+1.163$ $[+1.019,+1.300]$ points. Ego-position comfort followed the same
+ordering, with the assertive category below both other categories. The result therefore concerns
+which side of the reference is crossed as well as whether a segment is outside it.
+
+Accommodating-side segments also differed from within-range segments: counterpart-position comfort
+was $0.221$ points lower ($[-0.351,-0.100]$) and reported interaction cost was $0.908$ points higher
+($[+0.771,+1.051]$). These smaller subjective differences complement the absence of a corresponding
+compression signature in the separate vehicle-motion analysis. They describe another dimension of
+interaction quality; the two studies do not establish a segment-matched dissociation or a causal
+effect of crossing a reference boundary.
+
+The main comfort and cost directions were retained when categories were compared within shared
+scenarios. For assertive-versus-within comparisons, counterpart comfort was lower and reported cost
+higher in all eight shared scenarios; the corresponding assertive-versus-accommodating directions
+held in all 12 shared scenarios. These are scenario-composition sensitivity checks, not independent
+replications. Estimates and intervals preserve participant pairing and condition on the selected
+stimuli (Methods~\ref{sec:subjective_methods}).
+
+% Figure rendering is intentionally deferred to the local agent. The placeholder
+% marks missing artwork, not hypothetical data. Do not remove it until the asset
+% and its panel-level source manifest have been checked.
+\begin{figure}[tbp]\centering
+\IfFileExists{figures/fig6_subjective.pdf}{%
+\includegraphics[width=\linewidth]{figures/fig6_subjective.pdf}%
+}{\figph{1.2in}{Figure 6 artwork pending local rendering.\\
+Measured endpoints: perceived atypicality, comfort and reported counterpart interaction cost.}}
+\caption{\textbf{Subjective ratings distinguish perceived atypicality from interaction experience.}
+The planned display uses the measured ratings of assertive-side (A), accommodating-side (C) and
+within-range comparison (W) segments. Perceived atypicality is the reversed typicality item
+($8-\mathrm{Q1}$); higher Q4 ratings indicate greater comfort; Q5 is the reported counterpart
+interaction-cost item. Each position contributes 158 A, 239 C and 199 W completed ratings from
+40 participants in 20 pairs. Class means first average repeated ratings within participant and
+then give participants equal weight. Intervals are pointwise $95\%$ intervals from 10{,}000
+participant-pair bootstrap draws, conditional on the selected stimuli. Q5 is available only at the
+counterpart position. Main contrasts are tabulated in Supplementary Table~\ref{tab:subjective_core};
+the full 30-comparison family uses Holm correction. Final panel labels will be set with the artwork.}
+\label{fig:subjective}
+\end{figure}
+
+% ======================================================================
+\section{Discussion}
+% ----------------------------------------------------------------------
+This work makes social monitoring an auditable question about behaviour in a situation: whether the
+current interaction lies within a human reference range, when that comparison is supportable, and
+what an observed departure means. Human behaviour is relational and context-dependent, with
+complementary roles that are legible early. The situation-conditioned reference is sharper than a
+global range at near-nominal coverage and withholds judgement when the reading or human support is
+missing. In matched real-vehicle scenarios, the reference does not inflate alarms for human drivers,
+and assertive-side flagged moments show a shared vehicle-motion signature in human and automated
+arms. The separate subjective study adds evidence that the selected outside-range segments are
+perceptibly atypical and that their direction matters for comfort and reported interaction cost.
+
+Two distinctions organise these findings. First, interaction-level complementarity and the inputs
+needed by an online reference are different questions. Although partners' readings covary across
+interactions, adding counterpart IPV or ego self-history does not measurably sharpen the reference
+beyond the current situation in the evaluated implementation. The deployed monitor can therefore
+use the situation-conditioned range without those additional channels. This ablation result does not
+identify a psychological mechanism behind the partner relationship.
+
+Second, the frequency of departures and their experiential meaning need to be reported separately.
+The larger automated--human excess occurs on the accommodating side, while the larger comfort and
+reported-cost differences in the subjective study occur on the assertive side. Accommodating-side
+segments nevertheless carry smaller subjective differences relative to within-range segments.
+Together, these observations motivate retaining direction when interpreting a flag rather than
+using its frequency as a proxy for interaction cost. The rates and ratings come from different
+analyses and are not combined into a population-level social-loss score.
+
+Subjective experience and vehicle-motion consequences also provide complementary endpoints. The
+real-vehicle result is compression of routine interaction quality for the ego and counterpart at
+assertive-side flagged moments, without a detected increase in the tested emergency tails. The
+absence of the same compression on the accommodating side applies to that fixed motion-based
+battery. Its lower comfort and higher reported-cost ratings in the subjective study show why a
+broader evaluation should retain an experiential dimension. The current studies do not resolve
+which individual motion features account for those ratings.
+
+The empirical reference, subjective experience, direct normative judgement and realised harm remain
+distinct. The questionnaires support statements about perceived atypicality, comfort and the
+reported interaction-cost item; these endpoints do not establish psychological IPV recovery or a
+universal judgement of social appropriateness. The subjective analysis is exploratory and its
+participant-pair intervals condition on 90 selected segments. Within-scenario comparisons check
+composition sensitivity without establishing generalisation to all new stimuli. A reliable link to
+realised interaction failure remains unconfirmed under the present outcome definitions.
+
+The human-driving arm carries a separate scope: participants drove an instrumented vehicle on a
+closed course against controlled counterparts, supervised and instructed to drive naturally, with a
+fixed scenario sequence. Its protocol and consent cannot be substituted for those of the subjective
+study. The evidence covers pairwise vehicle--vehicle interactions at mapped conflict points;
+cyclists, pedestrians and multi-agent scenes remain outside the present reference. Beyond driving,
+the framework offers a template for comparing autonomous-agent behaviour with human reference
+ranges while separately examining experience and interaction outcomes and explicitly withholding
+unsupported judgements~\cite{rahwan2019machine}.
+
+% ======================================================================
+\section{Methods}
+% ----------------------------------------------------------------------
+\noindent\emph{Note on scope.} The main text states the social-monitoring argument; this section
+records the estimator, the reference-range model and its ablations, the calibration and abstention
+machinery, the real-vehicle consequence protocol, the matched human-driving arm and the separate
+subjective-evaluation analysis. Throughout, \emph{online} means that every input to a
+verdict is available at decision time (non-anticipation verified); end-to-end real-time operation on
+vehicle hardware is not evaluated in this paper.
+
+\subsection{Online likelihood-based inverse-planning IPV estimation}
+The trajectory-based IPV estimator was introduced and validated in controlled VGIM interactions,
+where imposed interaction-preference patterns were identified from trajectories and improved
+interactive-motion prediction~\cite{zhao2024measuring}. We adopt the published estimator as a fixed
+component of the monitor; Supplementary Note 1 summarises the earlier validation and the present
+online implementation.
+
+For a grid of candidate preferences $\{\theta_k\}$, candidate trajectories
+$\widetilde X_a(W_t;\theta_k)$ are generated and scored against the observed trajectory, the
+counterpart trajectory and the static map-lane-centreline reference. The frame-level reading is the
+likelihood-weighted mean,
+\begin{align}
+  \ell_{a,k}(t) &= p\!\left(X_a(W_t)\,\middle|\,\widetilde X_a(W_t;\theta_k),\,X_j(W_t),\,\mathcal{M}\right),
+  & \pi_{a,k}(t) &= \frac{\ell_{a,k}(t)}{\sum_m \ell_{a,m}(t)},
+  & \hat\theta_a(t) &= \sum_k \pi_{a,k}(t)\,\theta_k,
+  \label{eq:estimator}
+\end{align}
+where $W_t$ is the interaction window up to time $t$, $X_j$ is the counterpart trajectory and
+$\mathcal{M}$ is the map and reference geometry. The IPV is parameterised as
+$\theta\in[-\pi/2,\pi/2]$, with positive values placing more weight on the interaction term.
+Each candidate trajectory for preference $\theta_k$ optimises the frozen implementation's
+utility $\cos\theta_k\cdot(\text{own-progress cost}) + \sin\theta_k\cdot(\text{interaction cost})$, so
+a more negative $\theta$ weights the joint term negatively --- the assertive direction; the full cost
+terms and solver configuration are released with the code. This is inverse planning, not a single
+joint maximum-likelihood optimum; $u_a(t)$ is a dispersion
+statistic of the normalised candidate weights, not a standard deviation, and the operational readability gate
+$u_a(t)<u_0$ of Eq.~\eqref{eq:readability} is operationalised by the following frozen rule: the
+reading is discarded as near-uniform when the largest normalised weight falls below $0.20$ (against
+$1/7\approx0.14$ for exactly uniform weights) or the candidate likelihoods are exactly tied. The
+reference frame is what makes the estimate usable online: against an observed-trajectory-prefix
+reference the causal current estimate agrees only weakly with the offline estimate (correlation
+$\approx 0.281$), whereas against a static map-lane-centreline reference, route-conditioned and
+available before the outcome, it agrees closely (correlation $\approx 0.993$, MAE $\approx 0.027$),
+bounded to the lane-referenced slice (about three quarters of cases) and stated as a non-anticipation
+property, not a causal-effect claim. The gate determines whether the frozen candidate set yields a readable trajectory-based score. The frozen configuration uses seven candidate preferences
+$\theta_k\in\{-3,-2,-1,0,1,2,3\}\times\pi/8$; the grid spans $[-3\pi/8,3\pi/8]$ inside the declared domain $[-\pi/2,\pi/2]$ of Eq.~\ref{eq:estimator}, and the admissible span quoted in Fig.~\ref{fig:monitor} is the candidate span $3\pi/4$ (Fig.~\ref{fig:monitor} caption). A rolling window of the ten most recent frames at
+$10$\,Hz (one second), with at least four observed frames required for a reading; and a Gaussian
+trajectory likelihood $\ell_{a,k}\propto\exp\{-\mathrm{MSE}_k/(2\sigma^2)\}$ with $\sigma=0.1$,
+where $\mathrm{MSE}_k$ is the mean squared Euclidean distance (m$^2$) between observed and candidate
+positions over the window, so $\sigma$ is in metres. The reported reading is not one of the seven
+candidates: the likelihoods are normalised to weights $w_k=\ell_{a,k}/\sum_j\ell_{a,j}$ and the
+reading is their weighted mean $\hat\theta_a=\sum_k w_k\theta_k$, which varies continuously over
+$[-3\pi/8,3\pi/8]$. The candidate set is the support of the likelihood, not the range of the
+estimator; the concentration of $w$ is what the readability gate below tests. A reading failing the near-uniform rule above carries no discriminative information between
+the candidates, and the monitor abstains. The full frozen configuration is released with the code.
+
+\subsection{Interaction opportunity, readability and episode summary}
+An interaction-opportunity indicator $o_{ij}(t)$ marks when a behaviourally meaningful interaction is
+active (a mapped conflict point reachable by both agents within a bounded horizon with closing
+geometry), as opposed to mere co-presence. Candidate-weight concentration supplies the operational
+candidate-discrimination statistic $u_a(t)$. The readability indicator is
+\begin{equation}
+  g_a(t) = \mathbf{1}\!\left[\,o_{ij}(t)=1,\ u_a(t)<u_0,\ q_a(t)>q_0,\ c_a(t)>c_0\,\right],
+  \label{eq:readability}
+\end{equation}
+where $q_a(t)$ records trajectory/reference information and $c_a(t)$ counterpart-identity stability.
+The thresholds are frozen on training/guard data and applied identically downstream; $g_a(t)=0$
+states are labelled as no active interaction, insufficient candidate discrimination, unstable
+identity or unreliable reference rather than scored.
+The event-level summary of an interaction
+is the mean current IPV over its valid interaction segment; alternative rules (all valid frames;
+readability-weighted) differ by $0.26$ rad on average and flip the episode sign in $7$--$22\%$ of
+episodes (Supplementary Fig.~\ref{fig:suppmeasurement}c), which is why the monitor never uses an episode summary
+online and every reading is per-moment.
+
+Three dyad-level analyses in Section 2.2 use the episode summary for both partners. The cohort is the
+$34{,}850$ two-agent cases with a valid estimate for both partners. Complementarity treats the two
+summaries as an exchangeable pair and compares their intraclass correlation with a null that re-pairs
+partners across cases within $415$ scenario-matched strata (source subset, path-geometry category,
+post-encroachment band and duration band); $34{,}757$ cases lie in strata that support re-pairing.
+The estimate is computed in two independently built implementations and uncertainty is obtained by
+scene-cluster bootstrap. Early legibility predicts, out of fold under grouped cross-validation, which
+partner's summary will finish on the giving-way side from the first fraction of the interaction or
+from early kinematics over the same window; discrimination is AUC with scene-cluster bootstrap
+intervals. Turning yield is the paired difference between the turning and straight-driving partners,
+reported by source and pooled with Benjamini--Hochberg correction across turn groups.
+
+\subsection{Context-conditioned human reference range}
+The reference range is the conditional distribution of the human current IPV given the current
+observable situation $z_t$ (geometry, role, interaction progress, relative kinematics,
+online-computable risk proxies, and support/readability state), estimated by conditional quantile regression (histogram-based gradient-boosted quantile models, one per quantile level, with frozen hyperparameters: learning rate $0.06$, $72$ boosting iterations, maximum $31$ leaf nodes, minimum $80$ samples per leaf, L2 regularisation $0.01$, $255$ bins, no early stopping)
+and evaluated only on readable, active windows. The reference pool contains human--human vehicle
+pairs only ($2{,}442{,}625$ anchor rows): any interaction in which either agent is an automated
+data-collection vehicle is excluded from the reference, so machine behaviour cannot contaminate the
+human range. The corpora are fleet-collected in specific cities in the United States and Singapore;
+the reference is a sample of natural driving there, not of all human driving. We compare a global reference, an offline
+oracle-risk ceiling, and the context-conditioned reference; the context-conditioned reference
+supplies essentially all of the achievable sharpening over the global reference (width reductions of
+21\%, 20\% and 8\% at the 80\%, 90\% and 95\% levels, at coverage within 0.6 percentage points of
+nominal; the global 95\% range spans essentially the whole admissible scale). Two further inputs
+are evaluated as ablations and add no measurable value: conditioning on the principal counterpart's
+current IPV, and conditioning on the ego agent's own behavioural history (the self-anchor). Neither
+is interpreted as a mechanism; the counterpart channel in particular is statistically indistinguishable
+from removing the IPV input given the situation (paired $90\%$ interval-score difference $-0.0002$,
+case-clustered $p=0.86$), which---set against the event-level partner
+correlation---is the tension highlighted in the Results. Concretely, $z_t$ comprises four categorical descriptors (path-geometry category, path relation, turn-pair label and priority role) and $22$ numeric channels: elapsed interaction time and history length; ego and counterpart velocity components and headings at the anchor; relative position components, distance, velocity components, speed, closing rate and heading difference at the anchor; short-window means and a dispersion of relative distance, relative speed and closing rate; and two online risk proxies --- the closing-rate time-to-collision at the anchor and an anticipated post-encroachment proxy computed only from information available at time $t$.
+Excluded from the reference are observed
+post-encroachment time, realised passing order, post-hoc phase labels, the episode summary, the
+machine/human identity, and target-proximal concurrent ego actions; quantiles are made non-crossing
+by rearrangement. The reference range conditions on the current situation rather than on a specific
+temporal pattern of the interaction; temporal-history features were examined and are not part of the
+primary conditioning.
+
+\subsection{Conformal calibration and abstention}
+Vocabulary, used consistently: an anchor row is one agent-moment eligible for
+estimation; a readable moment passes the discriminative-information rule; an accepted moment
+additionally lies within human support (these receive verdicts); on the benchmark we write candidate
+moment for an anchor row entering the two gates, and judgeable moment for one that passes both. A scene
+is one contiguous recorded segment and the unit of the frozen split; an interaction case is one
+interacting vehicle pair within a scene (Section 2.2); on the benchmark, a scenario is one of the staged
+templates and a scenario run is one system's or one driver's traversal of it (Section 2.4).
+The final interval is calibrated by split-conformal prediction~\cite{romano2019cqr,angelopoulos2023conformal} with nonconformity
+$s_k=\max\{\hat q_l(x_k)-y_k,\ y_k-\hat q_u(x_k),\ 0\}$ and radius
+$c_\alpha=s_{(\lceil(n+1)(1-\alpha)\rceil)}$ over accepted calibration moments.
+Conformal calibration of trajectory atypicality has precedent in unconditional surveillance
+settings~\cite{laxhammar2014online}; distribution-shift-aware conformal
+variants~\cite{tibshirani2019conformal, gibbs2021adaptive, lei2018distribution} are compatible with
+the same monitor, and we use the split-conformal form for auditability.
+The estimand is pointwise marginal coverage over accepted moments: the conformal radius $c_\alpha$
+is the $\lceil(n+1)(1-\alpha)\rceil$-th smallest nonconformity score over all accepted
+calibration-fold moments ($n=455{,}723$), and coverage is evaluated over all accepted test-fold
+moments ($461{,}937$). The fitted radii are near zero ($c_\alpha = 1.4\times10^{-3}$, $1.2\times10^{-6}$ and $0.0$\,rad at the $80\%$, $90\%$ and $95\%$ levels), so the conformal step finds essentially nothing to repair in the situational quantile model.
+Splits are made by whole scenes under a split frozen before this study, so no
+scene contributes to more than one fold; the readability gate is frozen on training/guard data and
+applied identically to calibration and test. Moments within an interaction are dependent, so the
+coverage statement is marginal over accepted moments --- not a per-interaction, sequential or
+conditional guarantee --- and the achieved coverage is reported empirically (Fig.~\ref{fig:monitor}b). A marginal
+statement leaves conditional coverage unconstrained in principle, so we also report it by source:
+on the test fold the deployed reference contains $88.2\%$, $95.9\%$, $85.9\%$ and $88.2\%$ of
+moments at the $90\%$ level within Waymo, nuPlan, Lyft and Argoverse-2 respectively, against $90.3\%$
+pooled, so the pooled figure is not masking a source in which the range fails.
+The frozen split assigns $974{,}984$ / $499{,}893$ / $481{,}088$ / $486{,}660$ human anchor rows to
+the train / guard / calibration / test folds ($26{,}828$ interaction cases; whole-scene split frozen
+in advance). The universes nest as follows: of the $38{,}228$ corpus interaction cases (Section 2.2),
+$26{,}828$ enter the frozen anchor ledger, contributing $4{,}497{,}368$ anchor rows (the readability
+accounting above); the human--human reference pool retains $2{,}442{,}625$ of those rows (Methods
+4.3), which are exactly the train/guard/calibration/test folds
+($974{,}984+499{,}893+481{,}088+486{,}660$). The support gate scores each moment by the mean Euclidean distance to its $k=25$
+nearest training anchors after standardisation and one-hot encoding of the situation categories,
+abstaining above the $95$th percentile of guard distances ($1.081$); categorical support
+additionally requires at least $50$ training anchors and at least $10$ cases. On the test fold,
+support abstention is $5.08\%$ ($24{,}723$ of $486{,}660$) with zero categorical failures. On the
+natural corpus the mechanism-level readability accounting over $4{,}497{,}368$ anchor rows is:
+$3{,}202{,}646$ readable, $1{,}275{,}480$ near-uniform weights, $17{,}416$ exact ties and $1{,}826$
+solver failures. The $1{,}826$ solver failures belong to this natural-corpus accounting; on the benchmark, no
+candidate moment failed the solver or pipeline (Section 2.4). Conditional coverage across state groups and trajectory-wise simultaneous coverage
+are not established here and remain stated boundaries of the construction; leave-one-source-out
+coverage quantifies the source-shift boundary: at the $90\%$ level, refitting with one source held out
+covers the held-out source at
+$0.743$ (Waymo, $143{,}380$/$193{,}096$), $0.990$ (nuPlan, $149{,}068$/$150{,}587$), $0.750$ (Lyft,
+$68{,}270$/$91{,}069$) and $0.900$ (Argoverse-2, $11{,}315$/$12{,}576$, with $44.3\%$ held-out
+abstention---the support gate intercepting unsupported situations); transfer across sources is
+therefore a bounded property of source heterogeneity, and coverage and abstention must be read
+together. We report not only accepted-window coverage but also the active-interaction rate,
+readability rates, and the total abstention rate with its reason distribution, so that filtering is
+never hidden. The monitor returns \textsc{Abstain}---
+not \textsc{Within-Norm}---with one of the reason codes \textsc{No-Active-Interaction},
+\textsc{Ego-Unreadable}, \textsc{Counterpart-Unreadable} (the counterpart's identity is not stable
+enough to anchor a reading, $c_a$ of Eq.~\ref{eq:readability}), \textsc{Map-or-Role-Uncertain},
+\textsc{Low-Human-Support} or \textsc{Out-of-Distribution}; reason codes are assigned by the first failing gate in the evaluation order of Algorithm 2, so exactly one code is returned; otherwise it emits \textsc{Within-Norm},
+\textsc{Competitive-Deviation} or \textsc{Over-Yielding}. In the main text,
+\textsc{Competitive-Deviation} is written `outside the range on the assertive side' and
+\textsc{Over-Yielding} `outside on the accommodating side'; both sides are tested at every
+judgeable moment. A sequential warning layer (persistence over consecutive verdicts) belongs to the
+deployment interface: no result in this paper uses it, every reported verdict and flag rate is
+per-moment, and its operating characteristics (episode-level false-alarm rate, detection delay,
+warning duration) are not evaluated in this paper.
+
+\subsection{Real-vehicle consequence protocol}
+We use a matched-scenario real-vehicle benchmark at the scenario level (no run-level, seed-level or
+causal claims), separating an outcome universe from a replay/IPV universe with frozen exclusions.
+The counterpart vehicles are driven by traffic-simulation software (TESS~NG) and respond to what the
+ego vehicle does; the same counterpart control is used in the human reference arm below, so the two
+arms face a counterpart that reacts to them on the same terms. The staging is mixed-reality: the ego
+is a real vehicle driven at a test site, and the simulated counterparts reach an automated system
+through its perception interface and a human driver through a head-mounted display. No
+confirmatory analysis proceeded until an outcome-blind crosswalk had reconciled canonical scenario
+identifiers, structural case identities and official outcome labels. Realised-consequence events are
+defined by a frozen automatic extractor. Verdicts are issued per moment; outcome windows begin at
+the flagged moment, so the trajectory samples that produce a verdict (the one-second window ending
+at that moment) precede every outcome sample. The ego-side outcome is the minimum time-to-collision
+to the counterpart over the fixed three-second post-verdict window ($30$ frame intervals at
+$10$\,Hz, inclusive of both endpoints; the run ends inside that window for $4.8\%$ of assertive,
+$6.2\%$ of accommodating and $5.0\%$ of within-range moments, and the window is then truncated at
+the last available frame); time-to-collision is computed per frame as distance over closing rate,
+and frames in which the pair is not closing do not enter the minimum; the counterpart-side outcomes
+are read over the same fixed three-second window from the same moment, from the other vehicle's own
+logged control record.
+Comparisons are made within the frozen situation cells, inference resamples scenario runs (the unit
+of clustering throughout), and a placebo test that reassigns whole exposure trajectories across
+scenario runs distinguishes the real flag timing from permuted timings (200 whole-trajectory reassignment draws; the comparison statistic is the absolute case-clustered $t$; empirical $p=0.0199$).
+Across all six level--window combinations of the $\log(1+\mathrm{TTC})$ magnitude battery the
+coefficients agree in sign; the fixed three-second window is the pre-specified primary and is the one
+displayed, and its case-clustered intervals exclude zero at all three levels, while the alternative
+and much shorter window---the anchor's own prediction-target horizon, a median $0.60$\,s---crosses
+zero at the $90\%$ level ($[-2.6100, +0.1372]$). A case-level label permutation
+on the same battery does not reach significance ($p=0.1493$); the exposure placebo above is the
+test specific to flag timing.
+The battery is reported for both sides of the range. Its endpoints, windows, thresholds, clustering
+unit and resampling settings were fixed for the assertive-side comparison and were not altered
+afterwards; the accommodating-side values were obtained by running that unchanged battery on the
+accommodating group, so no endpoint, threshold or window was chosen in the light of
+accommodating-side data. The counterpart braking endpoint was specified for both sides from the
+outset. On the accommodating side ($817$ ego moments and $719$ counterpart anchors, against the same
+within-range groups) the counterpart's speed reduction is $0.79\times$ the within-range median
+($[0.28,1.53]$) and its speed variation $1.08\times$ ($[0.78,1.53]$); the share of counterpart
+records braking below $-3$\,m\,s$^{-2}$ differs by $+0.07$ percentage points ($[-1.96,+2.24]$); and
+the ego's own margin median is $0.99\times$ ($[0.83,1.22]$) with its upper quartile at $1.03\times$
+($[0.67,1.38]$). Every interval admits no difference.
+These are non-detections at the achieved precision---which on the ratio scale is slightly coarser
+than on the assertive side, despite the larger group---and not demonstrations of equivalence.
+The two sides are additionally compared with each other, rather than each against the within-range
+group in turn: on every resampled set of scenario runs both ratios are recomputed and their
+difference taken, so the two sides move together and the comparison keeps the correlation that
+separate intervals discard. At the upper quartile the sides differ ($-0.43$ $[-0.71,-0.06]$,
+$p=0.014$); at the median they do not ($-0.09$ $[-0.29,+0.12]$, $p=0.368$). That ordering is
+unchanged on the shorter window and under the retention convention above---the upper-quartile
+difference excludes zero in all four window-by-convention combinations and the median difference in
+none---so the side-specific statement is made at the quartile that supports it and withheld at the
+one that does not.
+Estimates are weighted by moment rather than by scenario run, because the monitor issues a verdict
+at each moment and the per-moment population is the one its operation defines; resampling scenario
+runs sets the intervals. Weighted equally per run, the assertive-side counterpart braking contrast
+does not reach significance ($p=0.4704$); the speed-reduction and speed-variation contrasts carry
+the counterpart-side result. Ratios of medians are reported alongside differences because a ratio
+becomes unstable where the within-range median is near zero, as it is in one of the two sites.
+Of the $14{,}099$ judgeable
+moments at the $90\%$ level, $519$ lie below the range, $869$ above and $12{,}711$ inside.
+The criterion is the situation-conditioned range, not the sign of the reading: at the $90\%$ level the
+lower edge is negative in essentially every situation (median $-1.03$\,rad), $40.0\%$ of within-range
+moments also carry a negative reading, and of all negative-reading moments only $9.25\%$ are flagged.
+The challenge fielded $20$ systems; one is set aside in full because its replay records are not
+clean, leaving $19$ systems across the $15$ scenarios, or $285$ system--scenario cells, of which
+$267$ yield the trajectory anchors the estimator needs. The $18$ that do not were all attempted and
+officially scored ($15$ scored completions and $3$ collision failures); they are lost in our own
+replay processing --- $11$ to observed reference trajectories that collapse to fewer than two
+distinct points, $3$ to no timing-valid anchor, $3$ to no eligible counterpart and $1$ to a
+counterpart without timing support --- and $13$ of the $18$ fall in a single system. No scenario is
+dropped: each retains between $16$ and $19$ systems.
+Consequence analyses follow the same run accounting as the rest of the benchmark. Of the $267$
+scenario runs, $231$ contain at least one judgeable moment and can therefore enter a consequence
+analysis at all. Reported per run rather than per moment, $157$ of those $231$ ($68.0\%$) contain at
+least one flagged moment on either side of the range and $120$ ($51.9\%$) at least one on the
+assertive side. The per-moment rate is the operating point throughout; the per-run figure is given
+here because the two have different denominators and are easily confused. Of those, $27$ are runs in which the counterpart was identified from a different
+naming convention in the run logs; they are held out of the pooled counterpart-response analyses and
+reported separately, leaving $204$, of which $175$ have the recorded counterpart logs the outcome
+battery requires. The split is one of record-keeping rather than of apparatus: the counterpart is
+the same kind of simulator-driven vehicle throughout. The runs dropped at that last step do differ
+from the retained ones in how often they contain a flagged moment: $7$ of the $29$ dropped ($24.1\%$)
+against $132$ of the $175$ retained ($75.4\%$). The requirement is a logging one, and a run without
+recorded counterpart logs also tends to be one with fewer judgeable moments, so the two rates are
+not independent of each other; we report them rather than argue the point. The restriction applies
+only to the counterpart-side panels: the ego-side panels use all $227$ runs with an evaluated ego
+window and are not filtered on counterpart logging at all. That the counterparts respond is also visible in the replay itself: in the four
+scenarios whose counterpart identity recurs across systems, the same counterpart's trajectory
+differs between systems by $4.35$--$9.03$\,m, and in none of the four is it identical. The ego-margin panels use the moments with
+a defined post-verdict margin ($499$ assertive, $817$ accommodating, $12{,}344$ within-range). The
+margin is undefined where the pair is not closing, and the three groups do not lose equally: $3.9\%$
+of assertive moments ($20$ of $519$), $6.0\%$ of accommodating moments ($52$ of $869$) and $2.9\%$
+of within-range moments ($367$ of $12{,}711$). The accommodating group loses most, which follows
+from what defines it---yielding is what stops a pair closing---so the exclusion removes
+preferentially the moments in which that group is most itself, and it does so in the direction that
+draws the accommodating group toward the within-range one. We therefore report the battery again
+with those moments retained and ranked at the safe end rather than dropped, which is what never
+approaching a collision means; the quartile statistics are invariant to the value used, verified
+against two sentinels a thousandfold apart. Retaining them leaves the assertive
+upper-quartile contrast in place ($0.626$ of the within-range quartile, $[0.410, 0.829]$, against
+$0.601$ $[0.436, 0.831]$ when they are dropped) and moves the accommodating side further away from
+the within-range group in the direction of wider margins ($1.029$ to $1.126$), which is what
+restoring the most strongly yielding moments should do. The exclusion was therefore pulling the
+accommodating side toward the within-range group, not the assertive side. Under these definitions the harm
+relationship is bounded rather than confirmed: deviation does not robustly or specifically predict
+realised harm, and the dominant limitation is upstream, in the adequacy of interaction-failure
+segmentation itself. The fraction of moments whose reading carries discriminative information
+differs between the naturalistic corpora and the benchmark ($70.3\%$ vs $55.3\%$); we report this as
+an observed difference without attributing a cause, and the readability gate treats both populations
+identically. The binding constraint on benchmark coverage is situational rather than volumetric: in the 36 always-silent runs the readability pass rate ($53.78\%$) is close to the benchmark average ($55.30\%$) while the human-support pass rate is $0.07\%$ (against $32.32\%$ overall), and support does not follow sample volume --- one high-volume situation cell with $1{,}148{,}133$ human anchor rows passes support on $14.58\%$ of its benchmark moments while a $45{,}283$-row cell passes on $47.03\%$. The support gate compares kinematic neighbourhoods, not IPV values.
+
+\subsection{Human reference arm (matched scenarios)}
+Licensed drivers drove the same scenario set in a real vehicle against the same simulator-driven
+counterparts under the counterpart control described above,
+giving a drivers-by-scenarios matrix (20 drivers $\times$
+15 scenarios) symmetric to the automated-systems benchmark. The unchanged estimator,
+abstention gates and frozen reference range were applied to the human runs. Endpoints were fixed
+before analysis: (i) the flagged fraction of judgeable moments against the nominal level, with the
+natural-driving outside rate ($9.72\%$ at the $90\%$ level) as the apparatus-validity anchor; and
+(ii) the consequence battery of Fig.~\ref{fig:consequence} recomputed within the human arm under
+identical frozen definitions, with no new outcome variables and no threshold scans. Official
+competition scores, harm labels and preference ratings were excluded as endpoints in the analysis
+plan, which was specified and frozen before any outcome was examined; those labels are publicly
+released by the challenge, which is operated by the authors' research group, and no author entered
+the challenge as a competitor. Driver identities were pseudonymised before analysis.
+
+The human-reference study was approved by the Science and Technology Ethics Committee of Tongji
+University (approval tjdxsr2025011). All participants gave written informed consent before taking
+part and were insured for the duration of testing. Runs took place at a dedicated test site with a
+safety supervisor on board who could intervene or terminate a run at any time. Participants held a
+valid driving licence, were compensated at CNY 150 per hour, and were instructed to drive naturally;
+they were not told that their runs would serve as a human reference against automated systems. Each
+driver completed the scenario set as a single fixed sequence, identical across drivers, and no trial
+was missing.
+
+\subsection{Subjective evaluation of selected interaction segments}
+\label{sec:subjective_methods}
+\noindent\textbf{Cohort and stimuli.} The author-confirmed final rating dataset contains 40
+participants organised into 20 pairs and 40 sessions. Of 600 formal trial attempts, 596 were completed
+and four were aborted. Each completed trial contributes one ego-position and one counterpart-position
+rating record, yielding 1{,}192 records; repeated records from the same participant are not treated
+as independent participants. The 90 segments span 15 scenarios: 24 assertive-side segments,
+36 accommodating-side segments and 30 within-range comparison segments, contributing 158, 239 and
+199 completed trials, respectively. The supplied source labels identify 45 automated and 45 human
+segments. These labels are used for sensitivity summaries, not a source-recognition or vehicle-ranking
+claim. The subjective protocol is distinct from the 20-driver matched driving arm.
+
+The supplied segment categories were retained. Package-internal checks associate A with segments
+containing below-range moments, C with segments containing above-range moments, and W with
+within-range and abstention moments. A segment category does not assign the same verdict to every
+frame; abstention is never recoded as a within-range verdict. Stimulus-selection rules and the
+version relationship between these supplied labels and the manuscript's frozen monitor require
+completion in the study documentation below.
+
+\noindent\textbf{Rating items.} Analyses are separated by the supplied ego and counterpart position
+labels. Perceived atypicality is Q1 reverse-coded as $8-\mathrm{Q1}$; Q4 is comfort, with higher
+values indicating greater comfort; Q5 is the supplied reported interaction-cost item, with higher
+values indicating greater cost. These items use a 1--7 scale. Q5 and Q5b are structurally unavailable
+for the ego position: the 596 blank values for each item there are not zero ratings. The four
+aborted trials contribute no completed questionnaires and are not imputed. Supplementary
+Note 2 records the remaining exploratory items and the scope of their interpretation.
+
+\noindent\textbf{Statistical analysis.} This is an exploratory secondary analysis of the final
+rating cohort. Within each participant and position, ratings were averaged within category; category
+differences were then computed within participant and averaged with equal participant weights.
+Pointwise $95\%$ percentile intervals use 10{,}000 bootstrap resamples of the 20 participant pairs,
+keeping the two members together. Two-sided one-sample $t$-tests use the 20 pair-averaged differences
+($19$ degrees of freedom). Holm correction covers all 30 available item-by-position-by-category
+contrasts, including contrasts not highlighted in the main text. Bootstrap intervals are pointwise,
+not multiplicity-adjusted simultaneous intervals, and condition on the selected stimulus set.
+The extraction used Python 3.9.6, NumPy 2.0.2, pandas 2.3.3 and SciPy 1.13.1, with seed 20260925.
+
+A separate scenario-composition sensitivity analysis first averages ratings within segment, then
+segments within scenario and category, and finally contrasts the categories across shared scenarios
+with equal scenario weights. Assertive-minus-within, accommodating-minus-within and
+assertive-minus-accommodating comparisons contain eight, nine and 12 shared scenarios, respectively.
+Its intervals resample scenarios and condition on the observed raters; they are not a joint
+participant-and-stimulus uncertainty estimate. The participant-pair and scenario analyses address
+different sources of variation and are not independent replications.
+
+\planned{Complete the subjective study's recruitment and eligibility, apparatus and presentation
+instructions, allocation and order rules, compensation, ethics approval and consent scope, full
+questionnaire wording and anchors (especially Q5), stimulus-selection rules, and the version link
+between supplied labels and the frozen monitor. These records were absent from the extraction
+package; do not substitute the matched human-driving protocol.}
+
+% ---------------------------------------------------------------------
+\begin{algorithm}[t]
+\caption{Offline calibration of the context-conditioned reference range}
+\label{alg:calib}
+\begin{algorithmic}[1]
+\REQUIRE existing IPV time series $\mathcal{D}$; target coverage $1-\alpha$
+\ENSURE quantile model $\hat{Q}$, conformal radius $c_\alpha$, frozen readability gate
+\STATE split whole scenes into train / guard / calibration / test
+\STATE freeze the interaction-opportunity rule and the readability gate ($u_0,q_0,c_0$) on train/guard
+\FOR{each interaction in train}
+    \STATE keep active, readable windows; build the current situation $z_t$; target $y\leftarrow$ human current IPV
+\ENDFOR
+\STATE fit non-crossing situational quantiles; fit counterpart-IPV and self-history variants as ablations only
+\STATE apply the identical frozen gate to calibration; score every accepted calibration window
+\STATE $c_\alpha\leftarrow s_{(\lceil(n+1)(1-\alpha)\rceil)}$ over accepted calibration windows; freeze all parameters
+\RETURN $\hat{Q},\,c_\alpha,\,\text{gate}$ \COMMENT{evaluate once on test}
+\end{algorithmic}
+\end{algorithm}
+
+% ---------------------------------------------------------------------
+\begin{algorithm}[t]
+\caption{Online social-atypicality monitoring step at time $t$}
+\label{alg:online}
+\begin{algorithmic}[1]
+\REQUIRE window $W_t$; map-lane reference; calibrated $\hat{Q},c_\alpha$; frozen gate; source health
+\ENSURE reference range and verdict, or an abstention with reason code
+\STATE identify the principal counterpart; evaluate active interaction $o_{ij}(t)$
+\IF{$o_{ij}(t)=0$} \RETURN \textsc{Abstain}(\textsc{No-Active-Interaction}) \ENDIF
+\STATE estimate $\hat\theta_i(t)$ and reliability $u_i(t)$ \COMMENT{Eq.~\eqref{eq:estimator}}
+\IF{$g_i(t)=0$} \RETURN \textsc{Abstain}(\textsc{Ego-Unreadable} if $u_i$ or $q_i$ failed; \textsc{Counterpart-Unreadable} if $c_i$ failed) \ENDIF
+\STATE build the current situation $z_t$; run map/role, human-support and distribution gates
+\IF{any gate fails} \RETURN \textsc{Abstain}(reason code) \ENDIF
+\STATE $[\hat q_l,\hat q_u]\leftarrow \hat{Q}(z_t)$ widened by $c_\alpha$
+\STATE verdict $\leftarrow$ \textsc{Within-Norm} / \textsc{Competitive-Deviation} / \textsc{Over-Yielding} from $\hat\theta_i(t)$ vs $[\hat q_l,\hat q_u]$
+\STATE optionally map the verdict to a planner-facing signal through a persistence rule (deployment interface; not evaluated in this paper)
+\RETURN (range, verdict) \COMMENT{plus signal only where the optional persistence rule is instantiated}
+\end{algorithmic}
+\end{algorithm}
+
+\noindent\textbf{Planner interface.} The verdicts map to planner actions---audit,
+soft cost or warning, a fallback candidate under sustained competitive deviation at high physical
+risk, a hesitation/efficiency warning, and --- on abstention --- a degraded mode in which the social verdict is simply unavailable. This mapping is an interface specification, not an external-validity result; the social layer is advisory and subordinate to collision-safety enforcement, no social verdict or abstention relaxes or delays any safety constraint, and a planner fallback is a control action never labelled \textsc{Within-Norm}.
+
+\section*{Data Availability}
+InterHub-derived interaction cases and source datasets (Waymo, nuPlan, Lyft, Argoverse-2) are governed
+by their respective licences; processed derivatives, including the online IPV time series, will be made
+available upon publication. The matched-scenario real-vehicle benchmark is operated by the authors'
+research group at Tongji University, and its official outcome labels are publicly released; the
+derived moment-level verdict series for the automated-systems arm will be made available upon
+publication. Records from the human reference arm are not released: participants consented to take
+part in the study, and that consent does not extend to sharing or publishing their driving records,
+so the human arm is reported only in aggregate.
+
+\planned{Specify the separate subjective study's data-access and sharing terms from its own
+consent records, including what may be released as aggregate Source Data and whether any
+participant-level derivatives may be shared. The driving-arm restriction above does not establish
+the subjective study's permissions.}
+
+\section*{Code Availability}
+Implementation, the online likelihood-based inverse-planning IPV estimator, the readability gate and
+abstention logic, and figure-generation code will be deposited in Zenodo under a persistent
+identifier upon publication, and are available to referees on request during peer review.
+
+
+% ======================================================================
+% Supplementary Information
+% ======================================================================
+\clearpage
+\section*{Supplementary Information}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\setcounter{table}{0}
+\renewcommand{\thetable}{S\arabic{table}}
+
+\subsection*{Supplementary Note 1. Published validation and present implementation of IPV estimation}
+The IPV estimator used in this study was introduced in Zhao et al.~\cite{zhao2024measuring}. In
+controlled VGIM interactions, agents were assigned interaction-preference patterns and the
+trajectory-based estimate tracked those imposed patterns as the interaction unfolded; incorporating
+the identified IPV also improved interactive-motion prediction. The present study adopts that
+published estimator without refitting it and changes the downstream question from parameter
+identification to membership in a situation-conditioned human reference range.
+
+The online implementation evaluates seven candidate preferences
+$\{-3,-2,-1,0,1,2,3\}\times\pi/8$ over a one-second causal window at $10$\,Hz. Each candidate
+generates a trajectory under the frozen VGIM utility, the observed-to-candidate trajectory error is
+converted to a normalised likelihood, and Eq.~\ref{eq:estimator} returns their continuous weighted
+mean. A static route-conditioned map reference keeps the calculation causal and available at decision
+time. The operational readability gate asks whether the current candidate set is sufficiently
+discriminated while the interaction, trajectory reference and counterpart identity are valid.
+
+The present implementation was also checked against interaction-specific controls
+(Supplementary Fig.~\ref{fig:suppmeasurement}). Candidate discrimination sharpens in the actual dyad
+relative to time-misaligned, partner-swapped and no-opportunity controls. At the same time, readable
+frame-level values can continue to move as negotiation develops, and episode-level summaries depend
+on how valid frames are aggregated. These diagnostics support the per-moment design used throughout
+the paper: the monitor retains the frame-level reading, applies an explicit readability boundary and
+never substitutes a single agent-level score for the online trajectory.
+
+\begin{table}[!htb]
+\centering
+\small
+\caption{\textbf{Role of IPV estimation in the published T-ITS study and in the present monitor.}}
+\label{tab:suppipv}
+\begin{tabular}{p{0.20\linewidth}p{0.35\linewidth}p{0.35\linewidth}}
+\toprule
+Aspect & Published T-ITS study~\cite{zhao2024measuring} & Present study \\
+\midrule
+Scientific role & Introduces trajectory-based IPV identification in the VGIM framework & Uses the published estimator as a fixed input to a human-reference monitor \\
+Interaction setting & Controlled pairwise VGIM interactions & Naturalistic and matched-scenario pairwise interactions \\
+Output & Time-varying IPV identified from observed interaction trajectories & Frame-level IPV reading compared with the human range for the current situation \\
+Primary question & Can imposed interaction-preference patterns be identified and improve interaction prediction? & Does the current behaviour fall within the context-conditioned human reference range? \\
+Validation emphasis & Model-consistent identification and interactive-motion prediction & Context conditioning, calibration, abstention and behavioural auditing \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[!htb]\centering
+\includegraphics[width=\linewidth]{figures/fig1_measurable.pdf}
+\caption{\textbf{Interaction-specific diagnostics and summary sensitivity of the present online implementation.}
+\textbf{a} Change in candidate-weight concentration inside real interaction windows relative to three
+controls. The interaction-specific sharpening disappears under time misalignment ($+0.006$), is
+weaker under partner swapping ($-0.043$), and reverses where no interaction opportunity exists
+($+0.027$). Points are means with $95\%$ confidence intervals over case clusters; the $n$ column
+counts case clusters.
+\textbf{b} Mean movement of the frame-level reading between consecutive frames. Readable values remain
+dynamic as an interaction unfolds, so the monitor keeps them time-indexed.
+\textbf{c} Episode-level summaries of the same interactions under three aggregation rules; bars span
+the interquartile range and ticks mark medians. The rules differ by $0.26$\,rad on average and change
+the sign in $7$--$22\%$ of episodes, motivating the per-moment verdict used in the main analysis.
+Source data are provided as a Source Data file.}
+\label{fig:suppmeasurement}
+\end{figure}
+
+\subsection*{Supplementary Note 2. Subjective endpoints and exploratory comparisons}
+\label{supp:subjective}
+The main subjective results focus on perceived atypicality, comfort and reported counterpart
+interaction cost. All 30 item-by-position-by-category comparisons were retained in the extraction,
+including the supplied Q2 yielding-tendency item, Q3 predictability item and counterpart-only Q5b
+naturalness item. Their full wording and response anchors must accompany the final questionnaire.
+No item is substituted for a direct preference, acceptability or appropriateness question.
+
+The ego-position assertive-minus-within atypicality difference is $+0.465$
+$[+0.170,+0.759]$ points, with Holm-adjusted $p=0.0704$. It is therefore not described as a
+multiplicity-adjusted positive finding despite its pointwise interval excluding zero. The
+counterpart-position assertive-minus-accommodating atypicality comparison has adjusted $p=1$;
+this non-detection does not establish equal atypicality. Q2 does not clearly separate assertive
+from within-range segments, and the Q5b comparisons do not establish equivalence of naturalness.
+Continuous dial responses are not used as evidence of instantaneous discomfort or warning latency:
+their construct, anchors, standardisation and onset definitions require additional documentation.
+
+Table~\ref{tab:subjective_core} gives the eight counterpart-position contrasts highlighted in the
+Results. Participant-pair intervals condition on the selected stimuli. The common-scenario estimate
+uses equal weighting of segments within scenario and then of shared scenarios; it is a composition
+sensitivity summary with a different estimand, not a second experiment.
+
+\begin{table}[!htb]
+\centering\small
+\caption{\textbf{Principal counterpart-position subjective contrasts.}
+Differences are on 1--7 scales; positive atypicality and cost differences indicate higher ratings,
+while negative comfort differences indicate lower comfort. A, assertive-side; C, accommodating-side;
+W, within-range comparison. All rows use 40 participants in 20 pairs. Intervals are pointwise
+$95\%$ participant-pair bootstrap intervals. Adjusted $p$ values use the full 30-comparison Holm
+family. Common-scenario means use eight A--W, nine C--W and 12 A--C scenarios.}
+\label{tab:subjective_core}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llrrr}
+\toprule
+Item & Contrast & Difference [$95\%$ CI] & Holm $p$ & Scenario mean \\
+\midrule
+Atypicality & A--W & $+0.639\ [ +0.318,+0.992]$ & $0.0245$ & $+0.850$ \\
+Atypicality & C--W & $+0.682\ [ +0.548,+0.817]$ & $1.99\!\times\!10^{-7}$ & $+0.949$ \\
+Comfort & A--W & $-1.091\ [-1.226,-0.961]$ & $6.11\!\times\!10^{-11}$ & $-1.120$ \\
+Comfort & A--C & $-0.870\ [-0.974,-0.766]$ & $5.18\!\times\!10^{-11}$ & $-0.851$ \\
+Comfort & C--W & $-0.221\ [-0.351,-0.100]$ & $0.0342$ & $-0.245$ \\
+Reported cost & A--W & $+2.070\ [ +1.885,+2.263]$ & $3.95\!\times\!10^{-13}$ & $+2.005$ \\
+Reported cost & A--C & $+1.163\ [ +1.019,+1.300]$ & $6.93\!\times\!10^{-11}$ & $+1.191$ \\
+Reported cost & C--W & $+0.908\ [ +0.771,+1.051]$ & $3.49\!\times\!10^{-9}$ & $+0.915$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ======================================================================
+% Extended Data figures
+% ======================================================================
+\clearpage
+\section*{Extended Data}
+\suppressfloats[t]
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{ED\arabic{figure}}
+
+\begin{figure}[!htb]\centering
+\includegraphics[width=\linewidth]{figures/figE2_reference_band.pdf}
+\caption{\textbf{The human reference range rises, falls and changes width
+with the situation.} A single interaction segment showing the frame-level reading against the nested
+$80\%$, $90\%$ and $95\%$ situation-conditioned human reference ranges. Grey intervals in the top strip
+mark frames with no reading; those frames remain gaps rather than being plotted as a value. Readable
+frames are shown as inside the $90\%$ range, below it (more assertive, atypical) or above it
+(the accommodating side, atypical). The two outlined frames carry the same reading, $-0.393$\,rad: it lies inside the range
+where that range spans $2.19$\,rad and outside it where the range spans $1.49$\,rad. The pair isolates
+the role of conditioning, in that the number being judged is identical while the reference against
+which it is judged is not. The display is descriptive. Source data are provided as a Source Data file.}
+\label{fig:edband}
+\end{figure}
+
+\begin{figure}[!htb]\centering
+\includegraphics[width=\linewidth]{figures/figE1_case_example.pdf}
+\caption{\textbf{One illustrative run containing flagged assertive moments.}
+\textbf{a} Bird's-eye trajectories over the displayed window; red points mark the monitored vehicle's
+positions during the selected flagged stretch.
+\textbf{b} Speed timelines over a $2.0$\,s pre-flag baseline and the flagged stretch. Lines are centred
+$21$-frame medians of speed computed from the logged velocity components. The counterpart median moves
+from $4.31$ to $1.40$\,m\,s$^{-1}$; the automated vehicle's median moves from $3.33$ to
+$3.32$\,m\,s$^{-1}$.
+\textbf{c} The same stretch relative to the $90\%$ situation-conditioned human reference range. Two
+traces are drawn from the same data: the faint line and its markers are the per-frame readings, which
+are what the verdicts are computed on, and the bold line is those readings under a centred
+$2.1$-second median---the filter the speed panel above also uses---which is what a display would
+show. Filtering is applied to the shown value only and never to a verdict; the bold line is masked to
+readable frames so it does not bridge an abstention. Red downward triangles are per-frame readings
+below the lower edge of the range; grey ticks mark no reading, and available rows are connected only
+for display continuity.
+This run was selected from the $120$ runs containing at least one flagged assertive moment, and is one
+of only two meeting display criteria fixed in advance (at least five flagged frames in one cluster,
+successive flags separated by at most one second; counterpart speed decrease of at least $20\%$;
+automated-vehicle speed change within $10\%$).
+Of the two runs meeting all criteria, the displayed one ranks first under the selection score fixed
+together with them --- the counterpart's speed-drop fraction minus the automated vehicle's absolute
+speed-change fraction ($0.675$ vs $0.552$).
+It is one illustrative run: it is not a typical value, not an overall distribution, and not evidence
+for ranking or comparison between automated systems. The display is descriptive and assigns no
+causation. Source data are provided as a Source Data file.}
+\label{fig:edcase}
+\end{figure}
+
+\clearpage
+\bibliographystyle{unsrt}
+\bibliography{bibliography/biblio}
+
+\section*{Acknowledgements}
+This work was supported by the National Natural Science Foundation of China (Key Program, grant
+52232015). We thank the drivers in the human-reference study and the participants in the subjective evaluation.
+
+\section*{Author Contributions}
+X.Z. conceived the study, developed the methodology and the software, and wrote the original draft
+and the revisions. J.S. acquired funding and revised the manuscript. X.J. contributed validation and
+data curation. Y.L. contributed methodology, data curation and validation. G.M. contributed to the
+conception of the study and revised the manuscript.
+
+\section*{Competing Interests}
+The matched-scenario real-vehicle benchmark analysed in this work is organised by the authors'
+research group at Tongji University. No author entered the challenge as a competitor, the official
+outcome labels examined here are publicly released, and the funding for this study is independent of,
+and does not overlap with, the funding of the challenge series. The authors declare no other
+competing interests.
+
+\end{document}

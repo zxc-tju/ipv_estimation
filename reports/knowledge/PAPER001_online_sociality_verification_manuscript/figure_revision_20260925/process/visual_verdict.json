@@ -1,0 +1,615 @@
+{
+  "mode": "direct",
+  "active": false,
+  "phase": "verified",
+  "score": 93,
+  "threshold": 90,
+  "threshold_pass": true,
+  "verdict": "pass",
+  "reasoning": "Six main figures verified against source outputs and compiled pages; supplemental migrations retain source boundaries.",
+  "suggestions": [],
+  "next_actions": [],
+  "lane_records": {
+    "fig2_qa.json": {
+      "iterations": [
+        {
+          "score": 86,
+          "verdict": "revise",
+          "category_match": true,
+          "differences": [
+            "Panel f legend second row is clipped below the fixed canvas.",
+            "Panel a square plotting box lowers its title relative to b and c.",
+            "The density colorbar has unnecessary minor ticks."
+          ],
+          "suggestions": [
+            "Increase bottom figure margin sufficiently to retain both geometry legend rows.",
+            "Anchor panel a equal-aspect box to its upper edge.",
+            "Disable colorbar minor ticks and label the displayed percentage clearly."
+          ],
+          "reasoning": "All six scientific panels are source-backed and legible; two layout details need repair before delivery."
+        },
+        {
+          "score": 95,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "All six source-backed panels are legible at the defined 183 mm width. Panel titles align, geometry legend remains inside the canvas, and frozen intervals and the nuPlan crossing-zero result remain visible."
+        }
+      ],
+      "numeric_checks": {
+        "source_records": 8,
+        "independent_distribution_cases": 34850,
+        "symmetric_display_points": 69700,
+        "bins": 2304,
+        "distribution_percent_sum": 99.99999999999994,
+        "role_auc_rows": 18,
+        "turn_paired_cases": 3565,
+        "PET_stratum_cases": [
+          9799,
+          22833,
+          4863
+        ],
+        "geometry_source_contrasts": 8,
+        "independent_observed_ci": "unavailable and not drawn",
+        "nuPlan_turn_interval": "crosses zero and grey",
+        "statistic_recomputation": false,
+        "source_inputs_modified": false
+      },
+      "export_checks": {
+        "pdf_pages": 1,
+        "pdf_dimensions_mm": [
+          183.00000559488933,
+          159.99999906751842
+        ],
+        "all_six_titles_in_pdf": true,
+        "editable_svg_text": true,
+        "visual_review_image": "reports/knowledge/PAPER001_online_sociality_verification_manuscript/figure_revision_20260925/assets/fig2_context.png",
+        "final_score": 95,
+        "threshold": 90,
+        "status": "PASS"
+      }
+    },
+    "fig45_qa.json": {
+      "iterations": [
+        {
+          "figure": "fig5_human_arm",
+          "iteration": 1,
+          "score": 83,
+          "verdict": "revise",
+          "category_match": true,
+          "differences": [
+            "Top design-strip second line overlaps the panel-a title."
+          ],
+          "suggestions": [
+            "Move the plotting grid top down to leave a clear design-strip margin."
+          ],
+          "reasoning": "All four evidence panels and missing-interval markers are present; the top layout collision must be repaired."
+        },
+        {
+          "figure": "fig5_human_arm",
+          "iteration": 2,
+          "score": 94,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "Design strip is separated from titles; all four panels, paired-arm shapes and missing-interval marks are legible."
+        },
+        {
+          "figure": "fig4_consequence",
+          "iteration": 1,
+          "score": 86,
+          "verdict": "revise",
+          "category_match": true,
+          "differences": [
+            "Arial lacks superscript 4 and 6 in TTC tick labels."
+          ],
+          "suggestions": [
+            "Use mathtext powers in log-axis labels; state upper-quartile percentage compression explicitly."
+          ],
+          "reasoning": "All directions, thresholds and full observed TTC range are retained, but glyph boxes require correction."
+        },
+        {
+          "figure": "fig4_consequence",
+          "iteration": 2,
+          "score": 94,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "Glyphs render correctly; complete TTC range, both departure directions, all thresholds and uncertainty are visible."
+        },
+        {
+          "figure": "figS3_human_levels",
+          "iteration": 1,
+          "score": 96,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "All three frozen levels and three arm/reference categories are legible without overlapping marks or labels."
+        }
+      ],
+      "numerical_checks": {
+        "source_files_unchanged": true,
+        "human_status": "REAL_VERIFIED",
+        "scenario_pairs": 15,
+        "above_equality": 15,
+        "ttc_counts": {
+          "A": 499,
+          "C": 817,
+          "W": 12344
+        },
+        "ego_tail_comparisons": 8,
+        "counterpart_speed_comparisons": 4,
+        "counterpart_brake_comparisons": 6,
+        "ast_parse": "PASS",
+        "script_execution": "PASS",
+        "frozen_statistics_recomputed": false,
+        "fig5_human_rate_ci_exported": [
+          3.4,
+          5.5
+        ]
+      }
+    },
+    "fig6_qa.json": {
+      "numerical_checks": {
+        "descriptive_rows": 30,
+        "paired_comparison_rows": 30,
+        "scenario_comparison_rows": 30,
+        "paper_core_comparisons_matched": 8,
+        "participants": 40,
+        "participant_pairs": 20,
+        "segments": 90,
+        "scenarios": 15,
+        "completed_trials": 596,
+        "position_rating_records": 1192,
+        "source_aggregate_checks": "pass",
+        "statistics_rerun": false,
+        "individual_or_pair_data_read": false,
+        "ego_atypicality_A-W_Holm30_p": 0.07038382684
+      },
+      "output_sha256": {
+        "fig6_subjective.pdf": "4f73017937b7337aeb4b66f8bfc30a8f5754d2346bd4301e95cecbb2056c0142",
+        "fig6_subjective.png": "ec8bea3ebaf180fd6d50fa86598999d79178e82cbca72030958b262a16bc2334",
+        "fig6_subjective.svg": "fd429af768f2f2e05a8ecbb2606fb1bbfa7c7cb4b8e6ecdbfa71fa7766b32315",
+        "figS2_subjective_sensitivity.pdf": "905791bfba3c13d602906735d4fc87a4219f3ff49480eb1d64d488e2f2d1fb17",
+        "figS2_subjective_sensitivity.png": "b3bcee22a095fb76ba7e3d044874589f93e1111dd97f3f31f277ca07d5d9f989",
+        "figS2_subjective_sensitivity.svg": "5ed1d3adf0074dd53d97cd3afbfa1b3c7b15e5cb06e330a8a1b4f251b22a74c9"
+      },
+      "source_copies_sha256_match": true,
+      "visual_verdicts": {
+        "fig6_subjective": {
+          "score": 96,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [
+            "Faint participant-pair dots removed as permitted; all aggregate means and intervals retained.",
+            "Category color and seat shape now follow the shared figure contract.",
+            "All nine counterpart direct contrasts are printed with supplied intervals."
+          ],
+          "suggestions": [],
+          "reasoning": "All three quantitative panels, the cohort strip, seat legend and contrast displays are legible without clipping or overlap at the 183 mm output size."
+        },
+        "figS2_subjective_sensitivity": {
+          "score": 95,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [
+            "Participant and scenario estimates use distinct shape/fill and an explicit estimand/resampling legend.",
+            "All nine counterpart contrasts and both original sets of intervals remain present."
+          ],
+          "suggestions": [],
+          "reasoning": "The compact triptych preserves two resampling units, readable axes and unclipped intervals; spacing and typography match the main figure style."
+        }
+      },
+      "visual_reference_images": [
+        "FigS1_subjective_ratings.png",
+        "FigS2_common_scenario_check.png"
+      ],
+      "visual_review_method": "Direct inspection of generated Python PNG exports and original supplied PNG figures.",
+      "next_actions": [],
+      "format_checks": {
+        "script_ast": "pass",
+        "editable_svg_text": "pass",
+        "pdf_text_extraction": "pass",
+        "embedded_pdf_fonts": "pass",
+        "main_size_mm": [
+          183,
+          115
+        ],
+        "supplement_size_mm": [
+          183,
+          95
+        ],
+        "PNG_DPI": 300,
+        "exact_0.6825_PDF_label": "pass"
+      },
+      "rounding_note": "Counterpart q1_rev C-W estimate is exactly 0.6825 in the source and is displayed to four decimals; all other contrast labels use half-up rounding to three decimals.",
+      "final_visual_review": "Final fig6 PNG inspected again after the 0.6825 label correction: no overlap or clipping; final PDF text confirms +0.6825."
+    },
+    "fig13_qa.json": {
+      "fig1_source_rows": 221,
+      "fig1_state_counts": {
+        "abstain": 160,
+        "W": 59,
+        "C": 2
+      },
+      "fig1_rejected_plot_values_all_nan": true,
+      "case": "ipv_004992",
+      "source_masks_checked": true,
+      "reference_range_median_check": true,
+      "visual_iterations": [
+        {
+          "iteration": 1,
+          "figure": "fig1_monitoring",
+          "score": 86,
+          "verdict": "revise",
+          "category_match": true,
+          "differences": [
+            "Panel a label falls outside canvas.",
+            "Panel c title/letter baseline differs from b because status-strip inset shifts the automatic title.",
+            "13.2 s label conflicts with lower-left trajectory legend."
+          ],
+          "suggestions": [
+            "Place a label inside fixed margin.",
+            "Use figure-positioned lower-row titles and panel labels.",
+            "Move trajectory legend to top right."
+          ],
+          "reasoning": "Source marks and abstention gaps are correct; three layout issues require correction."
+        },
+        {
+          "iteration": 1,
+          "figure": "figS4_estimator_details",
+          "score": 94,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "Editable angle diagram and exact seven-weight examples are readable."
+        },
+        {
+          "iteration": 1,
+          "figure": "figED5_reference_distribution",
+          "score": 95,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "Two data populations and range-summary definition are visibly separated."
+        },
+        {
+          "iteration": 1,
+          "figure": "fig3_monitor",
+          "score": 86,
+          "verdict": "revise",
+          "category_match": true,
+          "differences": [
+            "Width legend overlaps filled bars.",
+            "Coverage 90% value labels collide; top sample-size label crosses a point."
+          ],
+          "suggestions": [
+            "Use the shared series key in b; remove a key.",
+            "Offset paired labels; remove duplicated sample-size annotation."
+          ],
+          "reasoning": "All frozen statistics and populations are correct, but label collisions require one layout correction."
+        },
+        {
+          "iteration": 1,
+          "figure": "figED3_source_transfer",
+          "score": 85,
+          "verdict": "revise",
+          "category_match": true,
+          "differences": [
+            "Panel b legend overlays its title."
+          ],
+          "suggestions": [
+            "Shorten title and place legend inside a dedicated upper plot margin."
+          ],
+          "reasoning": "Coverage and abstention display all four sources and denominators; top hierarchy needs separation."
+        },
+        {
+          "iteration": 2,
+          "figure": "fig1_monitoring",
+          "score": 89,
+          "verdict": "revise",
+          "category_match": true,
+          "differences": [
+            "Panel c fixed title touches its status strip.",
+            "Readability-failure connector crosses the support box."
+          ],
+          "suggestions": [
+            "Raise the two lower-row headings.",
+            "Route the failure connector through the inter-column gap."
+          ],
+          "reasoning": "Legibility is improved; remaining two schematic-spacing issues require correction."
+        },
+        {
+          "iteration": 2,
+          "figure": "fig3_monitor",
+          "score": 95,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "All frozen values, units, count denominators, and four panel roles are clear."
+        },
+        {
+          "iteration": 2,
+          "figure": "figED3_source_transfer",
+          "score": 95,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "Predictive R² and reference metrics are distinct, source-specific, and legible."
+        },
+        {
+          "iteration": 3,
+          "figure": "fig1_monitoring",
+          "score": 95,
+          "verdict": "pass",
+          "category_match": true,
+          "differences": [],
+          "suggestions": [],
+          "reasoning": "All three panel letters and titles are separated; gate-failure lines avoid boxes; the observed case remains gapped at every abstention."
+        }
+      ],
+      "fig3_numeric_checks": true,
+      "fig3_width_reductions_pct": [
+        20.73663695270369,
+        20.474466353519606,
+        8.37606457162472
+      ],
+      "fig3_r2": 0.20935525629952612,
+      "fig3_abstention_fraction": 0.05080138084083344,
+      "source_transfer_all_four_sources": true,
+      "exports": {
+        "fig1_monitoring": {
+          "pdf_pages": 1,
+          "pdf_text_characters": 751,
+          "svg_editable_text": true,
+          "files": {
+            "pdf": {
+              "bytes": 57102,
+              "sha256": "f57197f9448cc41fb0bda320338222594124c2b58f2d32d162845a6db1b8f746"
+            },
+            "svg": {
+              "bytes": 97291,
+              "sha256": "34f9ac4fecf068c2aeb50698bc5c9172f055a0907c96744473df5ffda3825b41"
+            },
+            "png": {
+              "bytes": 301269,
+              "sha256": "96af2d330872fcadbe76e4f09c375381cf52b1807aaaa95216d2fdb5bed3c4f2"
+            }
+          }
+        },
+        "fig3_monitor": {
+          "pdf_pages": 1,
+          "pdf_text_characters": 782,
+          "svg_editable_text": true,
+          "files": {
+            "pdf": {
+              "bytes": 49754,
+              "sha256": "0dc2add3e51887f9747fc37c32949b7e924801b3446f009aa6e0bb8c462d8489"
+            },
+            "svg": {
+              "bytes": 25457,
+              "sha256": "92c5bfeb4c81fd53d80d328f83b5ed8c6cf795018dca765664d6ad6aa75afd09"
+            },
+            "png": {
+              "bytes": 242996,
+              "sha256": "953f944cc6ad427fd6f0893136092e73a5b77a759b629c75cfa4672f7312a9a9"
+            }
+          }
+        },
+        "figS4_estimator_details": {
+          "pdf_pages": 1,
+          "pdf_text_characters": 332,
+          "svg_editable_text": true,
+          "files": {
+            "pdf": {
+              "bytes": 38314,
+              "sha256": "3f5bc1a30fc4d403c34c33a8c65beec1539bdc4d8914278cbadced19c974f779"
+            },
+            "svg": {
+              "bytes": 20179,
+              "sha256": "56f2eb3e927fc67969a0b37d4f6f4f8edeb58581391cc00738b2031303dfa6e5"
+            },
+            "png": {
+              "bytes": 136466,
+              "sha256": "251c62074805f7935987ed8098bb9ff7467cd8d9ba9dd112d7b0d57f4cce384f"
+            }
+          }
+        },
+        "figED3_source_transfer": {
+          "pdf_pages": 1,
+          "pdf_text_characters": 373,
+          "svg_editable_text": true,
+          "files": {
+            "pdf": {
+              "bytes": 41467,
+              "sha256": "6f2cee289e45be5885af8191770dd254ec6dd39c9e423d0b8eea9922d73fb715"
+            },
+            "svg": {
+              "bytes": 18408,
+              "sha256": "681ed8172ed9f8435efb72e4f82e337a8365659854940e0fabbeb5a03a1b6fa4"
+            },
+            "png": {
+              "bytes": 110412,
+              "sha256": "a450518d9af913345930f4fb4f08c86fc00f9fdcb987a83717cb7eb3bcd5990b"
+            }
+          }
+        },
+        "figED5_reference_distribution": {
+          "pdf_pages": 1,
+          "pdf_text_characters": 332,
+          "svg_editable_text": true,
+          "files": {
+            "pdf": {
+              "bytes": 41291,
+              "sha256": "1c8e0cff4ed456c975309ec608372e71f1ba94e3cabac63558d01eb000097d12"
+            },
+            "svg": {
+              "bytes": 27355,
+              "sha256": "5048a4276eb57f5147475a508bd7062b61c0f7c54afe70535b4404d7caf0de12"
+            },
+            "png": {
+              "bytes": 86789,
+              "sha256": "26f28aa25e61af519b0cc2c2b21cbdd7132e8395ad8f771e382f6ed924d8987d"
+            }
+          }
+        }
+      },
+      "python_compile": "pass",
+      "status": "ready_for_integration"
+    },
+    "compiled_main_figures_visual_qa.json": {
+      "checked_at": "2026-09-25T03:20:23.032053+00:00",
+      "input_pdf": "/tmp/nmi-figrev-final/main.pdf",
+      "input_pdf_sha256": "44ccc905f1d59ef0461aa0a6b14ef025f77b2f41efd1f4d0fdcfca3b5b967615",
+      "pdf_page_count": 57,
+      "scope": "Independent visual inspection of the six main-figure pages only; not a new statistical audit or full-manuscript review.",
+      "method": "Rendered each listed page using PyMuPDF/fitz at Matrix(2,2), 144 dpi, then individually inspected every rendered page via view_image; PDF text extraction used only to corroborate caption/panel contents.",
+      "reference_basis": "User acceptance criteria, input_plan.md panel contract and displayed captions; no pixel-fidelity reference comparison was requested.",
+      "pass_threshold": 90,
+      "overall_verdict": "pass",
+      "pages": [
+        {
+          "page": 6,
+          "figure": 1,
+          "panels": "a–c",
+          "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_06.png",
+          "checks": {
+            "figure_text_readable": true,
+            "panel_letters_match_caption": true,
+            "caption_complete_on_page": true,
+            "no_clipped_content": true,
+            "no_obstructive_overlap": true,
+            "no_placeholder": true
+          },
+          "visual_verdict": {
+            "score": 95,
+            "verdict": "pass",
+            "category_match": true,
+            "differences": [],
+            "suggestions": [],
+            "reasoning": "Three panels are legible: the two-input monitoring diagram, the matched map/trajectory example and the time series with gaps and verdict strip. Panel letters a–c agree with the full caption; all figure content and the caption fit within the page with no clipped text, obstructive overlap or placeholder."
+          }
+        },
+        {
+          "page": 8,
+          "figure": 2,
+          "panels": "a–f",
+          "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_08.png",
+          "checks": {
+            "figure_text_readable": true,
+            "panel_letters_match_caption": true,
+            "caption_complete_on_page": true,
+            "no_clipped_content": true,
+            "no_obstructive_overlap": true,
+            "no_placeholder": true
+          },
+          "visual_verdict": {
+            "score": 94,
+            "verdict": "pass",
+            "category_match": true,
+            "differences": [],
+            "suggestions": [],
+            "reasoning": "All six panel letters, axis labels, legends and sample-size notes are readable in the compiled page. The caption covers a–f in the plotted order and ends fully on this page; no panel, interval, legend or caption is clipped and no placeholder remains."
+          }
+        },
+        {
+          "page": 10,
+          "figure": 3,
+          "panels": "a–d",
+          "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_10.png",
+          "checks": {
+            "figure_text_readable": true,
+            "panel_letters_match_caption": true,
+            "caption_complete_on_page": true,
+            "no_clipped_content": true,
+            "no_obstructive_overlap": true,
+            "no_placeholder": true
+          },
+          "visual_verdict": {
+            "score": 96,
+            "verdict": "pass",
+            "category_match": true,
+            "differences": [],
+            "suggestions": [],
+            "reasoning": "The width and calibration plots, nested counts and variance bar are readable, with clear separation among panels a–d. The population/point-estimate notes and complete caption are visible; no text or plotting element is truncated or obscured."
+          }
+        },
+        {
+          "page": 13,
+          "figure": 4,
+          "panels": "a–d",
+          "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_13.png",
+          "checks": {
+            "figure_text_readable": true,
+            "panel_letters_match_caption": true,
+            "caption_complete_on_page": true,
+            "no_clipped_content": true,
+            "no_obstructive_overlap": true,
+            "no_placeholder": true
+          },
+          "visual_verdict": {
+            "score": 93,
+            "verdict": "pass",
+            "category_match": true,
+            "differences": [],
+            "suggestions": [],
+            "reasoning": "Both directions remain visually distinguishable in panels b–d and the full-range cumulative plot is visible in panel a. Panel letters, threshold labels, run/count notes and the full caption are legible and fit within the page; no clipping, obstructive text overlap or placeholder is visible."
+          }
+        },
+        {
+          "page": 17,
+          "figure": 5,
+          "panels": "a–d",
+          "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_17.png",
+          "checks": {
+            "figure_text_readable": true,
+            "panel_letters_match_caption": true,
+            "caption_complete_on_page": true,
+            "no_clipped_content": true,
+            "no_obstructive_overlap": true,
+            "no_placeholder": true
+          },
+          "visual_verdict": {
+            "score": 93,
+            "verdict": "pass",
+            "category_match": true,
+            "differences": [],
+            "suggestions": [],
+            "reasoning": "The total rates, direction-specific points, equal-axis scenario scatter and consequence-ratio rows are readable, including human/AV marker encoding and unavailable-interval daggers. Panels a–d correspond to the complete caption, with no clipped labels, obscured values or placeholder."
+          }
+        },
+        {
+          "page": 18,
+          "figure": 6,
+          "panels": "a–c",
+          "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_18.png",
+          "checks": {
+            "figure_text_readable": true,
+            "panel_letters_match_caption": true,
+            "caption_complete_on_page": true,
+            "no_clipped_content": true,
+            "no_obstructive_overlap": true,
+            "no_placeholder": true
+          },
+          "visual_verdict": {
+            "score": 95,
+            "verdict": "pass",
+            "category_match": true,
+            "differences": [],
+            "suggestions": [],
+            "reasoning": "The design strip, position legend, three 1–7 rating panels and all nine counterpart contrast rows are legible; the atypicality C−W value visibly reads +0.6825. Panels a–c match the complete caption and there is no clipped content, obstructive overlap or placeholder."
+          }
+        }
+      ]
+    }
+  },
+  "completed_at": "2026-09-25T03:27:41.079750+00:00"
+}

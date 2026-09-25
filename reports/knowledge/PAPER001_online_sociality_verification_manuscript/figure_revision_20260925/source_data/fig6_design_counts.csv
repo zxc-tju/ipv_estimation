@@ -1,0 +1,13 @@
+﻿class,arm,seat,n_ratings,n_trials,n_subjects,n_pairs,n_segments,n_scenarios
+A,av,cp,79,79,40,20,12,12
+A,av,ego,79,79,40,20,12,12
+A,human,cp,79,79,40,20,12,12
+A,human,ego,79,79,40,20,12,12
+C,av,cp,120,120,40,20,18,15
+C,av,ego,120,120,40,20,18,15
+C,human,cp,119,119,40,20,18,15
+C,human,ego,119,119,40,20,18,15
+W,av,cp,100,100,40,20,15,9
+W,av,ego,100,100,40,20,15,9
+W,human,cp,99,99,40,20,15,9
+W,human,ego,99,99,40,20,15,9

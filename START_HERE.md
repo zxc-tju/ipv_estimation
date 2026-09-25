@@ -1,5 +1,7 @@
 # START_HERE: Current Operating Brief
 
+- **2026-09-25 PAPER001 six-figure revision completed locally:** latest remote manuscript/research baselines merged while retaining prior local work. Entry `reports/knowledge/PAPER001_online_sociality_verification_manuscript/figure_revision_20260925/index.html`; compiled `main_revised.pdf` (57 pages), all six main figures plus supporting migrations, 24 main panels source-mapped, no undefined references/citations or overfull boxes. Figure assets/aggregate Source Data are installed in the separate paper repository; no new research computation or participant-level export. Subjective protocol/consent/stimulus-version and sharing gaps remain open. No push performed.
+
 Last reviewed: 2026-09-04.
 
 Use this file as the first stop for a new agent thread. Keep durable policy in

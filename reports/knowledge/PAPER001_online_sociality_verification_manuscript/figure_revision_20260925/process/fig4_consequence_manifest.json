@@ -1,0 +1,92 @@
+{
+  "figure": "4",
+  "asset_stem": "fig4_consequence",
+  "data_status": "existing accepted aggregate results",
+  "sources": [
+    {
+      "figure": "4",
+      "panel": "a/b",
+      "source": ".codex-fleet/rq022-matched-scenario/work/T1_target_figure/ego_three_second_window.json",
+      "sha256": "23f74efcf3fff8686c52ba348f1acc10c376b32a7fc3b769714ead692ee49802",
+      "fields": "ego_ttc_values_sorted; ego_ttc_quantiles; ego_danger_shares; ego_danger_bootstrap; ratios_against_inside",
+      "unit": "moments and frozen statistics",
+      "filters": "fixed 3-second window; alpha90; A499/C817/W12344",
+      "notes": "Full sorted data exported; no new statistics or tests"
+    },
+    {
+      "figure": "4",
+      "panel": "c",
+      "source": ".codex-fleet/rq022-matched-scenario/work/T1_target_figure/accommodating_side_battery.json",
+      "sha256": "9412399bcceddc7608f78da5f1f074f1959b9ad5bebac3ffe97d6f8b74cadb4e",
+      "fields": "battery.counterpart_speed_drop_ratio; battery.counterpart_speed_range_ratio",
+      "unit": "moment-weighted median ratios",
+      "filters": "fixed3; A469/C719/W10483; whole-run bootstrap B2000",
+      "notes": "Only counterpart fields used; old ego fields deliberately excluded"
+    },
+    {
+      "figure": "4",
+      "panel": "d",
+      "source": "reports/studies/RQ021_contemporaneous_envelope/RQ021_1_contemporaneous_envelope_20260805T160425Z_43b4bff/rq019_rerun/distribution_results.json",
+      "sha256": "447c5b2ab55013a2b227a15c46ccb7ca8274592f62f96d3ece5c16b65a0b50f4",
+      "fields": "alpha90_case_bootstrap_threshold_contrasts",
+      "unit": "acceleration records",
+      "filters": "window=fixed3; stratum=non_scripted; both comparisons; thresholds -2,-3,-4",
+      "notes": "A13800/C21025/W310246; run bootstrap B1000"
+    }
+  ],
+  "files": [
+    {
+      "path": "assets/fig4_consequence.svg",
+      "bytes": 83875,
+      "sha256": "13f9e22489d162746db47d6e93322b4f4a83254b8d7abbe39c78072f2bfe605f"
+    },
+    {
+      "path": "assets/fig4_consequence.pdf",
+      "bytes": 63757,
+      "sha256": "0f7b8bf52155e7aa8e327cbcd469450bef1ac90578e03c39983b9e5ce2eb6cbf"
+    },
+    {
+      "path": "assets/fig4_consequence.png",
+      "bytes": 284213,
+      "sha256": "ba093e5aaec110a0cab434278f1dcfabbfaa0fe4b57a59dc9fd2467d0b97be43"
+    },
+    {
+      "path": "source_data/fig4_counterpart_all_ratios.csv",
+      "bytes": 2025,
+      "sha256": "fddd14102534eadcb2a878f285f483779a2ecf3772505dcc4ef1b3454ba60bbb"
+    },
+    {
+      "path": "source_data/fig4_ttc_distribution.csv",
+      "bytes": 703022,
+      "sha256": "2b3c8d5ce366785265d813e91a237712ab9a0095874acc4458fdc99e8ef8ef1f"
+    },
+    {
+      "path": "source_data/fig4_counterpart_speed_ratios.csv",
+      "bytes": 1080,
+      "sha256": "112ba3831592746b151cf1bf0a77c89e04247bfaad8a1c4b0914b50f099992ea"
+    },
+    {
+      "path": "source_data/fig4_counterpart_braking.csv",
+      "bytes": 2345,
+      "sha256": "a3c2416c6204d6cf3d2580ac40babdbb83e16209d9b7625028e34364d3430d2e"
+    },
+    {
+      "path": "source_data/fig4_ego_tail_differences.csv",
+      "bytes": 1371,
+      "sha256": "a51e3815fe6c598711ab3b515dd772ebf25f31fccca2c7d605e93c3b8b334ba5"
+    },
+    {
+      "path": "source_data/fig4_ttc_ratio_intervals.csv",
+      "bytes": 643,
+      "sha256": "c0b0fcdceed892e1bc1945a30120cc50ea0aafdbbb24ee1276136470893774d5"
+    },
+    {
+      "path": "source_data/fig4_ttc_quantiles.csv",
+      "bytes": 465,
+      "sha256": "fc3dcd481c43b7cd2a17b5c4942c7e31d61cc425f7c7b17c967cf856abdcf9b6"
+    }
+  ],
+  "statistical_change": false,
+  "rendering_backend": "Python matplotlib",
+  "visual_qa": "PASS; see process/fig45_qa.json"
+}

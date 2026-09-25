@@ -1,0 +1,83 @@
+{
+  "iterations": [
+    {
+      "figure": "fig5_human_arm",
+      "iteration": 1,
+      "score": 83,
+      "verdict": "revise",
+      "category_match": true,
+      "differences": [
+        "Top design-strip second line overlaps the panel-a title."
+      ],
+      "suggestions": [
+        "Move the plotting grid top down to leave a clear design-strip margin."
+      ],
+      "reasoning": "All four evidence panels and missing-interval markers are present; the top layout collision must be repaired."
+    },
+    {
+      "figure": "fig5_human_arm",
+      "iteration": 2,
+      "score": 94,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "Design strip is separated from titles; all four panels, paired-arm shapes and missing-interval marks are legible."
+    },
+    {
+      "figure": "fig4_consequence",
+      "iteration": 1,
+      "score": 86,
+      "verdict": "revise",
+      "category_match": true,
+      "differences": [
+        "Arial lacks superscript 4 and 6 in TTC tick labels."
+      ],
+      "suggestions": [
+        "Use mathtext powers in log-axis labels; state upper-quartile percentage compression explicitly."
+      ],
+      "reasoning": "All directions, thresholds and full observed TTC range are retained, but glyph boxes require correction."
+    },
+    {
+      "figure": "fig4_consequence",
+      "iteration": 2,
+      "score": 94,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "Glyphs render correctly; complete TTC range, both departure directions, all thresholds and uncertainty are visible."
+    },
+    {
+      "figure": "figS3_human_levels",
+      "iteration": 1,
+      "score": 96,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "All three frozen levels and three arm/reference categories are legible without overlapping marks or labels."
+    }
+  ],
+  "numerical_checks": {
+    "source_files_unchanged": true,
+    "human_status": "REAL_VERIFIED",
+    "scenario_pairs": 15,
+    "above_equality": 15,
+    "ttc_counts": {
+      "A": 499,
+      "C": 817,
+      "W": 12344
+    },
+    "ego_tail_comparisons": 8,
+    "counterpart_speed_comparisons": 4,
+    "counterpart_brake_comparisons": 6,
+    "ast_parse": "PASS",
+    "script_execution": "PASS",
+    "frozen_statistics_recomputed": false,
+    "fig5_human_rate_ci_exported": [
+      3.4,
+      5.5
+    ]
+  }
+}

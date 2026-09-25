@@ -1,0 +1,4 @@
+context_cell,n_candidate_moments,median_lower_rad,median_upper_rad,difference_of_median_bounds_rad,median_width_rad,population
+CP|priority,2336,-0.49388012300000916,0.9005043507622315,1.3943844737622406,1.4399229290101196,all OnSite candidate moments
+MP|priority,10291,-0.7724621296928955,1.0143455267952515,1.786807656488147,1.772313416204181,all OnSite candidate moments
+MP|equal,291,-1.0097757578896118,1.0663764477776123,2.076152205667224,2.097832501134601,all OnSite candidate moments

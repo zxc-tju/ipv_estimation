@@ -1,0 +1,14 @@
+{
+  "created_utc": "2026-09-25T03:04:59.890337+00:00",
+  "research_root": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation",
+  "paper_root": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/2_PaperWriting/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle",
+  "research_origin_main": "065fd66a6b75873dbceda349f8c86386e2e81dd6",
+  "paper_origin_main": "6ce95d397c4c89259b5c2f499f05371e5c2a0678",
+  "scope": "six-figure reorganization and existing results only; no experimental/statistical reruns",
+  "plan_sha256": "fd6ef25e4565cb01dfd076c14bdf4017e21f30450b84d0685c4817ac206a44d7",
+  "completed_at": "2026-09-25T03:25:23.070987+00:00",
+  "handoff_input_snapshot": "reports/knowledge/PAPER001_online_sociality_verification_manuscript/figure_revision_20260925/process/source_snapshots/agent_handoff_before_revision.md",
+  "task_only_staging_prepared": true,
+  "paper_figure_commit": "a8c8894f86d7fc83e91af49d42ab748e29dfb4e0",
+  "whitespace_check_scope": "authored text; native matplotlib SVG whitespace and source-preserved CSV CRLF excluded"
+}

@@ -1,0 +1,90 @@
+{
+  "status": "PASS",
+  "pdf_pages": 57,
+  "figure_caption_pairs": 14,
+  "main_panel_count": 24,
+  "new_or_rebuilt_figure_assets": 11,
+  "main_figures": 6,
+  "preserved_legacy_figure_assets": 3,
+  "plot_data_csv_files": 41,
+  "panel_source_relationships": 63,
+  "unique_mapped_input_files": 32,
+  "source_hashes_match": true,
+  "installed_assets_match": true,
+  "latex_errors": 0,
+  "undefined_references_or_citations": 0,
+  "overfull_boxes": 0,
+  "duplicate_labels": 0,
+  "figure6_placeholder_removed": true,
+  "participant_level_subjective_exports": 0,
+  "new_statistical_tests_or_bootstrap_runs": 0,
+  "page_map": [
+    {
+      "figure": "1",
+      "page": 6
+    },
+    {
+      "figure": "2",
+      "page": 8
+    },
+    {
+      "figure": "3",
+      "page": 10
+    },
+    {
+      "figure": "4",
+      "page": 13
+    },
+    {
+      "figure": "5",
+      "page": 17
+    },
+    {
+      "figure": "6",
+      "page": 18
+    },
+    {
+      "figure": "S1",
+      "page": 38
+    },
+    {
+      "figure": "S2",
+      "page": 39
+    },
+    {
+      "figure": "S3",
+      "page": 39
+    },
+    {
+      "figure": "S4",
+      "page": 40
+    },
+    {
+      "figure": "ED1",
+      "page": 47
+    },
+    {
+      "figure": "ED2",
+      "page": 48
+    },
+    {
+      "figure": "ED3",
+      "page": 49
+    },
+    {
+      "figure": "ED4",
+      "page": 49
+    }
+  ],
+  "main_pdf_sha256": "5170994091380fc32b177a3b0b6624202d5b3ce097ec2bb28956c63ea8462f01",
+  "main_tex_sha256": "f4965095e3654774f806af5deacafb88a03ee7b0337afcaadda5f040e8f551ef",
+  "main_pdf_visual_qa": "process/compiled_main_figures_visual_qa.json",
+  "supplemental_visual_qa": "process/visual_verdict.json",
+  "open_documentation": [
+    "recruitment and apparatus",
+    "questionnaire wording and anchors, especially Q5",
+    "ethics and consent",
+    "stimulus selection and monitor-version relationship",
+    "separate data-sharing permission"
+  ]
+}

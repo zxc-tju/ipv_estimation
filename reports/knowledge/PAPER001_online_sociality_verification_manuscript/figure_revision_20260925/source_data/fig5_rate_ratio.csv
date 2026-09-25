@@ -1,0 +1,2 @@
+contrast,estimate,ci_low,ci_high,resampling_unit,repetitions,seed,source,precision
+AV/Human,1.95,1.62,2.39,scenario,20000,20260820,"accepted handoff 2026-08-20, lines 1101-1103",as reported

@@ -1,0 +1,9 @@
+label,kind,n,estimate,ci_low,ci_high,interval
+nuPlan,source_paired,7330,-0.4050629823137387,-0.43163969619632647,-0.37720591538715303,95% case bootstrap CI; 1000 samples
+AV2,source_paired,2289,-0.2260803081234484,-0.2708930285882639,-0.18025580000962957,95% case bootstrap CI; 1000 samples
+Lyft,source_paired,4738,-0.3114475818770005,-0.3418691304144337,-0.2844532050397689,95% case bootstrap CI; 1000 samples
+Waymo,source_paired,20493,-0.3573687076777102,-0.37041587698911693,-0.3436493759813549,95% case bootstrap CI; 1000 samples
+All paired,pooled_paired,34757,-0.337614136009799,-0.3505519985159681,-0.3247942778446828,95% scene-cluster bootstrap CI; 300 samples
+Re-paired,pooled_null,34757,0.0407866381120795,0.0295300342692338,0.0524371324849279,central 95% of matched permutation null
+Independent,independent_paired,34645,-0.3390583713858984,,,unavailable
+Independent null,independent_null,34645,0.0417546049979853,0.0312515474489978,0.052078311678857,central 95% of matched permutation null

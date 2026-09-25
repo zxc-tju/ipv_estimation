@@ -1,0 +1,10 @@
+stage,count,universe
+candidate,663282,pure-human naturalistic test fold
+readable,486660,pure-human naturalistic test fold
+judgeable,461937,pure-human naturalistic test fold
+inside_90,417036,pure-human naturalistic test fold
+outside_90,44901,pure-human naturalistic test fold
+near_uniform,173417,pure-human naturalistic test fold
+no_ipv_effect,2981,pure-human naturalistic test fold
+solver_failure,224,pure-human naturalistic test fold
+unsupported,24723,pure-human naturalistic test fold

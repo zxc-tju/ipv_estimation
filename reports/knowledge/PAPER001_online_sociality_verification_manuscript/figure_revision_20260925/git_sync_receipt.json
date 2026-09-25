@@ -1,0 +1,38 @@
+{
+  "completed_at": "2026-09-25T11:07:50.801721+08:00",
+  "research": {
+    "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/1_Codes/2_sociality_estimation",
+    "head": "560a4cd879907b7984a70f4f3886ac58606949a0",
+    "origin_main": "065fd66a6b75873dbceda349f8c86386e2e81dd6",
+    "backup_branch": "backup/pre-sync-20260925-a7b3537",
+    "preexisting_tracked_changes": 85,
+    "restored_exact_pending_changes": 82,
+    "navigation_and_log_conflicts_merged": 3,
+    "identical_preexisting_untracked_files_now_tracked": 45,
+    "preservation_directory": "/Volumes/ZHITAI 2T/.codex-tmp/git-clones/research-sync-20260925.sMNZw9/.sync-preservation",
+    "stash_backups": [
+      "1d15b7af5ebf7b5ae8f910bbc780bff7e4fa0577 On main: sync-20260925-tracked-archival-retry",
+      "18341ddd2a405f37a1bc68aefe98c0eaba733ac6 On main: sync-20260925-tracked-archival-preservation"
+    ]
+  },
+  "paper": {
+    "path": "/Volumes/ZHITAI 2T/.CloudStorage/Data/OneDrive-个人/Desktop/Projects/2_PaperWriting/NMI---Online-Sociality-Verfication-for-Autonomous-Vehicle",
+    "head": "bcfcf5522596aa10423d1607cb12e4c2667227d6",
+    "origin_main": "6ce95d397c4c89259b5c2f499f05371e5c2a0678",
+    "merge_commit": "5d0137b001a0f290b2e826218017ef13d460c947",
+    "restored_dependency_commit": "bcfcf5522596aa10423d1607cb12e4c2667227d6",
+    "backup_branch": "backup/pre-sync-20260925-938b776",
+    "remote_baseline_conflict_files": [
+      "main.tex",
+      "structure.md",
+      "claims_register.md"
+    ],
+    "restored_missing_pdf_png_assets": 14,
+    "preexisting_untracked_preserved": [
+      "Claude outputs/",
+      "evidence_chain_20260902.html"
+    ]
+  },
+  "push_performed": false,
+  "science_results_modified": false
+}

@@ -1,0 +1,60 @@
+{
+  "iterations": [
+    {
+      "score": 86,
+      "verdict": "revise",
+      "category_match": true,
+      "differences": [
+        "Panel f legend second row is clipped below the fixed canvas.",
+        "Panel a square plotting box lowers its title relative to b and c.",
+        "The density colorbar has unnecessary minor ticks."
+      ],
+      "suggestions": [
+        "Increase bottom figure margin sufficiently to retain both geometry legend rows.",
+        "Anchor panel a equal-aspect box to its upper edge.",
+        "Disable colorbar minor ticks and label the displayed percentage clearly."
+      ],
+      "reasoning": "All six scientific panels are source-backed and legible; two layout details need repair before delivery."
+    },
+    {
+      "score": 95,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "All six source-backed panels are legible at the defined 183 mm width. Panel titles align, geometry legend remains inside the canvas, and frozen intervals and the nuPlan crossing-zero result remain visible."
+    }
+  ],
+  "numeric_checks": {
+    "source_records": 8,
+    "independent_distribution_cases": 34850,
+    "symmetric_display_points": 69700,
+    "bins": 2304,
+    "distribution_percent_sum": 99.99999999999994,
+    "role_auc_rows": 18,
+    "turn_paired_cases": 3565,
+    "PET_stratum_cases": [
+      9799,
+      22833,
+      4863
+    ],
+    "geometry_source_contrasts": 8,
+    "independent_observed_ci": "unavailable and not drawn",
+    "nuPlan_turn_interval": "crosses zero and grey",
+    "statistic_recomputation": false,
+    "source_inputs_modified": false
+  },
+  "export_checks": {
+    "pdf_pages": 1,
+    "pdf_dimensions_mm": [
+      183.00000559488933,
+      159.99999906751842
+    ],
+    "all_six_titles_in_pdf": true,
+    "editable_svg_text": true,
+    "visual_review_image": "reports/knowledge/PAPER001_online_sociality_verification_manuscript/figure_revision_20260925/assets/fig2_context.png",
+    "final_score": 95,
+    "threshold": 90,
+    "status": "PASS"
+  }
+}

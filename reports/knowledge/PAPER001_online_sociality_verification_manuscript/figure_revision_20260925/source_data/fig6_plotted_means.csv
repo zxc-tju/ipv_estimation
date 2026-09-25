@@ -1,0 +1,16 @@
+class,seat,metric,n_ratings,n_trials,n_subjects,n_pairs,n_segments,n_scenarios,raw_mean,raw_sd,median,q25,q75,subject_equal_mean,ci_low,ci_high,ci_method
+A,cp,q1_rev,158,158,40,20,24,12,3.151898734,1.232144912,3,2.0,4,3.154166667,2.922916667,3.395833333,10000 pair-cluster percentile bootstrap; fixed stimulus set
+A,cp,q4,158,158,40,20,24,12,4.158227848,0.5473986181,4,4.0,4,4.160416667,4.072916667,4.25,10000 pair-cluster percentile bootstrap; fixed stimulus set
+A,cp,q5_cost_cp,158,158,40,20,24,12,4.265822785,0.7772048687,4,4.0,5,4.266666667,4.141666667,4.383333333,10000 pair-cluster percentile bootstrap; fixed stimulus set
+A,ego,q1_rev,158,158,40,20,24,12,2.873417722,1.22466258,3,2.0,4,2.879166667,2.6375,3.1125,10000 pair-cluster percentile bootstrap; fixed stimulus set
+A,ego,q4,158,158,40,20,24,12,4.64556962,0.6189774737,5,4.0,5,4.647916667,4.566666667,4.729166667,10000 pair-cluster percentile bootstrap; fixed stimulus set
+C,cp,q1_rev,239,239,40,20,36,15,3.20083682,1.18527349,3,2.0,4,3.1975,3.029145833,3.368333333,10000 pair-cluster percentile bootstrap; fixed stimulus set
+C,cp,q4,239,239,40,20,36,15,5.029288703,0.6507751651,5,5.0,5,5.03,4.959145833,5.1,10000 pair-cluster percentile bootstrap; fixed stimulus set
+C,cp,q5_cost_cp,239,239,40,20,36,15,3.10041841,0.749201138,3,3.0,4,3.104166667,3.008333333,3.2,10000 pair-cluster percentile bootstrap; fixed stimulus set
+C,ego,q1_rev,239,239,40,20,36,15,3.167364017,1.05182003,3,3.0,4,3.17,3.0325,3.303333333,10000 pair-cluster percentile bootstrap; fixed stimulus set
+C,ego,q4,239,239,40,20,36,15,4.953974895,0.6166244647,5,5.0,5,4.955,4.883333333,5.029166667,10000 pair-cluster percentile bootstrap; fixed stimulus set
+W,cp,q1_rev,199,199,40,20,30,9,2.512562814,1.213806503,2,1.5,3,2.515,2.31,2.71,10000 pair-cluster percentile bootstrap; fixed stimulus set
+W,cp,q4,199,199,40,20,30,9,5.251256281,0.5921932609,5,5.0,6,5.25125,5.16625,5.33625,10000 pair-cluster percentile bootstrap; fixed stimulus set
+W,cp,q5_cost_cp,199,199,40,20,30,9,2.195979899,0.7499386639,2,2.0,3,2.19625,2.07125,2.32,10000 pair-cluster percentile bootstrap; fixed stimulus set
+W,ego,q1_rev,199,199,40,20,30,9,2.412060302,1.044976089,2,2.0,3,2.41375,2.25,2.57,10000 pair-cluster percentile bootstrap; fixed stimulus set
+W,ego,q4,199,199,40,20,30,9,5.316582915,0.663078512,5,5.0,6,5.31375,5.23375,5.395,10000 pair-cluster percentile bootstrap; fixed stimulus set

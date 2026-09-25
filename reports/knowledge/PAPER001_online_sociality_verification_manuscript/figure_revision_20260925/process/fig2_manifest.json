@@ -1,0 +1,157 @@
+{
+  "figure": "Figure 2",
+  "title": "Human interaction is relational and context-dependent",
+  "width_mm": 183,
+  "height_mm": 160,
+  "archetype": "quantitative grid",
+  "backend": "Python/matplotlib",
+  "input_sources": [
+    {
+      "figure": "Figure 2",
+      "panel": "a",
+      "source": "reports/studies/RQ004_ipv_state_space/RQ004_2_nature_conclusions_multiagent_20260618/02_process/agent_pair_asymmetry/tables/round3_case_level.csv",
+      "sha256": "7e1f180949517e100ca11db9555d219d011a16e1978570109a42efc78eb137d2",
+      "fields": "source_row;ipv_key_agent_1_mean;ipv_key_agent_2_mean",
+      "unit": "independent case",
+      "filters": "all 34850 valid rows; symmetrize partners for display only",
+      "notes": "48x48 fixed bins in [-1.2,1.2] rad; no smooth or synthetic points; RQ004-PRES-PLANE"
+    },
+    {
+      "figure": "Figure 2",
+      "panel": "b",
+      "source": "reports/studies/RQ004_ipv_state_space/RQ004_2_nature_conclusions_multiagent_20260618/02_process/agent_pair_asymmetry/tables/dataset_dyad_metrics.csv",
+      "sha256": "2c69d620e269dd7dddad389fbf3a7a7ca2f3fcd45927759203c9b2d36fcf2e54",
+      "fields": "dataset;n;icc;icc_ci",
+      "unit": "independent case",
+      "filters": "four frozen source rows",
+      "notes": "per-source support totals 34850; intervals are 1000 case-bootstrap CIs"
+    },
+    {
+      "figure": "Figure 2",
+      "panel": "b",
+      "source": "reports/studies/RQ004_ipv_state_space/RQ004_2_nature_conclusions_multiagent_20260618/02_process/agent_dynamics/tables/round3/round3_c1_static_implementation_comparison.csv",
+      "sha256": "fa2598701eeb4efaa8bd9c5e28c928fe3558a313566a0a1d9ed30fcf30c75edd",
+      "fields": "implementation;observed_icc;observed_ci_low;observed_ci_high;null_mean;null_ci_low;null_ci_high;n_cases",
+      "unit": "matched-support case",
+      "filters": "DYNAMICS pooled estimates and DYAD independent estimates",
+      "notes": "independent observed interval is absent and not invented"
+    },
+    {
+      "figure": "Figure 2",
+      "panel": "c",
+      "source": "reports/studies/RQ004_ipv_state_space/RQ004_2_nature_conclusions_multiagent_20260618/02_process/agent_dynamics/tables/round3/round3_c1_role_lock_auc_source.csv",
+      "sha256": "c916cdb677c36a8a5f5ca78be6434b521b3f95348215cf39ea0a27493c0ff5f6",
+      "fields": "window;model;n_cases;n_clusters;auc;ci_low;ci_high",
+      "unit": "case, clustered by scene",
+      "filters": "plot models ipv and kinematics; all three models preserved in Source Data",
+      "notes": "role target is final-quarter mean-IPV difference sign; original grouped OOF predictions and 300 scene bootstrap CIs"
+    },
+    {
+      "figure": "Figure 2",
+      "panel": "d",
+      "source": "reports/studies/RQ004_ipv_state_space/RQ004_2_nature_conclusions_multiagent_20260618/02_process/agent_context_safety/tables/table_turning_pairs.csv",
+      "sha256": "b0e5f00524fa62ccdabe48f57df668cfe6a25536dff9fc97e4db1b5697b44a69",
+      "fields": "turn_group;n_cases;mean_turn_minus_straight_ipv;ci_low;ci_high;p_bh",
+      "unit": "paired case",
+      "filters": "turn_group=all_turn_vs_straight",
+      "notes": "frozen paired-mean Student-t interval; excludes nonaccepted reversal subgroup"
+    },
+    {
+      "figure": "Figure 2",
+      "panel": "d",
+      "source": "reports/studies/RQ004_ipv_state_space/RQ004_2_nature_conclusions_multiagent_20260618/02_process/agent_context_safety/tables/table_turn_dataset_replication.csv",
+      "sha256": "ca252fddc72b6e1c51717e9d1d1d47ca1bde7bcf212ab7cacdeb5302bb0a66a4",
+      "fields": "dataset;n_cases;mean_turn_minus_straight_ipv;ci_low;ci_high",
+      "unit": "paired case",
+      "filters": "all four source rows",
+      "notes": "frozen Student-t interval; nuPlan crosses zero"
+    },
+    {
+      "figure": "Figure 2",
+      "panel": "e",
+      "source": "reports/studies/RQ004_ipv_state_space/RQ004_1_state_space_law_nature_20260618/02_process/agent_B_evidence/priority_gap_pet_bins.csv",
+      "sha256": "56d628b720835c032fa09aed858afd434bdfc9444c7b237c871c2374693292a9",
+      "fields": "dataset;pet_bin;n;estimate;ci_low;ci_high",
+      "unit": "paired priority/nonpriority case",
+      "filters": "dataset=ALL, all three pre-existing PET strata",
+      "notes": "frozen B=1000 seed=42 case-bootstrap CIs; no rebootstrap; offline PET only"
+    },
+    {
+      "figure": "Figure 2",
+      "panel": "f",
+      "source": "reports/studies/RQ004_ipv_state_space/RQ004_1_state_space_law_nature_20260618/02_process/agent_E_geometry/round3_geometry_prior_results.csv",
+      "sha256": "2aace382b6517619161ad3464ff5f206f71ffd8a1a86f06323bb945241c22cad",
+      "fields": "table;scope;dataset_short;contrast_id;n;n_a;n_b;effect;ci_low;ci_high",
+      "unit": "interaction case",
+      "filters": "table=primary_contrast;scope=dataset;contrast_id in MP_minus_nonMP,SS_minus_nonSS",
+      "notes": "eight source-specific original two-group bootstrap CIs; B=1200; no pooling"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "assets/fig2_context.pdf",
+      "bytes": 59148,
+      "sha256": "e173a826d13ebcc25538193073e4f1125de8d1e30fc95f4e3c30015154167485"
+    },
+    {
+      "path": "assets/fig2_context.png",
+      "bytes": 270623,
+      "sha256": "9f62df3733d9160b606fa3b728be5ad2d51c97adccd70a4d745b3ad8d685fffa"
+    },
+    {
+      "path": "assets/fig2_context.svg",
+      "bytes": 60636,
+      "sha256": "889cdc875ede7de6e73bf15be7ace6e2217e9ea645a0c5c9eb363838e46d45a4"
+    },
+    {
+      "path": "source_data/fig2a_joint_distribution_bins.csv",
+      "bytes": 171685,
+      "sha256": "5da2f2caa96658b1e7836aacfcb23f01dee8913c2070b481f5b8853135938ef9"
+    },
+    {
+      "path": "source_data/fig2b_complementarity.csv",
+      "bytes": 999,
+      "sha256": "6f13eb660e44e779e7ca39824ff3e970ef71ef70cad39f0287e5265e7d9ba88a"
+    },
+    {
+      "path": "source_data/fig2c_early_role_auc.csv",
+      "bytes": 1482,
+      "sha256": "c916cdb677c36a8a5f5ca78be6434b521b3f95348215cf39ea0a27493c0ff5f6"
+    },
+    {
+      "path": "source_data/fig2d_turn_straight.csv",
+      "bytes": 1046,
+      "sha256": "7962ca617ccef879470898aa0e1af42e420fd48791e15abddb82d157befe770f"
+    },
+    {
+      "path": "source_data/fig2e_priority_pet.csv",
+      "bytes": 390,
+      "sha256": "912e9e71816b5d3ca0e847cfedb6831ea3b2a5df1c5d7d5a5cbf35a516b7cf00"
+    },
+    {
+      "path": "source_data/fig2f_geometry.csv",
+      "bytes": 828,
+      "sha256": "ab45dadc91ab6414e680ffeca38e64a288c2c0959cabeacdc90e4fdcd571abf6"
+    },
+    {
+      "path": "process/make_fig2.py",
+      "bytes": 13742,
+      "sha256": "2e63156fa1a31674f3d2943a4617efce5358fd9baec41fb3606936f83a2fb34a"
+    },
+    {
+      "path": "process/fig2_sources.csv",
+      "bytes": 3497,
+      "sha256": "6da0658aa508aee5f8e7e7d89e3b52cbaa50c474abe5f04066cbacb23a4bc79e"
+    },
+    {
+      "path": "process/fig2_notes.md",
+      "bytes": 5423,
+      "sha256": "71ce25a4533c9377037fcbcab4b3fd898946f8e2ed7267997bcd0002e1a276df"
+    },
+    {
+      "path": "process/fig2_qa.json",
+      "bytes": 2075,
+      "sha256": "d87c489d2af21b4470dcae8b00693980caef6232dc659c45215f1dc39fc8ca18"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "numerical_checks": {
+    "descriptive_rows": 30,
+    "paired_comparison_rows": 30,
+    "scenario_comparison_rows": 30,
+    "paper_core_comparisons_matched": 8,
+    "participants": 40,
+    "participant_pairs": 20,
+    "segments": 90,
+    "scenarios": 15,
+    "completed_trials": 596,
+    "position_rating_records": 1192,
+    "source_aggregate_checks": "pass",
+    "statistics_rerun": false,
+    "individual_or_pair_data_read": false,
+    "ego_atypicality_A-W_Holm30_p": 0.07038382684
+  },
+  "output_sha256": {
+    "fig6_subjective.pdf": "4f73017937b7337aeb4b66f8bfc30a8f5754d2346bd4301e95cecbb2056c0142",
+    "fig6_subjective.png": "ec8bea3ebaf180fd6d50fa86598999d79178e82cbca72030958b262a16bc2334",
+    "fig6_subjective.svg": "fd429af768f2f2e05a8ecbb2606fb1bbfa7c7cb4b8e6ecdbfa71fa7766b32315",
+    "figS2_subjective_sensitivity.pdf": "905791bfba3c13d602906735d4fc87a4219f3ff49480eb1d64d488e2f2d1fb17",
+    "figS2_subjective_sensitivity.png": "b3bcee22a095fb76ba7e3d044874589f93e1111dd97f3f31f277ca07d5d9f989",
+    "figS2_subjective_sensitivity.svg": "5ed1d3adf0074dd53d97cd3afbfa1b3c7b15e5cb06e330a8a1b4f251b22a74c9"
+  },
+  "source_copies_sha256_match": true,
+  "visual_verdicts": {
+    "fig6_subjective": {
+      "score": 96,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [
+        "Faint participant-pair dots removed as permitted; all aggregate means and intervals retained.",
+        "Category color and seat shape now follow the shared figure contract.",
+        "All nine counterpart direct contrasts are printed with supplied intervals."
+      ],
+      "suggestions": [],
+      "reasoning": "All three quantitative panels, the cohort strip, seat legend and contrast displays are legible without clipping or overlap at the 183 mm output size."
+    },
+    "figS2_subjective_sensitivity": {
+      "score": 95,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [
+        "Participant and scenario estimates use distinct shape/fill and an explicit estimand/resampling legend.",
+        "All nine counterpart contrasts and both original sets of intervals remain present."
+      ],
+      "suggestions": [],
+      "reasoning": "The compact triptych preserves two resampling units, readable axes and unclipped intervals; spacing and typography match the main figure style."
+    }
+  },
+  "visual_reference_images": [
+    "FigS1_subjective_ratings.png",
+    "FigS2_common_scenario_check.png"
+  ],
+  "visual_review_method": "Direct inspection of generated Python PNG exports and original supplied PNG figures.",
+  "next_actions": [],
+  "format_checks": {
+    "script_ast": "pass",
+    "editable_svg_text": "pass",
+    "pdf_text_extraction": "pass",
+    "embedded_pdf_fonts": "pass",
+    "main_size_mm": [
+      183,
+      115
+    ],
+    "supplement_size_mm": [
+      183,
+      95
+    ],
+    "PNG_DPI": 300,
+    "exact_0.6825_PDF_label": "pass"
+  },
+  "rounding_note": "Counterpart q1_rev C-W estimate is exactly 0.6825 in the source and is displayed to four decimals; all other contrast labels use half-up rounding to three decimals.",
+  "final_visual_review": "Final fig6 PNG inspected again after the 0.6825 label correction: no overlap or clipping; final PDF text confirms +0.6825."
+}

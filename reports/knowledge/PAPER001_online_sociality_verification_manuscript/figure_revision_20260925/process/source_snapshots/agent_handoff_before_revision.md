@@ -1394,16 +1394,3 @@ Summary: Implemented the final RQ027 scope decision in the manuscript. The traje
 Structure: Results now contain four semantic sections and six main figures. `claims_register.md` and `structure.md` advance to v4.3. RQ027's independent-generator pilot remains in the research repository as a bounded internal diagnostic and is not introduced into the manuscript's frontstage narrative.
 
 Verification: paper PR CI passed source lint, LaTeX compilation, bibliography processing, undefined-reference/citation checks and PDF artifact generation.
-
-
-## 2026-09-25 — Six-figure local execution completed
-
-Purpose and state: execute the v4.5 six-figure revision plan with already accepted/source-verified results. All six main figures and five migrated/new supporting figures are complete; original Supplementary S1 and Extended Data ED1/ED2 are retained. The paper compiles to 57 pages with all 14 figure/caption pairs, no undefined reference/citation and no overfull box. Main figure pages 6/8/10/13/17/18 passed independent visual checks.
-
-Run: `reports/knowledge/PAPER001_online_sociality_verification_manuscript/figure_revision_20260925/`; entry `index.html`, compiled `main_revised.pdf`, `panel_source_map.csv`, `figure_inventory.csv`, `verification.json`. It contains editable/static assets, 41 plot/aggregate source CSVs, source hashes, plotting scripts, complete subjective comparison and sensitivity tables, source audit and visual/compile receipts.
-
-Source clarifications: Figure 2 density n=34,850; pooled matched-support ICC n=34,757; independent implementation n=34,645. Early AUC predicts final-quarter IPV role, not observed passing order. The readable-human histogram (486,660 test moments) and deployment-range summaries (all 67,861 AV candidates, before gates) are separated in ED4. Figure 4 uses existing two-sided ratio intervals where accommodating absolute-difference intervals are unavailable. Figure 5 restores side-specific matched rates and preserves unavailable intervals. Figure 6 uses equal-participant means and existing 20-pair bootstrap outputs; C-W atypicality is displayed source-exact as +0.6825. No new experiment, model, threshold, inclusion rule, bootstrap or statistical test.
-
-Boundary: these are artwork and reporting updates, not consent/protocol closure or submission clearance. Recruitment/apparatus, questionnaire anchors, ethics/consent, stimulus-version linkage and separate sharing permissions remain open. No participant-level subjective records exported. Local Git sync preserves pre-existing user changes; no remote push. This append is administrative; the prior accepted Fig5 ratio source text is snapshotted and hashed in the run before this append.
-
-Paper figure commit: `a8c8894f86d7fc83e91af49d42ab748e29dfb4e0` (local only).

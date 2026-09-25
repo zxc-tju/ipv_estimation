@@ -1,0 +1,13 @@
+index,endpoint,arm,contrast,ratio,ci_low,ci_high,interval_status,interval_note
+0,Ego TTC: median,AV,A/W,0.901351965972343,0.7625654619707104,1.10720688760317,available,95% run bootstrap
+1,Ego TTC: upper quartile,AV,A/W,0.6008998426633612,0.43617748527890404,0.8307816404799749,available,95% run bootstrap
+2,Counterpart: speed reduction,AV,A/W,2.061557277975424,1.0570176772865503,3.873102027490927,available,95% run bootstrap
+3,Counterpart: speed range,AV,A/W,1.8857278914756501,1.3490866189360982,2.377699017182887,available,95% run bootstrap
+4,Ego TTC < 2 s,AV,A/W,0.6076281045794942,,,unavailable,ratio interval unavailable; no interval reconstructed
+5,Counterpart braking < −3 m/s²,AV,A/W,0.4615259355308558,,,unavailable,ratio interval unavailable; no interval reconstructed
+0,Ego TTC: median,Human,A/W,0.8126463700234193,,,unavailable,ratio interval unavailable; no interval reconstructed
+1,Ego TTC: upper quartile,Human,A/W,0.704108164326573,,,unavailable,ratio interval unavailable; no interval reconstructed
+2,Counterpart: speed reduction,Human,A/W,2.455172,1.24,2.93,available,95% run bootstrap
+3,Counterpart: speed range,Human,A/W,1.449664,1.22,1.85,available,95% run bootstrap
+4,Ego TTC < 2 s,Human,A/W,0.5927141159569373,,,unavailable,ratio interval unavailable; no interval reconstructed
+5,Counterpart braking < −3 m/s²,Human,A/W,0.5251146204788589,,,unavailable,ratio interval unavailable; no interval reconstructed

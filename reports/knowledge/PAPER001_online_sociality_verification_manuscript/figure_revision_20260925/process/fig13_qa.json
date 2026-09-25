@@ -1,0 +1,236 @@
+{
+  "fig1_source_rows": 221,
+  "fig1_state_counts": {
+    "abstain": 160,
+    "W": 59,
+    "C": 2
+  },
+  "fig1_rejected_plot_values_all_nan": true,
+  "case": "ipv_004992",
+  "source_masks_checked": true,
+  "reference_range_median_check": true,
+  "visual_iterations": [
+    {
+      "iteration": 1,
+      "figure": "fig1_monitoring",
+      "score": 86,
+      "verdict": "revise",
+      "category_match": true,
+      "differences": [
+        "Panel a label falls outside canvas.",
+        "Panel c title/letter baseline differs from b because status-strip inset shifts the automatic title.",
+        "13.2 s label conflicts with lower-left trajectory legend."
+      ],
+      "suggestions": [
+        "Place a label inside fixed margin.",
+        "Use figure-positioned lower-row titles and panel labels.",
+        "Move trajectory legend to top right."
+      ],
+      "reasoning": "Source marks and abstention gaps are correct; three layout issues require correction."
+    },
+    {
+      "iteration": 1,
+      "figure": "figS4_estimator_details",
+      "score": 94,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "Editable angle diagram and exact seven-weight examples are readable."
+    },
+    {
+      "iteration": 1,
+      "figure": "figED5_reference_distribution",
+      "score": 95,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "Two data populations and range-summary definition are visibly separated."
+    },
+    {
+      "iteration": 1,
+      "figure": "fig3_monitor",
+      "score": 86,
+      "verdict": "revise",
+      "category_match": true,
+      "differences": [
+        "Width legend overlaps filled bars.",
+        "Coverage 90% value labels collide; top sample-size label crosses a point."
+      ],
+      "suggestions": [
+        "Use the shared series key in b; remove a key.",
+        "Offset paired labels; remove duplicated sample-size annotation."
+      ],
+      "reasoning": "All frozen statistics and populations are correct, but label collisions require one layout correction."
+    },
+    {
+      "iteration": 1,
+      "figure": "figED3_source_transfer",
+      "score": 85,
+      "verdict": "revise",
+      "category_match": true,
+      "differences": [
+        "Panel b legend overlays its title."
+      ],
+      "suggestions": [
+        "Shorten title and place legend inside a dedicated upper plot margin."
+      ],
+      "reasoning": "Coverage and abstention display all four sources and denominators; top hierarchy needs separation."
+    },
+    {
+      "iteration": 2,
+      "figure": "fig1_monitoring",
+      "score": 89,
+      "verdict": "revise",
+      "category_match": true,
+      "differences": [
+        "Panel c fixed title touches its status strip.",
+        "Readability-failure connector crosses the support box."
+      ],
+      "suggestions": [
+        "Raise the two lower-row headings.",
+        "Route the failure connector through the inter-column gap."
+      ],
+      "reasoning": "Legibility is improved; remaining two schematic-spacing issues require correction."
+    },
+    {
+      "iteration": 2,
+      "figure": "fig3_monitor",
+      "score": 95,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "All frozen values, units, count denominators, and four panel roles are clear."
+    },
+    {
+      "iteration": 2,
+      "figure": "figED3_source_transfer",
+      "score": 95,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "Predictive R\u00b2 and reference metrics are distinct, source-specific, and legible."
+    },
+    {
+      "iteration": 3,
+      "figure": "fig1_monitoring",
+      "score": 95,
+      "verdict": "pass",
+      "category_match": true,
+      "differences": [],
+      "suggestions": [],
+      "reasoning": "All three panel letters and titles are separated; gate-failure lines avoid boxes; the observed case remains gapped at every abstention."
+    }
+  ],
+  "fig3_numeric_checks": true,
+  "fig3_width_reductions_pct": [
+    20.73663695270369,
+    20.474466353519606,
+    8.37606457162472
+  ],
+  "fig3_r2": 0.20935525629952612,
+  "fig3_abstention_fraction": 0.05080138084083344,
+  "source_transfer_all_four_sources": true,
+  "exports": {
+    "fig1_monitoring": {
+      "pdf_pages": 1,
+      "pdf_text_characters": 751,
+      "svg_editable_text": true,
+      "files": {
+        "pdf": {
+          "bytes": 57102,
+          "sha256": "f57197f9448cc41fb0bda320338222594124c2b58f2d32d162845a6db1b8f746"
+        },
+        "svg": {
+          "bytes": 97291,
+          "sha256": "34f9ac4fecf068c2aeb50698bc5c9172f055a0907c96744473df5ffda3825b41"
+        },
+        "png": {
+          "bytes": 301269,
+          "sha256": "96af2d330872fcadbe76e4f09c375381cf52b1807aaaa95216d2fdb5bed3c4f2"
+        }
+      }
+    },
+    "fig3_monitor": {
+      "pdf_pages": 1,
+      "pdf_text_characters": 782,
+      "svg_editable_text": true,
+      "files": {
+        "pdf": {
+          "bytes": 49754,
+          "sha256": "0dc2add3e51887f9747fc37c32949b7e924801b3446f009aa6e0bb8c462d8489"
+        },
+        "svg": {
+          "bytes": 25457,
+          "sha256": "92c5bfeb4c81fd53d80d328f83b5ed8c6cf795018dca765664d6ad6aa75afd09"
+        },
+        "png": {
+          "bytes": 242996,
+          "sha256": "953f944cc6ad427fd6f0893136092e73a5b77a759b629c75cfa4672f7312a9a9"
+        }
+      }
+    },
+    "figS4_estimator_details": {
+      "pdf_pages": 1,
+      "pdf_text_characters": 332,
+      "svg_editable_text": true,
+      "files": {
+        "pdf": {
+          "bytes": 38314,
+          "sha256": "3f5bc1a30fc4d403c34c33a8c65beec1539bdc4d8914278cbadced19c974f779"
+        },
+        "svg": {
+          "bytes": 20179,
+          "sha256": "56f2eb3e927fc67969a0b37d4f6f4f8edeb58581391cc00738b2031303dfa6e5"
+        },
+        "png": {
+          "bytes": 136466,
+          "sha256": "251c62074805f7935987ed8098bb9ff7467cd8d9ba9dd112d7b0d57f4cce384f"
+        }
+      }
+    },
+    "figED3_source_transfer": {
+      "pdf_pages": 1,
+      "pdf_text_characters": 373,
+      "svg_editable_text": true,
+      "files": {
+        "pdf": {
+          "bytes": 41467,
+          "sha256": "6f2cee289e45be5885af8191770dd254ec6dd39c9e423d0b8eea9922d73fb715"
+        },
+        "svg": {
+          "bytes": 18408,
+          "sha256": "681ed8172ed9f8435efb72e4f82e337a8365659854940e0fabbeb5a03a1b6fa4"
+        },
+        "png": {
+          "bytes": 110412,
+          "sha256": "a450518d9af913345930f4fb4f08c86fc00f9fdcb987a83717cb7eb3bcd5990b"
+        }
+      }
+    },
+    "figED5_reference_distribution": {
+      "pdf_pages": 1,
+      "pdf_text_characters": 332,
+      "svg_editable_text": true,
+      "files": {
+        "pdf": {
+          "bytes": 41291,
+          "sha256": "1c8e0cff4ed456c975309ec608372e71f1ba94e3cabac63558d01eb000097d12"
+        },
+        "svg": {
+          "bytes": 27355,
+          "sha256": "5048a4276eb57f5147475a508bd7062b61c0f7c54afe70535b4404d7caf0de12"
+        },
+        "png": {
+          "bytes": 86789,
+          "sha256": "26f28aa25e61af519b0cc2c2b21cbdd7132e8395ad8f771e382f6ed924d8987d"
+        }
+      }
+    }
+  },
+  "python_compile": "pass",
+  "status": "ready_for_integration"
+}

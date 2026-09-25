@@ -1,0 +1,10 @@
+seat,metric,contrast,estimate,ci_low,ci_high,n_common_scenarios,n_positive,n_negative,n_zero,ci_method,scope,estimation_frame
+cp,q1_rev,A-W,0.8504464286,0.1443452381,1.65625,8,6,2,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap
+cp,q1_rev,C-W,0.9490740741,0.5422949735,1.413359788,9,9,0,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap
+cp,q1_rev,A-C,-0.07232142857,-0.480062004,0.3516865079,12,6,6,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap
+cp,q4,A-W,-1.119791667,-1.212053571,-1.020089286,8,0,8,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap
+cp,q4,C-W,-0.2447089947,-0.4173280423,-0.0787037037,9,2,7,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap
+cp,q4,A-C,-0.8514880952,-0.9824404762,-0.7251984127,12,0,12,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap
+cp,q5_cost_cp,A-W,2.005208333,1.839285714,2.178571429,8,8,0,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap
+cp,q5_cost_cp,C-W,0.9146825397,0.7711640212,1.068138228,9,9,0,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap
+cp,q5_cost_cp,A-C,1.19077381,0.9910714286,1.402790179,12,12,0,0,10000 scenario percentile bootstrap; fixed observed raters,descriptive sensitivity; selected scenario population only,equal_scenario_scenario_bootstrap

@@ -1,0 +1,107 @@
+{
+  "figure": "5",
+  "asset_stem": "fig5_human_arm",
+  "data_status": "existing accepted aggregate results",
+  "sources": [
+    {
+      "figure": "5",
+      "panel": "a/b/c/d",
+      "source": ".codex-fleet/rq022-matched-scenario/work/T1_target_figure/human_arm_data.json",
+      "sha256": "32b5263861b8add75de158c84ed142a59c7d8f8a6e2a166afa444654d62268fe",
+      "fields": "flag_counts; per_scenario_alpha90; signature; gates",
+      "unit": "aggregate counts and frozen statistics",
+      "filters": "REAL_VERIFIED; 90% main point",
+      "notes": "Human row-level archive not available locally; no recomputation"
+    },
+    {
+      "figure": "5",
+      "panel": "a/b/c/d",
+      "source": ".codex-fleet/rq022-matched-scenario/work/T1_target_figure/av_reference_values.json",
+      "sha256": "85dbe18431e36e8fae377073b3524c57d6b1a6c8b6768dec52621554b5105544",
+      "fields": "flag_counts; natural_human_outside_pct; per_scenario_alpha90; signature",
+      "unit": "aggregate counts and frozen statistics",
+      "filters": "90% main point",
+      "notes": ""
+    },
+    {
+      "figure": "5",
+      "panel": "d",
+      "source": ".codex-fleet/rq022-matched-scenario/work/T1_target_figure/ego_three_second_window.json",
+      "sha256": "23f74efcf3fff8686c52ba348f1acc10c376b32a7fc3b769714ead692ee49802",
+      "fields": "ratios_against_inside.lower.q50/q75.ci95",
+      "unit": "ratio",
+      "filters": "fixed 3-second window; 2000 whole-run bootstrap",
+      "notes": ""
+    },
+    {
+      "figure": "5",
+      "panel": "a",
+      "source": "reports/knowledge/PAPER001_online_sociality_verification_manuscript/imported_from_paper_repo_20260620/agent_handoff.md",
+      "sha256": "7f0a1ecd92daede56ced93019f180d020a049fdcc1e091eadc9756c895426686",
+      "fields": "lines 1101-1103: 1.95 [1.62,2.39]; 20000 draws; seed 20260820",
+      "unit": "reported ratio and CI",
+      "filters": "accepted 2026-08-20 handoff",
+      "notes": "Reported CI annotation only, not reconstructed from aggregate arm intervals"
+    },
+    {
+      "figure": "5",
+      "panel": "a",
+      "source": "reports/knowledge/RQ022_matched_scenario_human_arm/decision.md",
+      "sha256": "1f929b13c1a71aa4566c884a0dc9dab78a74ca7227dc61aa03686c8282a322d2",
+      "fields": "Accepted endpoint 1: rate CI 3.4–5.5%, driver-by-scenario bootstrap B1000",
+      "unit": "human outside-rate CI",
+      "filters": "20 drivers × 15 scenarios; 300 runs",
+      "notes": "CI method differs from AV/human scenario bootstrap"
+    }
+  ],
+  "files": [
+    {
+      "path": "assets/fig5_human_arm.svg",
+      "bytes": 37509,
+      "sha256": "3de506c37c0288b3a3a7501492cc9c1ea19f60b259af6a1fdc1753674ad02ae0"
+    },
+    {
+      "path": "assets/fig5_human_arm.png",
+      "bytes": 278631,
+      "sha256": "32f777d703dc996f13ce16b740030ab9a5122bbcf538760f59fc115bdbfc3e28"
+    },
+    {
+      "path": "assets/fig5_human_arm.pdf",
+      "bytes": 48740,
+      "sha256": "1772bc9aa6d2a3b9b40ab2b7037beeda3536d013e00c7f6f59eb6417a018534e"
+    },
+    {
+      "path": "source_data/fig5_consequence_signature.csv",
+      "bytes": 1450,
+      "sha256": "2998cd7f0e0628f662d77c5d9b9c87e18b4d92ab15c019a13938cd55afb263c3"
+    },
+    {
+      "path": "source_data/fig5_rate_ratio.csv",
+      "bytes": 192,
+      "sha256": "b054d92afaf175d37d7ce1f34bd28128843d263b8d2ed94eeb5671712b10b40d"
+    },
+    {
+      "path": "source_data/fig5_natural_reference.csv",
+      "bytes": 139,
+      "sha256": "fa145ea04eaabca472e9b48ef9dd46838044b83616cb3555e9ef8a9dae5b997e"
+    },
+    {
+      "path": "source_data/fig5_gates.csv",
+      "bytes": 137,
+      "sha256": "f3c9bad969be1152f557a602ac7a716a1e6ffc7bc4204b758b2e35317a5a7b09"
+    },
+    {
+      "path": "source_data/fig5_rates.csv",
+      "bytes": 1112,
+      "sha256": "0ccfa0ab742b2086bfa0ce6186679e49a3e423f2ea12c380d8d9f9bc021c9119"
+    },
+    {
+      "path": "source_data/fig5_scenarios.csv",
+      "bytes": 788,
+      "sha256": "f368e404b7809b3c300aa0150ac0af559ef4856d132b6056a6064fef229014b7"
+    }
+  ],
+  "statistical_change": false,
+  "rendering_backend": "Python matplotlib",
+  "visual_qa": "PASS; see process/fig45_qa.json"
+}

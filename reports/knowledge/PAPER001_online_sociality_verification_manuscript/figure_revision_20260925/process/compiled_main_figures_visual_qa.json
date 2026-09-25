@@ -1,0 +1,145 @@
+{
+  "checked_at": "2026-09-25T03:20:23.032053+00:00",
+  "input_pdf": "/tmp/nmi-figrev-final/main.pdf",
+  "input_pdf_sha256": "44ccc905f1d59ef0461aa0a6b14ef025f77b2f41efd1f4d0fdcfca3b5b967615",
+  "pdf_page_count": 57,
+  "scope": "Independent visual inspection of the six main-figure pages only; not a new statistical audit or full-manuscript review.",
+  "method": "Rendered each listed page using PyMuPDF/fitz at Matrix(2,2), 144 dpi, then individually inspected every rendered page via view_image; PDF text extraction used only to corroborate caption/panel contents.",
+  "reference_basis": "User acceptance criteria, input_plan.md panel contract and displayed captions; no pixel-fidelity reference comparison was requested.",
+  "pass_threshold": 90,
+  "overall_verdict": "pass",
+  "pages": [
+    {
+      "page": 6,
+      "figure": 1,
+      "panels": "a–c",
+      "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_06.png",
+      "checks": {
+        "figure_text_readable": true,
+        "panel_letters_match_caption": true,
+        "caption_complete_on_page": true,
+        "no_clipped_content": true,
+        "no_obstructive_overlap": true,
+        "no_placeholder": true
+      },
+      "visual_verdict": {
+        "score": 95,
+        "verdict": "pass",
+        "category_match": true,
+        "differences": [],
+        "suggestions": [],
+        "reasoning": "Three panels are legible: the two-input monitoring diagram, the matched map/trajectory example and the time series with gaps and verdict strip. Panel letters a–c agree with the full caption; all figure content and the caption fit within the page with no clipped text, obstructive overlap or placeholder."
+      }
+    },
+    {
+      "page": 8,
+      "figure": 2,
+      "panels": "a–f",
+      "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_08.png",
+      "checks": {
+        "figure_text_readable": true,
+        "panel_letters_match_caption": true,
+        "caption_complete_on_page": true,
+        "no_clipped_content": true,
+        "no_obstructive_overlap": true,
+        "no_placeholder": true
+      },
+      "visual_verdict": {
+        "score": 94,
+        "verdict": "pass",
+        "category_match": true,
+        "differences": [],
+        "suggestions": [],
+        "reasoning": "All six panel letters, axis labels, legends and sample-size notes are readable in the compiled page. The caption covers a–f in the plotted order and ends fully on this page; no panel, interval, legend or caption is clipped and no placeholder remains."
+      }
+    },
+    {
+      "page": 10,
+      "figure": 3,
+      "panels": "a–d",
+      "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_10.png",
+      "checks": {
+        "figure_text_readable": true,
+        "panel_letters_match_caption": true,
+        "caption_complete_on_page": true,
+        "no_clipped_content": true,
+        "no_obstructive_overlap": true,
+        "no_placeholder": true
+      },
+      "visual_verdict": {
+        "score": 96,
+        "verdict": "pass",
+        "category_match": true,
+        "differences": [],
+        "suggestions": [],
+        "reasoning": "The width and calibration plots, nested counts and variance bar are readable, with clear separation among panels a–d. The population/point-estimate notes and complete caption are visible; no text or plotting element is truncated or obscured."
+      }
+    },
+    {
+      "page": 13,
+      "figure": 4,
+      "panels": "a–d",
+      "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_13.png",
+      "checks": {
+        "figure_text_readable": true,
+        "panel_letters_match_caption": true,
+        "caption_complete_on_page": true,
+        "no_clipped_content": true,
+        "no_obstructive_overlap": true,
+        "no_placeholder": true
+      },
+      "visual_verdict": {
+        "score": 93,
+        "verdict": "pass",
+        "category_match": true,
+        "differences": [],
+        "suggestions": [],
+        "reasoning": "Both directions remain visually distinguishable in panels b–d and the full-range cumulative plot is visible in panel a. Panel letters, threshold labels, run/count notes and the full caption are legible and fit within the page; no clipping, obstructive text overlap or placeholder is visible."
+      }
+    },
+    {
+      "page": 17,
+      "figure": 5,
+      "panels": "a–d",
+      "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_17.png",
+      "checks": {
+        "figure_text_readable": true,
+        "panel_letters_match_caption": true,
+        "caption_complete_on_page": true,
+        "no_clipped_content": true,
+        "no_obstructive_overlap": true,
+        "no_placeholder": true
+      },
+      "visual_verdict": {
+        "score": 93,
+        "verdict": "pass",
+        "category_match": true,
+        "differences": [],
+        "suggestions": [],
+        "reasoning": "The total rates, direction-specific points, equal-axis scenario scatter and consequence-ratio rows are readable, including human/AV marker encoding and unavailable-interval daggers. Panels a–d correspond to the complete caption, with no clipped labels, obscured values or placeholder."
+      }
+    },
+    {
+      "page": 18,
+      "figure": 6,
+      "panels": "a–c",
+      "generated_screenshot": "/tmp/nmi-figrev-final/independent_main_figure_qa/page_18.png",
+      "checks": {
+        "figure_text_readable": true,
+        "panel_letters_match_caption": true,
+        "caption_complete_on_page": true,
+        "no_clipped_content": true,
+        "no_obstructive_overlap": true,
+        "no_placeholder": true
+      },
+      "visual_verdict": {
+        "score": 95,
+        "verdict": "pass",
+        "category_match": true,
+        "differences": [],
+        "suggestions": [],
+        "reasoning": "The design strip, position legend, three 1–7 rating panels and all nine counterpart contrast rows are legible; the atypicality C−W value visibly reads +0.6825. Panels a–c match the complete caption and there is no clipped content, obstructive overlap or placeholder."
+      }
+    }
+  ]
+}
